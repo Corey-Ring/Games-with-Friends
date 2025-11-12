@@ -148,14 +148,101 @@ def _print_help(letter: str, remaining_count: int):
     )
 
 
-def _show_hint(remaining: set[str]):
+def _get_hint_level_reveal(country: str, hint_level: int) -> tuple[str, bool]:
+    """
+    Get the revealed portion of a country name based on hint level.
+    hint_level is the number of hints already given (0 = first hint, 1 = second hint, etc.)
+    Returns (revealed_string, is_fully_revealed).
+    
+    Hint progression:
+    - Level 0 (first hint): First 3 letters
+    - Level 1 (second hint): First 5 letters
+    - Level 2 (third hint): First 7 letters
+    - Level 3+: Add 2 more letters each time (9, 11, 13...)
+    - When reach country_len - 1: Show all but last letter
+    - Next: Full reveal
+    """
+    country_len = len(country)
+    
+    # Calculate how many letters to reveal
+    if hint_level == 0:
+        reveal_len = 3
+    elif hint_level == 1:
+        reveal_len = 5
+    elif hint_level == 2:
+        reveal_len = 7
+    else:
+        # Level 3+: 7 + (hint_level - 2) * 2
+        reveal_len = 7 + (hint_level - 2) * 2
+    
+    # Determine what to show based on reveal_len and country length
+    # We need to ensure "all but last" is shown before full reveal
+    if reveal_len > country_len:
+        # Fully revealed (we've already shown "all but last")
+        return country, True
+    elif reveal_len >= country_len - 1:
+        # Show all but last letter
+        # If reveal_len == country_len, we still show "all but last" first
+        # The next hint will show the full country
+        return country[:-1] + "_", False
+    
+    # Normal progressive reveal
+    revealed = country[:reveal_len]
+    obscured = revealed + "_" * (country_len - reveal_len)
+    return obscured, False
+
+
+def _show_progressive_hint(
+    remaining: set[str],
+    current_hinted: str | None,
+    hint_levels: dict[str, int],
+) -> tuple[str | None, dict[str, int], str | None]:
+    """
+    Show a progressive hint. Continue with current country if it exists and isn't fully revealed,
+    otherwise pick a new random country.
+    Returns (new_current_hinted, updated_hint_levels, given_up_country).
+    given_up_country is the country name if it was fully revealed (should be marked as give up),
+    None otherwise.
+    """
     if not remaining:
-        print("  • Nothing left to hint!")
-        return
-    target = random.choice(tuple(remaining))
-    reveal = target[:3]
-    obscured = reveal + "…" + "_" * max(0, len(target) - len(reveal) - 1)
-    print(f"  • Hint: {obscured} ({len(target)} letters)")
+        print("  💡 Nothing left to hint!")
+        return None, hint_levels, None
+    
+    # If we have a current hinted country and it's still remaining
+    if current_hinted and current_hinted in remaining:
+        hint_level = hint_levels.get(current_hinted, 0)
+        revealed, is_fully_revealed = _get_hint_level_reveal(current_hinted, hint_level)
+        
+        if is_fully_revealed:
+            # This country is fully revealed, show it and mark as give up
+            level_display = f" [Hint level {hint_level + 1}]" if hint_level > 0 else ""
+            print(f"  💡 Hint: {revealed} ({len(current_hinted)} letters){level_display}")
+            hint_levels[current_hinted] = hint_level + 1
+            # Return the country name to mark it as given up
+            return None, hint_levels, current_hinted
+        else:
+            # Continue with this country - show hint at current level, then increment
+            level_display = f" [Hint level {hint_level + 1}]" if hint_level > 0 else ""
+            print(f"  💡 Hint: {revealed} ({len(current_hinted)} letters){level_display}")
+            hint_levels[current_hinted] = hint_level + 1
+            return current_hinted, hint_levels, None
+    
+    # Pick a new random country
+    current_hinted = random.choice(tuple(remaining))
+    hint_level = hint_levels.get(current_hinted, 0)
+    revealed, is_fully_revealed = _get_hint_level_reveal(current_hinted, hint_level)
+    
+    # Check if this new country is already fully revealed (shouldn't happen, but handle it)
+    if is_fully_revealed:
+        level_display = f" [Hint level {hint_level + 1}]" if hint_level > 0 else ""
+        print(f"  💡 Hint: {revealed} ({len(current_hinted)} letters){level_display}")
+        hint_levels[current_hinted] = hint_level + 1
+        return None, hint_levels, current_hinted
+    
+    level_display = f" [Hint level {hint_level + 1}]" if hint_level > 0 else ""
+    print(f"  💡 Hint: {revealed} ({len(current_hinted)} letters){level_display}")
+    hint_levels[current_hinted] = hint_level + 1
+    return current_hinted, hint_levels, None
 
 
 def resolve_guess(raw: str) -> str | None:
@@ -273,6 +360,10 @@ def play_round(letter: str | None = None, scores: dict | None = None) -> tuple[i
     targets = LETTER_INDEX[letter]
     remaining = set(targets)
     guessed = []
+    give_ups = []
+    hint_count = 0
+    current_hinted_country: str | None = None
+    hint_levels: dict[str, int] = {}
 
     print(f"\nYou picked '{letter}'. There are {len(targets)} countries starting with {letter}.")
     print("Start guessing! (Type 'done' when you want to stop.)\n")
@@ -291,10 +382,32 @@ def play_round(letter: str | None = None, scores: dict | None = None) -> tuple[i
             _print_help(letter, len(remaining))
             continue
         if lowered == "hint":
-            _show_hint(remaining)
+            if remaining:
+                hint_count += 1
+                current_hinted_country, hint_levels, given_up = _show_progressive_hint(
+                    remaining, current_hinted_country, hint_levels
+                )
+                # If a country was fully revealed, mark it as a give up
+                if given_up:
+                    remaining.remove(given_up)
+                    give_ups.append(given_up)
+                    # Clear hint tracking for this country
+                    if current_hinted_country == given_up:
+                        current_hinted_country = None
+                    if given_up in hint_levels:
+                        del hint_levels[given_up]
+                    print(f"  ⚠️  {given_up} marked as Give Up (fully revealed via hints)")
             continue
         if lowered == "status":
-            print(f"  • Progress: {len(guessed)}/{len(targets)} found; {len(remaining)} left.")
+            base_score = (len(guessed) / len(targets) * 100) if targets else 0
+            penalty = hint_count * 5
+            final_score = max(0, round(base_score - penalty))
+            print(f"  📊 Status:")
+            print(f"     Countries guessed: {', '.join(sorted(guessed)) if guessed else '(none)'}")
+            if give_ups:
+                print(f"     Give ups: {', '.join(sorted(give_ups))}")
+            print(f"     Remaining: {len(remaining)}")
+            print(f"     Score: {final_score}% ({len(guessed)}/{len(targets)} found, {hint_count} hints used: -{penalty} points)")
             continue
 
         match = resolve_guess(guess)
@@ -309,14 +422,31 @@ def play_round(letter: str | None = None, scores: dict | None = None) -> tuple[i
         if match in remaining:
             remaining.remove(match)
             guessed.append(match)
+            # Clear hint tracking for this country if it was being hinted
+            if current_hinted_country == match:
+                current_hinted_country = None
+            if match in hint_levels:
+                del hint_levels[match]
             print(f"  ✓ Correct! {len(guessed)}/{len(targets)} found.")
         else:
             print("  • Already got that one!")
 
     missed = sorted(remaining)
+    base_score = (len(guessed) / len(targets) * 100) if targets else 0
+    penalty = hint_count * 5
+    final_score = max(0, round(base_score - penalty))
+    
     print("\nRESULTS")
     print("-------")
     print(f"You found {len(guessed)} out of {len(targets)}.")
+    if give_ups:
+        print(f"Give ups: {len(give_ups)}")
+        for g in sorted(give_ups):
+            print(" - " + g)
+    if hint_count > 0:
+        print(f"Score: {final_score}% ({hint_count} hints used: -{penalty} points)")
+    else:
+        print(f"Score: {round(base_score)}%")
     if missed:
         print("You missed:")
         for m in missed:
