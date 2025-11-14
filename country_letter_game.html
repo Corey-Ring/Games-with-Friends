@@ -249,7 +249,7 @@
     #results-panel ul {
       list-style: none;
       padding: 0;
-      margin: 0;
+      margin: 0 0 1.5rem 0;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 0.5rem;
@@ -260,6 +260,14 @@
       background: rgba(15, 23, 42, 0.05);
       border-radius: 12px;
       font-weight: 600;
+    }
+
+    #give-ups-wrapper {
+      margin-top: 1.5rem;
+    }
+
+    #give-ups-wrapper h3 {
+      color: #f59e0b;
     }
 
     @media (max-width: 640px) {
@@ -326,6 +334,7 @@
       <ul class="guesses" id="guess-list" aria-live="polite"></ul>
 
       <div class="actions">
+        <button class="secondary" type="button" id="hint-btn">💡 Hint</button>
         <button class="secondary" type="button" id="done-btn">Done</button>
       </div>
     </section>
@@ -336,6 +345,10 @@
       <div id="missed-wrapper" class="hidden">
         <h3>Missed Countries</h3>
         <ul id="missed-list"></ul>
+      </div>
+      <div id="give-ups-wrapper" class="hidden">
+        <h3>Give Ups (Fully Revealed via Hints)</h3>
+        <ul id="give-ups-list"></ul>
       </div>
       <div class="actions">
         <button class="primary" type="button" id="play-again">Play Again</button>
@@ -452,7 +465,11 @@
       letter: null,
       targets: [],
       guessed: [],
-      finished: false
+      finished: false,
+      hintCount: 0,
+      currentHintedCountry: null,
+      hintLevels: {},
+      giveUps: []
     };
 
     const letterGrid = document.getElementById("letter-grid");
@@ -469,6 +486,9 @@
     const resultsSummary = document.getElementById("results-summary");
     const missedWrapper = document.getElementById("missed-wrapper");
     const missedList = document.getElementById("missed-list");
+    const giveUpsWrapper = document.getElementById("give-ups-wrapper");
+    const giveUpsList = document.getElementById("give-ups-list");
+    const hintBtn = document.getElementById("hint-btn");
     const doneBtn = document.getElementById("done-btn");
 
     const renderLetterButtons = () => {
@@ -488,8 +508,9 @@
     const updateStats = () => {
       const total = state.targets.length;
       const found = state.guessed.length;
+      const remaining = total - found - state.giveUps.length;
       progressCount.textContent = `${found}/${total}`;
-      remainingCount.textContent = total - found;
+      remainingCount.textContent = remaining;
     };
 
     const showFeedback = (message, type = "info") => {
@@ -522,11 +543,130 @@
       return null;
     };
 
+    const getHintLevelReveal = (country, hintLevel) => {
+      /**
+       * Get the revealed portion of a country name based on hint level.
+       * hintLevel is the number of hints already given (0 = first hint, 1 = second hint, etc.)
+       * Returns [revealedString, isFullyRevealed].
+       * 
+       * Hint progression:
+       * - Level 0 (first hint): First 3 letters
+       * - Level 1 (second hint): First 5 letters
+       * - Level 2 (third hint): First 7 letters
+       * - Level 3+: Add 2 more letters each time (9, 11, 13...)
+       * - When reach country_len - 1: Show all but last letter
+       * - Next: Full reveal
+       */
+      const countryLen = country.length;
+      
+      // Calculate how many letters to reveal
+      let revealLen;
+      if (hintLevel === 0) {
+        revealLen = 3;
+      } else if (hintLevel === 1) {
+        revealLen = 5;
+      } else if (hintLevel === 2) {
+        revealLen = 7;
+      } else {
+        // Level 3+: 7 + (hintLevel - 2) * 2
+        revealLen = 7 + (hintLevel - 2) * 2;
+      }
+      
+      // Determine what to show based on revealLen and country length
+      // We need to ensure "all but last" is shown before full reveal
+      if (revealLen > countryLen) {
+        // Fully revealed (we've already shown "all but last")
+        return [country, true];
+      } else if (revealLen >= countryLen - 1) {
+        // Show all but last letter
+        // If revealLen == countryLen, we still show "all but last" first
+        // The next hint will show the full country
+        return [country.slice(0, -1) + "_", false];
+      }
+      
+      // Normal progressive reveal
+      const revealed = country.slice(0, revealLen);
+      const obscured = revealed + "_".repeat(countryLen - revealLen);
+      return [obscured, false];
+    };
+
+    const showProgressiveHint = () => {
+      /**
+       * Show a progressive hint. Continue with current country if it exists and isn't fully revealed,
+       * otherwise pick a new random country.
+       * Returns the country name if it was fully revealed (should be marked as give up), null otherwise.
+       */
+      const remaining = state.targets.filter(
+        country => !state.guessed.includes(country) && !state.giveUps.includes(country)
+      );
+      
+      if (remaining.length === 0) {
+        showFeedback("Nothing left to hint!", "info");
+        return null;
+      }
+      
+      // If we have a current hinted country and it's still remaining
+      if (state.currentHintedCountry && remaining.includes(state.currentHintedCountry)) {
+        const hintLevel = state.hintLevels[state.currentHintedCountry] || 0;
+        const [revealed, isFullyRevealed] = getHintLevelReveal(state.currentHintedCountry, hintLevel);
+        
+        if (isFullyRevealed) {
+          // This country is fully revealed, show it and mark as give up
+          const levelDisplay = hintLevel > 0 ? ` [Hint level ${hintLevel + 1}]` : "";
+          showFeedback(
+            `💡 Hint: ${revealed} (${state.currentHintedCountry.length} letters)${levelDisplay}`,
+            "info"
+          );
+          state.hintLevels[state.currentHintedCountry] = hintLevel + 1;
+          // Return the country name to mark it as given up
+          return state.currentHintedCountry;
+        } else {
+          // Continue with this country - show hint at current level, then increment
+          const levelDisplay = hintLevel > 0 ? ` [Hint level ${hintLevel + 1}]` : "";
+          showFeedback(
+            `💡 Hint: ${revealed} (${state.currentHintedCountry.length} letters)${levelDisplay}`,
+            "info"
+          );
+          state.hintLevels[state.currentHintedCountry] = hintLevel + 1;
+          return null;
+        }
+      }
+      
+      // Pick a new random country
+      const newCurrentHinted = remaining[Math.floor(Math.random() * remaining.length)];
+      const hintLevel = state.hintLevels[newCurrentHinted] || 0;
+      const [revealed, isFullyRevealed] = getHintLevelReveal(newCurrentHinted, hintLevel);
+      
+      // Check if this new country is already fully revealed (shouldn't happen, but handle it)
+      if (isFullyRevealed) {
+        const levelDisplay = hintLevel > 0 ? ` [Hint level ${hintLevel + 1}]` : "";
+        showFeedback(
+          `💡 Hint: ${revealed} (${newCurrentHinted.length} letters)${levelDisplay}`,
+          "info"
+        );
+        state.hintLevels[newCurrentHinted] = hintLevel + 1;
+        return newCurrentHinted;
+      }
+      
+      const levelDisplay = hintLevel > 0 ? ` [Hint level ${hintLevel + 1}]` : "";
+      showFeedback(
+        `💡 Hint: ${revealed} (${newCurrentHinted.length} letters)${levelDisplay}`,
+        "info"
+      );
+      state.hintLevels[newCurrentHinted] = hintLevel + 1;
+      state.currentHintedCountry = newCurrentHinted;
+      return null;
+    };
+
     const startRound = (letter) => {
       state.letter = letter;
       state.targets = letterIndex[letter] ? [...letterIndex[letter]] : [];
       state.guessed = [];
       state.finished = false;
+      state.hintCount = 0;
+      state.currentHintedCountry = null;
+      state.hintLevels = {};
+      state.giveUps = [];
       currentLetter.textContent = letter;
       guessList.innerHTML = "";
       showFeedback(`Ready! ${state.targets.length} countries start with ${letter}.`, "info");
@@ -543,12 +683,21 @@
       state.finished = true;
       const total = state.targets.length;
       const found = state.guessed.length;
-      const missed = state.targets.filter((country) => !state.guessed.includes(country));
+      const missed = state.targets.filter(
+        (country) => !state.guessed.includes(country) && !state.giveUps.includes(country)
+      );
       
-      if (missed.length === 0 && total > 0) {
+      if (missed.length === 0 && state.giveUps.length === 0 && total > 0) {
         resultsSummary.textContent = `Perfect round — you got all ${total} countries starting with ${state.letter}!`;
       } else {
-        resultsSummary.textContent = `You found ${found} of ${total} countries starting with ${state.letter}.`;
+        let summary = `You found ${found} of ${total} countries starting with ${state.letter}.`;
+        if (state.giveUps.length > 0) {
+          summary += ` ${state.giveUps.length} gave up via hints.`;
+        }
+        if (state.hintCount > 0) {
+          summary += ` (${state.hintCount} hint${state.hintCount === 1 ? "" : "s"} used)`;
+        }
+        resultsSummary.textContent = summary;
       }
       
       missedList.innerHTML = "";
@@ -562,6 +711,19 @@
       } else {
         missedWrapper.classList.add("hidden");
       }
+      
+      giveUpsList.innerHTML = "";
+      if (state.giveUps.length) {
+        giveUpsWrapper.classList.remove("hidden");
+        state.giveUps.forEach((country) => {
+          const li = document.createElement("li");
+          li.textContent = country;
+          giveUpsList.appendChild(li);
+        });
+      } else {
+        giveUpsWrapper.classList.add("hidden");
+      }
+      
       playPanel.classList.add("hidden");
       resultsPanel.classList.remove("hidden");
     };
@@ -596,6 +758,13 @@
         return;
       }
 
+      if (state.giveUps.includes(resolved)) {
+        showFeedback(`"${resolved}" was already given up via hints.`, "error");
+        guessInput.value = "";
+        guessInput.focus();
+        return;
+      }
+
       if (state.guessed.includes(resolved)) {
         showFeedback("Already on the board. Keep going!", "error");
         guessInput.value = "";
@@ -604,13 +773,22 @@
       }
 
       state.guessed.push(resolved);
+      // Clear hint tracking for this country if it was being hinted
+      if (state.currentHintedCountry === resolved) {
+        state.currentHintedCountry = null;
+      }
+      if (resolved in state.hintLevels) {
+        delete state.hintLevels[resolved];
+      }
       renderGuesses();
       updateStats();
       showFeedback(`Nice! ${resolved} added.`, "success");
       guessInput.value = "";
       guessInput.focus();
 
-      if (state.guessed.length === state.targets.length) {
+      // Check if all countries are either guessed or given up
+      const remaining = state.targets.length - state.guessed.length - state.giveUps.length;
+      if (remaining === 0) {
         setTimeout(finishRound, 400);
       }
     });
@@ -619,6 +797,28 @@
       playPanel.classList.add("hidden");
       resultsPanel.classList.add("hidden");
       letterPanel.classList.remove("hidden");
+    });
+
+    hintBtn.addEventListener("click", () => {
+      if (state.finished || !state.letter) {
+        return;
+      }
+      state.hintCount++;
+      const givenUp = showProgressiveHint();
+      if (givenUp) {
+        // Mark as give up
+        state.giveUps.push(givenUp);
+        // Clear hint tracking for this country
+        if (state.currentHintedCountry === givenUp) {
+          state.currentHintedCountry = null;
+        }
+        if (givenUp in state.hintLevels) {
+          delete state.hintLevels[givenUp];
+        }
+        showFeedback(`⚠️ ${givenUp} marked as Give Up (fully revealed via hints)`, "info");
+        updateStats();
+      }
+      guessInput.focus();
     });
 
     doneBtn.addEventListener("click", finishRound);
