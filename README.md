@@ -1,6 +1,30 @@
-# Country Letter Guessing Game
+# Games with Friends
 
-Build shared trivia muscles with a lightweight game: pick a letter and try to recall every country that begins with it. Available in two versions:
+A collection of educational geography games to build shared trivia muscles with friends and family.
+
+## 🎮 Available Games
+
+### 1. Border Blitz (iOS)
+**A fast-paced country identification game for iPhone**
+
+Identify countries from their geographic borders as letters reveal one by one. Race against the clock and score points based on speed and accuracy!
+
+- **Platform**: iOS (SwiftUI)
+- **Location**: `BorderBlitz/`
+- **Type**: Single-player, timed challenge
+- **Features**:
+  - 15 countries with recognizable silhouettes
+  - 4 difficulty levels (Easy to Expert)
+  - Progressive letter reveal system
+  - Advanced scoring with streaks and bonuses
+  - Beautiful SwiftUI interface
+
+[**📖 Read the full Border Blitz README →**](BorderBlitz/README.md)
+
+### 2. Country Letter Guessing Game
+**Pick a letter and recall every country that starts with it**
+
+Available in two versions for maximum accessibility:
 
 - **Web Version**: Modern, single-file HTML game with a clean UI, perfect for quick games in any browser
 - **Python CLI Version**: Terminal-based game with advanced features like hints, scoring, and multi-round sessions
@@ -81,16 +105,26 @@ During a round you can enter:
 
 Score data (best percentages per letter plus perfect-round streaks) lives at `~/.country_letter_game_scores.json`. Delete that file if you want a fresh start.
 
-## Project Structure
-- `country_letter_game.html` - Web-based version (single file, no dependencies)
-- `country_letter_game.py` - Python CLI version
-  - `_norm`: normalizes user input (lowercase, strips accents/punctuation, removes leading "the").  
-  - `COUNTRIES` / `LETTER_INDEX`: canonical display names plus a pre-sorted index for fast lookup.  
-  - `_resolve_letter_arg`, `_print_help`, `_show_hint`, `_record_score`: CLI parsing, in-round utilities, and score persistence.  
-  - `play_round`: orchestrates a single round and emits detailed feedback.  
-  - `main`: parses CLI flags, manages round loops, and loads/saves scoreboard data.
-- `tests/test_country_letter_game.py`
-  - `unittest` coverage for `_norm`, `resolve_guess`, and the letter index invariants.
+## Repository Structure
+```
+Games-with-Friends/
+├── BorderBlitz/                    # iOS country border identification game
+│   ├── BorderBlitz/               # Source code
+│   │   ├── Models/               # Data models (Country, Difficulty, Scoring)
+│   │   ├── Views/                # SwiftUI views
+│   │   ├── ViewModels/           # Game state management
+│   │   └── Data/                 # Country border data
+│   ├── README.md                 # Border Blitz documentation
+│   └── SETUP.md                  # Xcode setup instructions
+├── country_letter_game.html       # Web version (single file, no dependencies)
+├── country_letter_game.py         # Python CLI version
+│   ├── _norm                     # Normalizes user input
+│   ├── COUNTRIES / LETTER_INDEX  # Country database and lookup
+│   ├── play_round                # Round orchestration
+│   └── main                      # CLI flags and round loops
+└── tests/
+    └── test_country_letter_game.py  # Unit tests for normalization and lookup
+```
 
 ## Development
 - Run tests: `python3 -m unittest discover -s tests`
