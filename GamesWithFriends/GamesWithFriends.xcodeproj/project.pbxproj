@@ -1,0 +1,704 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F10000010000000000000001 /* GamesWithFriendsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000001 /* GamesWithFriendsApp.swift */; };
+		F10000010000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000002 /* ContentView.swift */; };
+		F10000010000000000000003 /* GameHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000003 /* GameHubView.swift */; };
+		F10000010000000000000004 /* GameDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000004 /* GameDefinition.swift */; };
+		F10000010000000000000005 /* GameRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000005 /* GameRegistry.swift */; };
+		F10000010000000000000006 /* PlaceholderGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000006 /* PlaceholderGame.swift */; };
+		F10000010000000000000010 /* ConversationStartersGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000010 /* ConversationStartersGame.swift */; };
+		F10000010000000000000011 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000011 /* SampleData.swift */; };
+		F10000010000000000000012 /* ConversationStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000012 /* ConversationStarter.swift */; };
+		F10000010000000000000013 /* GameSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000013 /* GameSettings.swift */; };
+		F10000010000000000000014 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000014 /* PreviewHelpers.swift */; };
+		F10000010000000000000015 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000015 /* GameViewModel.swift */; };
+		F10000010000000000000016 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000016 /* GameView.swift */; };
+		F10000010000000000000017 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000017 /* HomeView.swift */; };
+		F10000010000000000000018 /* SavedStartersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000018 /* SavedStartersView.swift */; };
+		F10000010000000000000019 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000019 /* SettingsView.swift */; };
+		F10000010000000000000020 /* CountryLetterGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000020 /* CountryLetterGame.swift */; };
+		F10000010000000000000021 /* CountriesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000021 /* CountriesData.swift */; };
+		F10000010000000000000022 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000022 /* Country.swift */; };
+		F10000010000000000000023 /* CountryGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000023 /* CountryGameViewModel.swift */; };
+		F10000010000000000000024 /* CountryLetterGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000024 /* CountryLetterGameView.swift */; };
+		F10000010000000000000025 /* GamePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000025 /* GamePlayView.swift */; };
+		F10000010000000000000026 /* LetterSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000026 /* LetterSelectionView.swift */; };
+		F10000010000000000000027 /* ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000027 /* ResultsView.swift */; };
+		F10000010000000000000030 /* LicensePlateGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000030 /* LicensePlateGame.swift */; };
+		F10000010000000000000031 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000031 /* Achievement.swift */; };
+		F10000010000000000000032 /* LicensePlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000032 /* LicensePlate.swift */; };
+		F10000010000000000000033 /* PlateRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000033 /* PlateRegion.swift */; };
+		F10000010000000000000034 /* RoadTrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000034 /* RoadTrip.swift */; };
+		F10000010000000000000035 /* SpottedPlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000035 /* SpottedPlate.swift */; };
+		F10000010000000000000036 /* PlateData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000036 /* PlateData.swift */; };
+		F10000010000000000000037 /* LicensePlateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000037 /* LicensePlateViewModel.swift */; };
+		F10000010000000000000038 /* AchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000038 /* AchievementsView.swift */; };
+		F10000010000000000000039 /* LicensePlateGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000039 /* LicensePlateGameView.swift */; };
+		F10000010000000000000040 /* LifetimeStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000040 /* LifetimeStatsView.swift */; };
+		F10000010000000000000041 /* PlateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000041 /* PlateDetailView.swift */; };
+		F10000010000000000000042 /* PlateGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000042 /* PlateGridView.swift */; };
+		F10000010000000000000043 /* SpotPlateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000043 /* SpotPlateView.swift */; };
+		F10000010000000000000044 /* TripSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000044 /* TripSelectionView.swift */; };
+		F10000010000000000000045 /* TripStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000045 /* TripStatsView.swift */; };
+		F10000010000000000000050 /* Name5Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000050 /* Name5Game.swift */; };
+		F10000010000000000000051 /* Name5GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000051 /* Name5GameSession.swift */; };
+		F10000010000000000000052 /* Name5Prompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000052 /* Name5Prompt.swift */; };
+		F10000010000000000000053 /* Name5PromptData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000053 /* Name5PromptData.swift */; };
+		F10000010000000000000054 /* Name5PromptDataExtended.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000054 /* Name5PromptDataExtended.swift */; };
+		F10000010000000000000055 /* Name5ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000055 /* Name5ViewModel.swift */; };
+		F10000010000000000000056 /* Name5GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000056 /* Name5GameView.swift */; };
+		F10000010000000000000057 /* Name5PlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000057 /* Name5PlayView.swift */; };
+		F10000010000000000000058 /* Name5ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000058 /* Name5ResultsView.swift */; };
+		F10000010000000000000059 /* Name5SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000059 /* Name5SetupView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F00000010000000000000001 /* GamesWithFriends.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GamesWithFriends.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F20000010000000000000001 /* GamesWithFriendsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesWithFriendsApp.swift; sourceTree = "<group>"; };
+		F20000010000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F20000010000000000000003 /* GameHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHubView.swift; sourceTree = "<group>"; };
+		F20000010000000000000004 /* GameDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDefinition.swift; sourceTree = "<group>"; };
+		F20000010000000000000005 /* GameRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRegistry.swift; sourceTree = "<group>"; };
+		F20000010000000000000006 /* PlaceholderGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderGame.swift; sourceTree = "<group>"; };
+		F20000010000000000000010 /* ConversationStartersGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationStartersGame.swift; sourceTree = "<group>"; };
+		F20000010000000000000011 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
+		F20000010000000000000012 /* ConversationStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationStarter.swift; sourceTree = "<group>"; };
+		F20000010000000000000013 /* GameSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSettings.swift; sourceTree = "<group>"; };
+		F20000010000000000000014 /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
+		F20000010000000000000015 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		F20000010000000000000016 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		F20000010000000000000017 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		F20000010000000000000018 /* SavedStartersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStartersView.swift; sourceTree = "<group>"; };
+		F20000010000000000000019 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F20000010000000000000020 /* CountryLetterGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryLetterGame.swift; sourceTree = "<group>"; };
+		F20000010000000000000021 /* CountriesData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountriesData.swift; sourceTree = "<group>"; };
+		F20000010000000000000022 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
+		F20000010000000000000023 /* CountryGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryGameViewModel.swift; sourceTree = "<group>"; };
+		F20000010000000000000024 /* CountryLetterGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryLetterGameView.swift; sourceTree = "<group>"; };
+		F20000010000000000000025 /* GamePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePlayView.swift; sourceTree = "<group>"; };
+		F20000010000000000000026 /* LetterSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterSelectionView.swift; sourceTree = "<group>"; };
+		F20000010000000000000027 /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
+		F20000010000000000000030 /* LicensePlateGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensePlateGame.swift; sourceTree = "<group>"; };
+		F20000010000000000000031 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
+		F20000010000000000000032 /* LicensePlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensePlate.swift; sourceTree = "<group>"; };
+		F20000010000000000000033 /* PlateRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateRegion.swift; sourceTree = "<group>"; };
+		F20000010000000000000034 /* RoadTrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadTrip.swift; sourceTree = "<group>"; };
+		F20000010000000000000035 /* SpottedPlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpottedPlate.swift; sourceTree = "<group>"; };
+		F20000010000000000000036 /* PlateData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateData.swift; sourceTree = "<group>"; };
+		F20000010000000000000037 /* LicensePlateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensePlateViewModel.swift; sourceTree = "<group>"; };
+		F20000010000000000000038 /* AchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsView.swift; sourceTree = "<group>"; };
+		F20000010000000000000039 /* LicensePlateGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensePlateGameView.swift; sourceTree = "<group>"; };
+		F20000010000000000000040 /* LifetimeStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifetimeStatsView.swift; sourceTree = "<group>"; };
+		F20000010000000000000041 /* PlateDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateDetailView.swift; sourceTree = "<group>"; };
+		F20000010000000000000042 /* PlateGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateGridView.swift; sourceTree = "<group>"; };
+		F20000010000000000000043 /* SpotPlateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotPlateView.swift; sourceTree = "<group>"; };
+		F20000010000000000000044 /* TripSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripSelectionView.swift; sourceTree = "<group>"; };
+		F20000010000000000000045 /* TripStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripStatsView.swift; sourceTree = "<group>"; };
+		F20000010000000000000050 /* Name5Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5Game.swift; sourceTree = "<group>"; };
+		F20000010000000000000051 /* Name5GameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5GameSession.swift; sourceTree = "<group>"; };
+		F20000010000000000000052 /* Name5Prompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5Prompt.swift; sourceTree = "<group>"; };
+		F20000010000000000000053 /* Name5PromptData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5PromptData.swift; sourceTree = "<group>"; };
+		F20000010000000000000054 /* Name5PromptDataExtended.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5PromptDataExtended.swift; sourceTree = "<group>"; };
+		F20000010000000000000055 /* Name5ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5ViewModel.swift; sourceTree = "<group>"; };
+		F20000010000000000000056 /* Name5GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5GameView.swift; sourceTree = "<group>"; };
+		F20000010000000000000057 /* Name5PlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5PlayView.swift; sourceTree = "<group>"; };
+		F20000010000000000000058 /* Name5ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5ResultsView.swift; sourceTree = "<group>"; };
+		F20000010000000000000059 /* Name5SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5SetupView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F30000010000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F40000010000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				F40000010000000000000002 /* GamesWithFriends */,
+				F40000010000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F40000010000000000000002 /* GamesWithFriends */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000001 /* GamesWithFriendsApp.swift */,
+				F20000010000000000000002 /* ContentView.swift */,
+				F40000010000000000000010 /* Features */,
+			);
+			name = GamesWithFriends;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F00000010000000000000001 /* GamesWithFriends.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000010 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				F40000010000000000000011 /* GameHub */,
+				F40000010000000000000012 /* PlaceholderGame */,
+				F40000010000000000000020 /* ConversationStarters */,
+				F40000010000000000000030 /* CountryLetterGame */,
+				F40000010000000000000040 /* LicensePlateGame */,
+				F40000010000000000000050 /* Name5Game */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000011 /* GameHub */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000003 /* GameHubView.swift */,
+				F20000010000000000000004 /* GameDefinition.swift */,
+				F20000010000000000000005 /* GameRegistry.swift */,
+			);
+			path = GameHub;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000012 /* PlaceholderGame */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000006 /* PlaceholderGame.swift */,
+			);
+			path = PlaceholderGame;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000020 /* ConversationStarters */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000010 /* ConversationStartersGame.swift */,
+				F40000010000000000000021 /* Data */,
+				F40000010000000000000022 /* Models */,
+				F40000010000000000000023 /* Utilities */,
+				F40000010000000000000024 /* ViewModels */,
+				F40000010000000000000025 /* Views */,
+			);
+			path = ConversationStarters;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000021 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000011 /* SampleData.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000022 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000012 /* ConversationStarter.swift */,
+				F20000010000000000000013 /* GameSettings.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000023 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000014 /* PreviewHelpers.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000024 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000015 /* GameViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000025 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000016 /* GameView.swift */,
+				F20000010000000000000017 /* HomeView.swift */,
+				F20000010000000000000018 /* SavedStartersView.swift */,
+				F20000010000000000000019 /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000030 /* CountryLetterGame */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000020 /* CountryLetterGame.swift */,
+				F40000010000000000000031 /* Data */,
+				F40000010000000000000032 /* Models */,
+				F40000010000000000000033 /* ViewModels */,
+				F40000010000000000000034 /* Views */,
+			);
+			path = CountryLetterGame;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000031 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000021 /* CountriesData.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000032 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000022 /* Country.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000033 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000023 /* CountryGameViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000034 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000024 /* CountryLetterGameView.swift */,
+				F20000010000000000000025 /* GamePlayView.swift */,
+				F20000010000000000000026 /* LetterSelectionView.swift */,
+				F20000010000000000000027 /* ResultsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000040 /* LicensePlateGame */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000030 /* LicensePlateGame.swift */,
+				F40000010000000000000041 /* Models */,
+				F40000010000000000000042 /* Resources */,
+				F40000010000000000000043 /* ViewModels */,
+				F40000010000000000000044 /* Views */,
+			);
+			path = LicensePlateGame;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000041 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000031 /* Achievement.swift */,
+				F20000010000000000000032 /* LicensePlate.swift */,
+				F20000010000000000000033 /* PlateRegion.swift */,
+				F20000010000000000000034 /* RoadTrip.swift */,
+				F20000010000000000000035 /* SpottedPlate.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000042 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000036 /* PlateData.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000043 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000037 /* LicensePlateViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000044 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000038 /* AchievementsView.swift */,
+				F20000010000000000000039 /* LicensePlateGameView.swift */,
+				F20000010000000000000040 /* LifetimeStatsView.swift */,
+				F20000010000000000000041 /* PlateDetailView.swift */,
+				F20000010000000000000042 /* PlateGridView.swift */,
+				F20000010000000000000043 /* SpotPlateView.swift */,
+				F20000010000000000000044 /* TripSelectionView.swift */,
+				F20000010000000000000045 /* TripStatsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000050 /* Name5Game */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000050 /* Name5Game.swift */,
+				F40000010000000000000051 /* Models */,
+				F40000010000000000000052 /* Resources */,
+				F40000010000000000000053 /* ViewModels */,
+				F40000010000000000000054 /* Views */,
+			);
+			path = Name5Game;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000051 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000051 /* Name5GameSession.swift */,
+				F20000010000000000000052 /* Name5Prompt.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000052 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000053 /* Name5PromptData.swift */,
+				F20000010000000000000054 /* Name5PromptDataExtended.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000053 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000055 /* Name5ViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000054 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000056 /* Name5GameView.swift */,
+				F20000010000000000000057 /* Name5PlayView.swift */,
+				F20000010000000000000058 /* Name5ResultsView.swift */,
+				F20000010000000000000059 /* Name5SetupView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F50000010000000000000001 /* GamesWithFriends */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F70000010000000000000001 /* Build configuration list for PBXNativeTarget "GamesWithFriends" */;
+			buildPhases = (
+				F60000010000000000000001 /* Sources */,
+				F30000010000000000000001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GamesWithFriends;
+			productName = GamesWithFriends;
+			productReference = F00000010000000000000001 /* GamesWithFriends.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F80000010000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					F50000010000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = F70000010000000000000002 /* Build configuration list for PBXProject "GamesWithFriends" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F40000010000000000000001;
+			productRefGroup = F40000010000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F50000010000000000000001 /* GamesWithFriends */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F60000010000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F10000010000000000000001 /* GamesWithFriendsApp.swift in Sources */,
+				F10000010000000000000002 /* ContentView.swift in Sources */,
+				F10000010000000000000003 /* GameHubView.swift in Sources */,
+				F10000010000000000000004 /* GameDefinition.swift in Sources */,
+				F10000010000000000000005 /* GameRegistry.swift in Sources */,
+				F10000010000000000000006 /* PlaceholderGame.swift in Sources */,
+				F10000010000000000000010 /* ConversationStartersGame.swift in Sources */,
+				F10000010000000000000011 /* SampleData.swift in Sources */,
+				F10000010000000000000012 /* ConversationStarter.swift in Sources */,
+				F10000010000000000000013 /* GameSettings.swift in Sources */,
+				F10000010000000000000014 /* PreviewHelpers.swift in Sources */,
+				F10000010000000000000015 /* GameViewModel.swift in Sources */,
+				F10000010000000000000016 /* GameView.swift in Sources */,
+				F10000010000000000000017 /* HomeView.swift in Sources */,
+				F10000010000000000000018 /* SavedStartersView.swift in Sources */,
+				F10000010000000000000019 /* SettingsView.swift in Sources */,
+				F10000010000000000000020 /* CountryLetterGame.swift in Sources */,
+				F10000010000000000000021 /* CountriesData.swift in Sources */,
+				F10000010000000000000022 /* Country.swift in Sources */,
+				F10000010000000000000023 /* CountryGameViewModel.swift in Sources */,
+				F10000010000000000000024 /* CountryLetterGameView.swift in Sources */,
+				F10000010000000000000025 /* GamePlayView.swift in Sources */,
+				F10000010000000000000026 /* LetterSelectionView.swift in Sources */,
+				F10000010000000000000027 /* ResultsView.swift in Sources */,
+				F10000010000000000000030 /* LicensePlateGame.swift in Sources */,
+				F10000010000000000000031 /* Achievement.swift in Sources */,
+				F10000010000000000000032 /* LicensePlate.swift in Sources */,
+				F10000010000000000000033 /* PlateRegion.swift in Sources */,
+				F10000010000000000000034 /* RoadTrip.swift in Sources */,
+				F10000010000000000000035 /* SpottedPlate.swift in Sources */,
+				F10000010000000000000036 /* PlateData.swift in Sources */,
+				F10000010000000000000037 /* LicensePlateViewModel.swift in Sources */,
+				F10000010000000000000038 /* AchievementsView.swift in Sources */,
+				F10000010000000000000039 /* LicensePlateGameView.swift in Sources */,
+				F10000010000000000000040 /* LifetimeStatsView.swift in Sources */,
+				F10000010000000000000041 /* PlateDetailView.swift in Sources */,
+				F10000010000000000000042 /* PlateGridView.swift in Sources */,
+				F10000010000000000000043 /* SpotPlateView.swift in Sources */,
+				F10000010000000000000044 /* TripSelectionView.swift in Sources */,
+				F10000010000000000000045 /* TripStatsView.swift in Sources */,
+				F10000010000000000000050 /* Name5Game.swift in Sources */,
+				F10000010000000000000051 /* Name5GameSession.swift in Sources */,
+				F10000010000000000000052 /* Name5Prompt.swift in Sources */,
+				F10000010000000000000053 /* Name5PromptData.swift in Sources */,
+				F10000010000000000000054 /* Name5PromptDataExtended.swift in Sources */,
+				F10000010000000000000055 /* Name5ViewModel.swift in Sources */,
+				F10000010000000000000056 /* Name5GameView.swift in Sources */,
+				F10000010000000000000057 /* Name5PlayView.swift in Sources */,
+				F10000010000000000000058 /* Name5ResultsView.swift in Sources */,
+				F10000010000000000000059 /* Name5SetupView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F90000010000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F90000010000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F90000010000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coreyring.GamesWithFriends;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F90000010000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coreyring.GamesWithFriends;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F70000010000000000000001 /* Build configuration list for PBXNativeTarget "GamesWithFriends" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F90000010000000000000003 /* Debug */,
+				F90000010000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F70000010000000000000002 /* Build configuration list for PBXProject "GamesWithFriends" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F90000010000000000000001 /* Debug */,
+				F90000010000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F80000010000000000000001 /* Project object */;
+}
