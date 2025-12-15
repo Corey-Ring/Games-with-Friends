@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Country Letter Challenge</title>
+  <style>
+    :root {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #0f172a;
+      --accent: #2563eb;
+      --accent-light: rgba(37, 99, 235, 0.12);
+      --success: #0f9d58;
+      --error: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: radial-gradient(circle at top, #e0f2fe, #f1f5f9 45%, #e2e8f0);
+    }
+
+    .game-shell {
+      width: min(960px, 100%);
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(6px);
+    }
+
+    .panel h1,
+    .panel h2 {
+      margin: 0 0 0.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .panel > p {
+      color: #475569;
+      margin-bottom: 1.25rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .letter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .letter-grid button {
+      border: none;
+      border-radius: 12px;
+      padding: 0.75rem 0.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #0f172a;
+      background: rgba(15, 23, 42, 0.08);
+      transition: transform 0.2s ease, background 0.2s ease;
+      cursor: pointer;
+    }
+
+    .letter-grid button:hover {
+      background: var(--accent-light);
+      transform: translateY(-2px);
+    }
+
+    .letter-grid button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      gap: 0.5rem;
+    }
+
+    .ghost {
+      border: none;
+      background: none;
+      color: #64748b;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.35rem 0.25rem;
+    }
+
+    .letter-pill {
+      padding: 0.5rem 1.2rem;
+      border-radius: 999px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 16px;
+      padding: 1rem;
+      background: white;
+    }
+
+    .stat-card span {
+      display: block;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-card strong {
+      font-size: 1.5rem;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      align-items: end;
+      margin-bottom: 0.75rem;
+    }
+
+    label {
+      grid-column: span 2;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    input[type="text"] {
+      border-radius: 16px;
+      border: 1px solid rgba(15, 23, 42, 0.15);
+      padding: 0.95rem 1.25rem;
+      font-size: 1rem;
+      background: #fff;
+      outline: none;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .primary,
+    .secondary {
+      border: none;
+      border-radius: 16px;
+      padding: 0.9rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+    }
+
+    .primary:hover,
+    .secondary:hover {
+      transform: translateY(-2px);
+    }
+
+    .secondary {
+      background: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+    }
+
+    .feedback {
+      min-height: 2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #475569;
+    }
+
+    .feedback[data-type="success"] {
+      color: var(--success);
+    }
+
+    .feedback[data-type="error"] {
+      color: var(--error);
+    }
+
+    .guesses {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .guesses li {
+      border-radius: 14px;
+      padding: 0.75rem 1rem;
+      background: rgba(15, 23, 42, 0.05);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .guesses .icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.1);
+    }
+
+    .actions {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    #results-panel ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.5rem 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.5rem;
+    }
+
+    #results-panel li {
+      padding: 0.65rem 0.9rem;
+      background: rgba(15, 23, 42, 0.05);
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    #give-ups-wrapper {
+      margin-top: 1.5rem;
+    }
+
+    #give-ups-wrapper h3 {
+      color: #f59e0b;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 1.25rem;
+      }
+
+      .panel {
+        padding: 1.5rem;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      label {
+        grid-column: 1 / -1;
+      }
+
+      .actions {
+        justify-content: stretch;
+      }
+
+      .primary,
+      .secondary {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="game-shell">
+    <section class="panel" id="letter-panel">
+      <h1>Country Letter Challenge</h1>
+      <p>Select a letter to see how many countries you can name before tapping “Done”.</p>
+      <div class="letter-grid" id="letter-grid" aria-label="Letter choices A through Z"></div>
+    </section>
+
+    <section class="panel hidden" id="play-panel">
+      <div class="panel-header">
+        <button class="ghost" id="change-letter" type="button">← Pick another letter</button>
+        <div class="letter-pill" id="current-letter" aria-live="polite">A</div>
+      </div>
+
+      <div class="stats" aria-live="polite">
+        <div class="stat-card">
+          <span>Progress</span>
+          <strong id="progress-count">0/0</strong>
+        </div>
+        <div class="stat-card">
+          <span>Remaining</span>
+          <strong id="remaining-count">0</strong>
+        </div>
+      </div>
+
+      <form id="guess-form" autocomplete="off">
+        <label for="guess-input">Country Guess</label>
+        <input id="guess-input" name="guess" type="text" placeholder="Start typing here…" inputmode="text" />
+        <button class="primary" type="submit">Submit</button>
+      </form>
+
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+
+      <ul class="guesses" id="guess-list" aria-live="polite"></ul>
+
+      <div class="actions">
+        <button class="secondary" type="button" id="hint-btn">💡 Hint</button>
+        <button class="secondary" type="button" id="done-btn">Done</button>
+      </div>
+    </section>
+
+    <section class="panel hidden" id="results-panel">
+      <h2>Round Results</h2>
+      <p id="results-summary"></p>
+      <div id="missed-wrapper" class="hidden">
+        <h3>Missed Countries</h3>
+        <ul id="missed-list"></ul>
+      </div>
+      <div id="give-ups-wrapper" class="hidden">
+        <h3>Give Ups (Fully Revealed via Hints)</h3>
+        <ul id="give-ups-list"></ul>
+      </div>
+      <div class="actions">
+        <button class="primary" type="button" id="play-again">Play Again</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const COUNTRIES = [
+      "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia",
+      "Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium",
+      "Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria",
+      "Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad",
+      "Chile","China","Colombia","Comoros","Congo","Costa Rica","Côte d'Ivoire","Croatia","Cuba","Cyprus",
+      "Czechia","Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic",
+      "Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji",
+      "Finland","France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea",
+      "Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq",
+      "Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","North Korea",
+      "South Korea","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya",
+      "Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta",
+      "Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia",
+      "Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Netherlands","New Zealand",
+      "Nicaragua","Niger","Nigeria","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine","Panama",
+      "Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia",
+      "Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino",
+      "São Tomé and Príncipe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore",
+      "Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Sudan","Spain","Sri Lanka",
+      "Sudan","Suriname","Sweden","Switzerland","Syria","Tajikistan","Tanzania","Thailand","Timor-Leste",
+      "Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine",
+      "United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City",
+      "Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"
+    ];
+
+    const ALT_NAMES = {
+      "ivory coast": "Côte d'Ivoire",
+      "cote d ivoire": "Côte d'Ivoire",
+      "cote d'ivoire": "Côte d'Ivoire",
+      "cape verde": "Cabo Verde",
+      "east timor": "Timor-Leste",
+      "lao pdr": "Laos",
+      "lao people s democratic republic": "Laos",
+      "burma": "Myanmar",
+      "swaziland": "Eswatini",
+      "czech republic": "Czechia",
+      "vatican": "Vatican City",
+      "holy see": "Vatican City",
+      "north korea": "North Korea",
+      "democratic people s republic of korea": "North Korea",
+      "south korea": "South Korea",
+      "republic of korea": "South Korea",
+      "the bahamas": "Bahamas",
+      "the gambia": "Gambia",
+      "republic of the congo": "Congo",
+      "democratic republic of the congo": "Democratic Republic of the Congo",
+      "bolivia plurinational state of": "Bolivia",
+      "moldova republic of": "Moldova",
+      "russian federation": "Russia",
+      "syrian arab republic": "Syria",
+      "united states of america": "United States",
+      "u s a": "United States",
+      "u s": "United States",
+      "uk": "United Kingdom",
+      "u k": "United Kingdom",
+      "united kingdom of great britain and northern ireland": "United Kingdom",
+      "myanmar burma": "Myanmar",
+      "brunei darussalam": "Brunei",
+      "iran islamic republic of": "Iran",
+      "kyrgyz republic": "Kyrgyzstan",
+      "lao": "Laos",
+      "micronesia federated states of": "Micronesia",
+      "palestine state of": "Palestine",
+      "tanzania united republic of": "Tanzania",
+      "venezuela bolivarian republic of": "Venezuela",
+      "viet nam": "Vietnam",
+      "timor leste": "Timor-Leste",
+      "sao tome and principe": "São Tomé and Príncipe",
+      "cabo verde": "Cabo Verde",
+      "eswatini kingdom of": "Eswatini"
+    };
+
+    const normalizeInput = (value = "") => {
+      const cleaned = value
+        .toLowerCase()
+        .trim()
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (cleaned.startsWith("the ")) {
+        return cleaned.slice(4);
+      }
+      return cleaned;
+    };
+
+    const canonical = new Map();
+    COUNTRIES.forEach((country) => canonical.set(normalizeInput(country), country));
+    Object.entries(ALT_NAMES).forEach(([alias, real]) => {
+      canonical.set(normalizeInput(alias), real);
+    });
+
+    const letterIndex = {};
+    COUNTRIES.forEach((country) => {
+      const letter = country[0].toUpperCase();
+      letterIndex[letter] = letterIndex[letter] || [];
+      letterIndex[letter].push(country);
+    });
+    Object.keys(letterIndex).forEach((letter) => {
+      letterIndex[letter].sort();
+    });
+
+    const state = {
+      letter: null,
+      targets: [],
+      guessed: [],
+      finished: false,
+      hintCount: 0,
+      currentHintedCountry: null,
+      hintLevels: {},
+      giveUps: []
+    };
+
+    const letterGrid = document.getElementById("letter-grid");
+    const playPanel = document.getElementById("play-panel");
+    const letterPanel = document.getElementById("letter-panel");
+    const resultsPanel = document.getElementById("results-panel");
+    const guessForm = document.getElementById("guess-form");
+    const guessInput = document.getElementById("guess-input");
+    const progressCount = document.getElementById("progress-count");
+    const remainingCount = document.getElementById("remaining-count");
+    const feedback = document.getElementById("feedback");
+    const guessList = document.getElementById("guess-list");
+    const currentLetter = document.getElementById("current-letter");
+    const resultsSummary = document.getElementById("results-summary");
+    const missedWrapper = document.getElementById("missed-wrapper");
+    const missedList = document.getElementById("missed-list");
+    const giveUpsWrapper = document.getElementById("give-ups-wrapper");
+    const giveUpsList = document.getElementById("give-ups-list");
+    const hintBtn = document.getElementById("hint-btn");
+    const doneBtn = document.getElementById("done-btn");
+
+    const renderLetterButtons = () => {
+      const letters = Array.from({ length: 26 }, (_, idx) =>
+        String.fromCharCode(65 + idx)
+      );
+      letters.forEach((letter) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = letter;
+        btn.disabled = !letterIndex[letter];
+        btn.addEventListener("click", () => startRound(letter));
+        letterGrid.appendChild(btn);
+      });
+    };
+
+    const updateStats = () => {
+      const total = state.targets.length;
+      const found = state.guessed.length;
+      const remaining = total - found - state.giveUps.length;
+      progressCount.textContent = `${found}/${total}`;
+      remainingCount.textContent = remaining;
+    };
+
+    const showFeedback = (message, type = "info") => {
+      feedback.dataset.type = type;
+      const icon = type === "success" ? "✓" : type === "error" ? "✗" : "•";
+      feedback.textContent = "";
+      const iconSpan = document.createElement("span");
+      iconSpan.textContent = icon;
+      feedback.appendChild(iconSpan);
+      feedback.appendChild(document.createTextNode(` ${message}`));
+    };
+
+    const renderGuesses = () => {
+      guessList.innerHTML = "";
+      state.guessed.forEach((country) => {
+        const li = document.createElement("li");
+        const badge = document.createElement("span");
+        badge.className = "icon";
+        badge.textContent = "✓";
+        li.appendChild(badge);
+        li.appendChild(document.createTextNode(country));
+        guessList.appendChild(li);
+      });
+    };
+
+    const resolveGuess = (value) => {
+      const key = normalizeInput(value);
+      if (!key) return null;
+      if (canonical.has(key)) return canonical.get(key);
+      return null;
+    };
+
+    const getHintLevelReveal = (country, hintLevel) => {
+      /**
+       * Get the revealed portion of a country name based on hint level.
+       * hintLevel is the number of hints already given (0 = first hint, 1 = second hint, etc.)
+       * Returns [revealedString, isFullyRevealed].
+       * 
+       * Hint progression:
+       * - Level 0 (first hint): First 3 letters
+       * - Level 1 (second hint): First 5 letters
+       * - Level 2 (third hint): First 7 letters
+       * - Level 3+: Add 2 more letters each time (9, 11, 13...)
+       * - When reach country_len - 1: Show all but last letter
+       * - Next: Full reveal
+       */
+      const countryLen = country.length;
+      
+      // Calculate how many letters to reveal
+      let revealLen;
+      if (hintLevel === 0) {
+        revealLen = 3;
+      } else if (hintLevel === 1) {
+        revealLen = 5;
+      } else if (hintLevel === 2) {
+        revealLen = 7;
+      } else {
+        // Level 3+: 7 + (hintLevel - 2) * 2
+        revealLen = 7 + (hintLevel - 2) * 2;
+      }
+      
+      // Determine what to show based on revealLen and country length
+      // We need to ensure "all but last" is shown before full reveal
+      if (revealLen > countryLen) {
+        // Fully revealed (we've already shown "all but last")
+        return [country, true];
+      } else if (revealLen >= countryLen - 1) {
+        // Show all but last letter
+        // If revealLen == countryLen, we still show "all but last" first
+        // The next hint will show the full country
+        return [country.slice(0, -1) + "_", false];
+      }
+      
+      // Normal progressive reveal
+      const revealed = country.slice(0, revealLen);
+      const obscured = revealed + "_".repeat(countryLen - revealLen);
+      return [obscured, false];
+    };
+
+    const showProgressiveHint = () => {
+      /**
+       * Show a progressive hint. Continue with current country if it exists and isn't fully revealed,
+       * otherwise pick a new random country.
+       * Returns the country name if it was fully revealed (should be marked as give up), null otherwise.
+       */
+      const remaining = state.targets.filter(
+        country => !state.guessed.includes(country) && !state.giveUps.includes(country)
+      );
+      
+      if (remaining.length === 0) {
+        showFeedback("Nothing left to hint!", "info");
+        return null;
+      }
+      
+      // If we have a current hinted country and it's still remaining
+      if (state.currentHintedCountry && remaining.includes(state.currentHintedCountry)) {
+        const hintLevel = state.hintLevels[state.currentHintedCountry] || 0;
+        const [revealed, isFullyRevealed] = getHintLevelReveal(state.currentHintedCountry, hintLevel);
+        
+        if (isFullyRevealed) {
+          // This country is fully revealed, show it and mark as give up
+          const levelDisplay = hintLevel > 0 ? ` [Hint level ${hintLevel + 1}]` : "";
+          showFeedback(
+            `💡 Hint: ${revealed} (${state.currentHintedCountry.length} letters)${levelDisplay}`,
+            "info"
+          );
+          state.hintLevels[state.currentHintedCountry] = hintLevel + 1;
+          // Return the country name to mark it as given up
+          return state.currentHintedCountry;
+        } else {
+          // Continue with this country - show hint at current level, then increment
+          const levelDisplay = hintLevel > 0 ? ` [Hint level ${hintLevel + 1}]` : "";
+          showFeedback(
+            `💡 Hint: ${revealed} (${state.currentHintedCountry.length} letters)${levelDisplay}`,
+            "info"
+          );
+          state.hintLevels[state.currentHintedCountry] = hintLevel + 1;
+          return null;
+        }
+      }
+      
+      // Pick a new random country
+      const newCurrentHinted = remaining[Math.floor(Math.random() * remaining.length)];
+      const hintLevel = state.hintLevels[newCurrentHinted] || 0;
+      const [revealed, isFullyRevealed] = getHintLevelReveal(newCurrentHinted, hintLevel);
+      
+      // Check if this new country is already fully revealed (shouldn't happen, but handle it)
+      if (isFullyRevealed) {
+        const levelDisplay = hintLevel > 0 ? ` [Hint level ${hintLevel + 1}]` : "";
+        showFeedback(
+          `💡 Hint: ${revealed} (${newCurrentHinted.length} letters)${levelDisplay}`,
+          "info"
+        );
+        state.hintLevels[newCurrentHinted] = hintLevel + 1;
+        return newCurrentHinted;
+      }
+      
+      const levelDisplay = hintLevel > 0 ? ` [Hint level ${hintLevel + 1}]` : "";
+      showFeedback(
+        `💡 Hint: ${revealed} (${newCurrentHinted.length} letters)${levelDisplay}`,
+        "info"
+      );
+      state.hintLevels[newCurrentHinted] = hintLevel + 1;
+      state.currentHintedCountry = newCurrentHinted;
+      return null;
+    };
+
+    const startRound = (letter) => {
+      state.letter = letter;
+      state.targets = letterIndex[letter] ? [...letterIndex[letter]] : [];
+      state.guessed = [];
+      state.finished = false;
+      state.hintCount = 0;
+      state.currentHintedCountry = null;
+      state.hintLevels = {};
+      state.giveUps = [];
+      currentLetter.textContent = letter;
+      guessList.innerHTML = "";
+      showFeedback(`Ready! ${state.targets.length} countries start with ${letter}.`, "info");
+      updateStats();
+      guessInput.value = "";
+      resultsPanel.classList.add("hidden");
+      playPanel.classList.remove("hidden");
+      letterPanel.classList.add("hidden");
+      setTimeout(() => guessInput.focus(), 50);
+    };
+
+    const finishRound = () => {
+      if (state.finished || !state.letter) return;
+      state.finished = true;
+      const total = state.targets.length;
+      const found = state.guessed.length;
+      const missed = state.targets.filter(
+        (country) => !state.guessed.includes(country) && !state.giveUps.includes(country)
+      );
+      
+      if (missed.length === 0 && state.giveUps.length === 0 && total > 0) {
+        resultsSummary.textContent = `Perfect round — you got all ${total} countries starting with ${state.letter}!`;
+      } else {
+        let summary = `You found ${found} of ${total} countries starting with ${state.letter}.`;
+        if (state.giveUps.length > 0) {
+          summary += ` ${state.giveUps.length} gave up via hints.`;
+        }
+        if (state.hintCount > 0) {
+          summary += ` (${state.hintCount} hint${state.hintCount === 1 ? "" : "s"} used)`;
+        }
+        resultsSummary.textContent = summary;
+      }
+      
+      missedList.innerHTML = "";
+      if (missed.length) {
+        missedWrapper.classList.remove("hidden");
+        missed.forEach((country) => {
+          const li = document.createElement("li");
+          li.textContent = country;
+          missedList.appendChild(li);
+        });
+      } else {
+        missedWrapper.classList.add("hidden");
+      }
+      
+      giveUpsList.innerHTML = "";
+      if (state.giveUps.length) {
+        giveUpsWrapper.classList.remove("hidden");
+        state.giveUps.forEach((country) => {
+          const li = document.createElement("li");
+          li.textContent = country;
+          giveUpsList.appendChild(li);
+        });
+      } else {
+        giveUpsWrapper.classList.add("hidden");
+      }
+      
+      playPanel.classList.add("hidden");
+      resultsPanel.classList.remove("hidden");
+    };
+
+    guessForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (state.finished || !state.letter) {
+        return;
+      }
+      const guess = guessInput.value.trim();
+      if (!guess) {
+        showFeedback("Enter a country name to submit a guess.", "error");
+        return;
+      }
+
+      const resolved = resolveGuess(guess);
+      if (!resolved) {
+        showFeedback("Not recognized. Try another name.", "error");
+        return;
+      }
+
+      // Check if country starts with the selected letter
+      if (resolved[0].toUpperCase() !== state.letter) {
+        showFeedback(`"${resolved}" does not start with ${state.letter}.`, "error");
+        return;
+      }
+
+      // Check if country is in the targets list for this letter
+      if (!state.targets.includes(resolved)) {
+        // This shouldn't happen if data is consistent, but handle gracefully
+        showFeedback(`"${resolved}" is not a valid country for this letter.`, "error");
+        return;
+      }
+
+      if (state.giveUps.includes(resolved)) {
+        showFeedback(`"${resolved}" was already given up via hints.`, "error");
+        guessInput.value = "";
+        guessInput.focus();
+        return;
+      }
+
+      if (state.guessed.includes(resolved)) {
+        showFeedback("Already on the board. Keep going!", "error");
+        guessInput.value = "";
+        guessInput.focus();
+        return;
+      }
+
+      state.guessed.push(resolved);
+      // Clear hint tracking for this country if it was being hinted
+      if (state.currentHintedCountry === resolved) {
+        state.currentHintedCountry = null;
+      }
+      if (resolved in state.hintLevels) {
+        delete state.hintLevels[resolved];
+      }
+      renderGuesses();
+      updateStats();
+      showFeedback(`Nice! ${resolved} added.`, "success");
+      guessInput.value = "";
+      guessInput.focus();
+
+      // Check if all countries are either guessed or given up
+      const remaining = state.targets.length - state.guessed.length - state.giveUps.length;
+      if (remaining === 0) {
+        setTimeout(finishRound, 400);
+      }
+    });
+
+    document.getElementById("change-letter").addEventListener("click", () => {
+      playPanel.classList.add("hidden");
+      resultsPanel.classList.add("hidden");
+      letterPanel.classList.remove("hidden");
+    });
+
+    hintBtn.addEventListener("click", () => {
+      if (state.finished || !state.letter) {
+        return;
+      }
+      state.hintCount++;
+      const givenUp = showProgressiveHint();
+      if (givenUp) {
+        // Mark as give up
+        state.giveUps.push(givenUp);
+        // Clear hint tracking for this country
+        if (state.currentHintedCountry === givenUp) {
+          state.currentHintedCountry = null;
+        }
+        if (givenUp in state.hintLevels) {
+          delete state.hintLevels[givenUp];
+        }
+        showFeedback(`⚠️ ${givenUp} marked as Give Up (fully revealed via hints)`, "info");
+        updateStats();
+      }
+      guessInput.focus();
+    });
+
+    doneBtn.addEventListener("click", finishRound);
+    document.getElementById("play-again").addEventListener("click", () => {
+      resultsPanel.classList.add("hidden");
+      playPanel.classList.add("hidden");
+      letterPanel.classList.remove("hidden");
+    });
+
+    renderLetterButtons();
+  </script>
+</body>
+</html>
