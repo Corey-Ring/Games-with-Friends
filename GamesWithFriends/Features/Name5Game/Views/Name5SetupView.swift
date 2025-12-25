@@ -93,10 +93,10 @@ struct Name5SetupView: View {
                                 get: { viewModel.timerDuration },
                                 set: { viewModel.updateConfiguration(duration: $0) }
                             )) {
+                                Text("5s").tag(5)
+                                Text("10s").tag(10)
                                 Text("20s").tag(20)
                                 Text("30s").tag(30)
-                                Text("45s").tag(45)
-                                Text("60s").tag(60)
                             }
                             .pickerStyle(.segmented)
                         }
