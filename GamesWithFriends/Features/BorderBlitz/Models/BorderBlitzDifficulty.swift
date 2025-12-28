@@ -23,6 +23,14 @@ enum BorderBlitzDifficulty: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Whether letters should be revealed over time
+    var shouldRevealLetters: Bool {
+        switch self {
+        case .easy, .medium, .expert: return true
+        case .hard: return false
+        }
+    }
+
     /// Total time allowed for the round in seconds
     var totalTime: TimeInterval {
         switch self {
@@ -38,7 +46,7 @@ enum BorderBlitzDifficulty: String, CaseIterable, Identifiable {
         switch self {
         case .easy: return "1 letter every 3 seconds • 60s timer"
         case .medium: return "1 letter every 2 seconds • 45s timer"
-        case .hard: return "1 letter every 1.5 seconds • 35s timer"
+        case .hard: return "No letters given • 35s timer"
         case .expert: return "1 letter every 1 second • 25s timer"
         }
     }

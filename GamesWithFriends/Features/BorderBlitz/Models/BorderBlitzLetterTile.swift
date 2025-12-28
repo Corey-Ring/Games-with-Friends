@@ -28,6 +28,7 @@ class BorderBlitzLetterRevealManager: ObservableObject {
     private var revealTimer: Timer?
     private var currentRevealIndex = 0
     private let revealInterval: TimeInterval
+    private let shouldRevealLetters: Bool
 
     var allRevealed: Bool {
         tiles.allSatisfy { $0.shouldDisplay }
@@ -37,8 +38,9 @@ class BorderBlitzLetterRevealManager: ObservableObject {
         tiles.filter { !$0.shouldDisplay && !$0.isAlwaysVisible }.count
     }
 
-    init(revealInterval: TimeInterval) {
+    init(revealInterval: TimeInterval, shouldRevealLetters: Bool = true) {
         self.revealInterval = revealInterval
+        self.shouldRevealLetters = shouldRevealLetters
     }
 
     func setup(countryName: String) {
@@ -54,6 +56,8 @@ class BorderBlitzLetterRevealManager: ObservableObject {
     }
 
     func startRevealing() {
+        guard shouldRevealLetters else { return }
+
         revealTimer?.invalidate()
         currentRevealIndex = 0
 

@@ -46,7 +46,10 @@ class BorderBlitzViewModel: ObservableObject {
 
     // MARK: - Initialization
     init() {
-        self.letterRevealManager = BorderBlitzLetterRevealManager(revealInterval: BorderBlitzDifficulty.medium.letterRevealInterval)
+        self.letterRevealManager = BorderBlitzLetterRevealManager(
+            revealInterval: BorderBlitzDifficulty.medium.letterRevealInterval,
+            shouldRevealLetters: BorderBlitzDifficulty.medium.shouldRevealLetters
+        )
         loadCountries()
     }
 
@@ -59,7 +62,10 @@ class BorderBlitzViewModel: ObservableObject {
         gameState = .playing
 
         // Update letter reveal manager with selected difficulty
-        letterRevealManager = BorderBlitzLetterRevealManager(revealInterval: selectedDifficulty.letterRevealInterval)
+        letterRevealManager = BorderBlitzLetterRevealManager(
+            revealInterval: selectedDifficulty.letterRevealInterval,
+            shouldRevealLetters: selectedDifficulty.shouldRevealLetters
+        )
 
         startNewRound()
     }
