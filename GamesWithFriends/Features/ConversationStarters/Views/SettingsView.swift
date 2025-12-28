@@ -11,7 +11,7 @@ struct SettingsView: View {
             Form {
                 Section {
                     Toggle("Enable Timer", isOn: $viewModel.settings.timerEnabled)
-                        .onChange(of: viewModel.settings.timerEnabled) { newValue in
+                        .onChange(of: viewModel.settings.timerEnabled) { oldValue, newValue in
                             if newValue {
                                 viewModel.resetTimer()
                             } else {
