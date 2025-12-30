@@ -11,7 +11,7 @@ import SwiftUI
 struct LicensePlateGame: GameDefinition {
     let id = "license-plate-game"
     let name = "License Plate Game"
-    let description = "Spot plates from all 50 states and beyond! Track your collection across multiple road trips with persistent data."
+    let description = "Spot plates from all 50 states and beyond!"
     let iconName = "car.fill"
     let accentColor: Color = .blue
     let minPlayers = 1

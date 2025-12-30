@@ -58,12 +58,12 @@ struct GameCard: View {
         NavigationLink {
             game.makeRootView()
         } label: {
-            VStack(spacing: 12) {
+            VStack(spacing: 5) {
                 // Icon
                 Image(systemName: game.iconName)
-                    .font(.system(size: 40))
+                    .font(.system(size: 36))
                     .foregroundColor(game.accentColor)
-                    .frame(height: 50)
+                    .frame(height: 44)
 
                 // Title
                 Text(game.name)
@@ -80,8 +80,8 @@ struct GameCard: View {
                     .multilineTextAlignment(.center)
                     .lineLimit(3)
             }
-            .frame(maxWidth: .infinity, minHeight: 200)
-            .padding()
+            .frame(maxWidth: .infinity, minHeight: 150)
+            .padding(12)
             .background(Color.white)
             .cornerRadius(15)
             .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
