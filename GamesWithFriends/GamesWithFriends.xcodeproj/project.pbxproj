@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		F10000010000000000000001 /* GamesWithFriendsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000001 /* GamesWithFriendsApp.swift */; };
-		F10000010000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000002 /* ContentView.swift */; };
 		F10000010000000000000003 /* GameHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000003 /* GameHubView.swift */; };
 		F10000010000000000000004 /* GameDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000004 /* GameDefinition.swift */; };
 		F10000010000000000000005 /* GameRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000005 /* GameRegistry.swift */; };
@@ -74,7 +73,6 @@
 /* Begin PBXFileReference section */
 		F00000010000000000000001 /* GamesWithFriends.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GamesWithFriends.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F20000010000000000000001 /* GamesWithFriendsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesWithFriendsApp.swift; sourceTree = "<group>"; };
-		F20000010000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F20000010000000000000003 /* GameHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHubView.swift; sourceTree = "<group>"; };
 		F20000010000000000000004 /* GameDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDefinition.swift; sourceTree = "<group>"; };
 		F20000010000000000000005 /* GameRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRegistry.swift; sourceTree = "<group>"; };
@@ -160,7 +158,6 @@
 			isa = PBXGroup;
 			children = (
 				F20000010000000000000001 /* GamesWithFriendsApp.swift */,
-				F20000010000000000000002 /* ContentView.swift */,
 				F20000010000000000000080 /* Assets.xcassets */,
 				F40000010000000000000010 /* Features */,
 			);
@@ -535,7 +532,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F10000010000000000000001 /* GamesWithFriendsApp.swift in Sources */,
-				F10000010000000000000002 /* ContentView.swift in Sources */,
 				F10000010000000000000003 /* GameHubView.swift in Sources */,
 				F10000010000000000000004 /* GameDefinition.swift in Sources */,
 				F10000010000000000000005 /* GameRegistry.swift in Sources */,
