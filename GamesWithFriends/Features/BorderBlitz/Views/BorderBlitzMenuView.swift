@@ -76,20 +76,6 @@ struct BorderBlitzMenuView: View {
         }
         .padding()
         .navigationBarBackButtonHidden(viewModel.gameStarted)
-        .toolbar {
-            if !viewModel.gameStarted {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                            Text("Games")
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 

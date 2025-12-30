@@ -190,14 +190,6 @@ struct HomeView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: { dismiss() }) {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                            Text("Games")
-                        }
-                    }
-                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
                         Button(action: { showingSavedStarters = true }) {

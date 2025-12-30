@@ -29,16 +29,6 @@ struct Name5GameView: View {
             .navigationTitle("Name 5")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
-                    }
-                }
-
                 if viewModel.gamePhase != .setup {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Menu {
