@@ -15,18 +15,9 @@ struct GameHubView: View {
                 .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: 30) {
+                    VStack(spacing: 20) {
                         // Header
-                        VStack(spacing: 10) {
-                            Image(systemName: "gamecontroller.fill")
-                                .font(.system(size: 60))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [.blue, .purple],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
+                        VStack(spacing: 5) {
                             
                             Text("Games with Friends")
                                 .font(.largeTitle)
@@ -41,14 +32,14 @@ struct GameHubView: View {
                         
                         // Games Grid
                         LazyVGrid(columns: [
-                            GridItem(.flexible(), spacing: 16),
-                            GridItem(.flexible(), spacing: 16)
-                        ], spacing: 16) {
+                            GridItem(.flexible(), spacing: 20),
+                            GridItem(.flexible(), spacing: 20)
+                        ], spacing: 20) {
                             ForEach(games) { game in
                                 GameCard(game: game)
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 20)
                         
                         Spacer(minLength: 30)
                     }
@@ -67,20 +58,21 @@ struct GameCard: View {
         NavigationLink {
             game.makeRootView()
         } label: {
-            VStack(spacing: 16) {
+            VStack(spacing: 12) {
                 // Icon
                 Image(systemName: game.iconName)
                     .font(.system(size: 40))
                     .foregroundColor(game.accentColor)
                     .frame(height: 50)
-                
+
                 // Title
                 Text(game.name)
                     .font(.headline)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
                     .foregroundColor(.primary)
-                
+                    .lineLimit(2)
+
                 // Description
                 Text(game.description)
                     .font(.caption)
@@ -88,7 +80,7 @@ struct GameCard: View {
                     .multilineTextAlignment(.center)
                     .lineLimit(3)
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, minHeight: 200)
             .padding()
             .background(Color.white)
             .cornerRadius(15)
