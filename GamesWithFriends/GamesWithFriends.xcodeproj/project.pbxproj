@@ -11,7 +11,6 @@
 		F10000010000000000000003 /* GameHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000003 /* GameHubView.swift */; };
 		F10000010000000000000004 /* GameDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000004 /* GameDefinition.swift */; };
 		F10000010000000000000005 /* GameRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000005 /* GameRegistry.swift */; };
-		F10000010000000000000006 /* PlaceholderGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000006 /* PlaceholderGame.swift */; };
 		F10000010000000000000010 /* ConversationStartersGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000010 /* ConversationStartersGame.swift */; };
 		F10000010000000000000011 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000011 /* SampleData.swift */; };
 		F10000010000000000000012 /* ConversationStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000012 /* ConversationStarter.swift */; };
@@ -76,7 +75,6 @@
 		F20000010000000000000003 /* GameHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHubView.swift; sourceTree = "<group>"; };
 		F20000010000000000000004 /* GameDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDefinition.swift; sourceTree = "<group>"; };
 		F20000010000000000000005 /* GameRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRegistry.swift; sourceTree = "<group>"; };
-		F20000010000000000000006 /* PlaceholderGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderGame.swift; sourceTree = "<group>"; };
 		F20000010000000000000010 /* ConversationStartersGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationStartersGame.swift; sourceTree = "<group>"; };
 		F20000010000000000000011 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		F20000010000000000000012 /* ConversationStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationStarter.swift; sourceTree = "<group>"; };
@@ -176,7 +174,6 @@
 			isa = PBXGroup;
 			children = (
 				F40000010000000000000011 /* GameHub */,
-				F40000010000000000000012 /* PlaceholderGame */,
 				F40000010000000000000020 /* ConversationStarters */,
 				F40000010000000000000030 /* CountryLetterGame */,
 				F40000010000000000000040 /* LicensePlateGame */,
@@ -194,14 +191,6 @@
 				F20000010000000000000005 /* GameRegistry.swift */,
 			);
 			path = GameHub;
-			sourceTree = "<group>";
-		};
-		F40000010000000000000012 /* PlaceholderGame */ = {
-			isa = PBXGroup;
-			children = (
-				F20000010000000000000006 /* PlaceholderGame.swift */,
-			);
-			path = PlaceholderGame;
 			sourceTree = "<group>";
 		};
 		F40000010000000000000020 /* ConversationStarters */ = {
@@ -535,7 +524,6 @@
 				F10000010000000000000003 /* GameHubView.swift in Sources */,
 				F10000010000000000000004 /* GameDefinition.swift in Sources */,
 				F10000010000000000000005 /* GameRegistry.swift in Sources */,
-				F10000010000000000000006 /* PlaceholderGame.swift in Sources */,
 				F10000010000000000000010 /* ConversationStartersGame.swift in Sources */,
 				F10000010000000000000011 /* SampleData.swift in Sources */,
 				F10000010000000000000012 /* ConversationStarter.swift in Sources */,
