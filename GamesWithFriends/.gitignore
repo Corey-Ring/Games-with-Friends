@@ -1,0 +1,21 @@
+# Large data files (see Features/MovieChain/DATA_FILES.md for details)
+*.tsv
+*.sqlite
+*.sqlite.gz
+
+# Xcode user-specific files
+*.xcuserstate
+*.xcuserdatad
+xcuserdata/
+
+# Build products
+build/
+DerivedData/
+
+# Swift Package Manager
+.build/
+Packages/
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+
+# macOS
+.DS_Store
