@@ -49,6 +49,28 @@ struct SpectrumSliderView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
+                .gesture(
+                    isInteractive ?
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            let height = geometry.size.height
+                            let usableHeight = height - handleSize
+                            // Convert tap/drag location to position
+                            let adjustedY = value.location.y - handleSize / 2
+                            let clampedY = max(0, min(usableHeight, adjustedY))
+                            let newPosition = clampedY / usableHeight
+
+                            // Only trigger haptic if position actually changed significantly
+                            if abs(newPosition - position) > 0.01 {
+                                let generator = UISelectionFeedbackGenerator()
+                                generator.selectionChanged()
+                            }
+
+                            position = newPosition
+                        }
+                    : nil
+                )
             }
             .frame(height: sliderHeight)
 
@@ -171,17 +193,7 @@ struct SpectrumSliderView: View {
                 }
         }
         .position(x: trackWidth / 2 + (UIScreen.main.bounds.width - trackWidth) / 2 - 16, y: yPosition)
-        .gesture(
-            DragGesture()
-                .onChanged { value in
-                    let newY = value.location.y - handleSize / 2
-                    let clampedY = max(0, min(height - handleSize, newY))
-                    position = clampedY / (height - handleSize)
-
-                    let generator = UISelectionFeedbackGenerator()
-                    generator.selectionChanged()
-                }
-        )
+        .allowsHitTesting(false) // Let the parent handle all gestures
         .frame(width: trackWidth)
         .frame(maxWidth: .infinity)
     }
