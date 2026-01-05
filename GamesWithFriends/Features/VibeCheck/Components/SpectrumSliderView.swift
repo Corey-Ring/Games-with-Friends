@@ -173,9 +173,22 @@ struct SpectrumSliderView: View {
 
     private func draggableHandle(height: CGFloat) -> some View {
         let yPosition = position * (height - handleSize) + handleSize / 2
+        let centerX = (UIScreen.main.bounds.width - 32) / 2  // Account for horizontal padding
 
         return ZStack {
-            // Handle
+            // Position indicator line inside the bar, connecting to the handle
+            Rectangle()
+                .fill(
+                    LinearGradient(
+                        colors: [.purple, .blue],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .frame(width: trackWidth - 8, height: 3)
+                .position(x: centerX, y: yPosition)
+
+            // Handle on the right side
             Circle()
                 .fill(
                     LinearGradient(
@@ -191,11 +204,43 @@ struct SpectrumSliderView: View {
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.white)
                 }
+                .position(x: centerX + trackWidth / 2 + handleSize / 2 - 4, y: yPosition)
+
+            // Percentage label on the left side
+            percentageLabel(yPosition: yPosition, centerX: centerX)
         }
-        .position(x: trackWidth / 2 + (UIScreen.main.bounds.width - trackWidth) / 2 - 16, y: yPosition)
         .allowsHitTesting(false) // Let the parent handle all gestures
-        .frame(width: trackWidth)
         .frame(maxWidth: .infinity)
+    }
+
+    private func percentageLabel(yPosition: CGFloat, centerX: CGFloat) -> some View {
+        // Calculate percentage and determine which label to show
+        // position 0.0 = 100% top label, position 1.0 = 100% bottom label
+        let percentage: Int
+        let label: String
+
+        if position <= 0.5 {
+            // Closer to top - show top label percentage
+            percentage = Int(round((1 - position * 2) * 100))
+            label = spectrum.topLabel
+        } else {
+            // Closer to bottom - show bottom label percentage
+            percentage = Int(round((position - 0.5) * 2 * 100))
+            label = spectrum.bottomLabel
+        }
+
+        return VStack(spacing: 2) {
+            Text("\(percentage)%")
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+            Text(label.uppercased())
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+        }
+        .frame(width: 70, alignment: .trailing)
+        .position(x: centerX - trackWidth / 2 - 45, y: yPosition)
     }
 }
 
