@@ -232,7 +232,7 @@ class LicensePlateViewModel {
 
     func checkForNewAchievements() {
         guard let trip = currentTrip else { return }
-        let unlocked = Achievement.unlockedAchievements(with: trip.spottedPlates)
+        _ = Achievement.unlockedAchievements(with: trip.spottedPlates)
         // Could show notification here for newly unlocked achievements
     }
 
