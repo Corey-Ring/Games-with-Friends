@@ -13,6 +13,7 @@ enum BorderBlitzGameState {
     case gameOver
 }
 
+@MainActor
 class BorderBlitzViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var gameState: BorderBlitzGameState = .menu
@@ -107,6 +108,18 @@ class BorderBlitzViewModel: ObservableObject {
         endRound(correct: false)
     }
 
+    func pauseGame() {
+        guard gameState == .playing else { return }
+        stopTimer()
+        letterRevealManager.stopRevealing()
+    }
+
+    func resumeGame() {
+        guard gameState == .playing else { return }
+        startTimer()
+        letterRevealManager.startRevealing()
+    }
+
     func returnToMenu() {
         stopTimer()
         letterRevealManager.stopRevealing()
@@ -137,13 +150,14 @@ class BorderBlitzViewModel: ObservableObject {
         stopTimer()
 
         roundTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
+            Task { @MainActor [weak self] in
+                guard let self = self else { return }
+                self.timeRemaining -= 0.1
 
-            self.timeRemaining -= 0.1
-
-            if self.timeRemaining <= 0 {
-                self.timeRemaining = 0
-                self.handleTimeOut()
+                if self.timeRemaining <= 0 {
+                    self.timeRemaining = 0
+                    self.handleTimeOut()
+                }
             }
         }
     }
@@ -153,20 +167,24 @@ class BorderBlitzViewModel: ObservableObject {
         roundTimer = nil
     }
 
+
     private func handleCorrectGuess() {
         currentStreak += 1
         endRound(correct: true)
         showFeedbackMessage("Correct! 🎉", isCorrect: true)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
     private func handleIncorrectGuess() {
         showFeedbackMessage("Try again", isCorrect: false)
         currentGuess = ""
+        UINotificationFeedbackGenerator().notificationOccurred(.error)
     }
 
     private func handleTimeOut() {
         endRound(correct: false)
         showFeedbackMessage("Time's up!", isCorrect: false)
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
     }
 
     private func endRound(correct: Bool) {
@@ -227,6 +245,6 @@ class BorderBlitzViewModel: ObservableObject {
     }
 
     deinit {
-        stopTimer()
+        roundTimer?.invalidate()
     }
 }

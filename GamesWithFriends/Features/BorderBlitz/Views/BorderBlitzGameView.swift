@@ -58,10 +58,12 @@ struct BorderBlitzGameView: View {
                 VStack(alignment: .leading) {
                     Text("Score: \(viewModel.totalScore)")
                         .font(.headline)
+                        .accessibilityLabel("Score: \(viewModel.totalScore) points")
                     if viewModel.currentStreak > 1 {
                         Text("Streak: \(viewModel.currentStreak) 🔥")
                             .font(.subheadline)
                             .foregroundColor(.orange)
+                            .accessibilityLabel("Current streak: \(viewModel.currentStreak)")
                     }
                 }
                 Spacer()
@@ -111,6 +113,8 @@ struct BorderBlitzGameView: View {
             RoundedRectangle(cornerRadius: 8)
                 .fill(timeColor.opacity(0.1))
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(Int(viewModel.timeRemaining)) seconds remaining")
     }
 
     private var timeString: String {

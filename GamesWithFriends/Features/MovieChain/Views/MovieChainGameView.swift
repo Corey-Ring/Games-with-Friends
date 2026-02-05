@@ -35,6 +35,7 @@ struct MovieChainGameView: View {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.secondary)
                 }
+                .accessibilityLabel("Exit game")
             }
 
             ToolbarItem(placement: .topBarTrailing) {
@@ -102,6 +103,8 @@ struct MovieChainGameView: View {
         .padding(.vertical, 6)
         .background(timerColor.opacity(0.2))
         .clipShape(Capsule())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(viewModel.timeRemaining) seconds remaining")
     }
 
     private var timerColor: Color {

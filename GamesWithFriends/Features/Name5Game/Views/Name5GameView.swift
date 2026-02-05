@@ -3,6 +3,7 @@ import SwiftUI
 struct Name5GameView: View {
     @StateObject private var viewModel = Name5ViewModel()
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
@@ -42,6 +43,16 @@ struct Name5GameView: View {
                                 .font(.title3)
                         }
                     }
+                }
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                switch newPhase {
+                case .inactive, .background:
+                    if viewModel.gamePhase == .playing {
+                        viewModel.pauseTimer()
+                    }
+                default:
+                    break
                 }
             }
         }

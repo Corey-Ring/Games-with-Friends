@@ -107,7 +107,8 @@ class CompetitionVibeCheckViewModel: ObservableObject {
         let targetPosition = VibeCheckSpectrumData.randomTargetPosition()
 
         // Randomly select vibe setter for this round
-        let randomVibeSetterId = players.randomElement()!.id
+        guard let randomVibeSetter = players.randomElement() else { return }
+        let randomVibeSetterId = randomVibeSetter.id
 
         let round = CompetitionRound(
             roundNumber: roundNumber,

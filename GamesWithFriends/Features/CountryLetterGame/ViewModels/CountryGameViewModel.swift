@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class CountryGameViewModel: ObservableObject {
     @Published var selectedLetter: String?
     @Published var targetCountries: [Country] = []
@@ -113,11 +114,12 @@ class CountryGameViewModel: ObservableObject {
         feedbackMessage = "Nice! \(matchedCountry.name) added."
         feedbackType = .success
         currentGuess = ""
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
 
         // Check if game is complete
         if remainingCount == 0 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                self.finishGame()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                self?.finishGame()
             }
         }
     }

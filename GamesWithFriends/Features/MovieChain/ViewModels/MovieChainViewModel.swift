@@ -420,6 +420,34 @@ class MovieChainViewModel: ObservableObject {
         isTimerRunning = false
     }
 
+    func pauseTimer() {
+        guard isTimerRunning else { return }
+        timer?.invalidate()
+        timer = nil
+        isTimerRunning = false
+    }
+
+    func resumeTimer() {
+        guard !isTimerRunning, case .playing = gamePhase, gameMode.hasTimer, timeRemaining > 0 else { return }
+        isTimerRunning = true
+
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+
+            if self.timeRemaining > 0 {
+                self.timeRemaining -= 1
+
+                if self.timeRemaining == 5 {
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.notificationOccurred(.warning)
+                }
+            } else {
+                self.stopTimer()
+                self.handleChainBreak(reason: .timerExpired)
+            }
+        }
+    }
+
     // MARK: - Search
 
     private func setupSearchDebounce() {

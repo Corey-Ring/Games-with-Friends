@@ -108,12 +108,14 @@ struct SpectrumSliderView: View {
     }
 
     private func scoringZonesOverlay(height: CGFloat) -> some View {
-        let targetY = targetPosition * height
+        // Use the same usable height as the drag gesture to align zones with interactive area
+        let usableHeight = height - handleSize
+        let targetY = targetPosition * usableHeight + handleSize / 2
 
         return ZStack {
             // Draw zones from outside in (miss -> perfect)
             ForEach(Array(ScoringZone.allCases.reversed().enumerated()), id: \.offset) { _, zone in
-                let zoneHeight = zone.threshold * height * 2  // *2 because it extends both ways
+                let zoneHeight = zone.threshold * usableHeight * 2  // *2 because it extends both ways
                 RoundedRectangle(cornerRadius: 8)
                     .fill(zone.color.opacity(0.3))
                     .frame(width: trackWidth - 8, height: min(zoneHeight, height))
@@ -290,6 +292,7 @@ struct PromptSetterSliderView: View {
     }
 
     private func scoringZonesView(height: CGFloat) -> some View {
+        // Match the coordinate system of the main slider (no handle adjustment needed here)
         let targetY = targetPosition * height
 
         return Canvas { context, size in
@@ -318,6 +321,7 @@ struct PromptSetterSliderView: View {
     }
 
     private func targetLine(height: CGFloat) -> some View {
+        // Match the coordinate system of the main slider (no handle adjustment needed here)
         let yPosition = targetPosition * height
 
         return Rectangle()

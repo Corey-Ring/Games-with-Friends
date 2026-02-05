@@ -3,6 +3,7 @@ import SwiftUI
 /// Root view for Movie Chain game - manages navigation between game phases
 struct MovieChainRootView: View {
     @StateObject private var viewModel = MovieChainViewModel()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         Group {
@@ -21,6 +22,16 @@ struct MovieChainRootView: View {
             }
         }
         .navigationBarBackButtonHidden(viewModel.gamePhase != .setup)
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .inactive, .background:
+                viewModel.pauseTimer()
+            case .active:
+                viewModel.resumeTimer()
+            default:
+                break
+            }
+        }
     }
 }
 

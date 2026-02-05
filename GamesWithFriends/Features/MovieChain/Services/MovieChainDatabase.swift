@@ -24,8 +24,10 @@ final class MovieChainDatabase: ObservableObject {
     private(set) var loadError: String?
 
     /// Path to the decompressed database in the app's documents directory
-    private var decompressedDBPath: URL {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    private var decompressedDBPath: URL? {
+        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
         return documentsPath.appendingPathComponent("moviechain_core.sqlite")
     }
 
@@ -42,16 +44,22 @@ final class MovieChainDatabase: ObservableObject {
     // MARK: - Database Loading
 
     private func loadDatabase() {
+        guard let dbPath = decompressedDBPath else {
+            loadError = "Could not locate documents directory"
+            print("MovieChainDatabase: \(loadError ?? "unknown error")")
+            return
+        }
+
         // Check if we already have a decompressed database
-        if FileManager.default.fileExists(atPath: decompressedDBPath.path) {
-            openDatabase(at: decompressedDBPath.path)
+        if FileManager.default.fileExists(atPath: dbPath.path) {
+            openDatabase(at: dbPath.path)
             return
         }
 
         // Look for compressed database in bundle
         guard let compressedPath = Bundle.main.path(forResource: "moviechain_core.sqlite", ofType: "gz") else {
             loadError = "Compressed database file not found in bundle"
-            print("MovieChainDatabase: \(loadError!)")
+            print("MovieChainDatabase: \(loadError ?? "unknown error")")
             return
         }
 
@@ -61,18 +69,18 @@ final class MovieChainDatabase: ObservableObject {
             guard let self = self else { return }
 
             do {
-                try self.decompressDatabase(from: compressedPath, to: self.decompressedDBPath.path)
+                try self.decompressDatabase(from: compressedPath, to: dbPath.path)
 
                 DispatchQueue.main.async {
                     self.isDecompressing = false
                     self.decompressionProgress = 1.0
-                    self.openDatabase(at: self.decompressedDBPath.path)
+                    self.openDatabase(at: dbPath.path)
                 }
             } catch {
                 DispatchQueue.main.async {
                     self.isDecompressing = false
                     self.loadError = "Failed to decompress database: \(error.localizedDescription)"
-                    print("MovieChainDatabase: \(self.loadError!)")
+                    print("MovieChainDatabase: \(self.loadError ?? "unknown error")")
                 }
             }
         }
@@ -212,7 +220,7 @@ final class MovieChainDatabase: ObservableObject {
             print("MovieChainDatabase: Loaded successfully from \(path)")
         } else {
             loadError = "Failed to open database: \(String(cString: sqlite3_errmsg(dbPointer)))"
-            print("MovieChainDatabase: \(loadError!)")
+            print("MovieChainDatabase: \(loadError ?? "unknown error")")
             sqlite3_close(dbPointer)
         }
     }

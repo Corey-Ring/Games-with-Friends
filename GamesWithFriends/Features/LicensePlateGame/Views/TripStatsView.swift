@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SwiftData
-import Charts
+
 
 struct TripStatsView: View {
     @Bindable var viewModel: LicensePlateViewModel

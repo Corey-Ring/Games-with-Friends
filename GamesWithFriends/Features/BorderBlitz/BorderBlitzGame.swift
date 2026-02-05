@@ -20,6 +20,7 @@ struct BorderBlitzGame: GameDefinition {
 /// Root view that manages navigation between menu and game
 struct BorderBlitzRootView: View {
     @StateObject private var viewModel = BorderBlitzViewModel()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         Group {
@@ -30,5 +31,15 @@ struct BorderBlitzRootView: View {
             }
         }
         .navigationBarBackButtonHidden(viewModel.gameStarted)
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .inactive, .background:
+                viewModel.pauseGame()
+            case .active:
+                viewModel.resumeGame()
+            default:
+                break
+            }
+        }
     }
 }

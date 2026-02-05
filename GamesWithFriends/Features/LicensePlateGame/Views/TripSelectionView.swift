@@ -117,7 +117,7 @@ struct TripRowView: View {
             }
 
             if trip.totalSpotted > 0 {
-                ProgressView(value: Double(trip.totalSpotted), total: 51.0)
+                ProgressView(value: Double(trip.totalSpotted), total: Double(PlateData.allPlates.count))
                     .tint(.blue)
             }
 

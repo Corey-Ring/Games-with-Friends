@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var showingSettings = false
     @State private var showingSavedStarters = false
     @Environment(\.dismiss) var dismiss
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack {
@@ -196,9 +197,11 @@ struct HomeView: View {
                             Image(systemName: "star.fill")
                                 .foregroundColor(.yellow)
                         }
+                        .accessibilityLabel("Saved starters")
                         Button(action: { showingSettings = true }) {
                             Image(systemName: "gear")
                         }
+                        .accessibilityLabel("Settings")
                     }
                 }
             }
@@ -210,6 +213,11 @@ struct HomeView: View {
             }
             .sheet(isPresented: $showingSavedStarters) {
                 SavedStartersView(viewModel: viewModel)
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .inactive || newPhase == .background {
+                    viewModel.pauseTimer()
+                }
             }
     }
 

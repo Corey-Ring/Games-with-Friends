@@ -156,6 +156,9 @@ class LicensePlateViewModel {
         try? modelContext.save()
         loadTrips()
 
+        // Haptic feedback on successful spot
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+
         // Check for new achievements
         checkForNewAchievements()
     }
@@ -249,10 +252,10 @@ class LicensePlateViewModel {
     // MARK: - Family Members
 
     func addFamilyMember(_ name: String) {
-        if !familyMembers.contains(name) {
-            familyMembers.append(name)
-            saveSettings()
-        }
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !familyMembers.contains(trimmed) else { return }
+        familyMembers.append(trimmed)
+        saveSettings()
     }
 
     func removeFamilyMember(_ name: String) {

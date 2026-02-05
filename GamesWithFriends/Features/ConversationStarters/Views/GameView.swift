@@ -78,6 +78,7 @@ struct GameView: View {
                                     .foregroundColor(viewModel.hasPrevious ? .purple : .gray.opacity(0.3))
                             }
                             .disabled(!viewModel.hasPrevious)
+                            .accessibilityLabel("Previous conversation starter")
 
                             if viewModel.settings.timerEnabled {
                                 Button(action: {
@@ -93,6 +94,7 @@ struct GameView: View {
                                     }
                                     .foregroundColor(.orange)
                                 }
+                                .accessibilityLabel("Pass and skip to next")
                             }
 
                             Button(action: {
@@ -105,6 +107,7 @@ struct GameView: View {
                                     .foregroundColor(viewModel.hasNext ? .purple : .gray.opacity(0.3))
                             }
                             .disabled(!viewModel.hasNext)
+                            .accessibilityLabel("Next conversation starter")
                         }
                         .padding(.bottom, 30)
                     }
@@ -186,6 +189,8 @@ struct GameView: View {
         .padding(.vertical, 5)
         .background(Color.white.opacity(0.9))
         .cornerRadius(15)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(viewModel.isTimerRunning ? "\(Int(viewModel.timeRemaining)) seconds remaining" : "Timer paused")
     }
 
     private func timeString(from timeInterval: TimeInterval) -> String {
@@ -279,6 +284,7 @@ struct CardView: View {
                         .font(.title2)
                         .foregroundColor(isStarred ? .yellow : .gray)
                 }
+                .accessibilityLabel(isStarred ? "Remove from saved" : "Save this starter")
             }
             .padding()
 

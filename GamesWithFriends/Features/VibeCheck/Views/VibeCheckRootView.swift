@@ -2,19 +2,18 @@ import SwiftUI
 
 struct VibeCheckRootView: View {
     @StateObject private var classicViewModel = VibeCheckViewModel()
-    @StateObject private var competitionViewModel = CompetitionVibeCheckViewModel()
     @State private var selectedMode: VibeCheckGameMode = .classic
+    @State private var competitionViewModel: CompetitionVibeCheckViewModel?
 
     var body: some View {
         Group {
-            if selectedMode == .classic {
-                classicModeView
+            if let competitionVM = competitionViewModel, selectedMode == .competition {
+                competitionModeView(viewModel: competitionVM)
             } else {
-                competitionModeView
+                classicModeView
             }
         }
         .animation(.easeInOut(duration: 0.3), value: classicViewModel.gameState)
-        .animation(.easeInOut(duration: 0.3), value: competitionViewModel.gameState)
     }
 
     // MARK: - Classic Mode
@@ -26,11 +25,22 @@ struct VibeCheckRootView: View {
             VibeCheckHomeView(viewModel: classicViewModel, selectedMode: $selectedMode)
 
         case .teamSetup:
-            TeamSetupView(viewModel: classicViewModel)
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
+            if selectedMode == .competition {
+                // Transition to competition mode: create the VM and start its flow
+                Color.clear.onAppear {
+                    let vm = CompetitionVibeCheckViewModel()
+                    vm.settings = classicViewModel.competitionSettings
+                    vm.proceedToPlayerSetup()
+                    competitionViewModel = vm
+                    classicViewModel.gameState = .setup
+                }
+            } else {
+                TeamSetupView(viewModel: classicViewModel)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .trailing),
+                        removal: .move(edge: .leading)
+                    ))
+            }
 
         case .passingToPromptSetter:
             PromptSetterPassView(viewModel: classicViewModel)
@@ -86,72 +96,65 @@ struct VibeCheckRootView: View {
     // MARK: - Competition Mode
 
     @ViewBuilder
-    private var competitionModeView: some View {
-        switch competitionViewModel.gameState {
+    private func competitionModeView(viewModel: CompetitionVibeCheckViewModel) -> some View {
+        switch viewModel.gameState {
         case .setup:
-            // Show home view but competition settings will be used
-            VibeCheckHomeView(viewModel: classicViewModel, selectedMode: $selectedMode)
-                .onChange(of: classicViewModel.gameState) { _, newState in
-                    if newState == .teamSetup && selectedMode == .competition {
-                        // Transfer settings and start competition flow
-                        competitionViewModel.settings = classicViewModel.competitionSettings
-                        competitionViewModel.proceedToPlayerSetup()
-                        // Reset classic view model state
-                        classicViewModel.gameState = .setup
-                    }
-                }
+            // Competition VM returned to setup — go back to shared home view
+            Color.clear.onAppear {
+                competitionViewModel = nil
+            }
 
         case .playerSetup:
-            CompetitionPlayerSetupView(viewModel: competitionViewModel)
+            CompetitionPlayerSetupView(viewModel: viewModel)
                 .transition(.asymmetric(
                     insertion: .move(edge: .trailing),
                     removal: .move(edge: .leading)
                 ))
 
         case .passingToVibeSetter:
-            CompetitionVibeSetterPassView(viewModel: competitionViewModel)
+            CompetitionVibeSetterPassView(viewModel: viewModel)
                 .transition(.asymmetric(
                     insertion: .move(edge: .trailing),
                     removal: .move(edge: .leading)
                 ))
 
         case .promptEntry:
-            CompetitionPromptEntryView(viewModel: competitionViewModel)
+            CompetitionPromptEntryView(viewModel: viewModel)
                 .transition(.asymmetric(
                     insertion: .move(edge: .trailing),
                     removal: .move(edge: .leading)
                 ))
 
         case .passingToGuesser:
-            CompetitionGuesserPassView(viewModel: competitionViewModel)
+            CompetitionGuesserPassView(viewModel: viewModel)
                 .transition(.asymmetric(
                     insertion: .move(edge: .trailing),
                     removal: .move(edge: .leading)
                 ))
 
         case .guessing:
-            CompetitionGuessingView(viewModel: competitionViewModel)
+            CompetitionGuessingView(viewModel: viewModel)
                 .transition(.asymmetric(
                     insertion: .move(edge: .trailing),
                     removal: .move(edge: .leading)
                 ))
 
         case .reveal:
-            CompetitionRevealView(viewModel: competitionViewModel)
+            CompetitionRevealView(viewModel: viewModel)
                 .transition(.asymmetric(
                     insertion: .scale.combined(with: .opacity),
                     removal: .opacity
                 ))
 
         case .scoreboard:
-            CompetitionScoreboardView(viewModel: competitionViewModel)
+            CompetitionScoreboardView(viewModel: viewModel)
                 .transition(.asymmetric(
                     insertion: .move(edge: .trailing),
                     removal: .move(edge: .leading)
                 ))
 
         case .gameOver:
-            CompetitionGameOverView(viewModel: competitionViewModel)
+            CompetitionGameOverView(viewModel: viewModel)
                 .transition(.asymmetric(
                     insertion: .scale.combined(with: .opacity),
                     removal: .opacity

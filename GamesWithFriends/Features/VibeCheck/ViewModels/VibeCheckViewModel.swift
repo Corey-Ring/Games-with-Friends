@@ -26,11 +26,12 @@ class VibeCheckViewModel: ObservableObject {
     // MARK: - Computed Properties
 
     var promptSetterTeamIndex: Int {
-        rounds.count % teams.count
+        guard !teams.isEmpty else { return 0 }
+        return rounds.count % teams.count
     }
 
     var promptSetterTeam: VibeCheckTeam? {
-        guard !teams.isEmpty else { return nil }
+        guard !teams.isEmpty, promptSetterTeamIndex < teams.count else { return nil }
         return teams[promptSetterTeamIndex]
     }
 

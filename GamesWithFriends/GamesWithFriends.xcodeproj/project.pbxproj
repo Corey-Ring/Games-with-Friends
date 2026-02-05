@@ -30,6 +30,7 @@
 		4ADAF4D52F0CE55A00AE5ED6 /* CompetitionPromptEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADAF4C82F0CE55A00AE5ED6 /* CompetitionPromptEntryView.swift */; };
 		4ADAF4D62F0CE55A00AE5ED6 /* CompetitionVibeCheckModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADAF4C02F0CE55A00AE5ED6 /* CompetitionVibeCheckModels.swift */; };
 		4ADAF4D72F0CE55A00AE5ED6 /* CompetitionScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADAF4CA2F0CE55A00AE5ED6 /* CompetitionScoreboardView.swift */; };
+		4AF67CBC2F37D936009A3801 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AF67CBB2F37D936009A3801 /* StoreKit.framework */; };
 		F10000010000000000000001 /* GamesWithFriendsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000001 /* GamesWithFriendsApp.swift */; };
 		F10000010000000000000003 /* GameHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000003 /* GameHubView.swift */; };
 		F10000010000000000000004 /* GameDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000004 /* GameDefinition.swift */; };
@@ -129,6 +130,7 @@
 		4ADAF4C92F0CE55A00AE5ED6 /* CompetitionRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionRevealView.swift; sourceTree = "<group>"; };
 		4ADAF4CA2F0CE55A00AE5ED6 /* CompetitionScoreboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionScoreboardView.swift; sourceTree = "<group>"; };
 		4ADAF4CC2F0CE55A00AE5ED6 /* CompetitionVibeCheckRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionVibeCheckRootView.swift; sourceTree = "<group>"; };
+		4AF67CBB2F37D936009A3801 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F00000010000000000000001 /* GamesWithFriends.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GamesWithFriends.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F20000010000000000000001 /* GamesWithFriendsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesWithFriendsApp.swift; sourceTree = "<group>"; };
 		F20000010000000000000003 /* GameHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHubView.swift; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AF67CBC2F37D936009A3801 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,10 +320,19 @@
 			path = Competition;
 			sourceTree = "<group>";
 		};
+		4AF67CBA2F37D936009A3801 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4AF67CBB2F37D936009A3801 /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F40000010000000000000001 = {
 			isa = PBXGroup;
 			children = (
 				F40000010000000000000002 /* GamesWithFriends */,
+				4AF67CBA2F37D936009A3801 /* Frameworks */,
 				F40000010000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -715,7 +727,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 2620;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					F50000010000000000000001 = {
 						CreatedOnToolsVersion = 15.0;
@@ -892,6 +904,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 647UPTB897;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -956,6 +969,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 647UPTB897;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -985,7 +999,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -1013,7 +1026,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

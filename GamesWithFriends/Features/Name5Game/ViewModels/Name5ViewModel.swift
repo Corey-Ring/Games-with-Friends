@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import Combine
 
+@MainActor
 class Name5ViewModel: ObservableObject {
     // MARK: - Configuration
     @Published var socialContext: SocialContext = .friends
@@ -135,17 +136,19 @@ class Name5ViewModel: ObservableObject {
         timer?.invalidate()
 
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
+            Task { @MainActor [weak self] in
+                guard let self = self else { return }
 
-            if self.timeRemaining > 0 {
-                self.timeRemaining -= 1
+                if self.timeRemaining > 0 {
+                    self.timeRemaining -= 1
 
-                // Haptic feedback at key moments
-                if self.timeRemaining == 10 || self.timeRemaining == 5 {
-                    self.triggerHaptic()
+                    // Haptic feedback at key moments
+                    if self.timeRemaining == 10 || self.timeRemaining == 5 {
+                        self.triggerHaptic()
+                    }
+                } else {
+                    self.timeUp()
                 }
-            } else {
-                self.timeUp()
             }
         }
     }
@@ -304,6 +307,6 @@ class Name5ViewModel: ObservableObject {
     }
 
     deinit {
-        stopTimer()
+        timer?.invalidate()
     }
 }

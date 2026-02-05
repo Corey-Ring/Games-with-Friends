@@ -3,6 +3,7 @@ import SwiftUI
 import Combine
 import AVFoundation
 
+@MainActor
 class GameViewModel: ObservableObject {
     @Published var settings = GameSettings()
     @Published var currentIndex = 0
@@ -127,11 +128,13 @@ class GameViewModel: ObservableObject {
 
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            if self.timeRemaining > 0 {
-                self.timeRemaining -= 1
-            } else {
-                self.timerExpired()
+            Task { @MainActor [weak self] in
+                guard let self = self else { return }
+                if self.timeRemaining > 0 {
+                    self.timeRemaining -= 1
+                } else {
+                    self.timerExpired()
+                }
             }
         }
     }
