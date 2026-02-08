@@ -2,7 +2,7 @@ import SwiftUI
 
 struct GameHubView: View {
     let games = GameRegistry.allGames()
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -13,34 +13,35 @@ struct GameHubView: View {
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
-                
+
                 ScrollView {
-                    VStack(spacing: 20) {
+                    VStack(spacing: 24) {
                         // Header
-                        VStack(spacing: 5) {
-                            
+                        VStack(spacing: 8) {
+
                             Text("Games with Friends")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
-                            
+                                .foregroundColor(.white)
+
                             Text("Building connections through games")
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.white.opacity(0.8))
                                 .multilineTextAlignment(.center)
                         }
                         .padding(.top, 40)
-                        
+
                         // Games Grid
                         LazyVGrid(columns: [
-                            GridItem(.flexible(), spacing: 20),
-                            GridItem(.flexible(), spacing: 20)
-                        ], spacing: 20) {
+                            GridItem(.flexible(), spacing: 16),
+                            GridItem(.flexible(), spacing: 16)
+                        ], spacing: 16) {
                             ForEach(games) { game in
                                 GameCard(game: game)
                             }
                         }
-                        .padding(.horizontal, 20)
-                        
+                        .padding(.horizontal, 16)
+
                         Spacer(minLength: 30)
                     }
                 }
@@ -53,12 +54,14 @@ struct GameHubView: View {
 struct GameCard: View {
     let game: AnyGameDefinition
     @State private var isPressed = false
-    
+
     var body: some View {
         NavigationLink {
             game.makeRootView()
         } label: {
-            VStack(spacing: 5) {
+            VStack(spacing: 8) {
+                Spacer()
+
                 // Icon
                 Image(systemName: game.iconName)
                     .font(.system(size: 36))
@@ -67,26 +70,30 @@ struct GameCard: View {
 
                 // Title
                 Text(game.name)
-                    .font(.headline)
+                    .font(.system(.headline, design: .rounded))
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
                     .foregroundColor(.primary)
                     .lineLimit(2)
+                    .minimumScaleFactor(0.8)
 
                 // Description
                 Text(game.description)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary.opacity(0.6))
                     .multilineTextAlignment(.center)
                     .lineLimit(3)
+
+                Spacer()
             }
-            .frame(maxWidth: .infinity, minHeight: 150)
-            .padding(12)
-            .background(Color.white)
-            .cornerRadius(15)
-            .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+            .frame(maxWidth: .infinity, minHeight: 160)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(.systemBackground))
+            .cornerRadius(16)
+            .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
             .overlay(
-                RoundedRectangle(cornerRadius: 15)
+                RoundedRectangle(cornerRadius: 16)
                     .stroke(game.accentColor.opacity(0.3), lineWidth: 2)
             )
             .scaleEffect(isPressed ? 0.95 : 1.0)
