@@ -9,30 +9,32 @@ struct PromptEntryView: View {
     }
 
     var body: some View {
-        VStack(spacing: 12) {
-            // Header - inline at top
-            headerSection
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 12) {
+                // Header - inline at top
+                headerSection
 
-            // Instructions card
-            instructionsCard
+                // Instructions card
+                instructionsCard
 
-            // Spectrum with target
-            if let round = viewModel.currentRound {
-                PromptSetterSliderView(
-                    spectrum: round.spectrum,
-                    targetPosition: round.targetPosition
-                )
+                // Spectrum with target
+                if let round = viewModel.currentRound {
+                    PromptSetterSliderView(
+                        spectrum: round.spectrum,
+                        targetPosition: round.targetPosition
+                    )
+                }
+
+                // Prompt input
+                promptInputSection
+
+                // Submit button
+                submitButton
             }
-
-            // Prompt input
-            promptInputSection
-
-            // Submit button
-            submitButton
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .padding(.bottom)
         }
-        .padding(.horizontal)
-        .padding(.top, 8)
-        .padding(.bottom)
         .background {
             LinearGradient(
                 colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)],

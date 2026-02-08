@@ -29,72 +29,80 @@ struct BorderBlitzGameView: View {
     }
 
     private var playingView: some View {
-        VStack(spacing: 20) {
-            // Timer
-            HStack {
-                Spacer()
-                timerView
+        ScrollViewReader { proxy in
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 20) {
+                    // Timer
+                    HStack {
+                        Spacer()
+                        timerView
+                    }
+                    .padding(.horizontal)
+
+                    // Country silhouette
+                    if let country = viewModel.currentCountry {
+                        BorderBlitzCountrySilhouetteView(
+                            country: country,
+                            size: CGSize(width: 250, height: 250)
+                        )
+                        .padding()
+                    }
+
+                    // Letter tiles
+                    BorderBlitzLetterTilesView(tiles: viewModel.letterRevealManager.tiles)
+
+                    // Score display
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text("Score: \(viewModel.totalScore)")
+                                .font(.headline)
+                                .accessibilityLabel("Score: \(viewModel.totalScore) points")
+                            if viewModel.currentStreak > 1 {
+                                Text("Streak: \(viewModel.currentStreak) 🔥")
+                                    .font(.subheadline)
+                                    .foregroundColor(.orange)
+                                    .accessibilityLabel("Current streak: \(viewModel.currentStreak)")
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+
+                    // Input field
+                    VStack(spacing: 10) {
+                        TextField("Enter country name", text: $viewModel.currentGuess)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .autocapitalization(.words)
+                            .disableAutocorrection(true)
+                            .focused($isInputFocused)
+                            .onSubmit {
+                                viewModel.submitGuess()
+                            }
+
+                        HStack {
+                            Button("Submit") {
+                                viewModel.submitGuess()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(viewModel.currentGuess.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                            Button("Skip") {
+                                viewModel.skipRound()
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                    .padding()
+                    .id("inputField")
+                }
             }
-            .padding(.horizontal)
-
-            Spacer()
-
-            // Country silhouette
-            if let country = viewModel.currentCountry {
-                BorderBlitzCountrySilhouetteView(
-                    country: country,
-                    size: CGSize(width: 300, height: 300)
-                )
-                .padding()
-            }
-
-            Spacer()
-
-            // Letter tiles
-            BorderBlitzLetterTilesView(tiles: viewModel.letterRevealManager.tiles)
-
-            // Score display
-            HStack {
-                VStack(alignment: .leading) {
-                    Text("Score: \(viewModel.totalScore)")
-                        .font(.headline)
-                        .accessibilityLabel("Score: \(viewModel.totalScore) points")
-                    if viewModel.currentStreak > 1 {
-                        Text("Streak: \(viewModel.currentStreak) 🔥")
-                            .font(.subheadline)
-                            .foregroundColor(.orange)
-                            .accessibilityLabel("Current streak: \(viewModel.currentStreak)")
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    withAnimation {
+                        proxy.scrollTo("inputField", anchor: .bottom)
                     }
                 }
-                Spacer()
             }
-            .padding(.horizontal)
-
-            // Input field
-            VStack(spacing: 10) {
-                TextField("Enter country name", text: $viewModel.currentGuess)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .autocapitalization(.words)
-                    .disableAutocorrection(true)
-                    .focused($isInputFocused)
-                    .onSubmit {
-                        viewModel.submitGuess()
-                    }
-
-                HStack {
-                    Button("Submit") {
-                        viewModel.submitGuess()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(viewModel.currentGuess.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
-                    Button("Skip") {
-                        viewModel.skipRound()
-                    }
-                    .buttonStyle(.bordered)
-                }
-            }
-            .padding()
         }
     }
 

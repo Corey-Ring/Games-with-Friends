@@ -58,7 +58,7 @@ struct GamePlayView: View {
                                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.white)
+                                        .fill(Color(.systemBackground))
                                 )
                         )
                         .onSubmit {
@@ -193,7 +193,7 @@ struct StatCard: View {
                 .stroke(Color.gray.opacity(0.2), lineWidth: 1)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.white)
+                        .fill(Color(.systemBackground))
                 )
         )
     }

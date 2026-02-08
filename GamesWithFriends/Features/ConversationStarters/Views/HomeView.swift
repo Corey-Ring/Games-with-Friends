@@ -68,7 +68,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.white)
+                        .background(Color(.systemBackground))
                         .cornerRadius(15)
                         .shadow(radius: 5)
 
@@ -101,7 +101,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.white)
+                        .background(Color(.systemBackground))
                         .cornerRadius(15)
                         .shadow(radius: 5)
 
@@ -128,7 +128,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.white)
+                        .background(Color(.systemBackground))
                         .cornerRadius(15)
                         .shadow(radius: 5)
 
@@ -155,7 +155,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.white)
+                        .background(Color(.systemBackground))
                         .cornerRadius(15)
                         .shadow(radius: 5)
 

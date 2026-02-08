@@ -142,7 +142,7 @@ struct PromptCard: View {
             Text(prompt.text)
                 .font(.system(size: 28, weight: .bold))
                 .multilineTextAlignment(.center)
-                .foregroundColor(.primary)
+                .foregroundColor(.black)
                 .padding(.horizontal)
 
             // Difficulty indicator

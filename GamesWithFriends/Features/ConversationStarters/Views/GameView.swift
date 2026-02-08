@@ -178,11 +178,11 @@ struct GameView: View {
     private var timerView: some View {
         HStack(spacing: 5) {
             Image(systemName: viewModel.isTimerRunning ? "timer" : "pause.circle")
-                .foregroundColor(viewModel.timeRemaining < 10 ? .red : .primary)
+                .foregroundColor(viewModel.timeRemaining < 10 ? .red : .black)
             Text(timeString(from: viewModel.timeRemaining))
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(viewModel.timeRemaining < 10 ? .red : .primary)
+                .foregroundColor(viewModel.timeRemaining < 10 ? .red : .black)
                 .monospacedDigit()
         }
         .padding(.horizontal, 10)
@@ -295,6 +295,7 @@ struct CardView: View {
                 .font(.title2)
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
+                .foregroundColor(.black)
                 .padding(.horizontal, 30)
 
             Spacer()

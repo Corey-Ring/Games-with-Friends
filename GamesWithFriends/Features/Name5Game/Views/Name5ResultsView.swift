@@ -191,7 +191,7 @@ struct StatsCard: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
         )
     }
