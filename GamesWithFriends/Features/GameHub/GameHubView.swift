@@ -41,10 +41,10 @@ struct GameHubView: View {
                             }
                         }
                         .padding(.horizontal, 16)
-
-                        Spacer(minLength: 30)
+                        .padding(.bottom, 30)
                     }
                 }
+                .scrollIndicators(.hidden)
             }
             .navigationBarTitleDisplayMode(.inline)
         }

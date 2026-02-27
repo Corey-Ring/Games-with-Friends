@@ -172,11 +172,11 @@ struct Name5SetupView: View {
                 }
                 .disabled(!viewModel.canStart)
                 .opacity(viewModel.canStart ? 1.0 : 0.6)
-
-                Spacer(minLength: 40)
+                .padding(.bottom, 20)
             }
             .padding()
         }
+        .scrollIndicators(.hidden)
     }
 }
 

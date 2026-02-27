@@ -44,9 +44,11 @@ struct MovieChainSetupView: View {
 
                     // Start Button
                     startButton
+                        .padding(.bottom, 20)
                 }
                 .padding()
             }
+            .scrollIndicators(.hidden)
         }
         .navigationTitle("Movie Chain")
         .navigationBarTitleDisplayMode(.inline)

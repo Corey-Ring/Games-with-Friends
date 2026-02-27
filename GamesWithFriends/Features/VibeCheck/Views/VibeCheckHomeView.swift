@@ -40,9 +40,11 @@ struct VibeCheckHomeView: View {
                         .font(.subheadline)
                 }
                 .padding(.top, 8)
+                .padding(.bottom, 20)
             }
             .padding()
         }
+        .scrollIndicators(.hidden)
         .background {
             LinearGradient(
                 colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)],
@@ -384,9 +386,11 @@ struct TeamSetupView: View {
 
                 // Start button
                 startButton
+                    .padding(.bottom, 20)
             }
             .padding()
         }
+        .scrollIndicators(.hidden)
         .background {
             LinearGradient(
                 colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)],

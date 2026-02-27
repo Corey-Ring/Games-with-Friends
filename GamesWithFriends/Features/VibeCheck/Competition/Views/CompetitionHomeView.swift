@@ -27,9 +27,11 @@ struct CompetitionHomeView: View {
                         .font(.subheadline)
                 }
                 .padding(.top, 8)
+                .padding(.bottom, 20)
             }
             .padding()
         }
+        .scrollIndicators(.hidden)
         .background {
             LinearGradient(
                 colors: [Color.orange.opacity(0.1), Color.red.opacity(0.1)],
@@ -198,9 +200,11 @@ struct CompetitionPlayerSetupView: View {
 
                 // Start button
                 startButton
+                    .padding(.bottom, 20)
             }
             .padding()
         }
+        .scrollIndicators(.hidden)
         .background {
             LinearGradient(
                 colors: [Color.orange.opacity(0.1), Color.red.opacity(0.1)],

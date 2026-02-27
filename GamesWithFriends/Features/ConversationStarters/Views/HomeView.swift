@@ -183,11 +183,11 @@ struct HomeView: View {
                             .cornerRadius(15)
                         }
                         .shadow(radius: 5)
-
-                        Spacer(minLength: 30)
+                        .padding(.bottom, 20)
                     }
                     .padding(.horizontal)
                 }
+                .scrollIndicators(.hidden)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
