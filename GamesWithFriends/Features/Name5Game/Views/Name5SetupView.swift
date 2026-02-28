@@ -108,6 +108,33 @@ struct Name5SetupView: View {
                     }
                 }
 
+                // Category Selection
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Categories")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Select which categories to include")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                        ForEach(PromptCategory.allCases, id: \.self) { category in
+                            CategorySelectionCard(
+                                category: category,
+                                isSelected: viewModel.selectedCategories.contains(category)
+                            ) {
+                                viewModel.toggleCategory(category)
+                            }
+                        }
+                    }
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.purple.opacity(0.05))
+                )
+
                 // Player Count
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Number of Players")
@@ -216,6 +243,43 @@ struct ContextCard: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
+                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.2), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Category Selection Card
+struct CategorySelectionCard: View {
+    let category: PromptCategory
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                Image(systemName: category.icon)
+                    .font(.title3)
+                    .foregroundColor(isSelected ? .white : .purple)
+                
+                Text(category.rawValue)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(isSelected ? .white : .primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(isSelected ? Color.purple : Color.gray.opacity(0.1))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
                     .stroke(isSelected ? Color.clear : Color.gray.opacity(0.2), lineWidth: 1)
             )
         }

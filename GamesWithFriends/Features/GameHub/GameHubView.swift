@@ -5,46 +5,44 @@ struct GameHubView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Background gradient
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header
+                    VStack(spacing: 8) {
+
+                        Text("Games with Friends")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+
+                        Text("Building connections through games")
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.top, 40)
+
+                    // Games Grid
+                    LazyVGrid(columns: [
+                        GridItem(.flexible(), spacing: 16),
+                        GridItem(.flexible(), spacing: 16)
+                    ], spacing: 16) {
+                        ForEach(games) { game in
+                            GameCard(game: game)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 30)
+                }
+            }
+            .scrollIndicators(.hidden)
+            .background {
                 LinearGradient(
                     colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
-
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Header
-                        VStack(spacing: 8) {
-
-                            Text("Games with Friends")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-
-                            Text("Building connections through games")
-                                .font(.subheadline)
-                                .foregroundColor(.white.opacity(0.8))
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding(.top, 40)
-
-                        // Games Grid
-                        LazyVGrid(columns: [
-                            GridItem(.flexible(), spacing: 16),
-                            GridItem(.flexible(), spacing: 16)
-                        ], spacing: 16) {
-                            ForEach(games) { game in
-                                GameCard(game: game)
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 30)
-                    }
-                }
-                .scrollIndicators(.hidden)
             }
             .navigationBarTitleDisplayMode(.inline)
         }

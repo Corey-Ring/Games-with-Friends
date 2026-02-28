@@ -226,26 +226,6 @@ struct ContinueButtons: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            // Same Category button
-            if let category = viewModel.currentPrompt?.category {
-                Button(action: {
-                    viewModel.playAgainSameCategory()
-                }) {
-                    HStack {
-                        Image(systemName: category.icon)
-                        Text("More \(category.rawValue)")
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(Color.purple)
-                    )
-                }
-            }
-
             // Random button
             Button(action: {
                 viewModel.continueToNextRound()
@@ -268,6 +248,26 @@ struct ContinueButtons: View {
                             )
                         )
                 )
+            }
+
+            // Same Category button
+            if let category = viewModel.currentPrompt?.category {
+                Button(action: {
+                    viewModel.playAgainSameCategory()
+                }) {
+                    HStack {
+                        Image(systemName: category.icon)
+                        Text("More \(category.rawValue)")
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(Color.purple)
+                    )
+                }
             }
 
             // End Game button

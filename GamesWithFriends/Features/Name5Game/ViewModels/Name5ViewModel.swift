@@ -11,6 +11,7 @@ class Name5ViewModel {
     var playerCount: Int = 1
     var currentPlayerIndex: Int = 0
     var timerEnabled: Bool = true
+    var selectedCategories: Set<PromptCategory> = Set(PromptCategory.allCases)
 
     // MARK: - Game State
     var gamePhase: GamePhase = .setup
@@ -51,6 +52,7 @@ class Name5ViewModel {
     func updateAvailablePrompts() {
         availablePrompts = Name5PromptData.allPrompts.filter { prompt in
             prompt.isAvailableFor(context: socialContext, ageGroup: ageGroup) &&
+            selectedCategories.contains(prompt.category) &&
             !usedPromptIDs.contains(prompt.id)
         }
 
@@ -58,7 +60,8 @@ class Name5ViewModel {
         if availablePrompts.isEmpty && usedPromptIDs.count > 0 {
             usedPromptIDs.removeAll()
             availablePrompts = Name5PromptData.allPrompts.filter { prompt in
-                prompt.isAvailableFor(context: socialContext, ageGroup: ageGroup)
+                prompt.isAvailableFor(context: socialContext, ageGroup: ageGroup) &&
+                selectedCategories.contains(prompt.category)
             }
         }
     }
@@ -78,6 +81,21 @@ class Name5ViewModel {
             playerCount = players
             setupPlayers()
         }
+        updateAvailablePrompts()
+    }
+    
+    func toggleCategory(_ category: PromptCategory) {
+        if selectedCategories.contains(category) {
+            selectedCategories.remove(category)
+        } else {
+            selectedCategories.insert(category)
+        }
+        
+        // Always keep at least one category selected
+        if selectedCategories.isEmpty {
+            selectedCategories.insert(category)
+        }
+        
         updateAvailablePrompts()
     }
 
