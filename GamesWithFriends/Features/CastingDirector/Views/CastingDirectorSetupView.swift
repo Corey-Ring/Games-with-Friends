@@ -8,15 +8,10 @@ struct CastingDirectorSetupView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color.indigo.opacity(0.3), Color.purple.opacity(0.3)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            WarmLinenBackground()
 
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: AppTheme.Spacing.lg) {
                     headerSection
 
                     if viewModel.isDatabaseDecompressing {
@@ -27,6 +22,7 @@ struct CastingDirectorSetupView: View {
 
                     gameModeSection
                     difficultySection
+                    eraSection
 
                     if viewModel.gameMode == .passAndPlay {
                         playerCountSection
@@ -49,14 +45,14 @@ struct CastingDirectorSetupView: View {
     // MARK: - Header
 
     private var headerSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "person.crop.rectangle.stack")
                 .font(.system(size: 60))
-                .foregroundStyle(.indigo)
+                .foregroundStyle(GameTheme.castingDirector.accentColor)
 
             Text("Guess the actor from clues!")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Typography.cardTitle)
+                .foregroundStyle(AppTheme.mediumGray)
         }
         .padding(.top)
     }
@@ -64,78 +60,76 @@ struct CastingDirectorSetupView: View {
     // MARK: - Decompression
 
     private var decompressionSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             ProgressView()
                 .scaleEffect(1.5)
+                .tint(GameTheme.castingDirector.accentColor)
 
             Text("Preparing Movie Database...")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             ProgressView(value: viewModel.decompressionProgress)
                 .progressViewStyle(.linear)
+                .tint(GameTheme.castingDirector.accentColor)
                 .frame(maxWidth: 200)
 
             Text("\(Int(viewModel.decompressionProgress * 100))%")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Typography.caption)
+                .foregroundStyle(AppTheme.mediumGray)
 
             Text("This only happens once on first launch.")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Typography.caption)
+                .foregroundStyle(AppTheme.mediumGray)
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .gameCard()
     }
 
     // MARK: - Database Error
 
     private var databaseErrorSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.largeTitle)
                 .foregroundStyle(.yellow)
 
             Text("Database Not Loaded")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             if let error = viewModel.databaseError {
                 Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(AppTheme.Typography.caption)
+                    .foregroundStyle(AppTheme.mediumGray)
                     .multilineTextAlignment(.center)
             }
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .gameCard()
     }
 
     // MARK: - Game Mode
 
     private var gameModeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Game Mode")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             ForEach(CastingDirectorMode.allCases, id: \.rawValue) { mode in
                 Button {
                     viewModel.gameMode = mode
                 } label: {
-                    HStack(spacing: 16) {
+                    HStack(spacing: AppTheme.Spacing.md) {
                         Image(systemName: mode == .solo ? "person.fill" : "person.3.fill")
                             .font(.title2)
-                            .foregroundStyle(viewModel.gameMode == mode ? .white : .indigo)
+                            .foregroundStyle(viewModel.gameMode == mode ? .white : GameTheme.castingDirector.accentColor)
                             .frame(width: 40)
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text(mode.rawValue)
-                                .font(.headline)
-                                .foregroundStyle(viewModel.gameMode == mode ? .white : .primary)
+                                .font(AppTheme.Typography.cardTitle)
+                                .foregroundStyle(viewModel.gameMode == mode ? .white : AppTheme.deepCharcoal)
 
                             Text(mode.description)
-                                .font(.caption)
-                                .foregroundStyle(viewModel.gameMode == mode ? .white.opacity(0.8) : .secondary)
+                                .font(AppTheme.Typography.caption)
+                                .foregroundStyle(viewModel.gameMode == mode ? .white.opacity(0.8) : AppTheme.mediumGray)
                         }
 
                         Spacer()
@@ -146,13 +140,13 @@ struct CastingDirectorSetupView: View {
                         }
                     }
                     .padding()
-                    .background(viewModel.gameMode == mode ? Color.indigo : Color.clear)
-                    .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .background(viewModel.gameMode == mode ? GameTheme.castingDirector.accentColor : AppTheme.pureWhite)
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(viewModel.gameMode == mode ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                            .stroke(viewModel.gameMode == mode ? Color.clear : AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
                     )
+                    .shadow(color: viewModel.gameMode == mode ? Color.black.opacity(0.1) : Color.clear, radius: 4, y: 2)
                 }
                 .buttonStyle(.plain)
             }
@@ -162,36 +156,76 @@ struct CastingDirectorSetupView: View {
     // MARK: - Difficulty
 
     private var difficultySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Difficulty")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
-            HStack(spacing: 12) {
+            HStack(spacing: AppTheme.Spacing.md) {
                 ForEach(CastingDirectorDifficulty.allCases, id: \.rawValue) { diff in
                     Button {
                         viewModel.difficulty = diff
                     } label: {
                         VStack(spacing: 6) {
                             Text(diff.rawValue)
-                                .font(.headline)
-                                .foregroundStyle(viewModel.difficulty == diff ? .white : .primary)
+                                .font(AppTheme.Typography.cardTitle)
+                                .foregroundStyle(viewModel.difficulty == diff ? .white : AppTheme.deepCharcoal)
 
                             Text("\(Int(diff.clueInterval))s per clue")
-                                .font(.caption2)
-                                .foregroundStyle(viewModel.difficulty == diff ? .white.opacity(0.8) : .secondary)
+                                .font(AppTheme.Typography.caption)
+                                .foregroundStyle(viewModel.difficulty == diff ? .white.opacity(0.8) : AppTheme.mediumGray)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(viewModel.difficulty == diff ? Color.indigo : Color.clear)
-                        .background(.ultraThinMaterial)
+                        .background(viewModel.difficulty == diff ? GameTheme.castingDirector.accentColor : AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(viewModel.difficulty == diff ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
+                                .stroke(viewModel.difficulty == diff ? Color.clear : AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
                         )
+                        .shadow(color: viewModel.difficulty == diff ? Color.black.opacity(0.1) : Color.clear, radius: 4, y: 2)
                     }
                     .buttonStyle(.plain)
                 }
+            }
+        }
+    }
+    
+    // MARK: - Era
+    
+    private var eraSection: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            Text("Era")
+                .font(AppTheme.Typography.cardTitle)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: AppTheme.Spacing.md) {
+                    ForEach(CastingDirectorEra.allCases, id: \.rawValue) { era in
+                        Button {
+                            viewModel.era = era
+                        } label: {
+                            VStack(spacing: 6) {
+                                Image(systemName: era.icon)
+                                    .font(.title2)
+                                    .foregroundStyle(viewModel.era == era ? .white : GameTheme.castingDirector.accentColor)
+                                
+                                Text(era.rawValue)
+                                    .font(AppTheme.Typography.body)
+                                    .foregroundStyle(viewModel.era == era ? .white : AppTheme.deepCharcoal)
+                            }
+                            .frame(width: 80)
+                            .padding(.vertical, 12)
+                            .background(viewModel.era == era ? GameTheme.castingDirector.accentColor : AppTheme.pureWhite)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(viewModel.era == era ? Color.clear : AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
+                            )
+                            .shadow(color: viewModel.era == era ? Color.black.opacity(0.1) : Color.clear, radius: 4, y: 2)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 4)
             }
         }
     }
@@ -199,9 +233,9 @@ struct CastingDirectorSetupView: View {
     // MARK: - Player Count
 
     private var playerCountSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Players")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             HStack {
                 Text("\(playerCount) Players")
@@ -210,13 +244,13 @@ struct CastingDirectorSetupView: View {
 
                 Spacer()
 
-                HStack(spacing: 16) {
+                HStack(spacing: AppTheme.Spacing.md) {
                     Button {
                         if playerCount > 2 { playerCount -= 1 }
                     } label: {
                         Image(systemName: "minus.circle.fill")
                             .font(.title)
-                            .foregroundStyle(playerCount > 2 ? .indigo : .gray)
+                            .foregroundStyle(playerCount > 2 ? GameTheme.castingDirector.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount <= 2)
 
@@ -225,24 +259,22 @@ struct CastingDirectorSetupView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title)
-                            .foregroundStyle(playerCount < 8 ? .indigo : .gray)
+                            .foregroundStyle(playerCount < 8 ? GameTheme.castingDirector.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount >= 8)
                 }
             }
-            .padding()
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .gameCard()
         }
     }
 
     // MARK: - Player Names
 
     private var playerNamesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             HStack {
                 Text("Player Names")
-                    .font(.headline)
+                    .font(AppTheme.Typography.cardTitle)
 
                 Spacer()
 
@@ -250,12 +282,12 @@ struct CastingDirectorSetupView: View {
                     withAnimation { showingPlayerNames.toggle() }
                 } label: {
                     Image(systemName: showingPlayerNames ? "chevron.up" : "chevron.down")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppTheme.mediumGray)
                 }
             }
 
             if showingPlayerNames {
-                VStack(spacing: 8) {
+                VStack(spacing: AppTheme.Spacing.sm) {
                     ForEach(Array(viewModel.players.enumerated()), id: \.element.id) { index, player in
                         HStack {
                             Circle()
@@ -270,9 +302,7 @@ struct CastingDirectorSetupView: View {
                         }
                     }
                 }
-                .padding()
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .gameCard()
             }
         }
     }
@@ -280,9 +310,9 @@ struct CastingDirectorSetupView: View {
     // MARK: - Rounds
 
     private var roundsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Rounds")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             HStack {
                 Text("\(viewModel.numberOfRounds) rounds")
@@ -298,31 +328,18 @@ struct CastingDirectorSetupView: View {
                 .pickerStyle(.segmented)
                 .frame(width: 180)
             }
-            .padding()
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .gameCard()
         }
     }
 
     // MARK: - Start Button
 
     private var startButton: some View {
-        Button {
+        PrimaryButton(title: "Start Game", icon: "play.fill") {
             viewModel.startGame()
-        } label: {
-            HStack {
-                Image(systemName: "play.fill")
-                Text("Start Game")
-            }
-            .font(.title2)
-            .fontWeight(.semibold)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(viewModel.isDatabaseReady ? Color.indigo : Color.gray)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
         .disabled(!viewModel.isDatabaseReady)
+        .opacity(viewModel.isDatabaseReady ? 1.0 : 0.6)
         .padding(.top)
     }
 }

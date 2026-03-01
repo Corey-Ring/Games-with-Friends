@@ -9,8 +9,7 @@ struct Name5GameView: View {
         NavigationStack {
             ZStack {
                 // Background
-                Color(UIColor.systemGroupedBackground)
-                    .ignoresSafeArea()
+                WarmLinenBackground()
 
                 // Content based on game phase
                 switch viewModel.gamePhase {
@@ -64,82 +63,50 @@ struct GameOverView: View {
     var viewModel: Name5ViewModel
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Header
-                VStack(spacing: 12) {
-                    Image(systemName: "flag.checkered")
-                        .font(.system(size: 60))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.blue, .purple],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+        ZStack {
+            GameBackground(gameTheme: .name5)
+            
+            ScrollView {
+                VStack(spacing: AppTheme.Spacing.lg) {
+                    // Header
+                    VStack(spacing: AppTheme.Spacing.md) {
+                        Image(systemName: "flag.checkered")
+                            .font(.system(size: 60))
+                            .foregroundStyle(GameTheme.name5.accentColor)
 
-                    Text("Game Over!")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                        Text("Game Over!")
+                            .font(AppTheme.Typography.hero)
+                            .fontWeight(.bold)
 
-                    Text("Great job playing!")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.top, 40)
+                        Text("Great job playing!")
+                            .font(AppTheme.Typography.body)
+                            .foregroundColor(AppTheme.mediumGray)
+                    }
+                    .padding(.top, 40)
 
-                // Final Stats
-                FinalStatsCard(stats: viewModel.stats)
+                    // Final Stats
+                    FinalStatsCard(stats: viewModel.stats)
 
-                // Recent Rounds
-                if !viewModel.roundResults.isEmpty {
-                    RecentRoundsCard(results: viewModel.roundResults)
-                }
+                    // Recent Rounds
+                    if !viewModel.roundResults.isEmpty {
+                        RecentRoundsCard(results: viewModel.roundResults)
+                    }
 
-                // Buttons
-                VStack(spacing: 12) {
-                    Button(action: {
-                        viewModel.startGame()
-                    }) {
-                        HStack {
-                            Image(systemName: "play.fill")
-                            Text("Play Again")
-                                .fontWeight(.bold)
+                    // Buttons
+                    VStack(spacing: AppTheme.Spacing.md) {
+                        PrimaryButton(title: "Play Again", icon: "play.fill") {
+                            viewModel.startGame()
                         }
-                        .font(.title3)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.blue, .purple],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                        )
+
+                        SecondaryButton(title: "Back to Setup", icon: "gearshape") {
+                            viewModel.resetGame()
+                        }
                     }
 
-                    Button(action: {
-                        viewModel.resetGame()
-                    }) {
-                        Text("Back to Setup")
-                            .fontWeight(.semibold)
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(Color.gray.opacity(0.15))
-                            )
-                    }
+                    Spacer(minLength: 40)
                 }
-
-                Spacer(minLength: 40)
+                .padding()
             }
-            .padding()
         }
     }
 }
@@ -149,18 +116,18 @@ struct FinalStatsCard: View {
     let stats: GameStats
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: AppTheme.Spacing.lg) {
             Text("Final Stats")
-                .font(.title2)
+                .font(AppTheme.Typography.sectionHeader)
                 .fontWeight(.bold)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppTheme.Spacing.md) {
                 FinalStatItem(
                     icon: "target",
                     label: "Total Rounds",
                     value: "\(stats.roundsPlayed)",
-                    color: .blue
+                    color: GameTheme.name5.accentColor
                 )
 
                 FinalStatItem(
@@ -181,16 +148,11 @@ struct FinalStatsCard: View {
                     icon: "percent",
                     label: "Success Rate",
                     value: "\(Int(stats.successRate * 100))%",
-                    color: .purple
+                    color: GameTheme.name5.accentColor
                 )
             }
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.white)
-                .shadow(color: .black.opacity(0.05), radius: 15, x: 0, y: 8)
-        )
+        .gameCard()
     }
 }
 
@@ -201,7 +163,7 @@ struct FinalStatItem: View {
     let color: Color
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: icon)
                 .font(.title)
                 .foregroundColor(color)
@@ -211,14 +173,14 @@ struct FinalStatItem: View {
                 .fontWeight(.bold)
 
             Text(label)
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(AppTheme.mediumGray)
                 .multilineTextAlignment(.center)
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(color.opacity(0.1))
         )
     }
@@ -229,9 +191,9 @@ struct RecentRoundsCard: View {
     let results: [RoundResult]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Recent Rounds")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             ForEach(results.suffix(5).reversed()) { result in
                 HStack {
@@ -240,13 +202,13 @@ struct RecentRoundsCard: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(result.promptText)
-                            .font(.subheadline)
+                            .font(AppTheme.Typography.body)
                             .lineLimit(1)
 
                         if let time = result.timeUsed {
                             Text("\(time)s")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
+                                .font(AppTheme.Typography.caption)
+                                .foregroundColor(AppTheme.mediumGray)
                         }
                     }
 
@@ -254,29 +216,24 @@ struct RecentRoundsCard: View {
 
                     if let playerNum = result.playerNumber {
                         Text("P\(playerNum)")
-                            .font(.caption)
+                            .font(AppTheme.Typography.caption)
                             .fontWeight(.semibold)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 8)
+                            .foregroundColor(AppTheme.mediumGray)
+                            .padding(.horizontal, AppTheme.Spacing.sm)
                             .padding(.vertical, 4)
                             .background(
                                 Capsule()
-                                    .fill(Color.gray.opacity(0.15))
+                                    .fill(AppTheme.mediumGray.opacity(0.15))
                             )
                     }
                 }
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.05))
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                        .fill(AppTheme.mediumGray.opacity(0.05))
                 )
             }
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
-                .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
-        )
+        .gameCard()
     }
 }

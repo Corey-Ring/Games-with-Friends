@@ -4,233 +4,202 @@ struct Name5SetupView: View {
     @Bindable var viewModel: Name5ViewModel
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Header
-                VStack(spacing: 8) {
-                    Image(systemName: "hand.raised.fingers.spread.fill")
-                        .font(.system(size: 60))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.blue, .purple],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+        ZStack {
+            WarmLinenBackground()
+            
+            ScrollView {
+                VStack(spacing: AppTheme.Spacing.lg) {
+                    // Header
+                    VStack(spacing: AppTheme.Spacing.sm) {
+                        Image(systemName: "hand.raised.fingers.spread.fill")
+                            .font(.system(size: 60))
+                            .foregroundStyle(GameTheme.name5.accentColor)
 
-                    Text("Name 5")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                        Text("Name 5")
+                            .font(AppTheme.Typography.hero)
+                            .fontWeight(.bold)
 
-                    Text("Race against the clock to name 5 things!")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.top, 20)
-
-                // Social Context Selection
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Playing with...")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                        ForEach(SocialContext.allCases, id: \.self) { context in
-                            ContextCard(
-                                context: context,
-                                isSelected: viewModel.socialContext == context
-                            ) {
-                                viewModel.updateConfiguration(context: context)
-                            }
-                        }
+                        Text("Race against the clock to name 5 things!")
+                            .font(AppTheme.Typography.body)
+                            .foregroundColor(AppTheme.mediumGray)
+                            .multilineTextAlignment(.center)
                     }
-                }
+                    .padding(.top, AppTheme.Spacing.lg)
 
-                // Age Group Selection (show only for family or all ages)
-                if viewModel.socialContext == .family {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Age Group")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
+                    // Social Context Selection
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                        Text("Playing with...")
+                            .font(AppTheme.Typography.cardTitle)
+                            .foregroundColor(AppTheme.mediumGray)
 
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                            ForEach(AgeGroup.allCases, id: \.self) { age in
-                                AgeGroupCard(
-                                    ageGroup: age,
-                                    isSelected: viewModel.ageGroup == age
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppTheme.Spacing.md) {
+                            ForEach(SocialContext.allCases, id: \.self) { context in
+                                ContextCard(
+                                    context: context,
+                                    isSelected: viewModel.socialContext == context
                                 ) {
-                                    viewModel.updateConfiguration(age: age)
+                                    viewModel.updateConfiguration(context: context)
                                 }
                             }
                         }
                     }
-                }
 
-                // Difficulty Selection
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Difficulty")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
+                    // Age Group Selection (show only for family or all ages)
+                    if viewModel.socialContext == .family {
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                            Text("Age Group")
+                                .font(AppTheme.Typography.cardTitle)
+                                .foregroundColor(AppTheme.mediumGray)
 
-                    HStack(spacing: 12) {
-                        DifficultyToggle(
-                            difficulty: .easy,
-                            isSelected: viewModel.selectedDifficulties.contains(.easy)
-                        ) {
-                            viewModel.toggleDifficulty(.easy)
-                        }
-
-                        DifficultyToggle(
-                            difficulty: .medium,
-                            isSelected: viewModel.selectedDifficulties.contains(.medium)
-                        ) {
-                            viewModel.toggleDifficulty(.medium)
-                        }
-
-                        DifficultyToggle(
-                            difficulty: .hard,
-                            isSelected: viewModel.selectedDifficulties.contains(.hard)
-                        ) {
-                            viewModel.toggleDifficulty(.hard)
-                        }
-                    }
-                }
-
-                // Timer Settings
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Timer")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-
-                        Spacer()
-
-                        Toggle("", isOn: $viewModel.timerEnabled)
-                            .labelsHidden()
-                    }
-
-                    if viewModel.timerEnabled {
-                        VStack(spacing: 12) {
-                            Picker("Timer Duration", selection: Binding(
-                                get: { viewModel.timerDuration },
-                                set: { viewModel.updateConfiguration(duration: $0) }
-                            )) {
-                                Text("15s").tag(15)
-                                Text("30s").tag(30)
-                                Text("45s").tag(45)
-                                Text("60s").tag(60)
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppTheme.Spacing.md) {
+                                ForEach(AgeGroup.allCases, id: \.self) { age in
+                                    AgeGroupCard(
+                                        ageGroup: age,
+                                        isSelected: viewModel.ageGroup == age
+                                    ) {
+                                        viewModel.updateConfiguration(age: age)
+                                    }
+                                }
                             }
-                            .pickerStyle(.segmented)
+                        }
+                    }
 
-                            Text(timerDescription(for: viewModel.timerDuration))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                    // Difficulty Selection
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                        Text("Difficulty")
+                            .font(AppTheme.Typography.cardTitle)
+                            .foregroundColor(AppTheme.mediumGray)
+
+                        HStack(spacing: AppTheme.Spacing.md) {
+                            DifficultyToggle(
+                                difficulty: .easy,
+                                isSelected: viewModel.selectedDifficulties.contains(.easy)
+                            ) {
+                                viewModel.toggleDifficulty(.easy)
+                            }
+
+                            DifficultyToggle(
+                                difficulty: .medium,
+                                isSelected: viewModel.selectedDifficulties.contains(.medium)
+                            ) {
+                                viewModel.toggleDifficulty(.medium)
+                            }
+
+                            DifficultyToggle(
+                                difficulty: .hard,
+                                isSelected: viewModel.selectedDifficulties.contains(.hard)
+                            ) {
+                                viewModel.toggleDifficulty(.hard)
+                            }
+                        }
+                    }
+
+                    // Timer Settings
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                        HStack {
+                            Text("Timer")
+                                .font(AppTheme.Typography.cardTitle)
+                                .foregroundColor(AppTheme.mediumGray)
+
+                            Spacer()
+
+                            Toggle("", isOn: $viewModel.timerEnabled)
+                                .labelsHidden()
+                        }
+
+                        if viewModel.timerEnabled {
+                            VStack(spacing: AppTheme.Spacing.md) {
+                                Picker("Timer Duration", selection: Binding(
+                                    get: { viewModel.timerDuration },
+                                    set: { viewModel.updateConfiguration(duration: $0) }
+                                )) {
+                                    Text("15s").tag(15)
+                                    Text("30s").tag(30)
+                                    Text("45s").tag(45)
+                                    Text("60s").tag(60)
+                                }
+                                .pickerStyle(.segmented)
+
+                                Text(timerDescription(for: viewModel.timerDuration))
+                                    .font(AppTheme.Typography.caption)
+                                    .foregroundColor(AppTheme.mediumGray)
+                            }
+                            .gameCard()
+                        }
+                    }
+
+                    // Category Selection
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                        Text("Categories")
+                            .font(AppTheme.Typography.cardTitle)
+                            .foregroundColor(AppTheme.mediumGray)
+
+                        Text("Select which categories to include")
+                            .font(AppTheme.Typography.caption)
+                            .foregroundColor(AppTheme.mediumGray)
+
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                            ForEach(PromptCategory.allCases, id: \.self) { category in
+                                CategorySelectionCard(
+                                    category: category,
+                                    isSelected: viewModel.selectedCategories.contains(category)
+                                ) {
+                                    viewModel.toggleCategory(category)
+                                }
+                            }
+                        }
+                    }
+                    .gameCard()
+
+                    // Player Count
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                        Text("Number of Players")
+                            .font(AppTheme.Typography.cardTitle)
+                            .foregroundColor(AppTheme.mediumGray)
+
+                        HStack {
+                            Text("\(viewModel.playerCount) \(viewModel.playerCount == 1 ? "Player" : "Players")")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                            Spacer()
+                        }
+
+                        Stepper("", value: Binding(
+                            get: { viewModel.playerCount },
+                            set: { viewModel.updateConfiguration(players: $0) }
+                        ), in: 1...20)
+                        .labelsHidden()
+                    }
+
+                    // Available Prompts Info
+                    if !viewModel.availablePrompts.isEmpty {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text("\(viewModel.availablePrompts.count) prompts available")
+                                .font(AppTheme.Typography.body)
+                                .foregroundColor(AppTheme.mediumGray)
+                            Spacer()
                         }
                         .padding()
                         .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.blue.opacity(0.1))
+                            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
+                                .fill(Color.green.opacity(0.1))
                         )
                     }
-                }
 
-                // Category Selection
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Categories")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-
-                    Text("Select which categories to include")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                        ForEach(PromptCategory.allCases, id: \.self) { category in
-                            CategorySelectionCard(
-                                category: category,
-                                isSelected: viewModel.selectedCategories.contains(category)
-                            ) {
-                                viewModel.toggleCategory(category)
-                            }
-                        }
+                    // Start Button
+                    PrimaryButton(title: "Quick Play", icon: "play.fill") {
+                        viewModel.startGame()
                     }
+                    .disabled(!viewModel.canStart)
+                    .opacity(viewModel.canStart ? 1.0 : 0.6)
+                    .padding(.bottom, AppTheme.Spacing.lg)
                 }
                 .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.purple.opacity(0.05))
-                )
-
-                // Player Count
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Number of Players")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-
-                    HStack {
-                        Text("\(viewModel.playerCount) \(viewModel.playerCount == 1 ? "Player" : "Players")")
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                        Spacer()
-                    }
-
-                    Stepper("", value: Binding(
-                        get: { viewModel.playerCount },
-                        set: { viewModel.updateConfiguration(players: $0) }
-                    ), in: 1...20)
-                    .labelsHidden()
-                }
-
-                // Available Prompts Info
-                if !viewModel.availablePrompts.isEmpty {
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                        Text("\(viewModel.availablePrompts.count) prompts available")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.green.opacity(0.1))
-                    )
-                }
-
-                // Start Button
-                Button(action: {
-                    viewModel.startGame()
-                }) {
-                    HStack {
-                        Image(systemName: "play.fill")
-                        Text("Quick Play")
-                            .fontWeight(.bold)
-                    }
-                    .font(.title3)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(
-                                LinearGradient(
-                                    colors: [.blue, .purple],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                    )
-                    .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 5)
-                }
-                .disabled(!viewModel.canStart)
-                .opacity(viewModel.canStart ? 1.0 : 0.6)
-                .padding(.bottom, 20)
             }
-            .padding()
+            .scrollIndicators(.hidden)
         }
-        .scrollIndicators(.hidden)
     }
 
     private func timerDescription(for duration: Int) -> String {
@@ -262,20 +231,21 @@ struct DifficultyToggle: View {
                 }
 
                 Text(difficulty.rawValue)
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.body)
                     .fontWeight(.semibold)
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? selectedFill : Color.gray.opacity(0.1))
+                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                    .fill(isSelected ? selectedFill : AppTheme.pureWhite)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.2), lineWidth: 1)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
             )
+            .shadow(color: isSelected ? Color.black.opacity(0.1) : Color.clear, radius: 4, y: 2)
         }
         .buttonStyle(.plain)
     }
@@ -313,19 +283,19 @@ struct ContextCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 12) {
+            VStack(spacing: AppTheme.Spacing.md) {
                 Image(systemName: context.icon)
                     .font(.system(size: 32))
-                    .foregroundColor(isSelected ? .white : .blue)
+                    .foregroundColor(isSelected ? .white : GameTheme.name5.accentColor)
 
                 VStack(spacing: 4) {
                     Text(context.rawValue)
-                        .font(.headline)
-                        .foregroundColor(isSelected ? .white : .primary)
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
 
                     Text(context.description)
-                        .font(.caption)
-                        .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary)
+                        .font(AppTheme.Typography.caption)
+                        .foregroundColor(isSelected ? .white.opacity(0.9) : AppTheme.mediumGray)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
                 }
@@ -333,16 +303,14 @@ struct ContextCard: View {
             .padding()
             .frame(maxWidth: .infinity, minHeight: 140)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(isSelected ?
-                          LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing) :
-                            LinearGradient(colors: [Color.gray.opacity(0.1)], startPoint: .top, endPoint: .bottom)
-                    )
+                RoundedRectangle(cornerRadius: AppTheme.Radius.card)
+                    .fill(isSelected ? GameTheme.name5.accentColor : AppTheme.pureWhite)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.2), lineWidth: 1)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.card)
+                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
             )
+            .shadow(color: isSelected ? Color.black.opacity(0.15) : AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, y: AppTheme.Shadow.cardY)
         }
         .buttonStyle(.plain)
     }
@@ -356,15 +324,15 @@ struct CategorySelectionCard: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: AppTheme.Spacing.sm) {
                 Image(systemName: category.icon)
                     .font(.title3)
-                    .foregroundColor(isSelected ? .white : .purple)
+                    .foregroundColor(isSelected ? .white : GameTheme.name5.accentColor)
                 
                 Text(category.rawValue)
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .minimumScaleFactor(0.8)
@@ -374,11 +342,11 @@ struct CategorySelectionCard: View {
             .padding(.horizontal, 8)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(isSelected ? Color.purple : Color.gray.opacity(0.1))
+                    .fill(isSelected ? GameTheme.name5.accentColor : AppTheme.pureWhite)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.2), lineWidth: 1)
+                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -396,12 +364,12 @@ struct AgeGroupCard: View {
             HStack {
                 Image(systemName: ageGroup.icon)
                     .font(.title2)
-                    .foregroundColor(isSelected ? .white : .blue)
+                    .foregroundColor(isSelected ? .white : GameTheme.name5.accentColor)
 
                 Text(ageGroup.rawValue)
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.body)
                     .fontWeight(.semibold)
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
 
                 Spacer()
 
@@ -412,9 +380,14 @@ struct AgeGroupCard: View {
             }
             .padding()
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.blue : Color.gray.opacity(0.1))
+                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                    .fill(isSelected ? GameTheme.name5.accentColor : AppTheme.pureWhite)
             )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
+            )
+            .shadow(color: isSelected ? Color.black.opacity(0.1) : Color.clear, radius: 4, y: 2)
         }
         .buttonStyle(.plain)
     }
