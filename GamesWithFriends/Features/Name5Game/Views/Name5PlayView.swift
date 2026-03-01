@@ -6,17 +6,9 @@ struct Name5PlayView: View {
     var body: some View {
         ZStack {
             // Background
-            LinearGradient(
-                colors: [
-                    Color.blue.opacity(0.1),
-                    Color.purple.opacity(0.1)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            GameBackground(gameTheme: .name5)
 
-            VStack(spacing: 20) {
+            VStack(spacing: AppTheme.Spacing.lg) {
                 // Player indicator (if multiplayer)
                 if viewModel.playerCount > 1, let player = viewModel.currentPlayer {
                     PlayerIndicator(player: player)
@@ -72,11 +64,11 @@ struct PlayerIndicator: View {
                 .font(.title3)
                 .fontWeight(.bold)
         }
-        .foregroundColor(.blue)
+        .foregroundColor(GameTheme.name5.accentColor)
         .padding()
         .background(
             Capsule()
-                .fill(Color.blue.opacity(0.15))
+                .fill(GameTheme.name5.accentColor.opacity(0.15))
         )
     }
 }
@@ -89,10 +81,10 @@ struct TimerView: View {
     let isRunning: Bool
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: AppTheme.Spacing.md) {
             ZStack {
                 Circle()
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 12)
+                    .stroke(AppTheme.mediumGray.opacity(0.2), lineWidth: 12)
 
                 Circle()
                     .trim(from: 0, to: progress)
@@ -106,8 +98,8 @@ struct TimerView: View {
                         .foregroundColor(color)
 
                     Text("seconds")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(AppTheme.Typography.caption)
+                        .foregroundColor(AppTheme.mediumGray)
                 }
             }
             .frame(width: 140, height: 140)
@@ -121,20 +113,20 @@ struct PromptCard: View {
     let phase: GamePhase
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: AppTheme.Spacing.lg) {
             // Category & difficulty badges
-            HStack(spacing: 8) {
+            HStack(spacing: AppTheme.Spacing.sm) {
                 HStack(spacing: 4) {
                     Image(systemName: prompt.category.icon)
                         .font(.caption)
                     Text(prompt.category.rawValue)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .fontWeight(.semibold)
                 }
                 .foregroundColor(.white)
-                .padding(.horizontal, 12)
+                .padding(.horizontal, AppTheme.Spacing.md)
                 .padding(.vertical, 6)
-                .background(Capsule().fill(Color.blue))
+                .background(Capsule().fill(GameTheme.name5.accentColor))
 
                 HStack(spacing: 3) {
                     ForEach(0..<difficultyStars, id: \.self) { _ in
@@ -143,11 +135,11 @@ struct PromptCard: View {
                             .foregroundColor(.white)
                     }
                     Text(prompt.difficulty.rawValue)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                 }
-                .padding(.horizontal, 12)
+                .padding(.horizontal, AppTheme.Spacing.md)
                 .padding(.vertical, 6)
                 .background(Capsule().fill(difficultyColor))
             }
@@ -156,16 +148,12 @@ struct PromptCard: View {
             Text(prompt.text)
                 .font(.system(size: 28, weight: .bold))
                 .multilineTextAlignment(.center)
-                .foregroundColor(.black)
+                .foregroundColor(AppTheme.deepCharcoal)
                 .padding(.horizontal)
         }
-        .padding(32)
+        .padding(AppTheme.Spacing.xl)
         .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(Color.white)
-                .shadow(color: .black.opacity(0.1), radius: 20, x: 0, y: 10)
-        )
+        .gameCard()
         .scaleEffect(phase == .playing ? 1.0 : 0.95)
         .animation(.spring(response: 0.3), value: phase)
     }
@@ -192,47 +180,13 @@ struct ReadyButtons: View {
     var viewModel: Name5ViewModel
 
     var body: some View {
-        VStack(spacing: 16) {
-            Button(action: {
+        VStack(spacing: AppTheme.Spacing.md) {
+            PrimaryButton(title: "Start", icon: "play.fill") {
                 viewModel.startRound()
-            }) {
-                HStack {
-                    Image(systemName: "play.fill")
-                    Text("Start")
-                        .fontWeight(.bold)
-                }
-                .font(.title2)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 18)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(
-                            LinearGradient(
-                                colors: [.green, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                )
-                .shadow(color: .green.opacity(0.3), radius: 10, x: 0, y: 5)
             }
 
-            Button(action: {
+            SecondaryButton(title: "Skip", icon: "forward.fill") {
                 viewModel.skipPrompt()
-            }) {
-                HStack {
-                    Image(systemName: "forward.fill")
-                    Text("Skip")
-                        .fontWeight(.semibold)
-                }
-                .foregroundColor(.secondary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.15))
-                )
             }
         }
     }
@@ -243,8 +197,8 @@ struct PlayingButtons: View {
     var viewModel: Name5ViewModel
 
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 12) {
+        VStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.md) {
                 Button(action: {
                     viewModel.markSuccess()
                 }) {
@@ -258,10 +212,11 @@ struct PlayingButtons: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                             .fill(Color.green)
                     )
                 }
+                .pressable()
 
                 Button(action: {
                     viewModel.markFailure()
@@ -276,28 +231,16 @@ struct PlayingButtons: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                             .fill(Color.red)
                     )
                 }
+                .pressable()
             }
 
             if viewModel.timerEnabled {
-                Button(action: {
+                SecondaryButton(title: "Pause", icon: "pause.fill") {
                     viewModel.pauseTimer()
-                }) {
-                    HStack {
-                        Image(systemName: "pause.fill")
-                        Text("Pause")
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.gray.opacity(0.15))
-                    )
                 }
             }
         }
@@ -309,28 +252,14 @@ struct PausedButtons: View {
     var viewModel: Name5ViewModel
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Text("Paused")
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppTheme.mediumGray)
 
-            Button(action: {
+            PrimaryButton(title: "Resume", icon: "play.fill") {
                 viewModel.resumeTimer()
-            }) {
-                HStack {
-                    Image(systemName: "play.fill")
-                    Text("Resume")
-                        .fontWeight(.bold)
-                }
-                .font(.title3)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.blue)
-                )
             }
 
             Button(action: {
@@ -345,10 +274,11 @@ struct PausedButtons: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                         .fill(Color.red.opacity(0.15))
                 )
             }
+            .pressable()
         }
     }
 }
