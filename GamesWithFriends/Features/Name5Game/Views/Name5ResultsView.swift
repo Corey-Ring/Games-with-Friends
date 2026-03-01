@@ -88,20 +88,50 @@ struct CompletedPromptCard: View {
                 .foregroundColor(.secondary)
             }
 
-            HStack(spacing: 4) {
-                Image(systemName: prompt.category.icon)
-                    .font(.caption2)
-                Text(prompt.category.rawValue)
-                    .font(.caption)
+            HStack(spacing: 12) {
+                HStack(spacing: 4) {
+                    Image(systemName: prompt.category.icon)
+                        .font(.caption2)
+                    Text(prompt.category.rawValue)
+                        .font(.caption)
+                }
+                .foregroundColor(.secondary)
+
+                HStack(spacing: 2) {
+                    ForEach(0..<difficultyStars(prompt.difficulty), id: \.self) { _ in
+                        Image(systemName: "star.fill")
+                            .font(.caption2)
+                            .foregroundColor(difficultyColor(prompt.difficulty))
+                    }
+                    Text(prompt.difficulty.rawValue)
+                        .font(.caption)
+                        .foregroundColor(difficultyColor(prompt.difficulty))
+                }
+
                 Spacer()
             }
-            .foregroundColor(.secondary)
         }
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color.gray.opacity(0.1))
         )
+    }
+
+    private func difficultyStars(_ difficulty: Difficulty) -> Int {
+        switch difficulty {
+        case .easy: return 1
+        case .medium: return 2
+        case .hard: return 3
+        }
+    }
+
+    private func difficultyColor(_ difficulty: Difficulty) -> Color {
+        switch difficulty {
+        case .easy: return .green
+        case .medium: return .orange
+        case .hard: return .red
+        }
     }
 }
 

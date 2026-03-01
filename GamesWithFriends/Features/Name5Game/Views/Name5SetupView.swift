@@ -67,6 +67,36 @@ struct Name5SetupView: View {
                     }
                 }
 
+                // Difficulty Selection
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Difficulty")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+
+                    HStack(spacing: 12) {
+                        DifficultyToggle(
+                            difficulty: .easy,
+                            isSelected: viewModel.selectedDifficulties.contains(.easy)
+                        ) {
+                            viewModel.toggleDifficulty(.easy)
+                        }
+
+                        DifficultyToggle(
+                            difficulty: .medium,
+                            isSelected: viewModel.selectedDifficulties.contains(.medium)
+                        ) {
+                            viewModel.toggleDifficulty(.medium)
+                        }
+
+                        DifficultyToggle(
+                            difficulty: .hard,
+                            isSelected: viewModel.selectedDifficulties.contains(.hard)
+                        ) {
+                            viewModel.toggleDifficulty(.hard)
+                        }
+                    }
+                }
+
                 // Timer Settings
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -81,24 +111,21 @@ struct Name5SetupView: View {
                     }
 
                     if viewModel.timerEnabled {
-                        VStack(spacing: 8) {
-                            HStack {
-                                Text("\(viewModel.timerDuration) seconds")
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
-                                Spacer()
-                            }
-
+                        VStack(spacing: 12) {
                             Picker("Timer Duration", selection: Binding(
                                 get: { viewModel.timerDuration },
                                 set: { viewModel.updateConfiguration(duration: $0) }
                             )) {
-                                Text("5s").tag(5)
-                                Text("10s").tag(10)
-                                Text("20s").tag(20)
+                                Text("15s").tag(15)
                                 Text("30s").tag(30)
+                                Text("45s").tag(45)
+                                Text("60s").tag(60)
                             }
                             .pickerStyle(.segmented)
+
+                            Text(timerDescription(for: viewModel.timerDuration))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                         .padding()
                         .background(
@@ -113,11 +140,11 @@ struct Name5SetupView: View {
                     Text("Categories")
                         .font(.headline)
                         .foregroundColor(.secondary)
-                    
+
                     Text("Select which categories to include")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                         ForEach(PromptCategory.allCases, id: \.self) { category in
                             CategorySelectionCard(
@@ -204,6 +231,77 @@ struct Name5SetupView: View {
             .padding()
         }
         .scrollIndicators(.hidden)
+    }
+
+    private func timerDescription(for duration: Int) -> String {
+        switch duration {
+        case 15: return "Sprint mode — fast and frantic"
+        case 30: return "Standard — a good challenge"
+        case 45: return "Relaxed — plenty of time to think"
+        case 60: return "Easy going — no rush at all"
+        default: return "\(duration) seconds per round"
+        }
+    }
+}
+
+// MARK: - Difficulty Toggle
+struct DifficultyToggle: View {
+    let difficulty: Difficulty
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                HStack(spacing: 2) {
+                    ForEach(0..<starCount, id: \.self) { _ in
+                        Image(systemName: "star.fill")
+                            .font(.caption2)
+                            .foregroundColor(isSelected ? .white : starColor)
+                    }
+                }
+
+                Text(difficulty.rawValue)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(isSelected ? .white : .primary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? selectedFill : Color.gray.opacity(0.1))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.2), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var starCount: Int {
+        switch difficulty {
+        case .easy: return 1
+        case .medium: return 2
+        case .hard: return 3
+        }
+    }
+
+    private var starColor: Color {
+        switch difficulty {
+        case .easy: return .green
+        case .medium: return .orange
+        case .hard: return .red
+        }
+    }
+
+    private var selectedFill: Color {
+        switch difficulty {
+        case .easy: return .green
+        case .medium: return .orange
+        case .hard: return .red
+        }
     }
 }
 

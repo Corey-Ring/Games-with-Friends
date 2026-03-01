@@ -6,12 +6,11 @@ struct GameHubView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 12) {
                     // Header
-                    VStack(spacing: 8) {
-
+                    VStack(spacing: 4) {
                         Text("Games with Friends")
-                            .font(.largeTitle)
+                            .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
 
@@ -20,19 +19,19 @@ struct GameHubView: View {
                             .foregroundColor(.white.opacity(0.8))
                             .multilineTextAlignment(.center)
                     }
-                    .padding(.top, 40)
+                    .padding(.top, 12)
 
                     // Games Grid
                     LazyVGrid(columns: [
-                        GridItem(.flexible(), spacing: 16),
-                        GridItem(.flexible(), spacing: 16)
-                    ], spacing: 16) {
+                        GridItem(.flexible(), spacing: 10),
+                        GridItem(.flexible(), spacing: 10)
+                    ], spacing: 10) {
                         ForEach(games) { game in
                             GameCard(game: game)
                         }
                     }
                     .padding(.horizontal, 16)
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 16)
                 }
             }
             .scrollIndicators(.hidden)
@@ -51,58 +50,38 @@ struct GameHubView: View {
 
 struct GameCard: View {
     let game: AnyGameDefinition
-    @State private var isPressed = false
 
     var body: some View {
         NavigationLink {
             game.makeRootView()
         } label: {
-            VStack(spacing: 8) {
-                Spacer()
-
-                // Icon
+            VStack(spacing: 6) {
                 Image(systemName: game.iconName)
-                    .font(.system(size: 36))
+                    .font(.system(size: 24))
                     .foregroundColor(game.accentColor)
-                    .frame(height: 44)
 
-                // Title
                 Text(game.name)
-                    .font(.system(.headline, design: .rounded))
-                    .fontWeight(.bold)
+                    .font(.footnote)
+                    .fontWeight(.semibold)
                     .multilineTextAlignment(.center)
                     .foregroundColor(.primary)
                     .lineLimit(2)
                     .minimumScaleFactor(0.8)
-
-                // Description
-                Text(game.description)
-                    .font(.caption)
-                    .foregroundColor(.primary.opacity(0.6))
-                    .multilineTextAlignment(.center)
-                    .lineLimit(3)
-
-                Spacer()
             }
-            .frame(maxWidth: .infinity, minHeight: 160)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color(.systemBackground))
-            .cornerRadius(16)
-            .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(game.accentColor.opacity(0.3), lineWidth: 2)
-            )
-            .scaleEffect(isPressed ? 0.95 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
+            .frame(maxWidth: .infinity, minHeight: 72)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 10)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
         }
-        .buttonStyle(PlainButtonStyle())
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in isPressed = true }
-                .onEnded { _ in isPressed = false }
-        )
+        .buttonStyle(GameCardButtonStyle())
+    }
+}
+
+struct GameCardButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 

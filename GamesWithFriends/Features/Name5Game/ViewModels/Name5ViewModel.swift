@@ -12,6 +12,7 @@ class Name5ViewModel {
     var currentPlayerIndex: Int = 0
     var timerEnabled: Bool = true
     var selectedCategories: Set<PromptCategory> = Set(PromptCategory.allCases)
+    var selectedDifficulties: Set<Difficulty> = Set([.easy, .medium, .hard])
 
     // MARK: - Game State
     var gamePhase: GamePhase = .setup
@@ -53,6 +54,7 @@ class Name5ViewModel {
         availablePrompts = Name5PromptData.allPrompts.filter { prompt in
             prompt.isAvailableFor(context: socialContext, ageGroup: ageGroup) &&
             selectedCategories.contains(prompt.category) &&
+            selectedDifficulties.contains(prompt.difficulty) &&
             !usedPromptIDs.contains(prompt.id)
         }
 
@@ -61,7 +63,8 @@ class Name5ViewModel {
             usedPromptIDs.removeAll()
             availablePrompts = Name5PromptData.allPrompts.filter { prompt in
                 prompt.isAvailableFor(context: socialContext, ageGroup: ageGroup) &&
-                selectedCategories.contains(prompt.category)
+                selectedCategories.contains(prompt.category) &&
+                selectedDifficulties.contains(prompt.difficulty)
             }
         }
     }
@@ -90,12 +93,27 @@ class Name5ViewModel {
         } else {
             selectedCategories.insert(category)
         }
-        
+
         // Always keep at least one category selected
         if selectedCategories.isEmpty {
             selectedCategories.insert(category)
         }
-        
+
+        updateAvailablePrompts()
+    }
+
+    func toggleDifficulty(_ difficulty: Difficulty) {
+        if selectedDifficulties.contains(difficulty) {
+            selectedDifficulties.remove(difficulty)
+        } else {
+            selectedDifficulties.insert(difficulty)
+        }
+
+        // Always keep at least one difficulty selected
+        if selectedDifficulties.isEmpty {
+            selectedDifficulties.insert(difficulty)
+        }
+
         updateAvailablePrompts()
     }
 
@@ -293,6 +311,8 @@ class Name5ViewModel {
         lastResult = nil
         usedPromptIDs.removeAll()
         currentPlayerIndex = 0
+        selectedCategories = Set(PromptCategory.allCases)
+        selectedDifficulties = Set([.easy, .medium, .hard])
         setupPlayers()
         updateAvailablePrompts()
     }

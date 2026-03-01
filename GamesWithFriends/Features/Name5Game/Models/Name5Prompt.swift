@@ -75,7 +75,7 @@ enum PromptCategory: String, Codable, CaseIterable {
     }
 }
 
-enum Difficulty: String, Codable {
+enum Difficulty: String, Codable, CaseIterable {
     case easy = "Easy"
     case medium = "Medium"
     case hard = "Hard"

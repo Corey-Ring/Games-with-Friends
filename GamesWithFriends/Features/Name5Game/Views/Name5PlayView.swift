@@ -122,21 +122,35 @@ struct PromptCard: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // Category badge
-            HStack {
-                Image(systemName: prompt.category.icon)
-                    .font(.caption)
-                Text(prompt.category.rawValue)
-                    .font(.caption)
-                    .fontWeight(.semibold)
+            // Category & difficulty badges
+            HStack(spacing: 8) {
+                HStack(spacing: 4) {
+                    Image(systemName: prompt.category.icon)
+                        .font(.caption)
+                    Text(prompt.category.rawValue)
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Capsule().fill(Color.blue))
+
+                HStack(spacing: 3) {
+                    ForEach(0..<difficultyStars, id: \.self) { _ in
+                        Image(systemName: "star.fill")
+                            .font(.caption2)
+                            .foregroundColor(.white)
+                    }
+                    Text(prompt.difficulty.rawValue)
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Capsule().fill(difficultyColor))
             }
-            .foregroundColor(.white)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(
-                Capsule()
-                    .fill(Color.blue)
-            )
 
             // Prompt text
             Text(prompt.text)
@@ -144,15 +158,6 @@ struct PromptCard: View {
                 .multilineTextAlignment(.center)
                 .foregroundColor(.black)
                 .padding(.horizontal)
-
-            // Difficulty indicator
-            HStack(spacing: 4) {
-                ForEach(0..<difficultyStars, id: \.self) { _ in
-                    Image(systemName: "star.fill")
-                        .font(.caption)
-                        .foregroundColor(.orange)
-                }
-            }
         }
         .padding(32)
         .frame(maxWidth: .infinity)
@@ -170,6 +175,14 @@ struct PromptCard: View {
         case .easy: return 1
         case .medium: return 2
         case .hard: return 3
+        }
+    }
+
+    private var difficultyColor: Color {
+        switch prompt.difficulty {
+        case .easy: return .green
+        case .medium: return .orange
+        case .hard: return .red
         }
     }
 }
