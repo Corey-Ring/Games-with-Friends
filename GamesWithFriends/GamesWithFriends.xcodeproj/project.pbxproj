@@ -117,6 +117,15 @@
 		VC0000010000000000000017 /* VibeCheckGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000017 /* VibeCheckGame.swift */; };
 		VC0000010000000000000018 /* PromptEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000018 /* PromptEntryView.swift */; };
 		VC0000010000000000000019 /* TeamGuessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000019 /* TeamGuessingView.swift */; };
+		TH0000010000000000000001 /* AnimatedScoreText.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000001 /* AnimatedScoreText.swift */; };
+		TH0000010000000000000002 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000002 /* AppTheme.swift */; };
+		TH0000010000000000000003 /* BackgroundStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000003 /* BackgroundStyles.swift */; };
+		TH0000010000000000000004 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000004 /* Color+Hex.swift */; };
+		TH0000010000000000000005 /* GameTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000005 /* GameTheme.swift */; };
+		TH0000010000000000000006 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000006 /* HapticManager.swift */; };
+		TH0000010000000000000007 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000007 /* SharedComponents.swift */; };
+		TH0000010000000000000008 /* SkeletonLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000008 /* SkeletonLoading.swift */; };
+		TH0000010000000000000009 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000009 /* ViewModifiers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -231,6 +240,15 @@
 		VC0000020000000000000017 /* VibeCheckGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckGame.swift; sourceTree = "<group>"; };
 		VC0000020000000000000018 /* PromptEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptEntryView.swift; sourceTree = "<group>"; };
 		VC0000020000000000000019 /* TeamGuessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamGuessingView.swift; sourceTree = "<group>"; };
+		TH0000020000000000000001 /* AnimatedScoreText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedScoreText.swift; sourceTree = "<group>"; };
+		TH0000020000000000000002 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		TH0000020000000000000003 /* BackgroundStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundStyles.swift; sourceTree = "<group>"; };
+		TH0000020000000000000004 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; name = "Color+Hex.swift"; sourceTree = "<group>"; };
+		TH0000020000000000000005 /* GameTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTheme.swift; sourceTree = "<group>"; };
+		TH0000020000000000000006 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		TH0000020000000000000007 /* SharedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedComponents.swift; sourceTree = "<group>"; };
+		TH0000020000000000000008 /* SkeletonLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonLoading.swift; sourceTree = "<group>"; };
+		TH0000020000000000000009 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -429,6 +447,7 @@
 				F20000010000000000000001 /* GamesWithFriendsApp.swift */,
 				F20000010000000000000080 /* Assets.xcassets */,
 				F40000010000000000000010 /* Features */,
+				TH0000030000000000000001 /* Theme */,
 			);
 			name = GamesWithFriends;
 			sourceTree = "<group>";
@@ -786,6 +805,22 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		TH0000030000000000000001 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				TH0000020000000000000001 /* AnimatedScoreText.swift */,
+				TH0000020000000000000002 /* AppTheme.swift */,
+				TH0000020000000000000003 /* BackgroundStyles.swift */,
+				TH0000020000000000000004 /* Color+Hex.swift */,
+				TH0000020000000000000005 /* GameTheme.swift */,
+				TH0000020000000000000006 /* HapticManager.swift */,
+				TH0000020000000000000007 /* SharedComponents.swift */,
+				TH0000020000000000000008 /* SkeletonLoading.swift */,
+				TH0000020000000000000009 /* ViewModifiers.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -963,6 +998,15 @@
 				VC0000010000000000000015 /* PassDeviceView.swift in Sources */,
 				VC0000010000000000000016 /* VibeCheckRootView.swift in Sources */,
 				VC0000010000000000000017 /* VibeCheckGame.swift in Sources */,
+				TH0000010000000000000001 /* AnimatedScoreText.swift in Sources */,
+				TH0000010000000000000002 /* AppTheme.swift in Sources */,
+				TH0000010000000000000003 /* BackgroundStyles.swift in Sources */,
+				TH0000010000000000000004 /* Color+Hex.swift in Sources */,
+				TH0000010000000000000005 /* GameTheme.swift in Sources */,
+				TH0000010000000000000006 /* HapticManager.swift in Sources */,
+				TH0000010000000000000007 /* SharedComponents.swift in Sources */,
+				TH0000010000000000000008 /* SkeletonLoading.swift in Sources */,
+				TH0000010000000000000009 /* ViewModifiers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

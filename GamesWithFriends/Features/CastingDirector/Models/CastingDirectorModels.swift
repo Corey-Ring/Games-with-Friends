@@ -133,6 +133,24 @@ enum CastingDirectorMode: String, CaseIterable {
     }
 }
 
+// MARK: - Era
+
+enum CastingDirectorEra: String, CaseIterable {
+    case allEras = "All"
+    case classic = "Classic"
+    case modern = "Modern"
+    case recent = "Recent"
+
+    var icon: String {
+        switch self {
+        case .allEras: return "film.stack"
+        case .classic: return "theatermasks"
+        case .modern: return "popcorn"
+        case .recent: return "sparkles.tv"
+        }
+    }
+}
+
 // MARK: - Game Phase
 
 enum CastingDirectorPhase {

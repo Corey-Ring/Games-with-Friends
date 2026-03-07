@@ -8,6 +8,7 @@ class CastingDirectorViewModel: ObservableObject {
     // Game Configuration
     @Published var gameMode: CastingDirectorMode = .solo
     @Published var difficulty: CastingDirectorDifficulty = .medium
+    @Published var era: CastingDirectorEra = .allEras
     @Published var players: [CastingDirectorPlayer] = [CastingDirectorPlayer(name: "Player 1")]
     @Published var numberOfRounds: Int = 5
 
