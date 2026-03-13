@@ -2,40 +2,56 @@ import SwiftUI
 
 struct ResultsView: View {
     var viewModel: CountryGameViewModel
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                VStack(spacing: 16) {
+            VStack(spacing: AppTheme.Spacing.lg) {
+                // Header
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                     Text("Round Results")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                        .font(AppTheme.Typography.hero)
+                        .foregroundColor(AppTheme.deepCharcoal)
 
                     Text(resultsSummary)
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
+                        .font(AppTheme.Typography.body)
+                        .foregroundColor(AppTheme.mediumGray)
                 }
-                .padding(.top, 20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, AppTheme.Spacing.lg)
+
+                // Score display
+                VStack(spacing: AppTheme.Spacing.sm) {
+                    AnimatedScoreText(
+                        targetScore: viewModel.foundCount,
+                        color: GameTheme.countryLetter.accentColor
+                    )
+
+                    Text("of \(viewModel.totalCountries) countries found")
+                        .font(AppTheme.Typography.body)
+                        .foregroundColor(AppTheme.mediumGray)
+                }
+                .frame(maxWidth: .infinity)
+                .gameCard()
 
                 // Guessed countries
                 if !viewModel.guessedCountries.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Correct Guesses ✓")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.green)
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                        Text("Correct Guesses")
+                            .font(AppTheme.Typography.sectionHeader)
+                            .foregroundColor(AppTheme.deepCharcoal)
 
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 180))], spacing: 12) {
-                            ForEach(viewModel.guessedCountries) { country in
-                                Text(country.name)
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(Color.green.opacity(0.1))
-                                    )
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 180))], spacing: AppTheme.Spacing.md) {
+                            ForEach(Array(viewModel.guessedCountries.enumerated()), id: \.element.id) { index, country in
+                                HStack(spacing: AppTheme.Spacing.sm) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(GameTheme.countryLetter.accentColor)
+                                    Text(country.name)
+                                        .font(AppTheme.Typography.cardTitle)
+                                    Spacer()
+                                }
+                                .gameCard()
+                                .staggeredAppear(index: index)
                             }
                         }
                     }
@@ -44,22 +60,23 @@ struct ResultsView: View {
                 // Missed countries
                 let missedCountries = viewModel.remainingCountries
                 if !missedCountries.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                         Text("Missed Countries")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.red)
+                            .font(AppTheme.Typography.sectionHeader)
+                            .foregroundColor(AppTheme.deepCharcoal)
 
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 180))], spacing: 12) {
-                            ForEach(missedCountries) { country in
-                                Text(country.name)
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(Color.gray.opacity(0.1))
-                                    )
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 180))], spacing: AppTheme.Spacing.md) {
+                            ForEach(Array(missedCountries.enumerated()), id: \.element.id) { index, country in
+                                HStack(spacing: AppTheme.Spacing.sm) {
+                                    Image(systemName: "xmark.circle")
+                                        .foregroundColor(AppTheme.mediumGray)
+                                    Text(country.name)
+                                        .font(AppTheme.Typography.cardTitle)
+                                        .foregroundColor(AppTheme.mediumGray)
+                                    Spacer()
+                                }
+                                .gameCard()
+                                .staggeredAppear(index: viewModel.guessedCountries.count + index)
                             }
                         }
                     }
@@ -67,52 +84,42 @@ struct ResultsView: View {
 
                 // Give ups
                 if !viewModel.giveUpCountries.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                         Text("Give Ups (Fully Revealed via Hints)")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.orange)
+                            .font(AppTheme.Typography.sectionHeader)
+                            .foregroundColor(AppTheme.deepCharcoal)
 
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 180))], spacing: 12) {
-                            ForEach(viewModel.giveUpCountries) { country in
-                                Text(country.name)
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(Color.orange.opacity(0.1))
-                                    )
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 180))], spacing: AppTheme.Spacing.md) {
+                            ForEach(Array(viewModel.giveUpCountries.enumerated()), id: \.element.id) { index, country in
+                                HStack(spacing: AppTheme.Spacing.sm) {
+                                    Image(systemName: "hand.raised")
+                                        .foregroundColor(.orange)
+                                    Text(country.name)
+                                        .font(AppTheme.Typography.cardTitle)
+                                        .foregroundColor(.orange)
+                                    Spacer()
+                                }
+                                .gameCard()
+                                .staggeredAppear(index: viewModel.guessedCountries.count + missedCountries.count + index)
                             }
                         }
                     }
                 }
 
-                // Play again button
-                Button(action: {
-                    viewModel.resetGame()
-                }) {
-                    Text("Play Again")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Color.blue, Color.purple]),
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                        )
-                        .shadow(color: Color.blue.opacity(0.3), radius: 10, x: 0, y: 5)
+                // Action buttons
+                VStack(spacing: AppTheme.Spacing.md) {
+                    PrimaryButton(title: "Play Again", icon: "arrow.counterclockwise") {
+                        viewModel.resetGame()
+                    }
+
+                    SecondaryButton(title: "Back to Home", icon: "house") {
+                        dismiss()
+                    }
                 }
-                .padding(.top, 16)
-                .padding(.bottom, 30)
+                .padding(.top, AppTheme.Spacing.md)
+                .padding(.bottom, AppTheme.Spacing.xl)
             }
-            .padding()
+            .padding(AppTheme.Spacing.md)
         }
     }
 

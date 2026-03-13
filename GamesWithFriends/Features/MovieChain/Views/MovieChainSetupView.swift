@@ -7,49 +7,39 @@ struct MovieChainSetupView: View {
     @State private var showingPlayerNames = false
 
     var body: some View {
-        ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [Color.red.opacity(0.3), Color.orange.opacity(0.3)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+        ScrollView {
+            VStack(spacing: AppTheme.Spacing.lg) {
+                // Header
+                headerSection
 
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Header
-                    headerSection
-
-                    // Database status
-                    if viewModel.isDatabaseDecompressing {
-                        decompressionProgressSection
-                    } else if !viewModel.isDatabaseReady {
-                        databaseErrorSection
-                    }
-
-                    // Game Mode Selection
-                    gameModeSection
-
-                    // Player Count
-                    playerCountSection
-
-                    // Timer Duration (for timed mode)
-                    if viewModel.gameMode.hasTimer {
-                        timerSection
-                    }
-
-                    // Player Names
-                    playerNamesSection
-
-                    // Start Button
-                    startButton
-                        .padding(.bottom, 20)
+                // Database status
+                if viewModel.isDatabaseDecompressing {
+                    decompressionProgressSection
+                } else if !viewModel.isDatabaseReady {
+                    databaseErrorSection
                 }
-                .padding()
+
+                // Game Mode Selection
+                gameModeSection
+
+                // Player Count
+                playerCountSection
+
+                // Timer Duration (for timed mode)
+                if viewModel.gameMode.hasTimer {
+                    timerSection
+                }
+
+                // Player Names
+                playerNamesSection
+
+                // Start Button
+                startButton
+                    .padding(.bottom, AppTheme.Spacing.lg)
             }
-            .scrollIndicators(.hidden)
+            .padding(AppTheme.Spacing.md)
         }
+        .scrollIndicators(.hidden)
         .navigationTitle("Movie Chain")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: playerCount) { _, newValue in
@@ -63,14 +53,14 @@ struct MovieChainSetupView: View {
     // MARK: - Header Section
 
     private var headerSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "film.stack")
                 .font(.system(size: 60))
-                .foregroundStyle(.red)
+                .foregroundStyle(GameTheme.movieChain.accentColor)
 
             Text("Connect movies through actors!")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Typography.body)
+                .foregroundColor(AppTheme.mediumGray)
         }
         .padding(.top)
     }
@@ -78,71 +68,74 @@ struct MovieChainSetupView: View {
     // MARK: - Decompression Progress Section
 
     private var decompressionProgressSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             ProgressView()
                 .scaleEffect(1.5)
 
             Text("Preparing Movie Database...")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             ProgressView(value: viewModel.decompressionProgress)
                 .progressViewStyle(.linear)
+                .tint(GameTheme.movieChain.accentColor)
                 .frame(maxWidth: 200)
 
             Text("\(Int(viewModel.decompressionProgress * 100))%")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(AppTheme.mediumGray)
 
             Text("This only happens once on first launch.")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(AppTheme.mediumGray)
                 .multilineTextAlignment(.center)
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .gameCard()
     }
 
     // MARK: - Database Error Section
 
     private var databaseErrorSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.largeTitle)
                 .foregroundStyle(.yellow)
 
             Text("Database Not Loaded")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             if let error = viewModel.databaseError {
                 Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(AppTheme.mediumGray)
                     .multilineTextAlignment(.center)
             }
 
             Text("The movie database needs to be added to the app bundle.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Typography.body)
+                .foregroundColor(AppTheme.mediumGray)
                 .multilineTextAlignment(.center)
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .gameCard()
     }
 
     // MARK: - Game Mode Section
 
     private var gameModeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Game Mode")
-                .font(.headline)
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             ForEach(MovieChainGameMode.allCases) { mode in
                 GameModeCard(
                     mode: mode,
                     isSelected: viewModel.gameMode == mode,
-                    action: { viewModel.gameMode = mode }
+                    action: {
+                        HapticManager.selection()
+                        viewModel.gameMode = mode
+                    }
                 )
             }
         }
@@ -151,57 +144,60 @@ struct MovieChainSetupView: View {
     // MARK: - Player Count Section
 
     private var playerCountSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Players")
-                .font(.headline)
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             HStack {
                 Text("\(playerCount) Players")
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                    .font(AppTheme.Typography.sectionHeader)
+                    .foregroundColor(AppTheme.deepCharcoal)
 
                 Spacer()
 
-                HStack(spacing: 16) {
+                HStack(spacing: AppTheme.Spacing.md) {
                     Button {
                         if playerCount > 2 {
+                            HapticManager.light()
                             playerCount -= 1
                         }
                     } label: {
                         Image(systemName: "minus.circle.fill")
                             .font(.title)
-                            .foregroundStyle(playerCount > 2 ? .red : .gray)
+                            .foregroundStyle(playerCount > 2 ? GameTheme.movieChain.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount <= 2)
 
                     Button {
                         if playerCount < 8 {
+                            HapticManager.light()
                             playerCount += 1
                         }
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title)
-                            .foregroundStyle(playerCount < 8 ? .red : .gray)
+                            .foregroundStyle(playerCount < 8 ? GameTheme.movieChain.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount >= 8)
                 }
             }
-            .padding()
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .gameCard()
         }
     }
 
     // MARK: - Timer Section
 
     private var timerSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Timer")
-                .font(.headline)
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             HStack {
                 Text("\(viewModel.timerDuration) seconds per turn")
-                    .font(.title3)
+                    .font(AppTheme.Typography.body)
+                    .foregroundColor(AppTheme.deepCharcoal)
 
                 Spacer()
 
@@ -211,20 +207,20 @@ struct MovieChainSetupView: View {
                     }
                 }
                 .pickerStyle(.menu)
+                .tint(GameTheme.movieChain.accentColor)
             }
-            .padding()
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .gameCard()
         }
     }
 
     // MARK: - Player Names Section
 
     private var playerNamesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             HStack {
                 Text("Player Names")
-                    .font(.headline)
+                    .font(AppTheme.Typography.sectionHeader)
+                    .foregroundColor(AppTheme.deepCharcoal)
 
                 Spacer()
 
@@ -234,12 +230,12 @@ struct MovieChainSetupView: View {
                     }
                 } label: {
                     Image(systemName: showingPlayerNames ? "chevron.up" : "chevron.down")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppTheme.mediumGray)
                 }
             }
 
             if showingPlayerNames {
-                VStack(spacing: 8) {
+                VStack(spacing: AppTheme.Spacing.sm) {
                     ForEach(Array(viewModel.players.enumerated()), id: \.element.id) { index, player in
                         HStack {
                             Circle()
@@ -254,9 +250,7 @@ struct MovieChainSetupView: View {
                         }
                     }
                 }
-                .padding()
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .gameCard()
             }
         }
     }
@@ -264,23 +258,12 @@ struct MovieChainSetupView: View {
     // MARK: - Start Button
 
     private var startButton: some View {
-        Button {
+        PrimaryButton(title: "Start Game", icon: "play.fill") {
             viewModel.startGame()
-        } label: {
-            HStack {
-                Image(systemName: "play.fill")
-                Text("Start Game")
-            }
-            .font(.title2)
-            .fontWeight(.semibold)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(viewModel.isDatabaseReady ? Color.red : Color.gray)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
         .disabled(!viewModel.isDatabaseReady)
-        .padding(.top)
+        .opacity(viewModel.isDatabaseReady ? 1.0 : 0.5)
+        .padding(.top, AppTheme.Spacing.md)
     }
 }
 
@@ -293,20 +276,20 @@ struct GameModeCard: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 16) {
+            HStack(spacing: AppTheme.Spacing.md) {
                 Image(systemName: mode.iconName)
                     .font(.title2)
-                    .foregroundStyle(isSelected ? .white : .red)
+                    .foregroundStyle(isSelected ? .white : GameTheme.movieChain.accentColor)
                     .frame(width: 40)
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text(mode.name)
-                        .font(.headline)
-                        .foregroundStyle(isSelected ? .white : .primary)
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundStyle(isSelected ? .white : AppTheme.deepCharcoal)
 
                     Text(mode.description)
-                        .font(.caption)
-                        .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
+                        .font(AppTheme.Typography.caption)
+                        .foregroundStyle(isSelected ? .white.opacity(0.8) : AppTheme.mediumGray)
                 }
 
                 Spacer()
@@ -316,16 +299,13 @@ struct GameModeCard: View {
                         .foregroundStyle(.white)
                 }
             }
-            .padding()
-            .background(isSelected ? Color.red : Color.clear)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
-            )
+            .padding(AppTheme.Spacing.md)
+            .background(isSelected ? GameTheme.movieChain.accentColor : AppTheme.pureWhite)
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
+            .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
         }
         .buttonStyle(.plain)
+        .pressable()
     }
 }
 

@@ -4,7 +4,7 @@ struct GamePlayView: View {
     @Bindable var viewModel: CountryGameViewModel
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: AppTheme.Spacing.lg) {
             // Header with letter and change button
             HStack {
                 Button(action: {
@@ -16,7 +16,7 @@ struct GamePlayView: View {
                         Text("Pick another letter")
                             .font(.system(size: 16, weight: .semibold))
                     }
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppTheme.mediumGray)
                 }
 
                 Spacer()
@@ -24,12 +24,12 @@ struct GamePlayView: View {
                 if let letter = viewModel.selectedLetter {
                     Text(letter)
                         .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.blue)
-                        .padding(.horizontal, 24)
+                        .foregroundColor(GameTheme.countryLetter.accentColor)
+                        .padding(.horizontal, AppTheme.Spacing.lg)
                         .padding(.vertical, 10)
                         .background(
                             Capsule()
-                                .fill(Color.blue.opacity(0.12))
+                                .fill(GameTheme.countryLetter.mediumBackground)
                         )
                 }
             }
@@ -37,27 +37,27 @@ struct GamePlayView: View {
             .padding(.top)
 
             // Stats cards
-            HStack(spacing: 16) {
+            HStack(spacing: AppTheme.Spacing.md) {
                 StatCard(title: "Progress", value: "\(viewModel.foundCount)/\(viewModel.totalCountries)")
                 StatCard(title: "Remaining", value: "\(viewModel.remainingCount)")
             }
             .padding(.horizontal)
 
             // Guess input form
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                 Text("Country Guess")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Typography.cardTitle)
+                    .foregroundColor(AppTheme.mediumGray)
 
-                HStack(spacing: 12) {
+                HStack(spacing: AppTheme.Spacing.md) {
                     TextField("Start typing here...", text: $viewModel.currentGuess)
                         .textFieldStyle(.plain)
                         .padding()
                         .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
+                                .stroke(AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 16)
+                                    RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                                         .fill(Color(.systemBackground))
                                 )
                         )
@@ -71,26 +71,27 @@ struct GamePlayView: View {
                         viewModel.submitGuess()
                     }) {
                         Text("Submit")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(AppTheme.Typography.buttonLabel)
                             .foregroundColor(.white)
-                            .padding(.horizontal, 24)
+                            .padding(.horizontal, AppTheme.Spacing.lg)
                             .padding(.vertical, 14)
                             .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.blue)
+                                RoundedRectangle(cornerRadius: AppTheme.Radius.card)
+                                    .fill(GameTheme.countryLetter.accentColor)
                             )
                     }
+                    .pressable()
                 }
             }
             .padding(.horizontal)
 
             // Feedback message
-            HStack(spacing: 8) {
+            HStack(spacing: AppTheme.Spacing.sm) {
                 if !viewModel.feedbackMessage.isEmpty {
                     Image(systemName: feedbackIcon)
                         .foregroundColor(feedbackColor)
                     Text(viewModel.feedbackMessage)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(AppTheme.Typography.cardTitle)
                         .foregroundColor(feedbackColor)
                 }
             }
@@ -99,56 +100,33 @@ struct GamePlayView: View {
 
             // Guessed countries list
             ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 200))], spacing: 12) {
-                    ForEach(viewModel.guessedCountries) { country in
-                        HStack(spacing: 10) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 200))], spacing: AppTheme.Spacing.md) {
+                    ForEach(Array(viewModel.guessedCountries.enumerated()), id: \.element.id) { index, country in
+                        HStack(spacing: AppTheme.Spacing.sm) {
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
+                                .foregroundColor(GameTheme.countryLetter.accentColor)
                                 .font(.system(size: 18))
 
                             Text(country.name)
-                                .font(.system(size: 16, weight: .semibold))
+                                .font(AppTheme.Typography.cardTitle)
 
                             Spacer()
                         }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 14)
-                                .fill(Color.gray.opacity(0.1))
-                        )
+                        .gameCard()
+                        .staggeredAppear(index: index)
                     }
                 }
                 .padding(.horizontal)
             }
 
             // Action buttons
-            HStack(spacing: 16) {
-                Button(action: {
+            HStack(spacing: AppTheme.Spacing.md) {
+                SecondaryButton(title: "Hint", icon: "lightbulb.fill") {
                     viewModel.showHint()
-                }) {
-                    Text("💡 Hint")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.primary)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 14)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.gray.opacity(0.15))
-                        )
                 }
 
-                Button(action: {
+                SecondaryButton(title: "Done", icon: "checkmark") {
                     viewModel.finishGame()
-                }) {
-                    Text("Done")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.primary)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 14)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.gray.opacity(0.15))
-                        )
                 }
             }
             .padding(.horizontal)
@@ -168,7 +146,7 @@ struct GamePlayView: View {
         switch viewModel.feedbackType {
         case .success: return .green
         case .error: return .red
-        case .info: return .secondary
+        case .info: return AppTheme.mediumGray
         }
     }
 }
@@ -178,23 +156,16 @@ struct StatCard: View {
     let value: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Text(title)
-                .font(.system(size: 14))
-                .foregroundColor(.secondary)
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(AppTheme.mediumGray)
 
             Text(value)
-                .font(.system(size: 24, weight: .bold))
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.deepCharcoal)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(.systemBackground))
-                )
-        )
+        .gameCard()
     }
 }
