@@ -6,38 +6,28 @@ struct MovieChainGameOverView: View {
     let winner: MovieChainPlayer?
 
     var body: some View {
-        ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.red.opacity(0.3), Color.orange.opacity(0.3)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+        ScrollView {
+            VStack(spacing: AppTheme.Spacing.lg) {
+                // Trophy/Winner section
+                winnerSection
 
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Trophy/Winner section
-                    winnerSection
+                // Final standings
+                standingsSection
 
-                    // Final standings
-                    standingsSection
+                // Game stats
+                gameStatsSection
 
-                    // Game stats
-                    gameStatsSection
-
-                    // Action buttons
-                    actionButtons
-                }
-                .padding()
+                // Action buttons
+                actionButtons
             }
+            .padding(AppTheme.Spacing.md)
         }
     }
 
     // MARK: - Winner Section
 
     private var winnerSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             // Trophy icon
             ZStack {
                 Circle()
@@ -50,36 +40,37 @@ struct MovieChainGameOverView: View {
             }
 
             if let winner = winner {
-                VStack(spacing: 8) {
+                VStack(spacing: AppTheme.Spacing.sm) {
                     Text("Winner!")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
+                        .font(AppTheme.Typography.sectionHeader)
+                        .foregroundColor(AppTheme.mediumGray)
 
-                    HStack(spacing: 12) {
+                    HStack(spacing: AppTheme.Spacing.md) {
                         Circle()
                             .fill(winner.color)
                             .frame(width: 24, height: 24)
 
                         Text(winner.name)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
+                            .font(AppTheme.Typography.hero)
+                            .foregroundColor(AppTheme.deepCharcoal)
                     }
                 }
             } else {
                 Text("Game Over!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(AppTheme.Typography.hero)
+                    .foregroundColor(AppTheme.deepCharcoal)
             }
         }
-        .padding(.top)
+        .padding(.top, AppTheme.Spacing.lg)
     }
 
     // MARK: - Standings Section
 
     private var standingsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Final Standings")
-                .font(.headline)
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             ForEach(Array(sortedPlayers.enumerated()), id: \.element.id) { index, player in
                 PlayerStandingRow(
@@ -88,17 +79,15 @@ struct MovieChainGameOverView: View {
                     gameMode: viewModel.gameMode,
                     isWinner: player.id == winner?.id
                 )
+                .staggeredAppear(index: index)
             }
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .gameCard()
     }
 
     private var sortedPlayers: [MovieChainPlayer] {
         switch viewModel.gameMode {
         case .classic:
-            // Sort by lives remaining (higher is better), then by links contributed
             return viewModel.players.sorted {
                 if $0.lives != $1.lives {
                     return $0.lives > $1.lives
@@ -106,10 +95,8 @@ struct MovieChainGameOverView: View {
                 return $0.linksContributed > $1.linksContributed
             }
         case .timed:
-            // Sort by score
             return viewModel.players.sorted { $0.score > $1.score }
         case .endless:
-            // Sort by links contributed
             return viewModel.players.sorted { $0.linksContributed > $1.linksContributed }
         }
     }
@@ -117,14 +104,15 @@ struct MovieChainGameOverView: View {
     // MARK: - Game Stats Section
 
     private var gameStatsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Game Statistics")
-                .font(.headline)
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             LazyVGrid(columns: [
                 GridItem(.flexible()),
                 GridItem(.flexible())
-            ], spacing: 16) {
+            ], spacing: AppTheme.Spacing.md) {
                 GameStatCard(
                     icon: "link",
                     title: "Longest Chain",
@@ -150,14 +138,11 @@ struct MovieChainGameOverView: View {
                 )
             }
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .gameCard()
     }
 
     private var countMovies: Int {
         viewModel.players.reduce(0) { total, player in
-            // Rough estimate: half of links are movies
             total + (player.linksContributed / 2)
         }
     }
@@ -171,31 +156,16 @@ struct MovieChainGameOverView: View {
     // MARK: - Action Buttons
 
     private var actionButtons: some View {
-        VStack(spacing: 12) {
-            Button {
+        VStack(spacing: AppTheme.Spacing.md) {
+            PrimaryButton(title: "Play Again", icon: "arrow.clockwise") {
                 viewModel.startGame()
-            } label: {
-                HStack {
-                    Image(systemName: "arrow.clockwise")
-                    Text("Play Again")
-                }
-                .font(.headline)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.red)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
             }
 
-            Button {
+            SecondaryButton(title: "Back to Setup", icon: "gearshape") {
                 viewModel.returnToSetup()
-            } label: {
-                Text("Back to Setup")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
             }
         }
-        .padding(.top)
+        .padding(.top, AppTheme.Spacing.md)
     }
 }
 
@@ -208,7 +178,7 @@ struct PlayerStandingRow: View {
     let isWinner: Bool
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: AppTheme.Spacing.md) {
             // Rank
             ZStack {
                 Circle()
@@ -233,8 +203,8 @@ struct PlayerStandingRow: View {
                 .frame(width: 16, height: 16)
 
             Text(player.name)
-                .font(.subheadline)
-                .fontWeight(isWinner ? .bold : .regular)
+                .font(AppTheme.Typography.cardTitle)
+                .foregroundColor(isWinner ? AppTheme.deepCharcoal : AppTheme.deepCharcoal)
 
             Spacer()
 
@@ -251,23 +221,23 @@ struct PlayerStandingRow: View {
                     }
                 case .timed:
                     Text("\(player.score) pts")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(GameTheme.movieChain.accentColor)
                 case .endless:
                     Text("\(player.linksContributed) links")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(GameTheme.movieChain.accentColor)
                 }
 
                 Text("\(player.linksContributed) contributed")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(AppTheme.mediumGray)
             }
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
+        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.md)
         .background(isWinner ? player.color.opacity(0.1) : Color.clear)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.small))
     }
 
     private var rankColor: Color {
@@ -275,7 +245,7 @@ struct PlayerStandingRow: View {
         case 1: return .yellow
         case 2: return .gray
         case 3: return .brown
-        default: return .secondary
+        default: return AppTheme.mediumGray
         }
     }
 
@@ -297,24 +267,24 @@ struct GameStatCard: View {
     let value: String
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(.red)
+                .foregroundStyle(GameTheme.movieChain.accentColor)
 
             Text(value)
-                .font(.title2)
-                .fontWeight(.bold)
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(AppTheme.mediumGray)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.white.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(AppTheme.Spacing.md)
+        .background(GameTheme.movieChain.lightBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
     }
 }
 

@@ -26,8 +26,9 @@ struct Name5GameView: View {
                     GameOverView(viewModel: viewModel)
                 }
             }
-            .navigationTitle("Name 5")
+            .navigationTitle(viewModel.gamePhase == .setup ? "" : "Name 5")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(viewModel.gamePhase == .setup ? .hidden : .automatic, for: .navigationBar)
             .toolbar {
                 if viewModel.gamePhase != .setup {
                     ToolbarItem(placement: .navigationBarTrailing) {

@@ -6,19 +6,23 @@ struct MovieChainRootView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        Group {
-            switch viewModel.gamePhase {
-            case .setup:
-                MovieChainSetupView(viewModel: viewModel)
+        ZStack {
+            GameBackground(gameTheme: .movieChain)
 
-            case .playing:
-                MovieChainGameView(viewModel: viewModel)
+            Group {
+                switch viewModel.gamePhase {
+                case .setup:
+                    MovieChainSetupView(viewModel: viewModel)
 
-            case .chainBroken(let reason):
-                ChainBreakView(viewModel: viewModel, reason: reason)
+                case .playing:
+                    MovieChainGameView(viewModel: viewModel)
 
-            case .gameOver(let winner):
-                MovieChainGameOverView(viewModel: viewModel, winner: winner)
+                case .chainBroken(let reason):
+                    ChainBreakView(viewModel: viewModel, reason: reason)
+
+                case .gameOver(let winner):
+                    MovieChainGameOverView(viewModel: viewModel, winner: winner)
+                }
             }
         }
         .navigationBarBackButtonHidden(viewModel.gamePhase != .setup)

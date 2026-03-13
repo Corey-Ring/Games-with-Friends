@@ -6,7 +6,7 @@ struct MovieChainGame: GameDefinition {
     let name = "Movie Chain"
     let description = "Connect movies through their actors"
     let iconName = "film.stack"
-    let accentColor = Color.red
+    let accentColor = AppTheme.warmGold
 
     func makeRootView() -> AnyView {
         AnyView(MovieChainRootView())

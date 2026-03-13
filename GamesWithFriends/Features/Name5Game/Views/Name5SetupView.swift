@@ -10,14 +10,15 @@ struct Name5SetupView: View {
             ScrollView {
                 VStack(spacing: AppTheme.Spacing.lg) {
                     // Header
-                    VStack(spacing: AppTheme.Spacing.sm) {
+                    VStack(spacing: AppTheme.Spacing.xs) {
                         Image(systemName: "hand.raised.fingers.spread.fill")
                             .font(.system(size: 60))
                             .foregroundStyle(GameTheme.name5.accentColor)
 
-                        Text("Name 5")
+                        Text("Name Five")
                             .font(AppTheme.Typography.hero)
                             .fontWeight(.bold)
+                            .foregroundColor(GameTheme.name5.accentColor)
 
                         Text("Race against the clock to name 5 things!")
                             .font(AppTheme.Typography.body)
@@ -109,16 +110,30 @@ struct Name5SetupView: View {
 
                         if viewModel.timerEnabled {
                             VStack(spacing: AppTheme.Spacing.md) {
-                                Picker("Timer Duration", selection: Binding(
-                                    get: { viewModel.timerDuration },
-                                    set: { viewModel.updateConfiguration(duration: $0) }
-                                )) {
-                                    Text("15s").tag(15)
-                                    Text("30s").tag(30)
-                                    Text("45s").tag(45)
-                                    Text("60s").tag(60)
+                                HStack(spacing: AppTheme.Spacing.sm) {
+                                    ForEach([15, 30, 45, 60], id: \.self) { duration in
+                                        Button {
+                                            viewModel.updateConfiguration(duration: duration)
+                                        } label: {
+                                            Text("\(duration)s")
+                                                .font(AppTheme.Typography.body)
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(viewModel.timerDuration == duration ? .white : AppTheme.deepCharcoal)
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.vertical, 10)
+                                                .background(
+                                                    Capsule()
+                                                        .fill(viewModel.timerDuration == duration ? GameTheme.name5.accentColor : AppTheme.mediumGray.opacity(0.12))
+                                                )
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
                                 }
-                                .pickerStyle(.segmented)
+                                .padding(8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                                        .fill(AppTheme.deepCharcoal.opacity(0.06))
+                                )
 
                                 Text(timerDescription(for: viewModel.timerDuration))
                                     .font(AppTheme.Typography.caption)
@@ -161,14 +176,35 @@ struct Name5SetupView: View {
                             Text("\(viewModel.playerCount) \(viewModel.playerCount == 1 ? "Player" : "Players")")
                                 .font(.title3)
                                 .fontWeight(.semibold)
-                            Spacer()
-                        }
+                                .foregroundColor(AppTheme.deepCharcoal)
 
-                        Stepper("", value: Binding(
-                            get: { viewModel.playerCount },
-                            set: { viewModel.updateConfiguration(players: $0) }
-                        ), in: 1...20)
-                        .labelsHidden()
+                            Spacer()
+
+                            HStack(spacing: AppTheme.Spacing.md) {
+                                Button {
+                                    if viewModel.playerCount > 1 {
+                                        viewModel.updateConfiguration(players: viewModel.playerCount - 1)
+                                    }
+                                } label: {
+                                    Image(systemName: "minus.circle.fill")
+                                        .font(.title)
+                                        .foregroundStyle(viewModel.playerCount > 1 ? GameTheme.name5.accentColor : AppTheme.mediumGray)
+                                }
+                                .disabled(viewModel.playerCount <= 1)
+
+                                Button {
+                                    if viewModel.playerCount < 20 {
+                                        viewModel.updateConfiguration(players: viewModel.playerCount + 1)
+                                    }
+                                } label: {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.title)
+                                        .foregroundStyle(viewModel.playerCount < 20 ? GameTheme.name5.accentColor : AppTheme.mediumGray)
+                                }
+                                .disabled(viewModel.playerCount >= 20)
+                            }
+                        }
+                        .gameCard()
                     }
 
                     // Available Prompts Info

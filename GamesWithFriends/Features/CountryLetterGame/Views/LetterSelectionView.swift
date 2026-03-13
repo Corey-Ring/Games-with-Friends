@@ -6,34 +6,36 @@ struct LetterSelectionView: View {
     let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 6)
 
     var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 12) {
+        VStack(spacing: AppTheme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                 Text("Country Letter Challenge")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(AppTheme.Typography.hero)
+                    .foregroundColor(AppTheme.deepCharcoal)
 
                 Text("Select a letter to see how many countries you can name before tapping \"Done\".")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                    .font(AppTheme.Typography.body)
+                    .foregroundColor(AppTheme.mediumGray)
             }
-            .padding(.top, 20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, AppTheme.Spacing.lg)
 
-            LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), id: \.self) { letter in
+            LazyVGrid(columns: columns, spacing: AppTheme.Spacing.md) {
+                ForEach(Array(Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ").enumerated()), id: \.element) { index, letter in
                     LetterButton(
                         letter: String(letter),
                         isEnabled: CountriesData.availableLetters.contains(String(letter))
                     ) {
+                        HapticManager.selection()
                         viewModel.selectLetter(String(letter))
                     }
+                    .staggeredAppear(index: index)
                 }
             }
             .padding(.horizontal)
 
             Spacer()
         }
-        .padding()
+        .padding(AppTheme.Spacing.md)
     }
 }
 
@@ -49,11 +51,12 @@ struct LetterButton: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
                 .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(isEnabled ? Color.blue.opacity(0.1) : Color.gray.opacity(0.1))
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                        .fill(isEnabled ? GameTheme.countryLetter.lightBackground : AppTheme.mediumGray.opacity(0.1))
                 )
-                .foregroundColor(isEnabled ? .primary : .gray)
+                .foregroundColor(isEnabled ? AppTheme.deepCharcoal : AppTheme.mediumGray)
         }
         .disabled(!isEnabled)
+        .pressable()
     }
 }

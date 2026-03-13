@@ -6,94 +6,85 @@ struct ChainBreakView: View {
     let reason: ChainBreakReason
 
     var body: some View {
-        ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.red.opacity(0.3), Color.orange.opacity(0.2)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+        VStack(spacing: AppTheme.Spacing.lg) {
+            Spacer()
 
-            VStack(spacing: 24) {
-                Spacer()
+            // Chain break icon
+            ZStack {
+                Circle()
+                    .fill(GameTheme.movieChain.accentColor.opacity(0.2))
+                    .frame(width: 120, height: 120)
 
-                // Chain break icon
-                ZStack {
-                    Circle()
-                        .fill(Color.red.opacity(0.2))
-                        .frame(width: 120, height: 120)
+                Image(systemName: "link.badge.plus")
+                    .font(.system(size: 50))
+                    .foregroundStyle(GameTheme.movieChain.accentColor)
+                    .symbolEffect(.bounce, value: true)
+            }
 
-                    Image(systemName: "link.badge.plus")
-                        .font(.system(size: 50))
-                        .foregroundStyle(.red)
-                        .symbolEffect(.bounce, value: true)
-                }
+            // Message
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+                Text("Chain Broken!")
+                    .font(AppTheme.Typography.hero)
+                    .foregroundColor(AppTheme.deepCharcoal)
 
-                // Message
-                VStack(spacing: 8) {
-                    Text("Chain Broken!")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                Text(reason.message)
+                    .font(AppTheme.Typography.body)
+                    .foregroundColor(AppTheme.mediumGray)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
 
-                    Text(reason.message)
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                }
+            // Player who broke the chain
+            HStack(spacing: AppTheme.Spacing.md) {
+                Circle()
+                    .fill(viewModel.currentPlayer.color)
+                    .frame(width: 20, height: 20)
 
-                // Player who broke the chain
-                HStack(spacing: 12) {
-                    Circle()
-                        .fill(viewModel.currentPlayer.color)
-                        .frame(width: 20, height: 20)
+                Text(viewModel.currentPlayer.name)
+                    .font(AppTheme.Typography.cardTitle)
+                    .foregroundColor(AppTheme.deepCharcoal)
 
-                    Text(viewModel.currentPlayer.name)
-                        .font(.title3)
-                        .fontWeight(.medium)
+                if viewModel.gameMode.hasLives {
+                    Text("lost a life")
+                        .foregroundColor(AppTheme.mediumGray)
 
-                    if viewModel.gameMode.hasLives {
-                        Text("lost a life")
-                            .foregroundStyle(.secondary)
-
-                        HStack(spacing: 2) {
-                            ForEach(0..<viewModel.gameMode.defaultLives, id: \.self) { index in
-                                Image(systemName: index < viewModel.currentPlayer.lives ? "heart.fill" : "heart")
-                                    .foregroundStyle(.red)
-                                    .font(.caption)
-                            }
+                    HStack(spacing: 2) {
+                        ForEach(0..<viewModel.gameMode.defaultLives, id: \.self) { index in
+                            Image(systemName: index < viewModel.currentPlayer.lives ? "heart.fill" : "heart")
+                                .foregroundStyle(.red)
+                                .font(.caption)
                         }
                     }
                 }
-                .padding()
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-
-                // Chain stats
-                chainStatsSection
-
-                Spacer()
-
-                // Action buttons
-                actionButtons
             }
-            .padding()
+            .gameCard()
+            .padding(.horizontal)
+
+            // Chain stats
+            chainStatsSection
+                .padding(.horizontal)
+
+            Spacer()
+
+            // Action buttons
+            actionButtons
+                .padding(.horizontal)
+                .padding(.bottom, AppTheme.Spacing.lg)
         }
     }
 
     // MARK: - Chain Stats Section
 
     private var chainStatsSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Text("Chain Length: \(viewModel.chain.count)")
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             if viewModel.chain.count > 1 {
                 // Show the chain that was built
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
+                    HStack(spacing: AppTheme.Spacing.sm) {
                         ForEach(viewModel.chain) { link in
                             MiniChainLinkView(link: link)
                         }
@@ -102,7 +93,7 @@ struct ChainBreakView: View {
                 }
             }
 
-            HStack(spacing: 24) {
+            HStack(spacing: AppTheme.Spacing.lg) {
                 MovieChainStatBox(
                     title: "Longest Chain",
                     value: "\(viewModel.longestChainThisGame)",
@@ -116,65 +107,33 @@ struct ChainBreakView: View {
                 )
             }
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .gameCard()
     }
 
     // MARK: - Action Buttons
 
     private var actionButtons: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: AppTheme.Spacing.md) {
             // Check if game should end (only 1 player left in classic mode)
             if viewModel.gameMode == .classic && viewModel.activePlayers.count <= 1 {
-                Button {
+                PrimaryButton(title: "See Results", icon: "flag.checkered") {
                     viewModel.endGame()
-                } label: {
-                    HStack {
-                        Image(systemName: "flag.checkered")
-                        Text("See Results")
-                    }
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.red)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             } else {
                 // Continue with new chain
-                Button {
+                PrimaryButton(title: "Start New Chain", icon: "arrow.clockwise") {
                     viewModel.startNewChain()
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.clockwise")
-                        Text("Start New Chain")
-                    }
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.red)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
 
                 if viewModel.gameMode == .endless {
-                    Button {
+                    SecondaryButton(title: "End Game", icon: "flag.checkered") {
                         viewModel.endGame()
-                    } label: {
-                        Text("End Game")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
                     }
                 }
             }
 
-            Button {
+            SecondaryButton(title: "Quit to Menu", icon: "house") {
                 viewModel.returnToSetup()
-            } label: {
-                Text("Quit to Menu")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -186,10 +145,10 @@ struct MiniChainLinkView: View {
     let link: ChainLink
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             ZStack {
                 Circle()
-                    .fill(link.isMovie ? Color.red : Color.blue)
+                    .fill(link.isMovie ? GameTheme.movieChain.accentColor : AppTheme.deepCharcoal)
                     .frame(width: 36, height: 36)
 
                 Image(systemName: link.isMovie ? "film" : "person.fill")
@@ -198,7 +157,8 @@ struct MiniChainLinkView: View {
             }
 
             Text(shortName)
-                .font(.caption2)
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(AppTheme.mediumGray)
                 .lineLimit(1)
                 .frame(width: 60)
         }
@@ -221,18 +181,18 @@ struct MovieChainStatBox: View {
     let icon: String
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(.red)
+                .foregroundStyle(GameTheme.movieChain.accentColor)
 
             Text(value)
-                .font(.title)
-                .fontWeight(.bold)
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(AppTheme.mediumGray)
         }
         .frame(maxWidth: .infinity)
     }
