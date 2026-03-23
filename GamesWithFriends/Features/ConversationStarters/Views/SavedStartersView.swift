@@ -91,8 +91,8 @@ struct SavedStarterRow: View {
                         .font(AppTheme.Typography.caption)
                         .fontWeight(.medium)
                 }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
+                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .background(categoryColor.opacity(0.2))
                 .foregroundColor(categoryColor)
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
@@ -129,7 +129,7 @@ struct SavedStarterRow: View {
                 .tint(.red)
             }
         }
-        .padding(.vertical, 5)
+        .padding(.vertical, AppTheme.Spacing.xs)
     }
 
     private var categoryColor: Color {

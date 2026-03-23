@@ -26,7 +26,7 @@ struct GamePlayView: View {
                         .font(AppTheme.Typography.sectionHeader)
                         .foregroundColor(GameTheme.countryLetter.accentColor)
                         .padding(.horizontal, AppTheme.Spacing.lg)
-                        .padding(.vertical, 10)
+                        .padding(.vertical, AppTheme.Spacing.sm)
                         .background(
                             Capsule()
                                 .fill(GameTheme.countryLetter.mediumBackground)
@@ -58,7 +58,7 @@ struct GamePlayView: View {
                                 .stroke(AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
                                 .background(
                                     RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                                        .fill(Color(.systemBackground))
+                                        .fill(AppTheme.pureWhite)
                                 )
                         )
                         .onSubmit {
@@ -74,7 +74,7 @@ struct GamePlayView: View {
                             .font(AppTheme.Typography.buttonLabel)
                             .foregroundColor(.white)
                             .padding(.horizontal, AppTheme.Spacing.lg)
-                            .padding(.vertical, 14)
+                            .padding(.vertical, AppTheme.Spacing.md)
                             .background(
                                 RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                                     .fill(GameTheme.countryLetter.accentColor)

@@ -66,7 +66,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color(.systemBackground))
+                        .background(AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -95,11 +95,11 @@ struct HomeView: View {
                             Text(vibeLevelDescription(for: viewModel.settings.vibeLevel))
                                 .font(AppTheme.Typography.secondary)
                                 .foregroundColor(.secondary)
-                                .padding(.top, 5)
+                                .padding(.top, AppTheme.Spacing.xs)
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color(.systemBackground))
+                        .background(AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -128,7 +128,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color(.systemBackground))
+                        .background(AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -157,7 +157,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color(.systemBackground))
+                        .background(AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -185,7 +185,7 @@ struct HomeView: View {
                             .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         }
                         .shadow(radius: 5)
-                        .padding(.bottom, 20)
+                        .padding(.bottom, AppTheme.Spacing.lg)
                     }
                     .padding(.horizontal)
                 }

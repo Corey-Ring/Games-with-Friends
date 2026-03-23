@@ -27,7 +27,7 @@ struct CompetitionHomeView: View {
                         .font(AppTheme.Typography.secondary)
                 }
                 .padding(.top, AppTheme.Spacing.sm)
-                .padding(.bottom, 20)
+                .padding(.bottom, AppTheme.Spacing.lg)
             }
             .padding()
         }
@@ -115,7 +115,7 @@ struct CompetitionHomeView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
     }
@@ -133,10 +133,10 @@ struct CompetitionHomeView: View {
                         Text("\(score)")
                             .font(AppTheme.Typography.secondary.weight(.medium))
                             .padding(.horizontal, AppTheme.Spacing.md)
-                            .padding(.vertical, 10)
+                            .padding(.vertical, AppTheme.Spacing.sm)
                             .background {
                                 RoundedRectangle(cornerRadius: 10)
-                                    .fill(viewModel.settings.targetScore == score ? GameTheme.vibeCheck.accentColor : Color(.systemGray5))
+                                    .fill(viewModel.settings.targetScore == score ? GameTheme.vibeCheck.accentColor : AppTheme.warmLinen)
                             }
                             .foregroundStyle(viewModel.settings.targetScore == score ? .white : .primary)
                     }
@@ -147,7 +147,7 @@ struct CompetitionHomeView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
     }
@@ -200,7 +200,7 @@ struct CompetitionPlayerSetupView: View {
 
                 // Start button
                 startButton
-                    .padding(.bottom, 20)
+                    .padding(.bottom, AppTheme.Spacing.lg)
             }
             .padding()
         }
@@ -268,7 +268,7 @@ struct PlayerNameCard: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
     }
@@ -348,7 +348,7 @@ struct CompetitionHowToPlayView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(Color(.systemGray6))
+                .fill(AppTheme.warmLinen)
         }
     }
 

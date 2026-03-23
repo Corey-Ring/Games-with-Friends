@@ -58,8 +58,8 @@ struct AchievementsView: View {
                 }
                 .padding(.horizontal)
             }
-            .padding(.vertical, 12)
-            .background(Color(.systemBackground))
+            .padding(.vertical, AppTheme.Spacing.sm)
+            .background(AppTheme.pureWhite)
 
             // Progress Header
             VStack(spacing: 12) {

@@ -73,12 +73,12 @@ struct TeamGuessingView: View {
                     .minimumScaleFactor(0.8)
             }
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
         }
     }
@@ -93,12 +93,12 @@ struct TeamGuessingView: View {
                 .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, AppTheme.Spacing.sm)
         .padding(.vertical, AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color(.systemGray6))
+                .fill(AppTheme.warmLinen)
         }
     }
 
@@ -112,7 +112,7 @@ struct TeamGuessingView: View {
                     .fontWeight(.bold)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
+            .padding(.vertical, AppTheme.Spacing.md)
             .background {
                 LinearGradient(
                     colors: [.orange, .red],

@@ -61,7 +61,7 @@ struct CompetitionScoreboardView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -131,7 +131,7 @@ struct CompetitionPlayerScoreRow: View {
                             .frame(width: 32, height: 32)
 
                         Image(systemName: "crown.fill")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.caption)
                             .foregroundStyle(.white)
                     } else if rank == 2 {
                         Circle()

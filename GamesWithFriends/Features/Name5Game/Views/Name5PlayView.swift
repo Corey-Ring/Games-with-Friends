@@ -125,7 +125,7 @@ struct PromptCard: View {
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, AppTheme.Spacing.md)
-                .padding(.vertical, 6)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .background(Capsule().fill(GameTheme.name5.accentColor))
 
                 HStack(spacing: 3) {
@@ -140,7 +140,7 @@ struct PromptCard: View {
                         .foregroundColor(.white)
                 }
                 .padding(.horizontal, AppTheme.Spacing.md)
-                .padding(.vertical, 6)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .background(Capsule().fill(difficultyColor))
             }
 
@@ -272,7 +272,7 @@ struct PausedButtons: View {
                 }
                 .foregroundColor(AppTheme.error)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .padding(.vertical, AppTheme.Spacing.md)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                         .fill(AppTheme.error.opacity(0.15))

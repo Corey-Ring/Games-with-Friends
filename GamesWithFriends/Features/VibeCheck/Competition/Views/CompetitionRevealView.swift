@@ -95,7 +95,7 @@ struct CompetitionRevealView: View {
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -158,7 +158,7 @@ struct CompetitionRevealView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -217,7 +217,7 @@ struct CompetitionRevealSliderView: View {
                 ZStack(alignment: .top) {
                     // Background track
                     RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(Color(.systemGray5))
+                        .fill(AppTheme.warmLinen)
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
 
@@ -352,7 +352,7 @@ struct CompetitionResultRow: View {
                             Text("CLOSEST")
                                 .font(AppTheme.Typography.tabLabel.weight(.bold))
                                 .foregroundStyle(.white)
-                                .padding(.horizontal, 6)
+                                .padding(.horizontal, AppTheme.Spacing.xs)
                                 .padding(.vertical, 2)
                                 .background {
                                     Capsule()
@@ -378,8 +378,8 @@ struct CompetitionResultRow: View {
                         .font(AppTheme.Typography.subsectionHeader.weight(.bold))
                         .foregroundStyle(result.zone.color)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .background {
                     Capsule()
                         .fill(result.zone.color.opacity(0.15))
@@ -396,7 +396,7 @@ struct CompetitionResultRow: View {
                         .foregroundStyle(.secondary)
                         .italic()
                 }
-                .padding(.horizontal, 12)
+                .padding(.horizontal, AppTheme.Spacing.sm)
                 .padding(.vertical, AppTheme.Spacing.sm)
                 .frame(maxWidth: .infinity)
                 .background {
@@ -408,7 +408,7 @@ struct CompetitionResultRow: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(Color(.systemGray6))
+                .fill(AppTheme.warmLinen)
         }
     }
 
@@ -420,7 +420,7 @@ struct CompetitionResultRow: View {
                     .frame(width: 32, height: 32)
 
                 Image(systemName: "crown.fill")
-                    .font(.system(size: 14))
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.white)
             } else if result.rank == 2 {
                 Circle()

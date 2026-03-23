@@ -40,7 +40,7 @@ struct VibeCheckHomeView: View {
                         .font(AppTheme.Typography.secondary)
                 }
                 .padding(.top, AppTheme.Spacing.sm)
-                .padding(.bottom, 20)
+                .padding(.bottom, AppTheme.Spacing.lg)
             }
             .padding()
         }
@@ -121,7 +121,7 @@ struct VibeCheckHomeView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
     }
@@ -194,7 +194,7 @@ struct VibeCheckHomeView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
     }
@@ -245,7 +245,7 @@ struct VibeCheckHomeView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
     }
@@ -269,7 +269,7 @@ struct VibeCheckHomeView: View {
                         Text("\(score)")
                             .font(AppTheme.Typography.secondary.weight(.medium))
                             .padding(.horizontal, AppTheme.Spacing.md)
-                            .padding(.vertical, 10)
+                            .padding(.vertical, AppTheme.Spacing.sm)
                             .background {
                                 RoundedRectangle(cornerRadius: 10)
                                     .fill(currentScore == score ? GameTheme.vibeCheck.accentColor : AppTheme.warmLinen)
@@ -283,7 +283,7 @@ struct VibeCheckHomeView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
     }
@@ -351,7 +351,7 @@ struct VibeCheckGameModeCard: View {
             }
             .padding()
             .background(isSelected ? GameTheme.vibeCheck.accentColor : Color.clear)
-            .background(Color(.systemBackground))
+            .background(AppTheme.pureWhite)
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
             .overlay(
@@ -386,7 +386,7 @@ struct TeamSetupView: View {
 
                 // Start button
                 startButton
-                    .padding(.bottom, 20)
+                    .padding(.bottom, AppTheme.Spacing.lg)
             }
             .padding()
         }
@@ -465,7 +465,7 @@ struct TeamSetupCard: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
     }
@@ -561,7 +561,7 @@ struct HowToPlayView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(Color(.systemGray6))
+                .fill(AppTheme.warmLinen)
         }
     }
 

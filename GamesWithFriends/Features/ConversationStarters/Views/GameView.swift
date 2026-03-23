@@ -109,7 +109,7 @@ struct GameView: View {
                             .disabled(!viewModel.hasNext)
                             .accessibilityLabel("Next conversation starter")
                         }
-                        .padding(.bottom, 30)
+                        .padding(.bottom, AppTheme.Spacing.xl)
                     }
                 } else {
                     allDoneView
@@ -185,8 +185,8 @@ struct GameView: View {
                 .foregroundColor(viewModel.timeRemaining < 10 ? AppTheme.error : .primary)
                 .monospacedDigit()
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.xs)
         .background(AppTheme.pureWhite.opacity(0.95))
         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         .accessibilityElement(children: .combine)
@@ -269,8 +269,8 @@ struct CardView: View {
                         .font(AppTheme.Typography.caption)
                         .fontWeight(.medium)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .background(categoryColor.opacity(0.2))
                 .foregroundColor(categoryColor)
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
@@ -295,7 +295,7 @@ struct CardView: View {
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.primary)
-                .padding(.horizontal, 30)
+                .padding(.horizontal, AppTheme.Spacing.xl)
 
             Spacer()
 
@@ -334,7 +334,7 @@ struct CardView: View {
         .background(AppTheme.pureWhite)
         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.large))
         .shadow(radius: 10)
-        .padding(.horizontal, 30)
+        .padding(.horizontal, AppTheme.Spacing.xl)
     }
 
     private var categoryColor: Color {

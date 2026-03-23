@@ -262,7 +262,7 @@ struct ContinueButtons: View {
                     }
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, AppTheme.Spacing.md)
                     .background(
                         RoundedRectangle(cornerRadius: 14)
                             .fill(GameTheme.name5.accentColor)

@@ -65,8 +65,8 @@ struct CompetitionPassDeviceView: View {
                 }
                 .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.white)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
+                .padding(.horizontal, AppTheme.Spacing.lg)
+                .padding(.vertical, AppTheme.Spacing.sm)
                 .background {
                     Capsule()
                         .fill(role.color)
@@ -122,7 +122,7 @@ struct CompetitionPassDeviceView: View {
         .padding()
         .background {
             LinearGradient(
-                colors: [role.color.opacity(0.1), Color(.systemBackground)],
+                colors: [role.color.opacity(0.1), AppTheme.pureWhite],
                 startPoint: .top,
                 endPoint: .bottom
             )

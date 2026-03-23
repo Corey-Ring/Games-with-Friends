@@ -95,7 +95,7 @@ struct RevealView: View {
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -158,7 +158,7 @@ struct RevealView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -219,8 +219,8 @@ struct TeamResultRow: View {
                     .font(AppTheme.Typography.subsectionHeader.weight(.bold))
                     .foregroundStyle(result.zone.color)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
+            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .background {
                 Capsule()
                     .fill(result.zone.color.opacity(0.15))
@@ -229,7 +229,7 @@ struct TeamResultRow: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(Color(.systemGray6))
+                .fill(AppTheme.warmLinen)
         }
     }
 

@@ -173,7 +173,7 @@ struct CastingDirectorSetupView: View {
                                 .foregroundStyle(viewModel.difficulty == diff ? .white.opacity(0.8) : AppTheme.mediumGray)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, AppTheme.Spacing.sm)
                         .background(viewModel.difficulty == diff ? GameTheme.castingDirector.accentColor : AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                         .overlay(
@@ -211,7 +211,7 @@ struct CastingDirectorSetupView: View {
                                     .foregroundStyle(viewModel.era == era ? .white : AppTheme.deepCharcoal)
                             }
                             .frame(width: 80)
-                            .padding(.vertical, 12)
+                            .padding(.vertical, AppTheme.Spacing.sm)
                             .background(viewModel.era == era ? GameTheme.castingDirector.accentColor : AppTheme.pureWhite)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(

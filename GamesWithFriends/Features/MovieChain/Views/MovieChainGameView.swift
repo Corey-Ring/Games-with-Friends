@@ -92,7 +92,7 @@ struct MovieChainGameView: View {
         }
         .foregroundStyle(timerColor)
         .padding(.horizontal, AppTheme.Spacing.md)
-        .padding(.vertical, 6)
+        .padding(.vertical, AppTheme.Spacing.xs)
         .background(timerColor.opacity(0.2))
         .clipShape(Capsule())
         .accessibilityElement(children: .combine)
@@ -442,8 +442,8 @@ struct PlayerStatusBadge: View {
                     .foregroundStyle(GameTheme.movieChain.accentColor)
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.xs)
         .background(isCurrentPlayer ? player.color.opacity(0.3) : AppTheme.pureWhite.opacity(0.8))
         .clipShape(Capsule())
         .overlay(

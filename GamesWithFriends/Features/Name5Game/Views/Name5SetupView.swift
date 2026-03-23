@@ -120,7 +120,7 @@ struct Name5SetupView: View {
                                                 .fontWeight(.semibold)
                                                 .foregroundColor(viewModel.timerDuration == duration ? .white : AppTheme.deepCharcoal)
                                                 .frame(maxWidth: .infinity)
-                                                .padding(.vertical, 10)
+                                                .padding(.vertical, AppTheme.Spacing.sm)
                                                 .background(
                                                     Capsule()
                                                         .fill(viewModel.timerDuration == duration ? GameTheme.name5.accentColor : AppTheme.mediumGray.opacity(0.12))
@@ -272,7 +272,7 @@ struct DifficultyToggle: View {
                     .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
+            .padding(.vertical, AppTheme.Spacing.md)
             .background(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                     .fill(isSelected ? selectedFill : AppTheme.pureWhite)
@@ -374,7 +374,7 @@ struct CategorySelectionCard: View {
                     .minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
+            .padding(.vertical, AppTheme.Spacing.sm)
             .padding(.horizontal, AppTheme.Spacing.sm)
             .background(
                 RoundedRectangle(cornerRadius: 10)

@@ -65,7 +65,7 @@ struct ScoreboardView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -141,7 +141,7 @@ struct TeamScoreRow: View {
                             .frame(width: 32, height: 32)
 
                         Image(systemName: "crown.fill")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.caption)
                             .foregroundStyle(.white)
                     } else {
                         Circle()
@@ -178,7 +178,7 @@ struct TeamScoreRow: View {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(.systemGray5))
+                        .fill(AppTheme.warmLinen)
                         .frame(height: 8)
 
                     RoundedRectangle(cornerRadius: 4)

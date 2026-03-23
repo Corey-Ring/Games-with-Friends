@@ -28,8 +28,8 @@ struct ClueChipView: View {
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.xs)
         .background(clue.tier.color)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 10))

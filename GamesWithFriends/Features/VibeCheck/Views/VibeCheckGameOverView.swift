@@ -95,7 +95,7 @@ struct VibeCheckGameOverView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -153,7 +153,7 @@ struct FinalTeamRow: View {
 
                     if rank == 1 {
                         Image(systemName: "crown.fill")
-                            .font(.system(size: 16))
+                            .font(AppTheme.Typography.detail)
                             .foregroundStyle(.white)
                     } else {
                         Text("\(rank)")

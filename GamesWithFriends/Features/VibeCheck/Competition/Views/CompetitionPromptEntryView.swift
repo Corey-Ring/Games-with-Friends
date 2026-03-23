@@ -82,12 +82,12 @@ struct CompetitionPromptEntryView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
         }
     }
@@ -108,10 +108,10 @@ struct CompetitionPromptEntryView: View {
                     }
                 }
         }
-        .padding(10)
+        .padding(AppTheme.Spacing.sm)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(Color(.systemBackground))
+                .fill(AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
         }
     }
@@ -126,7 +126,7 @@ struct CompetitionPromptEntryView: View {
                     .fontWeight(.bold)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
+            .padding(.vertical, AppTheme.Spacing.md)
             .background {
                 LinearGradient(
                     colors: canSubmit ? [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor] : [AppTheme.mediumGray, AppTheme.mediumGray],

@@ -203,7 +203,7 @@ struct SpectrumSliderView: View {
                 .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
                 .overlay {
                     Image(systemName: "line.3.horizontal")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.cardTitle)
                         .foregroundStyle(.white)
                 }
                 .position(x: centerX + trackWidth / 2 + handleSize / 2 - 4, y: yPosition)
@@ -267,7 +267,7 @@ struct PromptSetterSliderView: View {
                 ZStack(alignment: .top) {
                     // Background track
                     RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(Color(.systemGray5))
+                        .fill(AppTheme.warmLinen)
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
 
@@ -370,7 +370,7 @@ struct RevealSliderView: View {
                 ZStack(alignment: .top) {
                     // Background track
                     RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(Color(.systemGray5))
+                        .fill(AppTheme.warmLinen)
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
 

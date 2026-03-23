@@ -35,7 +35,7 @@ struct ClueBoardView: View {
                         ScrollView(.vertical, showsIndicators: false) {
                             clueBoard
                                 .padding(.horizontal, AppTheme.Spacing.sm)
-                                .padding(.top, 12)
+                                .padding(.top, AppTheme.Spacing.sm)
                                 .padding(.bottom, AppTheme.Spacing.md)
                         }
                         .onChange(of: viewModel.roundState.revealedClues.count) { _, _ in
@@ -168,7 +168,7 @@ struct ClueBoardView: View {
                     .font(AppTheme.Typography.secondary)
                     .monospacedDigit()
             }
-            .padding(.horizontal, 10)
+            .padding(.horizontal, AppTheme.Spacing.sm)
             .padding(.vertical, AppTheme.Spacing.xs)
             .background(.ultraThinMaterial)
             .clipShape(Capsule())
@@ -196,7 +196,7 @@ struct ClueBoardView: View {
                     .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, AppTheme.Spacing.md)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, AppTheme.Spacing.sm)
                     .background(.ultraThinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             }
@@ -230,7 +230,7 @@ struct ClueBoardView: View {
                 .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.white)
                 .padding(.horizontal, AppTheme.Spacing.lg)
-                .padding(.vertical, 12)
+                .padding(.vertical, AppTheme.Spacing.sm)
                 .background(GameTheme.castingDirector.accentColor)
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             }

@@ -77,7 +77,7 @@ struct GuessOverlayView: View {
                                 .scaleEffect(0.6)
                         }
                     }
-                    .padding(12)
+                    .padding(AppTheme.Spacing.sm)
                     .background(AppTheme.warmLinen)
                     .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
 
@@ -114,8 +114,8 @@ struct GuessOverlayView: View {
                                                 .font(AppTheme.Typography.caption)
                                                 .foregroundStyle(.secondary)
                                         }
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 10)
+                                        .padding(.horizontal, AppTheme.Spacing.sm)
+                                        .padding(.vertical, AppTheme.Spacing.sm)
                                         .background(AppTheme.warmLinen.opacity(0.5))
                                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.small))
                                     }
@@ -141,11 +141,11 @@ struct GuessOverlayView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .padding(20)
+                .padding(AppTheme.Spacing.lg)
                 .background(.regularMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .padding(.horizontal)
-                .padding(.bottom, 20)
+                .padding(.bottom, AppTheme.Spacing.lg)
             }
         }
         .onAppear {

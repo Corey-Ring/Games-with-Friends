@@ -64,7 +64,7 @@ struct PlateGridView: View {
                 .padding(.horizontal)
             }
             .padding(.vertical, AppTheme.Spacing.sm)
-            .background(Color(.systemBackground))
+            .background(AppTheme.pureWhite)
 
             // Grid or List
             if viewModel.viewMode == .grid {
@@ -250,8 +250,8 @@ struct FilterChip: View {
                     .font(AppTheme.Typography.caption)
                     .fontWeight(.medium)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
+            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .background(isSelected ? GameTheme.licensePlate.accentColor : AppTheme.warmLinen)
             .foregroundStyle(isSelected ? .white : .primary)
             .clipShape(Capsule())
