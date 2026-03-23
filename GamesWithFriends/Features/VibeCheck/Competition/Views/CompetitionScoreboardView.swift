@@ -4,7 +4,7 @@ struct CompetitionScoreboardView: View {
     var viewModel: CompetitionVibeCheckViewModel
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: AppTheme.Spacing.lg) {
             // Header
             headerSection
 
@@ -22,7 +22,7 @@ struct CompetitionScoreboardView: View {
         .padding()
         .background {
             LinearGradient(
-                colors: [Color.orange.opacity(0.1), Color.red.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -33,16 +33,16 @@ struct CompetitionScoreboardView: View {
     // MARK: - Sections
 
     private var headerSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "trophy.fill")
                 .font(.system(size: 36))
                 .foregroundStyle(.yellow)
 
             Text("SCOREBOARD")
-                .font(.title2.weight(.bold))
+                .font(AppTheme.Typography.sectionHeader)
 
             Text("Target: \(viewModel.settings.targetScore) pts")
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
                 .foregroundStyle(.secondary)
         }
     }
@@ -60,30 +60,30 @@ struct CompetitionScoreboardView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
 
     private var nextRoundInfo: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Text("Round \(viewModel.rounds.count + 1)")
-                .font(.headline)
-                .foregroundStyle(.orange)
+                .font(AppTheme.Typography.cardTitle)
+                .foregroundStyle(GameTheme.vibeCheck.accentColor)
 
             HStack(spacing: 6) {
                 Image(systemName: "shuffle")
                 Text("Vibe Setter will be randomly selected")
             }
-            .font(.subheadline)
+            .font(AppTheme.Typography.secondary)
             .foregroundStyle(.secondary)
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.orange.opacity(0.1))
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                .fill(GameTheme.vibeCheck.lightBackground)
         }
     }
 
@@ -99,14 +99,10 @@ struct CompetitionScoreboardView: View {
             .frame(maxWidth: .infinity)
             .padding()
             .background {
-                LinearGradient(
-                    colors: [.orange, .red],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
+                GameTheme.vibeCheck.accentColor
             }
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
         .buttonStyle(.plain)
     }
@@ -131,7 +127,7 @@ struct CompetitionPlayerScoreRow: View {
                 ZStack {
                     if rank == 1 {
                         Circle()
-                            .fill(Color.yellow)
+                            .fill(AppTheme.medalGold)
                             .frame(width: 32, height: 32)
 
                         Image(systemName: "crown.fill")
@@ -139,34 +135,34 @@ struct CompetitionPlayerScoreRow: View {
                             .foregroundStyle(.white)
                     } else if rank == 2 {
                         Circle()
-                            .fill(Color.gray)
+                            .fill(AppTheme.medalSilver)
                             .frame(width: 32, height: 32)
 
                         Text("2")
-                            .font(.subheadline.weight(.bold))
+                            .font(AppTheme.Typography.secondary.weight(.bold))
                             .foregroundStyle(.white)
                     } else if rank == 3 {
                         Circle()
-                            .fill(Color.orange.opacity(0.8))
+                            .fill(AppTheme.medalBronze)
                             .frame(width: 32, height: 32)
 
                         Text("3")
-                            .font(.subheadline.weight(.bold))
+                            .font(AppTheme.Typography.secondary.weight(.bold))
                             .foregroundStyle(.white)
                     } else {
                         Circle()
-                            .fill(Color(.systemGray5))
+                            .fill(AppTheme.warmLinen)
                             .frame(width: 32, height: 32)
 
                         Text("\(rank)")
-                            .font(.subheadline.weight(.bold))
+                            .font(AppTheme.Typography.secondary.weight(.bold))
                             .foregroundStyle(.secondary)
                     }
                 }
 
                 // Player name
                 Text(player.name)
-                    .font(.headline)
+                    .font(AppTheme.Typography.cardTitle)
 
                 Spacer()
 
@@ -174,30 +170,24 @@ struct CompetitionPlayerScoreRow: View {
                 Text("\(player.score)")
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .monospacedDigit()
-                    .foregroundStyle(isLeading ? .orange : .primary)
+                    .foregroundStyle(isLeading ? GameTheme.vibeCheck.accentColor : .primary)
             }
 
             // Progress bar
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(.systemGray5))
+                        .fill(AppTheme.warmLinen)
                         .frame(height: 6)
 
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(
-                            LinearGradient(
-                                colors: [.orange, .red],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .fill(GameTheme.vibeCheck.accentColor)
                         .frame(width: geometry.size.width * progress, height: 6)
                 }
             }
             .frame(height: 6)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, AppTheme.Spacing.xs)
     }
 }
 

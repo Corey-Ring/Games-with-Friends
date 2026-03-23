@@ -19,7 +19,7 @@ struct LicensePlateGameView: View {
             if let viewModel = viewModel {
                 mainContent(viewModel: viewModel)
             } else {
-                ProgressView()
+                GameSpinner(color: GameTheme.licensePlate.accentColor)
             }
         }
         .onAppear {
@@ -40,7 +40,7 @@ struct LicensePlateGameView: View {
 
     private func noTripView(viewModel: LicensePlateViewModel) -> some View {
         NavigationStack {
-            VStack(spacing: 24) {
+            VStack(spacing: AppTheme.Spacing.lg) {
                 Spacer()
 
                 Image(systemName: "car.fill")
@@ -49,29 +49,29 @@ struct LicensePlateGameView: View {
 
                 VStack(spacing: 12) {
                     Text("Ready for a Road Trip?")
-                        .font(.title)
+                        .font(AppTheme.Typography.screenTitle)
                         .fontWeight(.bold)
 
                     Text("Create a trip to start spotting license plates from all 50 states and beyond!")
-                        .font(.body)
+                        .font(AppTheme.Typography.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
+                        .padding(.horizontal, AppTheme.Spacing.xl)
                 }
 
                 Spacer()
 
-                VStack(spacing: 16) {
+                VStack(spacing: AppTheme.Spacing.md) {
                     NavigationLink {
                         TripSelectionView(viewModel: viewModel)
                     } label: {
                         Label("Start New Trip", systemImage: "plus.circle.fill")
-                            .font(.headline)
+                            .font(AppTheme.Typography.buttonLabel)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.blue)
+                            .background(GameTheme.licensePlate.accentColor)
                             .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
                     }
 
                     if !viewModel.trips.isEmpty {
@@ -79,17 +79,17 @@ struct LicensePlateGameView: View {
                             TripSelectionView(viewModel: viewModel)
                         } label: {
                             Label("Select Existing Trip", systemImage: "list.bullet")
-                                .font(.headline)
+                                .font(AppTheme.Typography.buttonLabel)
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color(.systemGray6))
-                                .foregroundStyle(.blue)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .background(AppTheme.warmLinen)
+                                .foregroundStyle(GameTheme.licensePlate.accentColor)
+                                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
                         }
                     }
                 }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 32)
+                .padding(.horizontal, AppTheme.Spacing.xl)
+                .padding(.bottom, AppTheme.Spacing.xl)
             }
             .navigationTitle("License Plate Game")
         }
@@ -104,7 +104,7 @@ struct LicensePlateGameView: View {
                 if let trip = viewModel.currentTrip {
                     TripHeaderView(trip: trip, viewModel: viewModel)
                         .padding()
-                        .background(Color(.systemGray6))
+                        .background(AppTheme.warmLinen)
                 }
 
                 // Main Content
@@ -187,25 +187,25 @@ struct TripHeaderView: View {
     var body: some View {
         VStack(spacing: 12) {
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text(trip.name)
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
 
                     Text("Started \(trip.startDate, style: .date)")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
                 }
 
                 Spacer()
 
-                VStack(alignment: .trailing, spacing: 4) {
+                VStack(alignment: .trailing, spacing: AppTheme.Spacing.xs) {
                     Text("\(trip.totalSpotted)")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .fontWeight(.bold)
                         .foregroundStyle(.blue)
 
                     Text("spotted")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
                 }
             }
@@ -214,11 +214,11 @@ struct TripHeaderView: View {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(.systemGray5))
+                        .fill(AppTheme.warmLinen)
                         .frame(height: 8)
 
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.blue)
+                        .fill(GameTheme.licensePlate.accentColor)
                         .frame(width: geometry.size.width * viewModel.tripProgress(), height: 8)
                 }
             }
@@ -226,14 +226,14 @@ struct TripHeaderView: View {
 
             HStack {
                 Label("\(trip.usStatesSpotted)/51 US", systemImage: "flag.fill")
-                    .font(.caption2)
+                    .font(AppTheme.Typography.tabLabel)
                     .foregroundStyle(.secondary)
 
                 Spacer()
 
                 if viewModel.showMexicanStates {
                     Text("\(trip.totalPoints) points")
-                        .font(.caption2)
+                        .font(AppTheme.Typography.tabLabel)
                         .foregroundStyle(.secondary)
                 }
             }

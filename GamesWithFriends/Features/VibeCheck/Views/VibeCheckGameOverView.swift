@@ -5,7 +5,7 @@ struct VibeCheckGameOverView: View {
     @State private var showConfetti = false
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: AppTheme.Spacing.lg) {
             // Header with winner
             winnerSection
 
@@ -21,7 +21,7 @@ struct VibeCheckGameOverView: View {
         .background {
             ZStack {
                 LinearGradient(
-                    colors: [Color.purple.opacity(0.15), Color.blue.opacity(0.15)],
+                    colors: [GameTheme.vibeCheck.accentColor.opacity(0.15), GameTheme.vibeCheck.accentColor.opacity(0.05)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -44,7 +44,7 @@ struct VibeCheckGameOverView: View {
     // MARK: - Sections
 
     private var winnerSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: "trophy.fill")
                 .font(.system(size: 60))
                 .foregroundStyle(
@@ -57,16 +57,16 @@ struct VibeCheckGameOverView: View {
                 .shadow(color: .yellow.opacity(0.5), radius: 10)
 
             Text("GAME OVER!")
-                .font(.largeTitle.weight(.bold))
+                .font(AppTheme.Typography.hero)
 
             if let winner = viewModel.winner {
-                VStack(spacing: 8) {
+                VStack(spacing: AppTheme.Spacing.sm) {
                     Text("\(winner.name) Wins!")
-                        .font(.title2.weight(.semibold))
+                        .font(AppTheme.Typography.sectionHeader.weight(.semibold))
                         .foregroundStyle(.purple)
 
                     Text("\(winner.score) points")
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
                         .foregroundStyle(.secondary)
                 }
             }
@@ -75,9 +75,9 @@ struct VibeCheckGameOverView: View {
     }
 
     private var standingsSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Text("FINAL STANDINGS")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.secondary)
 
             ForEach(Array(viewModel.sortedTeamsByScore.enumerated()), id: \.element.id) { index, team in
@@ -94,7 +94,7 @@ struct VibeCheckGameOverView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
@@ -120,7 +120,7 @@ struct VibeCheckGameOverView: View {
                     )
                 }
                 .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
             }
             .buttonStyle(.plain)
 
@@ -128,7 +128,7 @@ struct VibeCheckGameOverView: View {
                 viewModel.returnToSetup()
             } label: {
                 Text("Back to Setup")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
             }
         }
@@ -143,7 +143,7 @@ struct FinalTeamRow: View {
     let isWinner: Bool
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: AppTheme.Spacing.md) {
             // Rank with medal for top 3
             ZStack {
                 if rank <= 3 {
@@ -157,38 +157,38 @@ struct FinalTeamRow: View {
                             .foregroundStyle(.white)
                     } else {
                         Text("\(rank)")
-                            .font(.headline.weight(.bold))
+                            .font(AppTheme.Typography.cardTitle.weight(.bold))
                             .foregroundStyle(.white)
                     }
                 } else {
                     Text("\(rank).")
-                        .font(.headline.monospacedDigit())
+                        .font(AppTheme.Typography.cardTitle.monospacedDigit())
                         .foregroundStyle(.secondary)
                         .frame(width: 36)
                 }
             }
 
             // Team info
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                HStack(spacing: AppTheme.Spacing.sm) {
                     Text(team.name)
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
 
                     if isWinner {
                         Text("WINNER")
-                            .font(.caption2.weight(.bold))
+                            .font(AppTheme.Typography.tabLabel.weight(.bold))
                             .foregroundStyle(.white)
-                            .padding(.horizontal, 8)
+                            .padding(.horizontal, AppTheme.Spacing.sm)
                             .padding(.vertical, 2)
                             .background {
                                 Capsule()
-                                    .fill(Color.purple)
+                                    .fill(GameTheme.vibeCheck.accentColor)
                             }
                     }
                 }
 
                 Text(team.playerNames.joined(separator: ", "))
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
@@ -202,11 +202,11 @@ struct FinalTeamRow: View {
                     .monospacedDigit()
 
                 Text("points")
-                    .font(.caption2)
+                    .font(AppTheme.Typography.tabLabel)
                     .foregroundStyle(.secondary)
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, AppTheme.Spacing.sm)
     }
 
     private var medalColor: Color {

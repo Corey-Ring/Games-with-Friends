@@ -63,7 +63,7 @@ struct PlateGridView: View {
                 }
                 .padding(.horizontal)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, AppTheme.Spacing.sm)
             .background(Color(.systemBackground))
 
             // Grid or List
@@ -138,18 +138,18 @@ struct PlateGridItem: View {
     let isSpotted: Bool
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSpotted ? Color.green.opacity(0.2) : Color(.systemGray6))
+                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                    .fill(isSpotted ? AppTheme.success.opacity(0.2) : AppTheme.warmLinen)
 
-                VStack(spacing: 4) {
+                VStack(spacing: AppTheme.Spacing.xs) {
                     Text(plate.code)
                         .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundStyle(isSpotted ? .green : .primary)
+                        .foregroundStyle(isSpotted ? AppTheme.success : .primary)
 
                     Image(systemName: plate.rarityTier.icon)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(Color(plate.rarityTier.color))
                 }
                 .padding()
@@ -159,9 +159,9 @@ struct PlateGridItem: View {
                         HStack {
                             Spacer()
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
-                                .font(.title3)
-                                .padding(8)
+                                .foregroundStyle(AppTheme.success)
+                                .font(AppTheme.Typography.subsectionHeader)
+                                .padding(AppTheme.Spacing.sm)
                         }
                         Spacer()
                     }
@@ -170,7 +170,7 @@ struct PlateGridItem: View {
             .frame(height: 100)
 
             Text(plate.name)
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .fontWeight(.medium)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
@@ -187,38 +187,38 @@ struct PlateListItem: View {
         HStack(spacing: 12) {
             // Code badge
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isSpotted ? Color.green.opacity(0.2) : Color(.systemGray6))
+                RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                    .fill(isSpotted ? AppTheme.success.opacity(0.2) : AppTheme.warmLinen)
                     .frame(width: 60, height: 60)
 
                 Text(plate.code)
                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundStyle(isSpotted ? .green : .primary)
+                    .foregroundStyle(isSpotted ? AppTheme.success : .primary)
             }
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 HStack {
                     Text(plate.name)
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
 
                     if isSpotted {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                            .font(.caption)
+                            .foregroundStyle(AppTheme.success)
+                            .font(AppTheme.Typography.caption)
                     }
                 }
 
-                HStack(spacing: 8) {
+                HStack(spacing: AppTheme.Spacing.sm) {
                     Label(plate.region.displayName, systemImage: plate.region.icon)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
 
                     Image(systemName: plate.rarityTier.icon)
-                        .font(.caption2)
+                        .font(AppTheme.Typography.tabLabel)
                         .foregroundStyle(Color(plate.rarityTier.color))
 
                     Text(plate.rarityTier.rawValue)
-                        .font(.caption2)
+                        .font(AppTheme.Typography.tabLabel)
                         .foregroundStyle(Color(plate.rarityTier.color))
                 }
             }
@@ -226,10 +226,10 @@ struct PlateListItem: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.tertiary)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, AppTheme.Spacing.xs)
     }
 }
 
@@ -241,18 +241,18 @@ struct FilterChip: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 4) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                 }
                 Text(title)
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .fontWeight(.medium)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(isSelected ? Color.blue : Color(.systemGray5))
+            .background(isSelected ? GameTheme.licensePlate.accentColor : AppTheme.warmLinen)
             .foregroundStyle(isSelected ? .white : .primary)
             .clipShape(Capsule())
         }

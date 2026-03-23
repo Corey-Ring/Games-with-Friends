@@ -52,7 +52,7 @@ struct ChainBreakView: View {
                         ForEach(0..<viewModel.gameMode.defaultLives, id: \.self) { index in
                             Image(systemName: index < viewModel.currentPlayer.lives ? "heart.fill" : "heart")
                                 .foregroundStyle(.red)
-                                .font(.caption)
+                                .font(AppTheme.Typography.caption)
                         }
                     }
                 }
@@ -152,7 +152,7 @@ struct MiniChainLinkView: View {
                     .frame(width: 36, height: 36)
 
                 Image(systemName: link.isMovie ? "film" : "person.fill")
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.white)
             }
 
@@ -183,7 +183,7 @@ struct MovieChainStatBox: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: icon)
-                .font(.title2)
+                .font(AppTheme.Typography.sectionHeader)
                 .foregroundStyle(GameTheme.movieChain.accentColor)
 
             Text(value)

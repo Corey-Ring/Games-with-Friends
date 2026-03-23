@@ -25,6 +25,8 @@ struct GameHubView: View {
                                 NavigationLink(destination: game.makeRootView()) {
                                     HubGameCard(game: game)
                                 }
+                                .accessibilityLabel("\(game.name). \(game.description)")
+                                .accessibilityHint("Double tap to play")
                                 .pressable()
                                 .staggeredAppear(index: index)
                             }
@@ -67,7 +69,7 @@ struct HubGameCard: View {
                     .frame(width: 56, height: 56)
 
                 Image(systemName: game.iconName)
-                    .font(.title2)
+                    .font(AppTheme.Typography.sectionHeader)
                     .foregroundColor(game.accentColor)
             }
         }

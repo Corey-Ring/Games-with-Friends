@@ -29,7 +29,7 @@ class ConversationStarterData {
         ConversationStarter(text: "What's a belief you had as a child that you later realized was wrong?", vibeLevel: 3, category: .deepDive),
         ConversationStarter(text: "Invisibility or ability to fly?", vibeLevel: 3, category: .wouldYouRather),
 
-        // VIBE LEVEL 4 - Spicy
+        // VIBE LEVEL 4 - Deep
         ConversationStarter(text: "Would you rather know how you die or when you die?", vibeLevel: 4, category: .wouldYouRather),
         ConversationStarter(text: "Social media has made us worse communicators", vibeLevel: 4, category: .hotTakes),
         ConversationStarter(text: "If you could read minds but never turn it off, would you want to?", vibeLevel: 4, category: .hypotheticals),
@@ -38,7 +38,7 @@ class ConversationStarterData {
         ConversationStarter(text: "What's something about yourself that most people misunderstand?", vibeLevel: 4, category: .deepDive),
         ConversationStarter(text: "What's a opinion you have that would surprise people who know you?", vibeLevel: 4, category: .deepDive),
 
-        // VIBE LEVEL 5 - Wild
+        // VIBE LEVEL 5 - Daring
         ConversationStarter(text: "Would you rather be famous but hated or unknown but loved by those close to you?", vibeLevel: 5, category: .wouldYouRather),
         ConversationStarter(text: "We should bring back dueling as a way to settle arguments", vibeLevel: 5, category: .hotTakes),
         ConversationStarter(text: "If you had to delete all but 3 apps from your phone, which would you keep?", vibeLevel: 5, category: .hypotheticals),

@@ -4,7 +4,7 @@ struct ScoreboardView: View {
     var viewModel: VibeCheckViewModel
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: AppTheme.Spacing.lg) {
             // Header
             headerSection
 
@@ -22,7 +22,7 @@ struct ScoreboardView: View {
         .padding()
         .background {
             LinearGradient(
-                colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -33,22 +33,22 @@ struct ScoreboardView: View {
     // MARK: - Sections
 
     private var headerSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "trophy.fill")
                 .font(.system(size: 36))
                 .foregroundStyle(.yellow)
 
             Text("SCOREBOARD")
-                .font(.title2.weight(.bold))
+                .font(AppTheme.Typography.sectionHeader)
 
             Text("Target: \(viewModel.settings.targetScore) pts")
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
                 .foregroundStyle(.secondary)
         }
     }
 
     private var standingsSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             ForEach(Array(viewModel.sortedTeamsByScore.enumerated()), id: \.element.id) { index, team in
                 TeamScoreRow(
                     rank: index + 1,
@@ -64,16 +64,16 @@ struct ScoreboardView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
 
     private var nextRoundInfo: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Text("Round \(viewModel.rounds.count + 1)")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.purple)
 
             if let nextSetter = viewModel.promptSetterTeam {
@@ -81,15 +81,15 @@ struct ScoreboardView: View {
                     Image(systemName: "person.fill.questionmark")
                     Text("\(nextSetter.name) is the Prompt Setter")
                 }
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
                 .foregroundStyle(.secondary)
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.purple.opacity(0.1))
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                .fill(GameTheme.vibeCheck.lightBackground)
         }
     }
 
@@ -112,7 +112,7 @@ struct ScoreboardView: View {
                 )
             }
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
         .buttonStyle(.plain)
     }
@@ -137,7 +137,7 @@ struct TeamScoreRow: View {
                 ZStack {
                     if rank == 1 {
                         Circle()
-                            .fill(Color.yellow)
+                            .fill(AppTheme.medalGold)
                             .frame(width: 32, height: 32)
 
                         Image(systemName: "crown.fill")
@@ -145,11 +145,11 @@ struct TeamScoreRow: View {
                             .foregroundStyle(.white)
                     } else {
                         Circle()
-                            .fill(Color(.systemGray5))
+                            .fill(AppTheme.warmLinen)
                             .frame(width: 32, height: 32)
 
                         Text("\(rank)")
-                            .font(.subheadline.weight(.bold))
+                            .font(AppTheme.Typography.secondary.weight(.bold))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -157,10 +157,10 @@ struct TeamScoreRow: View {
                 // Team info
                 VStack(alignment: .leading, spacing: 2) {
                     Text(team.name)
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
 
                     Text(team.playerNames.joined(separator: ", "))
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
@@ -194,7 +194,7 @@ struct TeamScoreRow: View {
             }
             .frame(height: 8)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, AppTheme.Spacing.xs)
     }
 }
 

@@ -69,8 +69,7 @@ struct MovieChainSetupView: View {
 
     private var decompressionProgressSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            ProgressView()
-                .scaleEffect(1.5)
+            GameSpinner(color: GameTheme.movieChain.accentColor)
 
             Text("Preparing Movie Database...")
                 .font(AppTheme.Typography.cardTitle)
@@ -98,7 +97,7 @@ struct MovieChainSetupView: View {
     private var databaseErrorSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.largeTitle)
+                .font(AppTheme.Typography.hero)
                 .foregroundStyle(.yellow)
 
             Text("Database Not Loaded")
@@ -164,7 +163,7 @@ struct MovieChainSetupView: View {
                         }
                     } label: {
                         Image(systemName: "minus.circle.fill")
-                            .font(.title)
+                            .font(AppTheme.Typography.screenTitle)
                             .foregroundStyle(playerCount > 2 ? GameTheme.movieChain.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount <= 2)
@@ -176,7 +175,7 @@ struct MovieChainSetupView: View {
                         }
                     } label: {
                         Image(systemName: "plus.circle.fill")
-                            .font(.title)
+                            .font(AppTheme.Typography.screenTitle)
                             .foregroundStyle(playerCount < 8 ? GameTheme.movieChain.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount >= 8)
@@ -278,7 +277,7 @@ struct GameModeCard: View {
         Button(action: action) {
             HStack(spacing: AppTheme.Spacing.md) {
                 Image(systemName: mode.iconName)
-                    .font(.title2)
+                    .font(AppTheme.Typography.sectionHeader)
                     .foregroundStyle(isSelected ? .white : GameTheme.movieChain.accentColor)
                     .frame(width: 40)
 

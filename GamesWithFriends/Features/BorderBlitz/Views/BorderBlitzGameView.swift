@@ -8,6 +8,7 @@ import SwiftUI
 struct BorderBlitzGameView: View {
     @Bindable var viewModel: BorderBlitzViewModel
     @FocusState private var isInputFocused: Bool
+    private let theme = GameTheme.borderBlitz
 
     var body: some View {
         ZStack {
@@ -31,13 +32,13 @@ struct BorderBlitzGameView: View {
     private var playingView: some View {
         ScrollViewReader { proxy in
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 20) {
+                VStack(spacing: AppTheme.Spacing.lg) {
                     // Timer
                     HStack {
                         Spacer()
                         timerView
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, AppTheme.Spacing.md)
 
                     // Country silhouette
                     if let country = viewModel.currentCountry {
@@ -45,7 +46,7 @@ struct BorderBlitzGameView: View {
                             country: country,
                             size: CGSize(width: 250, height: 250)
                         )
-                        .padding()
+                        .padding(AppTheme.Spacing.md)
                     }
 
                     // Letter tiles
@@ -53,25 +54,33 @@ struct BorderBlitzGameView: View {
 
                     // Score display
                     HStack {
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                             Text("Score: \(viewModel.totalScore)")
-                                .font(.headline)
+                                .font(AppTheme.Typography.cardTitle)
+                                .foregroundColor(AppTheme.deepCharcoal)
                                 .accessibilityLabel("Score: \(viewModel.totalScore) points")
                             if viewModel.currentStreak > 1 {
                                 Text("Streak: \(viewModel.currentStreak) 🔥")
-                                    .font(.subheadline)
+                                    .font(AppTheme.Typography.body)
                                     .foregroundColor(.orange)
                                     .accessibilityLabel("Current streak: \(viewModel.currentStreak)")
                             }
                         }
                         Spacer()
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, AppTheme.Spacing.md)
 
                     // Input field
-                    VStack(spacing: 10) {
+                    VStack(spacing: AppTheme.Spacing.sm) {
                         TextField("Enter country name", text: $viewModel.currentGuess)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .font(AppTheme.Typography.body)
+                            .padding(AppTheme.Spacing.sm)
+                            .background(AppTheme.pureWhite)
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: AppTheme.Radius.card)
+                                    .stroke(theme.accentColor.opacity(0.3), lineWidth: 1)
+                            )
                             .autocapitalization(.words)
                             .disableAutocorrection(true)
                             .focused($isInputFocused)
@@ -79,20 +88,18 @@ struct BorderBlitzGameView: View {
                                 viewModel.submitGuess()
                             }
 
-                        HStack {
-                            Button("Submit") {
+                        HStack(spacing: AppTheme.Spacing.md) {
+                            PrimaryButton(title: "Submit") {
                                 viewModel.submitGuess()
                             }
-                            .buttonStyle(.borderedProminent)
                             .disabled(viewModel.currentGuess.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
-                            Button("Skip") {
+                            SecondaryButton(title: "Skip") {
                                 viewModel.skipRound()
                             }
-                            .buttonStyle(.bordered)
                         }
                     }
-                    .padding()
+                    .padding(AppTheme.Spacing.md)
                     .id("inputField")
                 }
             }
@@ -107,18 +114,18 @@ struct BorderBlitzGameView: View {
     }
 
     private var timerView: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: AppTheme.Spacing.xs) {
             Image(systemName: "clock.fill")
                 .foregroundColor(timeColor)
             Text(timeString)
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(AppTheme.Typography.sectionHeader)
                 .foregroundColor(timeColor)
                 .monospacedDigit()
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.xs)
         .background(
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
                 .fill(timeColor.opacity(0.1))
         )
         .accessibilityElement(children: .combine)
@@ -141,7 +148,7 @@ struct BorderBlitzGameView: View {
     }
 
     private var roundCompleteView: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: AppTheme.Spacing.lg) {
             if let result = viewModel.roundResults.last {
                 // Result icon
                 Image(systemName: result.guessedCorrectly ? "checkmark.circle.fill" : "xmark.circle.fill")
@@ -150,101 +157,98 @@ struct BorderBlitzGameView: View {
 
                 // Country name
                 Text(result.countryName)
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(AppTheme.Typography.hero)
 
                 // Score breakdown
                 if result.guessedCorrectly {
-                    VStack(spacing: 15) {
+                    VStack(spacing: AppTheme.Spacing.md) {
                         if result.isPerfect {
                             Text("PERFECT! 🎉")
-                                .font(.title)
+                                .font(AppTheme.Typography.sectionHeader)
                                 .foregroundColor(.orange)
                         }
 
                         Text("+\(result.score) points")
-                            .font(.system(size: 36, weight: .bold))
-                            .foregroundColor(.green)
+                            .font(AppTheme.Typography.hero)
+                            .foregroundColor(theme.accentColor)
 
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                             Text("• Hidden letters: \(result.hiddenLettersCount)")
                             Text("• Time remaining: \(Int(result.timeRemaining))s")
                             if result.streak > 1 {
                                 Text("• Streak bonus: \(result.streak)x 🔥")
                             }
                         }
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(AppTheme.Typography.body)
+                        .foregroundColor(AppTheme.mediumGray)
                     }
+                    .gameCard()
                 }
 
                 // Total score
                 Text("Total Score: \(viewModel.totalScore)")
-                    .font(.title2)
-                    .padding(.top)
+                    .font(AppTheme.Typography.sectionHeader)
+                    .padding(.top, AppTheme.Spacing.sm)
 
                 // Buttons
-                HStack(spacing: 20) {
-                    Button("Continue") {
+                HStack(spacing: AppTheme.Spacing.md) {
+                    PrimaryButton(title: "Continue") {
                         viewModel.continueToNextRound()
                     }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
 
-                    Button("Menu") {
+                    SecondaryButton(title: "Menu") {
                         viewModel.returnToMenu()
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
                 }
-                .padding(.top)
+                .padding(.top, AppTheme.Spacing.sm)
             }
         }
-        .padding()
+        .padding(AppTheme.Spacing.md)
     }
 
     private var gameOverView: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: AppTheme.Spacing.lg) {
             Text("Game Complete!")
-                .font(.system(size: 40, weight: .bold))
+                .font(AppTheme.Typography.hero)
+                .foregroundColor(AppTheme.deepCharcoal)
 
             Text("Final Score")
-                .font(.title2)
-                .foregroundColor(.secondary)
+                .font(AppTheme.Typography.sectionHeader)
+                .foregroundColor(AppTheme.mediumGray)
 
             Text("\(viewModel.totalScore)")
-                .font(.system(size: 60, weight: .bold))
-                .foregroundColor(.green)
+                .font(.system(size: 60, weight: .bold, design: .rounded))
+                .foregroundColor(theme.accentColor)
 
             // Stats
-            VStack(spacing: 10) {
+            VStack(spacing: AppTheme.Spacing.sm) {
                 Text("Rounds Played: \(viewModel.roundResults.count)")
                 Text("Correct: \(viewModel.roundResults.filter { $0.guessedCorrectly }.count)")
                 Text("Best Streak: \(viewModel.roundResults.map { $0.streak }.max() ?? 0)")
             }
-            .font(.headline)
+            .font(AppTheme.Typography.cardTitle)
+            .foregroundColor(AppTheme.deepCharcoal)
+            .gameCard()
 
-            Button("Back to Menu") {
+            PrimaryButton(title: "Back to Menu") {
                 viewModel.returnToMenu()
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
         }
-        .padding()
+        .padding(AppTheme.Spacing.md)
     }
 
     private var feedbackOverlay: some View {
         VStack {
             Spacer()
             Text(viewModel.feedbackMessage)
-                .font(.title2)
-                .fontWeight(.bold)
+                .font(AppTheme.Typography.sectionHeader)
                 .foregroundColor(.white)
-                .padding()
+                .padding(AppTheme.Spacing.md)
                 .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(viewModel.feedbackIsCorrect ? Color.green : Color.red)
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                        .fill(viewModel.feedbackIsCorrect ? AppTheme.success : AppTheme.error)
                 )
-                .padding()
+                .padding(AppTheme.Spacing.md)
             Spacer()
         }
         .transition(.scale.combined(with: .opacity))

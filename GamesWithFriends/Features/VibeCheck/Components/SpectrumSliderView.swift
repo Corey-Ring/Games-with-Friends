@@ -16,10 +16,10 @@ struct SpectrumSliderView: View {
     private let trackWidth: CGFloat = 56
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             // Top label
             Text(spectrum.topLabel.uppercased())
-                .font(.headline.weight(.bold))
+                .font(AppTheme.Typography.cardTitle.weight(.bold))
                 .foregroundStyle(.primary)
 
             // Slider area
@@ -76,7 +76,7 @@ struct SpectrumSliderView: View {
 
             // Bottom label
             Text(spectrum.bottomLabel.uppercased())
-                .font(.headline.weight(.bold))
+                .font(AppTheme.Typography.cardTitle.weight(.bold))
                 .foregroundStyle(.primary)
         }
         .padding(.horizontal)
@@ -85,14 +85,14 @@ struct SpectrumSliderView: View {
     // MARK: - Components
 
     private var backgroundTrack: some View {
-        RoundedRectangle(cornerRadius: 12)
+        RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
             .fill(
                 LinearGradient(
                     colors: [
-                        Color.purple.opacity(0.3),
-                        Color.purple.opacity(0.1),
-                        Color.blue.opacity(0.1),
-                        Color.blue.opacity(0.3)
+                        GameTheme.vibeCheck.accentColor.opacity(0.3),
+                        GameTheme.vibeCheck.accentColor.opacity(0.1),
+                        GameTheme.vibeCheck.accentColor.opacity(0.1),
+                        GameTheme.vibeCheck.accentColor.opacity(0.3)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -101,8 +101,8 @@ struct SpectrumSliderView: View {
             .frame(width: trackWidth)
             .frame(maxWidth: .infinity)
             .overlay {
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                    .stroke(AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
                     .frame(width: trackWidth)
             }
     }
@@ -116,7 +116,7 @@ struct SpectrumSliderView: View {
             // Draw zones from outside in (miss -> perfect)
             ForEach(Array(ScoringZone.allCases.reversed().enumerated()), id: \.offset) { _, zone in
                 let zoneHeight = zone.threshold * usableHeight * 2  // *2 because it extends both ways
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.small)
                     .fill(zone.color.opacity(0.3))
                     .frame(width: trackWidth - 8, height: min(zoneHeight, height))
                     .position(x: trackWidth / 2, y: targetY)
@@ -133,16 +133,16 @@ struct SpectrumSliderView: View {
         return ZStack {
             // Target line
             Rectangle()
-                .fill(Color.green)
+                .fill(AppTheme.success)
                 .frame(width: trackWidth + 20, height: 4)
 
             // Target marker
             Circle()
-                .fill(Color.green)
+                .fill(AppTheme.success)
                 .frame(width: 16, height: 16)
                 .overlay {
                     Circle()
-                        .stroke(Color.white, lineWidth: 2)
+                        .stroke(AppTheme.pureWhite, lineWidth: 2)
                 }
         }
         .position(x: trackWidth / 2 + (UIScreen.main.bounds.width - trackWidth) / 2 - 16, y: yPosition)
@@ -156,16 +156,16 @@ struct SpectrumSliderView: View {
         return ZStack {
             // Guess line
             Rectangle()
-                .fill(Color.orange)
+                .fill(AppTheme.warning)
                 .frame(width: trackWidth + 20, height: 4)
 
             // Guess marker
             Circle()
-                .fill(Color.orange)
+                .fill(AppTheme.warning)
                 .frame(width: 16, height: 16)
                 .overlay {
                     Circle()
-                        .stroke(Color.white, lineWidth: 2)
+                        .stroke(AppTheme.pureWhite, lineWidth: 2)
                 }
         }
         .position(x: trackWidth / 2 + (UIScreen.main.bounds.width - trackWidth) / 2 - 16, y: yPosition)
@@ -182,7 +182,7 @@ struct SpectrumSliderView: View {
             Rectangle()
                 .fill(
                     LinearGradient(
-                        colors: [.purple, .blue],
+                        colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -194,7 +194,7 @@ struct SpectrumSliderView: View {
             Circle()
                 .fill(
                     LinearGradient(
-                        colors: [.purple, .blue],
+                        colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -233,10 +233,10 @@ struct SpectrumSliderView: View {
 
         return VStack(spacing: 2) {
             Text("\(percentage)%")
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(AppTheme.Typography.sectionHeader)
                 .foregroundStyle(.primary)
             Text(label.uppercased())
-                .font(.system(size: 10, weight: .semibold))
+                .font(AppTheme.Typography.tabLabel)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -256,17 +256,17 @@ struct PromptSetterSliderView: View {
     private let trackWidth: CGFloat = 56
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             // Top label
             Text(spectrum.topLabel.uppercased())
-                .font(.headline.weight(.bold))
+                .font(AppTheme.Typography.cardTitle.weight(.bold))
                 .foregroundStyle(.primary)
 
             // Slider with scoring zones
             GeometryReader { geometry in
                 ZStack(alignment: .top) {
                     // Background track
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                         .fill(Color(.systemGray5))
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
@@ -282,7 +282,7 @@ struct PromptSetterSliderView: View {
 
             // Bottom label
             Text(spectrum.bottomLabel.uppercased())
-                .font(.headline.weight(.bold))
+                .font(AppTheme.Typography.cardTitle.weight(.bold))
                 .foregroundStyle(.primary)
 
             // Legend
@@ -325,7 +325,7 @@ struct PromptSetterSliderView: View {
         let yPosition = targetPosition * height
 
         return Rectangle()
-            .fill(Color.white)
+            .fill(AppTheme.pureWhite)
             .frame(width: trackWidth + 30, height: 3)
             .shadow(color: .black.opacity(0.3), radius: 2)
             .position(x: UIScreen.main.bounds.width / 2 - 16, y: yPosition)
@@ -334,12 +334,12 @@ struct PromptSetterSliderView: View {
     private var scoringLegend: some View {
         HStack(spacing: 12) {
             ForEach(Array(ScoringZone.allCases.prefix(4)), id: \.self) { zone in
-                HStack(spacing: 4) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Circle()
                         .fill(zone.color)
                         .frame(width: 10, height: 10)
                     Text("\(zone.points)")
-                        .font(.caption2)
+                        .font(AppTheme.Typography.tabLabel)
                         .foregroundStyle(.secondary)
                 }
             }
@@ -359,17 +359,17 @@ struct RevealSliderView: View {
     private let trackWidth: CGFloat = 60
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             // Top label
             Text(spectrum.topLabel.uppercased())
-                .font(.headline.weight(.bold))
+                .font(AppTheme.Typography.cardTitle.weight(.bold))
                 .foregroundStyle(.primary)
 
             // Slider with both positions
             GeometryReader { geometry in
                 ZStack(alignment: .top) {
                     // Background track
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                         .fill(Color(.systemGray5))
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
@@ -380,14 +380,14 @@ struct RevealSliderView: View {
                     // Target line (green)
                     positionLine(
                         y: targetPosition * geometry.size.height,
-                        color: .green,
+                        color: AppTheme.success,
                         label: "Target"
                     )
 
                     // Guess line (team color)
                     positionLine(
                         y: guessPosition * geometry.size.height,
-                        color: .orange,
+                        color: AppTheme.warning,
                         label: "Guess"
                     )
                 }
@@ -396,7 +396,7 @@ struct RevealSliderView: View {
 
             // Bottom label
             Text(spectrum.bottomLabel.uppercased())
-                .font(.headline.weight(.bold))
+                .font(AppTheme.Typography.cardTitle.weight(.bold))
                 .foregroundStyle(.primary)
 
             // Result
@@ -405,11 +405,11 @@ struct RevealSliderView: View {
                     .fill(zone.color)
                     .frame(width: 20, height: 20)
                 Text("+\(zone.points) points")
-                    .font(.headline)
+                    .font(AppTheme.Typography.cardTitle)
                     .foregroundStyle(zone.color)
             }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 16)
+            .padding(.vertical, AppTheme.Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.md)
             .background {
                 Capsule()
                     .fill(zone.color.opacity(0.2))
@@ -446,9 +446,9 @@ struct RevealSliderView: View {
     }
 
     private func positionLine(y: CGFloat, color: Color, label: String) -> some View {
-        HStack(spacing: 8) {
+        HStack(spacing: AppTheme.Spacing.sm) {
             Text(label)
-                .font(.caption.weight(.semibold))
+                .font(AppTheme.Typography.caption.weight(.semibold))
                 .foregroundStyle(color)
                 .frame(width: 50, alignment: .trailing)
 

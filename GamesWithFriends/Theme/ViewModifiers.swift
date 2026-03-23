@@ -2,12 +2,19 @@ import SwiftUI
 
 // MARK: - Game Card Modifier
 struct GameCardModifier: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
     func body(content: Content) -> some View {
         content
             .padding(AppTheme.Spacing.md)
-            .background(AppTheme.pureWhite)
+            .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-            .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
+            .shadow(
+                color: colorScheme == .dark ? Color.white.opacity(0.04) : AppTheme.Shadow.cardColor,
+                radius: AppTheme.Shadow.cardRadius,
+                x: AppTheme.Shadow.cardX,
+                y: AppTheme.Shadow.cardY
+            )
     }
 }
 
@@ -40,10 +47,12 @@ extension View {
 
 // MARK: - Pressable Button Style
 struct PressableButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
-            .animation(AppTheme.Animation.buttonPress, value: configuration.isPressed)
+            .scaleEffect(reduceMotion ? 1.0 : (configuration.isPressed ? 0.97 : 1.0))
+            .animation(reduceMotion ? nil : AppTheme.Animation.buttonPress, value: configuration.isPressed)
             .onChange(of: configuration.isPressed) { _, pressed in
                 if pressed {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -62,17 +71,22 @@ extension View {
 struct StaggeredAppearModifier: ViewModifier {
     let index: Int
     @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
         content
             .opacity(appeared ? 1 : 0)
-            .offset(y: appeared ? 0 : 20)
+            .offset(y: appeared ? 0 : (reduceMotion ? 0 : 20))
             .onAppear {
-                withAnimation(
-                    .easeOut(duration: AppTheme.Animation.cardEnterDuration)
-                    .delay(Double(index) * AppTheme.Animation.cardEnterDelay)
-                ) {
+                if reduceMotion {
                     appeared = true
+                } else {
+                    withAnimation(
+                        .easeOut(duration: AppTheme.Animation.cardEnterDuration)
+                        .delay(Double(index) * AppTheme.Animation.cardEnterDelay)
+                    ) {
+                        appeared = true
+                    }
                 }
             }
     }

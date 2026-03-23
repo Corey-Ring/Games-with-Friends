@@ -3,7 +3,7 @@ import SwiftUI
 struct LetterSelectionView: View {
     var viewModel: CountryGameViewModel
 
-    let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 6)
+    let columns = Array(repeating: GridItem(.flexible(), spacing: AppTheme.Spacing.sm), count: 6)
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.lg) {
@@ -47,7 +47,7 @@ struct LetterButton: View {
     var body: some View {
         Button(action: action) {
             Text(letter)
-                .font(.system(size: 20, weight: .semibold))
+                .font(AppTheme.Typography.sectionHeader)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
                 .background(

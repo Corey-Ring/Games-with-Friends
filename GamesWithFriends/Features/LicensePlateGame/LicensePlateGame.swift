@@ -13,7 +13,7 @@ struct LicensePlateGame: GameDefinition {
     let name = "License Plate Game"
     let description = "Spot plates from all 50 states and beyond!"
     let iconName = "car.fill"
-    let accentColor: Color = .blue
+    let accentColor: Color = GameTheme.licensePlate.accentColor
     let minPlayers = 1
     let maxPlayers = 10
 

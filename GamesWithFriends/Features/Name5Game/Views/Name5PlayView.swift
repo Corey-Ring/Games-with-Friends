@@ -59,9 +59,9 @@ struct PlayerIndicator: View {
     var body: some View {
         HStack {
             Image(systemName: "person.circle.fill")
-                .font(.title2)
+                .font(AppTheme.Typography.sectionHeader)
             Text("Player \(player.playerNumber)")
-                .font(.title3)
+                .font(AppTheme.Typography.cardTitle)
                 .fontWeight(.bold)
         }
         .foregroundColor(GameTheme.name5.accentColor)
@@ -92,9 +92,9 @@ struct TimerView: View {
                     .rotationEffect(.degrees(-90))
                     .animation(.linear(duration: 0.3), value: progress)
 
-                VStack(spacing: 4) {
+                VStack(spacing: AppTheme.Spacing.xs) {
                     Text("\(timeRemaining)")
-                        .font(.system(size: 48, weight: .bold))
+                        .font(AppTheme.Typography.hero)
                         .foregroundColor(color)
 
                     Text("seconds")
@@ -116,9 +116,9 @@ struct PromptCard: View {
         VStack(spacing: AppTheme.Spacing.lg) {
             // Category & difficulty badges
             HStack(spacing: AppTheme.Spacing.sm) {
-                HStack(spacing: 4) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: prompt.category.icon)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                     Text(prompt.category.rawValue)
                         .font(AppTheme.Typography.caption)
                         .fontWeight(.semibold)
@@ -131,7 +131,7 @@ struct PromptCard: View {
                 HStack(spacing: 3) {
                     ForEach(0..<difficultyStars, id: \.self) { _ in
                         Image(systemName: "star.fill")
-                            .font(.caption2)
+                            .font(AppTheme.Typography.tabLabel)
                             .foregroundColor(.white)
                     }
                     Text(prompt.difficulty.rawValue)
@@ -146,7 +146,7 @@ struct PromptCard: View {
 
             // Prompt text
             Text(prompt.text)
-                .font(.system(size: 28, weight: .bold))
+                .font(AppTheme.Typography.sectionHeader)
                 .multilineTextAlignment(.center)
                 .foregroundColor(AppTheme.deepCharcoal)
                 .padding(.horizontal)
@@ -207,13 +207,13 @@ struct PlayingButtons: View {
                         Text("Got It!")
                             .fontWeight(.bold)
                     }
-                    .font(.title3)
+                    .font(AppTheme.Typography.cardTitle)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, AppTheme.Spacing.md)
                     .background(
                         RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                            .fill(Color.green)
+                            .fill(AppTheme.success)
                     )
                 }
                 .pressable()
@@ -226,13 +226,13 @@ struct PlayingButtons: View {
                         Text("Failed")
                             .fontWeight(.bold)
                     }
-                    .font(.title3)
+                    .font(AppTheme.Typography.cardTitle)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, AppTheme.Spacing.md)
                     .background(
                         RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                            .fill(Color.red)
+                            .fill(AppTheme.error)
                     )
                 }
                 .pressable()
@@ -254,7 +254,7 @@ struct PausedButtons: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             Text("Paused")
-                .font(.title2)
+                .font(AppTheme.Typography.sectionHeader)
                 .fontWeight(.bold)
                 .foregroundColor(AppTheme.mediumGray)
 
@@ -270,12 +270,12 @@ struct PausedButtons: View {
                     Text("Give Up")
                         .fontWeight(.semibold)
                 }
-                .foregroundColor(.red)
+                .foregroundColor(AppTheme.error)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(Color.red.opacity(0.15))
+                        .fill(AppTheme.error.opacity(0.15))
                 )
             }
             .pressable()

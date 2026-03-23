@@ -6,7 +6,7 @@ struct CastingDirectorGame: GameDefinition {
     let name = "Casting Director"
     let description = "Guess the actor from progressive clues"
     let iconName = "person.crop.rectangle.stack"
-    let accentColor = Color.indigo
+    let accentColor = GameTheme.castingDirector.accentColor
 
     func makeRootView() -> AnyView {
         AnyView(CastingDirectorRootView())

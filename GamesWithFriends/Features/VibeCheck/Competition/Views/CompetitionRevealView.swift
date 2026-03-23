@@ -6,7 +6,7 @@ struct CompetitionRevealView: View {
     @State private var revealedPositions = false
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             // Header
             headerSection
 
@@ -33,7 +33,7 @@ struct CompetitionRevealView: View {
         .padding()
         .background {
             LinearGradient(
-                colors: [Color.orange.opacity(0.1), Color.red.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.1)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -59,42 +59,42 @@ struct CompetitionRevealView: View {
     // MARK: - Sections
 
     private var headerSection: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             if let round = viewModel.currentRound {
                 Text("Round \(round.roundNumber)")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
             }
 
             Text("RESULTS")
-                .font(.headline)
-                .foregroundStyle(.orange)
+                .font(AppTheme.Typography.cardTitle)
+                .foregroundStyle(GameTheme.vibeCheck.accentColor)
         }
     }
 
     private var promptCard: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Text("THE PROMPT")
-                .font(.caption.weight(.semibold))
+                .font(AppTheme.Typography.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .tracking(2)
 
             if let round = viewModel.currentRound {
                 Text("\"\(round.prompt)\"")
-                    .font(.title3.weight(.semibold))
+                    .font(AppTheme.Typography.subsectionHeader.weight(.semibold))
                     .multilineTextAlignment(.center)
             }
 
             if let setter = viewModel.vibeSetter {
                 Text("Set by \(setter.name)")
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
@@ -104,7 +104,7 @@ struct CompetitionRevealView: View {
     private func multiGuessRevealSection(round: CompetitionRound) -> some View {
         let results = viewModel.getRoundResults()
 
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             CompetitionRevealSliderView(
                 spectrum: round.spectrum,
                 targetPosition: round.targetPosition,
@@ -117,10 +117,10 @@ struct CompetitionRevealView: View {
             HStack(spacing: 20) {
                 HStack(spacing: 6) {
                     Circle()
-                        .fill(Color.green)
+                        .fill(AppTheme.success)
                         .frame(width: 12, height: 12)
                     Text("Target")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
                 }
 
@@ -129,7 +129,7 @@ struct CompetitionRevealView: View {
                         .strokeBorder(Color.primary, lineWidth: 2)
                         .frame(width: 12, height: 12)
                     Text("Guesses")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
                 }
             }
@@ -137,9 +137,9 @@ struct CompetitionRevealView: View {
     }
 
     private var leaderboardSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Text("LEADERBOARD")
-                .font(.caption.weight(.semibold))
+                .font(AppTheme.Typography.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .tracking(2)
 
@@ -157,7 +157,7 @@ struct CompetitionRevealView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
@@ -176,13 +176,13 @@ struct CompetitionRevealView: View {
             .padding()
             .background {
                 LinearGradient(
-                    colors: [.orange, .red],
+                    colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
             }
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
         .buttonStyle(.plain)
         .opacity(showResults ? 1 : 0.5)
@@ -206,17 +206,17 @@ struct CompetitionRevealSliderView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             // Top label
             Text(spectrum.topLabel.uppercased())
-                .font(.headline.weight(.bold))
+                .font(AppTheme.Typography.cardTitle.weight(.bold))
                 .foregroundStyle(.primary)
 
             // Slider with all positions
             GeometryReader { geometry in
                 ZStack(alignment: .top) {
                     // Background track
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                         .fill(Color(.systemGray5))
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
@@ -242,7 +242,7 @@ struct CompetitionRevealSliderView: View {
 
             // Bottom label
             Text(spectrum.bottomLabel.uppercased())
-                .font(.headline.weight(.bold))
+                .font(AppTheme.Typography.cardTitle.weight(.bold))
                 .foregroundStyle(.primary)
         }
         .padding(.horizontal)
@@ -278,23 +278,23 @@ struct CompetitionRevealSliderView: View {
     private func targetLine(height: CGFloat) -> some View {
         let y = targetPosition * height
 
-        return HStack(spacing: 4) {
+        return HStack(spacing: AppTheme.Spacing.xs) {
             Text("Target")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.green)
+                .font(AppTheme.Typography.tabLabel.weight(.semibold))
+                .foregroundStyle(AppTheme.success)
                 .frame(width: 45, alignment: .trailing)
 
             Rectangle()
-                .fill(Color.green)
+                .fill(AppTheme.success)
                 .frame(width: trackWidth + 20, height: 4)
                 .shadow(color: .black.opacity(0.2), radius: 2)
 
             Circle()
-                .fill(Color.green)
+                .fill(AppTheme.success)
                 .frame(width: 14, height: 14)
                 .overlay {
                     Circle()
-                        .stroke(Color.white, lineWidth: 2)
+                        .stroke(AppTheme.pureWhite, lineWidth: 2)
                 }
         }
         .position(x: UIScreen.main.bounds.width / 2 - 16, y: y)
@@ -305,9 +305,9 @@ struct CompetitionRevealSliderView: View {
         // Slight offset to prevent exact overlapping
         let xOffset = CGFloat(index % 2 == 0 ? -2 : 2)
 
-        return HStack(spacing: 4) {
+        return HStack(spacing: AppTheme.Spacing.xs) {
             Text(result.playerName)
-                .font(.caption2.weight(.medium))
+                .font(AppTheme.Typography.tabLabel.weight(.medium))
                 .foregroundStyle(color)
                 .frame(width: 45, alignment: .trailing)
                 .lineLimit(1)
@@ -322,7 +322,7 @@ struct CompetitionRevealSliderView: View {
                 .frame(width: 12, height: 12)
                 .overlay {
                     Circle()
-                        .stroke(Color.white, lineWidth: 1.5)
+                        .stroke(AppTheme.pureWhite, lineWidth: 1.5)
                 }
         }
         .position(x: UIScreen.main.bounds.width / 2 - 16 + xOffset, y: y)
@@ -337,32 +337,32 @@ struct CompetitionResultRow: View {
     let totalPlayers: Int
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             HStack(spacing: 12) {
                 // Rank indicator
                 rankBadge
 
                 // Player info
                 VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 8) {
+                    HStack(spacing: AppTheme.Spacing.sm) {
                         Text(result.playerName)
-                            .font(.headline)
+                            .font(AppTheme.Typography.cardTitle)
 
                         if result.rank == 1 {
                             Text("CLOSEST")
-                                .font(.caption2.weight(.bold))
+                                .font(AppTheme.Typography.tabLabel.weight(.bold))
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background {
                                     Capsule()
-                                        .fill(Color.green)
+                                        .fill(AppTheme.success)
                                 }
                         }
                     }
 
                     Text("\(result.distancePercentage)% away")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
                 }
 
@@ -375,7 +375,7 @@ struct CompetitionResultRow: View {
                         .frame(width: 16, height: 16)
 
                     Text("+\(result.pointsEarned)")
-                        .font(.title3.weight(.bold))
+                        .font(AppTheme.Typography.subsectionHeader.weight(.bold))
                         .foregroundStyle(result.zone.color)
                 }
                 .padding(.horizontal, 12)
@@ -392,22 +392,22 @@ struct CompetitionResultRow: View {
                     Image(systemName: "face.smiling.inverse")
                         .foregroundStyle(.orange)
                     Text(WorstGuesserTease.randomMessage())
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
                         .italic()
                 }
                 .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.vertical, AppTheme.Spacing.sm)
                 .frame(maxWidth: .infinity)
                 .background {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.orange.opacity(0.1))
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                        .fill(AppTheme.warning.opacity(0.1))
                 }
             }
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                 .fill(Color(.systemGray6))
         }
     }
@@ -416,7 +416,7 @@ struct CompetitionResultRow: View {
         ZStack {
             if result.rank == 1 {
                 Circle()
-                    .fill(Color.yellow)
+                    .fill(AppTheme.medalGold)
                     .frame(width: 32, height: 32)
 
                 Image(systemName: "crown.fill")
@@ -424,27 +424,27 @@ struct CompetitionResultRow: View {
                     .foregroundStyle(.white)
             } else if result.rank == 2 {
                 Circle()
-                    .fill(Color.gray)
+                    .fill(AppTheme.medalSilver)
                     .frame(width: 32, height: 32)
 
                 Text("2")
-                    .font(.subheadline.weight(.bold))
+                    .font(AppTheme.Typography.secondary.weight(.bold))
                     .foregroundStyle(.white)
             } else if result.rank == 3 {
                 Circle()
-                    .fill(Color.orange.opacity(0.8))
+                    .fill(AppTheme.medalBronze)
                     .frame(width: 32, height: 32)
 
                 Text("3")
-                    .font(.subheadline.weight(.bold))
+                    .font(AppTheme.Typography.secondary.weight(.bold))
                     .foregroundStyle(.white)
             } else {
                 Circle()
-                    .fill(Color(.systemGray5))
+                    .fill(AppTheme.warmLinen)
                     .frame(width: 32, height: 32)
 
                 Text("\(result.rank)")
-                    .font(.subheadline.weight(.bold))
+                    .font(AppTheme.Typography.secondary.weight(.bold))
                     .foregroundStyle(.secondary)
             }
         }

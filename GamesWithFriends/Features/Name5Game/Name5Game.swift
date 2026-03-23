@@ -5,7 +5,7 @@ struct Name5Game: GameDefinition {
     let name: String = "Name 5"
     let description: String = "Race against the clock to name 5 things!"
     let iconName: String = "hand.raised.fingers.spread.fill"
-    let accentColor: Color = .blue
+    let accentColor: Color = GameTheme.name5.accentColor
 
     func makeRootView() -> AnyView {
         AnyView(Name5GameView())

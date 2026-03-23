@@ -129,7 +129,7 @@ struct Name5SetupView: View {
                                         .buttonStyle(.plain)
                                     }
                                 }
-                                .padding(8)
+                                .padding(AppTheme.Spacing.sm)
                                 .background(
                                     RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                                         .fill(AppTheme.deepCharcoal.opacity(0.06))
@@ -174,7 +174,7 @@ struct Name5SetupView: View {
 
                         HStack {
                             Text("\(viewModel.playerCount) \(viewModel.playerCount == 1 ? "Player" : "Players")")
-                                .font(.title3)
+                                .font(AppTheme.Typography.subsectionHeader)
                                 .fontWeight(.semibold)
                                 .foregroundColor(AppTheme.deepCharcoal)
 
@@ -187,7 +187,7 @@ struct Name5SetupView: View {
                                     }
                                 } label: {
                                     Image(systemName: "minus.circle.fill")
-                                        .font(.title)
+                                        .font(AppTheme.Typography.screenTitle)
                                         .foregroundStyle(viewModel.playerCount > 1 ? GameTheme.name5.accentColor : AppTheme.mediumGray)
                                 }
                                 .disabled(viewModel.playerCount <= 1)
@@ -198,7 +198,7 @@ struct Name5SetupView: View {
                                     }
                                 } label: {
                                     Image(systemName: "plus.circle.fill")
-                                        .font(.title)
+                                        .font(AppTheme.Typography.screenTitle)
                                         .foregroundStyle(viewModel.playerCount < 20 ? GameTheme.name5.accentColor : AppTheme.mediumGray)
                                 }
                                 .disabled(viewModel.playerCount >= 20)
@@ -211,7 +211,7 @@ struct Name5SetupView: View {
                     if !viewModel.availablePrompts.isEmpty {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
+                                .foregroundColor(AppTheme.success)
                             Text("\(viewModel.availablePrompts.count) prompts available")
                                 .font(AppTheme.Typography.body)
                                 .foregroundColor(AppTheme.mediumGray)
@@ -220,7 +220,7 @@ struct Name5SetupView: View {
                         .padding()
                         .background(
                             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                                .fill(Color.green.opacity(0.1))
+                                .fill(AppTheme.success.opacity(0.1))
                         )
                     }
 
@@ -261,7 +261,7 @@ struct DifficultyToggle: View {
                 HStack(spacing: 2) {
                     ForEach(0..<starCount, id: \.self) { _ in
                         Image(systemName: "star.fill")
-                            .font(.caption2)
+                            .font(AppTheme.Typography.tabLabel)
                             .foregroundColor(isSelected ? .white : starColor)
                     }
                 }
@@ -281,7 +281,7 @@ struct DifficultyToggle: View {
                 RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                     .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
             )
-            .shadow(color: isSelected ? Color.black.opacity(0.1) : Color.clear, radius: 4, y: 2)
+            .shadow(color: isSelected ? AppTheme.Shadow.cardColor : Color.clear, radius: AppTheme.Shadow.cardRadius, y: AppTheme.Shadow.cardY)
         }
         .buttonStyle(.plain)
     }
@@ -321,10 +321,10 @@ struct ContextCard: View {
         Button(action: action) {
             VStack(spacing: AppTheme.Spacing.md) {
                 Image(systemName: context.icon)
-                    .font(.system(size: 32))
+                    .font(AppTheme.Typography.hero)
                     .foregroundColor(isSelected ? .white : GameTheme.name5.accentColor)
 
-                VStack(spacing: 4) {
+                VStack(spacing: AppTheme.Spacing.xs) {
                     Text(context.rawValue)
                         .font(AppTheme.Typography.cardTitle)
                         .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
@@ -346,7 +346,7 @@ struct ContextCard: View {
                 RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                     .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
             )
-            .shadow(color: isSelected ? Color.black.opacity(0.15) : AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, y: AppTheme.Shadow.cardY)
+            .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, y: AppTheme.Shadow.cardY)
         }
         .buttonStyle(.plain)
     }
@@ -362,7 +362,7 @@ struct CategorySelectionCard: View {
         Button(action: action) {
             VStack(spacing: AppTheme.Spacing.sm) {
                 Image(systemName: category.icon)
-                    .font(.title3)
+                    .font(AppTheme.Typography.subsectionHeader)
                     .foregroundColor(isSelected ? .white : GameTheme.name5.accentColor)
                 
                 Text(category.rawValue)
@@ -375,7 +375,7 @@ struct CategorySelectionCard: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .padding(.horizontal, 8)
+            .padding(.horizontal, AppTheme.Spacing.sm)
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .fill(isSelected ? GameTheme.name5.accentColor : AppTheme.pureWhite)
@@ -399,7 +399,7 @@ struct AgeGroupCard: View {
         Button(action: action) {
             HStack {
                 Image(systemName: ageGroup.icon)
-                    .font(.title2)
+                    .font(AppTheme.Typography.sectionHeader)
                     .foregroundColor(isSelected ? .white : GameTheme.name5.accentColor)
 
                 Text(ageGroup.rawValue)
@@ -423,7 +423,7 @@ struct AgeGroupCard: View {
                 RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                     .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
             )
-            .shadow(color: isSelected ? Color.black.opacity(0.1) : Color.clear, radius: 4, y: 2)
+            .shadow(color: isSelected ? AppTheme.Shadow.cardColor : Color.clear, radius: AppTheme.Shadow.cardRadius, y: AppTheme.Shadow.cardY)
         }
         .buttonStyle(.plain)
     }

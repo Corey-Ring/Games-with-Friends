@@ -10,7 +10,7 @@ struct BorderBlitzGame: GameDefinition {
     let name = "Border Blitz"
     let description = "Guess countries by their borders!"
     let iconName = "map.fill"
-    let accentColor = Color.blue
+    let accentColor = GameTheme.borderBlitz.accentColor
 
     func makeRootView() -> AnyView {
         AnyView(BorderBlitzRootView())

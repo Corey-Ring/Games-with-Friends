@@ -11,7 +11,7 @@ struct RevealView: View {
             headerSection
 
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: AppTheme.Spacing.lg) {
                     // The prompt
                     promptCard
 
@@ -33,7 +33,7 @@ struct RevealView: View {
         .padding()
         .background {
             LinearGradient(
-                colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -59,42 +59,42 @@ struct RevealView: View {
     // MARK: - Sections
 
     private var headerSection: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             if let round = viewModel.currentRound {
                 Text("Round \(round.roundNumber)")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
             }
 
             Text("RESULTS")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.purple)
         }
     }
 
     private var promptCard: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Text("THE PROMPT")
-                .font(.caption.weight(.semibold))
+                .font(AppTheme.Typography.pillLabel)
                 .foregroundStyle(.secondary)
                 .tracking(2)
 
             if let round = viewModel.currentRound {
                 Text("\"\(round.prompt)\"")
-                    .font(.title3.weight(.semibold))
+                    .font(AppTheme.Typography.subsectionHeader.weight(.semibold))
                     .multilineTextAlignment(.center)
             }
 
             if let setter = viewModel.promptSetterTeam {
                 Text("Set by \(setter.name)")
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
@@ -106,7 +106,7 @@ struct RevealView: View {
 
         // For single team or first result, show the main reveal slider
         if let firstResult = results.first {
-            VStack(spacing: 16) {
+            VStack(spacing: AppTheme.Spacing.md) {
                 RevealSliderView(
                     spectrum: round.spectrum,
                     targetPosition: round.targetPosition,
@@ -117,22 +117,22 @@ struct RevealView: View {
                 .scaleEffect(revealedPositions ? 1 : 0.9)
 
                 // Legend
-                HStack(spacing: 24) {
+                HStack(spacing: AppTheme.Spacing.lg) {
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(Color.green)
+                            .fill(AppTheme.success)
                             .frame(width: 12, height: 12)
                         Text("Target")
-                            .font(.caption)
+                            .font(AppTheme.Typography.caption)
                             .foregroundStyle(.secondary)
                     }
 
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(Color.orange)
+                            .fill(AppTheme.warning)
                             .frame(width: 12, height: 12)
                         Text("Your Guess")
-                            .font(.caption)
+                            .font(AppTheme.Typography.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -141,9 +141,9 @@ struct RevealView: View {
     }
 
     private var resultsSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Text("SCORING")
-                .font(.caption.weight(.semibold))
+                .font(AppTheme.Typography.pillLabel)
                 .foregroundStyle(.secondary)
                 .tracking(2)
 
@@ -157,7 +157,7 @@ struct RevealView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
@@ -182,7 +182,7 @@ struct RevealView: View {
                 )
             }
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
         .buttonStyle(.plain)
         .opacity(showResults ? 1 : 0.5)
@@ -196,14 +196,14 @@ struct TeamResultRow: View {
     let result: VibeCheckRoundResult
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: AppTheme.Spacing.md) {
             // Team name
             VStack(alignment: .leading, spacing: 2) {
                 Text(result.teamName)
-                    .font(.headline)
+                    .font(AppTheme.Typography.cardTitle)
 
                 Text(distanceText)
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
             }
 
@@ -216,7 +216,7 @@ struct TeamResultRow: View {
                     .frame(width: 16, height: 16)
 
                 Text("+\(result.pointsEarned)")
-                    .font(.title3.weight(.bold))
+                    .font(AppTheme.Typography.subsectionHeader.weight(.bold))
                     .foregroundStyle(result.zone.color)
             }
             .padding(.horizontal, 12)
@@ -228,7 +228,7 @@ struct TeamResultRow: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                 .fill(Color(.systemGray6))
         }
     }

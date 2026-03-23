@@ -11,7 +11,7 @@ struct GameRegistry {
                 name: "Conversation Starters",
                 description: "Break the ice and spark great conversations",
                 iconName: "bubble.left.and.bubble.right.fill",
-                accentColor: .purple
+                accentColor: GameTheme.conversationStarters.accentColor
             )),
             AnyGameDefinition(CountryLetterGame()),
             AnyGameDefinition(Name5Game()),

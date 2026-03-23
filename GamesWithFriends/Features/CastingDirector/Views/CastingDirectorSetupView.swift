@@ -61,9 +61,7 @@ struct CastingDirectorSetupView: View {
 
     private var decompressionSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            ProgressView()
-                .scaleEffect(1.5)
-                .tint(GameTheme.castingDirector.accentColor)
+            GameSpinner(color: GameTheme.castingDirector.accentColor)
 
             Text("Preparing Movie Database...")
                 .font(AppTheme.Typography.cardTitle)
@@ -89,7 +87,7 @@ struct CastingDirectorSetupView: View {
     private var databaseErrorSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.largeTitle)
+                .font(AppTheme.Typography.hero)
                 .foregroundStyle(.yellow)
 
             Text("Database Not Loaded")
@@ -118,11 +116,11 @@ struct CastingDirectorSetupView: View {
                 } label: {
                     HStack(spacing: AppTheme.Spacing.md) {
                         Image(systemName: mode == .solo ? "person.fill" : "person.3.fill")
-                            .font(.title2)
+                            .font(AppTheme.Typography.sectionHeader)
                             .foregroundStyle(viewModel.gameMode == mode ? .white : GameTheme.castingDirector.accentColor)
                             .frame(width: 40)
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                             Text(mode.rawValue)
                                 .font(AppTheme.Typography.cardTitle)
                                 .foregroundStyle(viewModel.gameMode == mode ? .white : AppTheme.deepCharcoal)
@@ -205,7 +203,7 @@ struct CastingDirectorSetupView: View {
                         } label: {
                             VStack(spacing: 6) {
                                 Image(systemName: era.icon)
-                                    .font(.title2)
+                                    .font(AppTheme.Typography.sectionHeader)
                                     .foregroundStyle(viewModel.era == era ? .white : GameTheme.castingDirector.accentColor)
                                 
                                 Text(era.rawValue)
@@ -225,7 +223,7 @@ struct CastingDirectorSetupView: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 4)
+                .padding(.horizontal, AppTheme.Spacing.xs)
             }
         }
     }
@@ -239,7 +237,7 @@ struct CastingDirectorSetupView: View {
 
             HStack {
                 Text("\(playerCount) Players")
-                    .font(.title2)
+                    .font(AppTheme.Typography.sectionHeader)
                     .fontWeight(.semibold)
 
                 Spacer()
@@ -249,7 +247,7 @@ struct CastingDirectorSetupView: View {
                         if playerCount > 2 { playerCount -= 1 }
                     } label: {
                         Image(systemName: "minus.circle.fill")
-                            .font(.title)
+                            .font(AppTheme.Typography.screenTitle)
                             .foregroundStyle(playerCount > 2 ? GameTheme.castingDirector.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount <= 2)
@@ -258,7 +256,7 @@ struct CastingDirectorSetupView: View {
                         if playerCount < 8 { playerCount += 1 }
                     } label: {
                         Image(systemName: "plus.circle.fill")
-                            .font(.title)
+                            .font(AppTheme.Typography.screenTitle)
                             .foregroundStyle(playerCount < 8 ? GameTheme.castingDirector.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount >= 8)
@@ -316,7 +314,7 @@ struct CastingDirectorSetupView: View {
 
             HStack {
                 Text("\(viewModel.numberOfRounds) rounds")
-                    .font(.title3)
+                    .font(AppTheme.Typography.subsectionHeader)
 
                 Spacer()
 

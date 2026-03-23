@@ -32,12 +32,12 @@ struct PromptEntryView: View {
                 submitButton
             }
             .padding(.horizontal)
-            .padding(.top, 8)
+            .padding(.top, AppTheme.Spacing.sm)
             .padding(.bottom)
         }
         .background {
             LinearGradient(
-                colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -51,18 +51,18 @@ struct PromptEntryView: View {
         HStack {
             if let round = viewModel.currentRound {
                 Text("Round \(round.roundNumber)")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
             if let setter = viewModel.promptSetterTeam {
-                HStack(spacing: 4) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: "person.fill.questionmark")
                     Text("\(setter.name) - Prompt Setter")
                 }
-                .font(.subheadline.weight(.semibold))
+                .font(AppTheme.Typography.secondary.weight(.semibold))
                 .foregroundStyle(.purple)
             }
         }
@@ -71,14 +71,14 @@ struct PromptEntryView: View {
     private var instructionsCard: some View {
         VStack(spacing: 6) {
             Image(systemName: "lightbulb.fill")
-                .font(.title3)
+                .font(AppTheme.Typography.subsectionHeader)
                 .foregroundStyle(.yellow)
 
             Text("Create a Prompt")
-                .font(.subheadline.weight(.semibold))
+                .font(AppTheme.Typography.secondary.weight(.semibold))
 
             Text("Think of something that matches the target position on the spectrum. Your team will try to guess where you placed it!")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -86,16 +86,16 @@ struct PromptEntryView: View {
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity)
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
         }
     }
 
     private var promptInputSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Text("Your Prompt:")
-                .font(.subheadline.weight(.medium))
+                .font(AppTheme.Typography.secondary.weight(.medium))
 
             TextField("Enter something that matches the target...", text: $viewModel.currentPrompt, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
@@ -110,7 +110,7 @@ struct PromptEntryView: View {
         }
         .padding(10)
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
         }

@@ -27,11 +27,11 @@ struct TeamGuessingView: View {
             lockInButton
         }
         .padding(.horizontal)
-        .padding(.top, 8)
+        .padding(.top, AppTheme.Spacing.sm)
         .padding(.bottom)
         .background {
             LinearGradient(
-                colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -45,28 +45,28 @@ struct TeamGuessingView: View {
         HStack {
             if let round = viewModel.currentRound {
                 Text("Round \(round.roundNumber)")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
             if let team = viewModel.currentGuessingTeam {
-                HStack(spacing: 4) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: "hand.tap.fill")
                     Text(team.name)
                 }
-                .font(.subheadline.weight(.semibold))
+                .font(AppTheme.Typography.secondary.weight(.semibold))
                 .foregroundStyle(.orange)
             }
         }
     }
 
     private var promptCard: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             if let round = viewModel.currentRound {
                 Text("\"\(round.prompt)\"")
-                    .font(.body.weight(.semibold))
+                    .font(AppTheme.Typography.body.weight(.semibold))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.primary)
                     .lineLimit(2)
@@ -77,7 +77,7 @@ struct TeamGuessingView: View {
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity)
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
         }
@@ -87,14 +87,14 @@ struct TeamGuessingView: View {
         HStack(spacing: 6) {
             Image(systemName: "lightbulb.fill")
                 .foregroundStyle(.yellow)
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
 
             Text("Discuss as a team! Slide to where you think the prompt belongs.")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.vertical, AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: 10)

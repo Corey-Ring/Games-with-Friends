@@ -5,6 +5,7 @@ struct PrimaryButton: View {
     let title: String
     var icon: String? = nil
     let action: () -> Void
+    @ScaledMetric(relativeTo: .headline) private var buttonHeight: CGFloat = 52
 
     var body: some View {
         Button(action: action) {
@@ -18,7 +19,7 @@ struct PrimaryButton: View {
             .font(AppTheme.Typography.buttonLabel)
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
-            .frame(height: 52)
+            .frame(minHeight: buttonHeight)
             .background(AppTheme.brandOrange)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
@@ -31,6 +32,7 @@ struct SecondaryButton: View {
     let title: String
     var icon: String? = nil
     let action: () -> Void
+    @ScaledMetric(relativeTo: .headline) private var buttonHeight: CGFloat = 52
 
     var body: some View {
         Button(action: action) {
@@ -44,13 +46,29 @@ struct SecondaryButton: View {
             .font(AppTheme.Typography.buttonLabel)
             .foregroundColor(AppTheme.brandOrange)
             .frame(maxWidth: .infinity)
-            .frame(height: 52)
+            .frame(minHeight: buttonHeight)
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(AppTheme.brandOrange, lineWidth: 1.5)
             )
         }
         .pressable()
+    }
+}
+
+// MARK: - Game Spinner (replaces ProgressView)
+struct GameSpinner: View {
+    let color: Color
+    @State private var isAnimating = false
+
+    var body: some View {
+        Circle()
+            .trim(from: 0, to: 0.7)
+            .stroke(color, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+            .frame(width: 40, height: 40)
+            .rotationEffect(.degrees(isAnimating ? 360 : 0))
+            .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: isAnimating)
+            .onAppear { isAnimating = true }
     }
 }
 

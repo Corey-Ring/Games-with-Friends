@@ -31,12 +31,12 @@ struct MovieChainGameOverView: View {
             // Trophy icon
             ZStack {
                 Circle()
-                    .fill(Color.yellow.opacity(0.3))
+                    .fill(AppTheme.medalGold.opacity(0.3))
                     .frame(width: 120, height: 120)
 
                 Image(systemName: "trophy.fill")
                     .font(.system(size: 60))
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(AppTheme.medalGold)
             }
 
             if let winner = winner {
@@ -187,11 +187,11 @@ struct PlayerStandingRow: View {
 
                 if rank <= 3 {
                     Image(systemName: rankIcon)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.white)
                 } else {
                     Text("\(rank)")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .fontWeight(.bold)
                         .foregroundStyle(.white)
                 }
@@ -215,7 +215,7 @@ struct PlayerStandingRow: View {
                     HStack(spacing: 2) {
                         ForEach(0..<gameMode.defaultLives, id: \.self) { index in
                             Image(systemName: index < player.lives ? "heart.fill" : "heart")
-                                .font(.caption2)
+                                .font(AppTheme.Typography.tabLabel)
                                 .foregroundStyle(.red)
                         }
                     }
@@ -269,7 +269,7 @@ struct GameStatCard: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: icon)
-                .font(.title2)
+                .font(AppTheme.Typography.sectionHeader)
                 .foregroundStyle(GameTheme.movieChain.accentColor)
 
             Text(value)

@@ -27,21 +27,21 @@ struct SpotPlateView: View {
                             .foregroundStyle(.blue)
 
                         Text(plate.name)
-                            .font(.title2)
+                            .font(AppTheme.Typography.sectionHeader)
                             .fontWeight(.semibold)
 
                         if let nickname = plate.nickname {
                             Text(nickname)
-                                .font(.subheadline)
+                                .font(AppTheme.Typography.secondary)
                                 .foregroundStyle(.secondary)
                         }
 
-                        HStack(spacing: 16) {
+                        HStack(spacing: AppTheme.Spacing.md) {
                             Label(plate.region.displayName, systemImage: plate.region.icon)
-                                .font(.caption)
+                                .font(AppTheme.Typography.caption)
 
                             Label(plate.rarityTier.rawValue, systemImage: plate.rarityTier.icon)
-                                .font(.caption)
+                                .font(AppTheme.Typography.caption)
                                 .foregroundStyle(Color(plate.rarityTier.color))
                         }
                         .foregroundStyle(.secondary)
@@ -68,15 +68,15 @@ struct SpotPlateView: View {
                 }
 
                 Section {
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                         Label("Fun Fact", systemImage: "lightbulb.fill")
-                            .font(.headline)
+                            .font(AppTheme.Typography.cardTitle)
                             .foregroundStyle(.orange)
 
                         Text(plate.funFact)
-                            .font(.body)
+                            .font(AppTheme.Typography.body)
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, AppTheme.Spacing.xs)
                 }
 
                 Section {
@@ -86,7 +86,7 @@ struct SpotPlateView: View {
                         HStack {
                             Spacer()
                             Label("Spotted!", systemImage: "checkmark.circle.fill")
-                                .font(.headline)
+                                .font(AppTheme.Typography.cardTitle)
                             Spacer()
                         }
                     }
@@ -136,34 +136,34 @@ struct CelebrationView: View {
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
 
-            VStack(spacing: 24) {
+            VStack(spacing: AppTheme.Spacing.lg) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 80))
                     .foregroundStyle(.green)
 
-                VStack(spacing: 8) {
+                VStack(spacing: AppTheme.Spacing.sm) {
                     Text("Spotted!")
-                        .font(.largeTitle)
+                        .font(AppTheme.Typography.hero)
                         .fontWeight(.bold)
 
                     Text(plate.name)
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundStyle(.secondary)
 
                     if plate.rarityTier == .rare || plate.rarityTier == .ultraRare {
-                        HStack(spacing: 4) {
+                        HStack(spacing: AppTheme.Spacing.xs) {
                             Image(systemName: plate.rarityTier.icon)
                             Text(plate.rarityTier.rawValue + "!")
                         }
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
                         .foregroundStyle(Color(plate.rarityTier.color))
-                        .padding(.top, 8)
+                        .padding(.top, AppTheme.Spacing.sm)
                     }
                 }
             }
-            .padding(32)
+            .padding(AppTheme.Spacing.xl)
             .background(
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.large)
                     .fill(.regularMaterial)
             )
             .padding(40)

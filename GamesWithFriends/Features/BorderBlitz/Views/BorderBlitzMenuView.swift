@@ -8,71 +8,68 @@ import SwiftUI
 struct BorderBlitzMenuView: View {
     var viewModel: BorderBlitzViewModel
     @Environment(\.dismiss) private var dismiss
+    private let theme = GameTheme.borderBlitz
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 30) {
+            VStack(spacing: AppTheme.Spacing.lg) {
                 // Title
-                VStack(spacing: 10) {
+                VStack(spacing: AppTheme.Spacing.sm) {
                     Text("Border Blitz")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundColor(.blue)
+                        .font(AppTheme.Typography.hero)
+                        .foregroundColor(AppTheme.deepCharcoal)
 
                     Text("Identify countries by their borders!")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(AppTheme.Typography.body)
+                        .foregroundColor(AppTheme.mediumGray)
                 }
-                .padding(.top, 20)
+                .padding(.top, AppTheme.Spacing.lg)
 
                 // Game preview icon
                 ZStack {
                     Circle()
                         .fill(
                             LinearGradient(
-                                colors: [.blue, .purple],
+                                colors: [theme.accentColor, theme.accentColor.opacity(0.6)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
                         .frame(width: 150, height: 150)
 
-                    Image(systemName: "map.fill")
+                    Image(systemName: theme.iconName)
                         .font(.system(size: 70))
                         .foregroundColor(.white)
                 }
-                .padding(.vertical, 20)
+                .padding(.vertical, AppTheme.Spacing.lg)
 
                 // Difficulty selection
-                VStack(alignment: .leading, spacing: 15) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                     Text("Select Difficulty")
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(AppTheme.deepCharcoal)
 
                     ForEach(BorderBlitzDifficulty.allCases) { difficulty in
                         BorderBlitzDifficultyButton(
                             difficulty: difficulty,
-                            isSelected: viewModel.selectedDifficulty == difficulty
+                            isSelected: viewModel.selectedDifficulty == difficulty,
+                            accentColor: theme.accentColor
                         ) {
                             viewModel.selectedDifficulty = difficulty
                         }
                     }
                 }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(UIColor.secondarySystemBackground))
-                )
-                .padding(.horizontal)
+                .gameCard()
+                .padding(.horizontal, AppTheme.Spacing.md)
 
                 // Start button
-                Button("Start Game") {
+                PrimaryButton(title: "Start Game", icon: "play.fill") {
                     viewModel.startGame()
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .font(.title2)
-                .padding(.bottom, 20)
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.bottom, AppTheme.Spacing.lg)
             }
-            .padding()
+            .padding(.horizontal, AppTheme.Spacing.md)
         }
         .navigationBarBackButtonHidden(viewModel.gameStarted)
     }
@@ -81,19 +78,20 @@ struct BorderBlitzMenuView: View {
 struct BorderBlitzDifficultyButton: View {
     let difficulty: BorderBlitzDifficulty
     let isSelected: Bool
+    var accentColor: Color = AppTheme.tealGreen
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text(difficulty.rawValue)
-                        .font(.headline)
-                        .foregroundColor(isSelected ? .white : .primary)
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
 
                     Text(difficulty.description)
-                        .font(.caption)
-                        .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary)
+                        .font(AppTheme.Typography.caption)
+                        .foregroundColor(isSelected ? .white.opacity(0.9) : AppTheme.mediumGray)
                 }
 
                 Spacer()
@@ -103,11 +101,12 @@ struct BorderBlitzDifficultyButton: View {
                         .foregroundColor(.white)
                 }
             }
-            .padding()
+            .padding(AppTheme.Spacing.md)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.blue : Color(UIColor.tertiarySystemBackground))
+                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                    .fill(isSelected ? accentColor : accentColor.opacity(0.08))
             )
         }
+        .pressable()
     }
 }

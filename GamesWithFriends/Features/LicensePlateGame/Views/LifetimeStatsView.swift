@@ -19,17 +19,17 @@ struct LifetimeStatsView: View {
         ScrollView {
             VStack(spacing: 20) {
                 // Header
-                VStack(spacing: 8) {
+                VStack(spacing: AppTheme.Spacing.sm) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .font(.system(size: 60))
                         .foregroundStyle(.blue)
 
                     Text("Lifetime Statistics")
-                        .font(.title)
+                        .font(AppTheme.Typography.screenTitle)
                         .fontWeight(.bold)
 
                     Text("Across all trips")
-                        .font(.subheadline)
+                        .font(AppTheme.Typography.secondary)
                         .foregroundStyle(.secondary)
                 }
                 .padding()
@@ -38,7 +38,7 @@ struct LifetimeStatsView: View {
                 LazyVGrid(columns: [
                     GridItem(.flexible()),
                     GridItem(.flexible())
-                ], spacing: 16) {
+                ], spacing: AppTheme.Spacing.md) {
                     StatBox(
                         value: "\(stats.totalTrips)",
                         label: "Total Trips",
@@ -76,10 +76,10 @@ struct LifetimeStatsView: View {
                 if let mostSpotted = stats.mostSpottedPlateCode,
                    let plate = PlateData.plate(forCode: mostSpotted) {
                     LicensePlateStatsCard(title: "Most Spotted Plate") {
-                        HStack(spacing: 16) {
+                        HStack(spacing: AppTheme.Spacing.md) {
                             ZStack {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.blue.opacity(0.1))
+                                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                                    .fill(GameTheme.licensePlate.accentColor.opacity(0.1))
                                     .frame(width: 80, height: 80)
 
                                 Text(plate.code)
@@ -88,15 +88,15 @@ struct LifetimeStatsView: View {
 
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(plate.name)
-                                    .font(.headline)
+                                    .font(AppTheme.Typography.cardTitle)
 
                                 Text("Spotted \(stats.mostSpottedCount) times")
-                                    .font(.subheadline)
+                                    .font(AppTheme.Typography.secondary)
                                     .foregroundStyle(.secondary)
 
                                 if let nickname = plate.nickname {
                                     Text(nickname)
-                                        .font(.caption)
+                                        .font(AppTheme.Typography.caption)
                                         .foregroundStyle(.tertiary)
                                 }
                             }
@@ -115,14 +115,14 @@ struct LifetimeStatsView: View {
                                 .font(.system(size: 40))
                                 .foregroundStyle(Color(rarestRarity.color))
 
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                                 Text(rarestRarity.rawValue)
-                                    .font(.title3)
+                                    .font(AppTheme.Typography.subsectionHeader)
                                     .fontWeight(.bold)
                                     .foregroundStyle(Color(rarestRarity.color))
 
                                 Text("Worth \(rarestRarity.points) points each")
-                                    .font(.caption)
+                                    .font(AppTheme.Typography.caption)
                                     .foregroundStyle(.secondary)
                             }
 
@@ -157,7 +157,7 @@ struct LifetimeStatsView: View {
                     LicensePlateStatsCard(title: "Lifetime Achievements") {
                         VStack(spacing: 12) {
                             Text("\(lifetimeUnlocked.count) of \(Achievement.allAchievements.count) unlocked")
-                                .font(.subheadline)
+                                .font(AppTheme.Typography.secondary)
                                 .foregroundStyle(.secondary)
 
                             ProgressView(
@@ -170,7 +170,7 @@ struct LifetimeStatsView: View {
                                 AchievementsView(viewModel: viewModel)
                             } label: {
                                 Text("View All Achievements")
-                                    .font(.subheadline)
+                                    .font(AppTheme.Typography.secondary)
                                     .foregroundStyle(.blue)
                             }
                         }
@@ -201,14 +201,14 @@ struct StatBox: View {
                 .font(.system(size: 32, weight: .bold))
 
             Text(label)
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(.regularMaterial)
         )
     }
@@ -221,24 +221,24 @@ struct TripHistoryRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 6) {
                 Text(trip.name)
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
 
-                HStack(spacing: 8) {
+                HStack(spacing: AppTheme.Spacing.sm) {
                     Text(trip.startDate, style: .date)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
 
                     if let endDate = trip.endDate {
                         Text("→")
                             .foregroundStyle(.secondary)
                         Text(endDate, style: .date)
-                            .font(.caption)
+                            .font(AppTheme.Typography.caption)
                             .foregroundStyle(.secondary)
                     } else {
                         Text("• Ongoing")
-                            .font(.caption)
+                            .font(AppTheme.Typography.caption)
                             .foregroundStyle(.green)
                     }
                 }
@@ -246,18 +246,18 @@ struct TripHistoryRow: View {
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 4) {
+            VStack(alignment: .trailing, spacing: AppTheme.Spacing.xs) {
                 Text("\(trip.totalSpotted)")
-                    .font(.headline)
+                    .font(AppTheme.Typography.cardTitle)
                     .foregroundStyle(.blue)
 
                 Text("plates")
-                    .font(.caption2)
+                    .font(AppTheme.Typography.tabLabel)
                     .foregroundStyle(.secondary)
             }
 
             Image(systemName: "chevron.right")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.tertiary)
         }
     }
@@ -272,7 +272,7 @@ struct TripHistoryDetailView: View {
                 // Trip Info
                 VStack(alignment: .leading, spacing: 12) {
                     Text(trip.name)
-                        .font(.title)
+                        .font(AppTheme.Typography.screenTitle)
                         .fontWeight(.bold)
 
                     HStack {
@@ -281,16 +281,16 @@ struct TripHistoryDetailView: View {
                             Text("• Ended: \(endDate, style: .date)")
                         }
                     }
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
 
                     if let notes = trip.notes, !notes.isEmpty {
                         Text(notes)
-                            .font(.body)
+                            .font(AppTheme.Typography.body)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color(.systemGray6))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .background(AppTheme.warmLinen)
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
                     }
                 }
                 .padding()
@@ -298,29 +298,29 @@ struct TripHistoryDetailView: View {
                 // Spotted Plates
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Spotted Plates (\(trip.totalSpotted))")
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
                         .padding(.horizontal)
 
                     ForEach(trip.spottedPlates.sorted { $0.spottedAt > $1.spottedAt }) { spotted in
                         HStack {
                             Text(spotted.plateCode)
-                                .font(.system(.headline, design: .rounded))
+                                .font(AppTheme.Typography.cardTitle)
                                 .frame(width: 50)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(spotted.plateName)
-                                    .font(.subheadline)
+                                    .font(AppTheme.Typography.secondary)
 
                                 Text(spotted.spottedAt, style: .date)
-                                    .font(.caption)
+                                    .font(AppTheme.Typography.caption)
                                     .foregroundStyle(.secondary)
                             }
 
                             Spacer()
                         }
                         .padding()
-                        .background(Color(.systemGray6))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .background(AppTheme.warmLinen)
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
                         .padding(.horizontal)
                     }
                 }

@@ -6,7 +6,7 @@ struct CompetitionHomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: AppTheme.Spacing.lg) {
                 // Header
                 headerSection
 
@@ -24,9 +24,9 @@ struct CompetitionHomeView: View {
                     showHowToPlay = true
                 } label: {
                     Label("How to Play", systemImage: "book.fill")
-                        .font(.subheadline)
+                        .font(AppTheme.Typography.secondary)
                 }
-                .padding(.top, 8)
+                .padding(.top, AppTheme.Spacing.sm)
                 .padding(.bottom, 20)
             }
             .padding()
@@ -34,7 +34,7 @@ struct CompetitionHomeView: View {
         .scrollIndicators(.hidden)
         .background {
             LinearGradient(
-                colors: [Color.orange.opacity(0.1), Color.red.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.1)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -48,22 +48,22 @@ struct CompetitionHomeView: View {
     // MARK: - Sections
 
     private var headerSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "trophy.fill")
                 .font(.system(size: 50))
                 .foregroundStyle(
                     LinearGradient(
-                        colors: [.orange, .red],
+                        colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
 
             Text("COMPETITION MODE")
-                .font(.largeTitle.weight(.bold))
+                .font(AppTheme.Typography.hero)
 
             Text("Every player for themselves!")
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
                 .foregroundStyle(.secondary)
         }
         .padding(.vertical)
@@ -72,7 +72,7 @@ struct CompetitionHomeView: View {
     private var playerCountSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Players", systemImage: "person.fill")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             HStack {
                 Button {
@@ -81,7 +81,7 @@ struct CompetitionHomeView: View {
                     }
                 } label: {
                     Image(systemName: "minus.circle.fill")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundStyle(viewModel.settings.playerCount > 2 ? .primary : .secondary)
                 }
                 .disabled(viewModel.settings.playerCount <= 2)
@@ -100,7 +100,7 @@ struct CompetitionHomeView: View {
                     }
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundStyle(viewModel.settings.playerCount < 10 ? .primary : .secondary)
                 }
                 .disabled(viewModel.settings.playerCount >= 10)
@@ -108,13 +108,13 @@ struct CompetitionHomeView: View {
             .padding(.horizontal)
 
             Text("Minimum 2 players")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity)
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
@@ -123,20 +123,20 @@ struct CompetitionHomeView: View {
     private var targetScoreSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Target Score", systemImage: "flag.checkered")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
-            HStack(spacing: 16) {
+            HStack(spacing: AppTheme.Spacing.md) {
                 ForEach([300, 500, 750, 1000], id: \.self) { score in
                     Button {
                         viewModel.settings.targetScore = score
                     } label: {
                         Text("\(score)")
-                            .font(.subheadline.weight(.medium))
-                            .padding(.horizontal, 16)
+                            .font(AppTheme.Typography.secondary.weight(.medium))
+                            .padding(.horizontal, AppTheme.Spacing.md)
                             .padding(.vertical, 10)
                             .background {
                                 RoundedRectangle(cornerRadius: 10)
-                                    .fill(viewModel.settings.targetScore == score ? Color.orange : Color(.systemGray5))
+                                    .fill(viewModel.settings.targetScore == score ? GameTheme.vibeCheck.accentColor : Color(.systemGray5))
                             }
                             .foregroundStyle(viewModel.settings.targetScore == score ? .white : .primary)
                     }
@@ -146,7 +146,7 @@ struct CompetitionHomeView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
@@ -165,13 +165,13 @@ struct CompetitionHomeView: View {
             .padding()
             .background {
                 LinearGradient(
-                    colors: [.orange, .red],
+                    colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
             }
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
         .buttonStyle(.plain)
     }
@@ -184,10 +184,10 @@ struct CompetitionPlayerSetupView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: AppTheme.Spacing.lg) {
                 // Header
                 Text("Enter Player Names")
-                    .font(.title.weight(.bold))
+                    .font(AppTheme.Typography.screenTitle)
 
                 // Player name fields
                 ForEach(Array(viewModel.players.enumerated()), id: \.element.id) { index, player in
@@ -207,7 +207,7 @@ struct CompetitionPlayerSetupView: View {
         .scrollIndicators(.hidden)
         .background {
             LinearGradient(
-                colors: [Color.orange.opacity(0.1), Color.red.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.1)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -228,13 +228,13 @@ struct CompetitionPlayerSetupView: View {
             .padding()
             .background {
                 LinearGradient(
-                    colors: [.orange, .red],
+                    colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
             }
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
         .buttonStyle(.plain)
     }
@@ -250,11 +250,11 @@ struct PlayerNameCard: View {
             // Player number badge
             ZStack {
                 Circle()
-                    .fill(Color.orange)
+                    .fill(GameTheme.vibeCheck.accentColor)
                     .frame(width: 36, height: 36)
 
                 Text("\(playerIndex + 1)")
-                    .font(.headline.weight(.bold))
+                    .font(AppTheme.Typography.cardTitle.weight(.bold))
                     .foregroundStyle(.white)
             }
 
@@ -263,11 +263,11 @@ struct PlayerNameCard: View {
                 set: { viewModel.updatePlayerName(at: playerIndex, name: $0) }
             ))
             .textFieldStyle(.roundedBorder)
-            .font(.body)
+            .font(AppTheme.Typography.body)
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
@@ -282,7 +282,7 @@ struct CompetitionHowToPlayView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
                     // Overview
                     section(title: "Overview", icon: "info.circle.fill") {
                         Text("Competition Mode is a free-for-all version of Vibe Check where every player competes individually. Pass the device around and try to match the Vibe Setter's target position!")
@@ -290,7 +290,7 @@ struct CompetitionHowToPlayView: View {
 
                     // Vibe Setter
                     section(title: "Vibe Setter", icon: "person.fill.questionmark") {
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                             Text("1. A random player becomes the Vibe Setter each round")
                             Text("2. They see the spectrum and target position")
                             Text("3. They create a prompt that matches the target")
@@ -300,7 +300,7 @@ struct CompetitionHowToPlayView: View {
 
                     // Guessing
                     section(title: "Guessing", icon: "hand.tap.fill") {
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                             Text("1. Each player takes a turn with the device")
                             Text("2. See the spectrum and prompt")
                             Text("3. Slide to where YOU think it belongs")
@@ -339,15 +339,15 @@ struct CompetitionHowToPlayView: View {
     private func section<Content: View>(title: String, icon: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Label(title, systemImage: icon)
-                .font(.headline)
-                .foregroundStyle(.orange)
+                .font(AppTheme.Typography.cardTitle)
+                .foregroundStyle(GameTheme.vibeCheck.accentColor)
 
             content()
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                 .fill(Color(.systemGray6))
         }
     }
@@ -359,10 +359,10 @@ struct CompetitionHowToPlayView: View {
                 .frame(width: 16, height: 16)
 
             Text("\(zone.points) points")
-                .font(.subheadline.weight(.medium))
+                .font(AppTheme.Typography.secondary.weight(.medium))
 
             Text("(within \(Int(zone.threshold * 100))%)")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
         }
     }

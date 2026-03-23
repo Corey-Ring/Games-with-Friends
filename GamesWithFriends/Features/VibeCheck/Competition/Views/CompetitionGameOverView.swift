@@ -5,7 +5,7 @@ struct CompetitionGameOverView: View {
     @State private var showConfetti = false
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: AppTheme.Spacing.lg) {
             // Header with winner
             winnerSection
 
@@ -21,7 +21,7 @@ struct CompetitionGameOverView: View {
         .background {
             ZStack {
                 LinearGradient(
-                    colors: [Color.orange.opacity(0.15), Color.red.opacity(0.15)],
+                    colors: [GameTheme.vibeCheck.accentColor.opacity(0.15), GameTheme.vibeCheck.accentColor.opacity(0.05)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -44,29 +44,29 @@ struct CompetitionGameOverView: View {
     // MARK: - Sections
 
     private var winnerSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: "trophy.fill")
                 .font(.system(size: 60))
                 .foregroundStyle(
                     LinearGradient(
-                        colors: [.yellow, .orange],
+                        colors: [AppTheme.medalGold, AppTheme.warning],
                         startPoint: .top,
                         endPoint: .bottom
                     )
                 )
-                .shadow(color: .yellow.opacity(0.5), radius: 10)
+                .shadow(color: AppTheme.medalGold.opacity(0.5), radius: 10)
 
             Text("GAME OVER!")
-                .font(.largeTitle.weight(.bold))
+                .font(AppTheme.Typography.hero)
 
             if let winner = viewModel.winner {
-                VStack(spacing: 8) {
+                VStack(spacing: AppTheme.Spacing.sm) {
                     Text("\(winner.name) Wins!")
-                        .font(.title2.weight(.semibold))
-                        .foregroundStyle(.orange)
+                        .font(AppTheme.Typography.sectionHeader.weight(.semibold))
+                        .foregroundStyle(GameTheme.vibeCheck.accentColor)
 
                     Text("\(winner.score) points")
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
                         .foregroundStyle(.secondary)
                 }
             }
@@ -75,9 +75,9 @@ struct CompetitionGameOverView: View {
     }
 
     private var standingsSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Text("FINAL STANDINGS")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.secondary)
 
             ForEach(Array(viewModel.sortedPlayersByScore.enumerated()), id: \.element.id) { index, player in
@@ -90,7 +90,7 @@ struct CompetitionGameOverView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
@@ -109,14 +109,10 @@ struct CompetitionGameOverView: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background {
-                    LinearGradient(
-                        colors: [.orange, .red],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
+                    GameTheme.vibeCheck.accentColor
                 }
                 .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
             }
             .buttonStyle(.plain)
 
@@ -124,7 +120,7 @@ struct CompetitionGameOverView: View {
                 viewModel.returnToSetup()
             } label: {
                 Text("Back to Setup")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
             }
         }
@@ -139,7 +135,7 @@ struct CompetitionFinalPlayerRow: View {
     let isWinner: Bool
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: AppTheme.Spacing.md) {
             // Rank with medal for top 3
             ZStack {
                 if rank <= 3 {
@@ -153,32 +149,32 @@ struct CompetitionFinalPlayerRow: View {
                             .foregroundStyle(.white)
                     } else {
                         Text("\(rank)")
-                            .font(.headline.weight(.bold))
+                            .font(AppTheme.Typography.cardTitle.weight(.bold))
                             .foregroundStyle(.white)
                     }
                 } else {
                     Text("\(rank).")
-                        .font(.headline.monospacedDigit())
+                        .font(AppTheme.Typography.cardTitle.monospacedDigit())
                         .foregroundStyle(.secondary)
                         .frame(width: 36)
                 }
             }
 
             // Player info
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                HStack(spacing: AppTheme.Spacing.sm) {
                     Text(player.name)
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
 
                     if isWinner {
                         Text("WINNER")
-                            .font(.caption2.weight(.bold))
+                            .font(AppTheme.Typography.tabLabel.weight(.bold))
                             .foregroundStyle(.white)
-                            .padding(.horizontal, 8)
+                            .padding(.horizontal, AppTheme.Spacing.sm)
                             .padding(.vertical, 2)
                             .background {
                                 Capsule()
-                                    .fill(Color.orange)
+                                    .fill(GameTheme.vibeCheck.accentColor)
                             }
                     }
                 }
@@ -193,18 +189,18 @@ struct CompetitionFinalPlayerRow: View {
                     .monospacedDigit()
 
                 Text("points")
-                    .font(.caption2)
+                    .font(AppTheme.Typography.tabLabel)
                     .foregroundStyle(.secondary)
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, AppTheme.Spacing.sm)
     }
 
     private var medalColor: Color {
         switch rank {
-        case 1: return .yellow
-        case 2: return .gray
-        case 3: return .orange
+        case 1: return AppTheme.medalGold
+        case 2: return AppTheme.medalSilver
+        case 3: return AppTheme.medalBronze
         default: return .clear
         }
     }
@@ -235,7 +231,7 @@ struct CompetitionConfettiView: View {
     }
 
     private func createParticles(in size: CGSize) {
-        let colors: [Color] = [.orange, .red, .yellow, .green, .blue, .pink]
+        let colors: [Color] = [GameTheme.vibeCheck.accentColor, AppTheme.warning, AppTheme.medalGold, AppTheme.success, .blue, .pink]
         particles = (0..<50).map { _ in
             CompetitionConfettiParticle(
                 color: colors.randomElement()!,

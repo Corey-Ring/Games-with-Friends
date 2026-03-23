@@ -8,7 +8,7 @@ struct ClueBoardView: View {
         ZStack {
             // Background
             LinearGradient(
-                colors: [Color.indigo.opacity(0.15), Color.purple.opacity(0.1)],
+                colors: [GameTheme.castingDirector.accentColor.opacity(0.15), GameTheme.castingDirector.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -18,16 +18,15 @@ struct ClueBoardView: View {
                 // Top bar
                 topBar
                     .padding(.horizontal)
-                    .padding(.top, 8)
+                    .padding(.top, AppTheme.Spacing.sm)
 
                 // Clue board area
                 if viewModel.isLoadingRound {
                     Spacer()
-                    VStack(spacing: 16) {
-                        ProgressView()
-                            .scaleEffect(1.5)
+                    VStack(spacing: AppTheme.Spacing.md) {
+                        GameSpinner(color: GameTheme.castingDirector.accentColor)
                         Text("Finding an actor...")
-                            .font(.headline)
+                            .font(AppTheme.Typography.cardTitle)
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -35,9 +34,9 @@ struct ClueBoardView: View {
                     ScrollViewReader { proxy in
                         ScrollView(.vertical, showsIndicators: false) {
                             clueBoard
-                                .padding(.horizontal, 8)
+                                .padding(.horizontal, AppTheme.Spacing.sm)
                                 .padding(.top, 12)
-                                .padding(.bottom, 16)
+                                .padding(.bottom, AppTheme.Spacing.md)
                         }
                         .onChange(of: viewModel.roundState.revealedClues.count) { _, _ in
                             // Auto-scroll to the latest clue
@@ -53,7 +52,7 @@ struct ClueBoardView: View {
                 // Bottom bar with score and guess button
                 bottomBar
                     .padding(.horizontal)
-                    .padding(.bottom, 8)
+                    .padding(.bottom, AppTheme.Spacing.sm)
             }
 
             // Guess overlay
@@ -143,16 +142,16 @@ struct ClueBoardView: View {
             // Round info
             VStack(alignment: .leading, spacing: 2) {
                 Text("Round \(viewModel.currentRound) of \(viewModel.numberOfRounds)")
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
 
                 if viewModel.gameMode == .passAndPlay {
-                    HStack(spacing: 4) {
+                    HStack(spacing: AppTheme.Spacing.xs) {
                         Circle()
                             .fill(viewModel.currentPlayer.color)
                             .frame(width: 10, height: 10)
                         Text(viewModel.currentPlayer.name)
-                            .font(.subheadline)
+                            .font(AppTheme.Typography.secondary)
                             .fontWeight(.medium)
                     }
                 }
@@ -161,26 +160,26 @@ struct ClueBoardView: View {
             Spacer()
 
             // Clue counter
-            HStack(spacing: 4) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: "lightbulb.fill")
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.orange)
                 Text("\(viewModel.roundState.cluesRevealed)/\(viewModel.allClues.count)")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .monospacedDigit()
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 4)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .background(.ultraThinMaterial)
             .clipShape(Capsule())
 
             // Difficulty badge
             Text(viewModel.difficulty.rawValue)
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .fontWeight(.medium)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.indigo.opacity(0.2))
+                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .background(GameTheme.castingDirector.mediumBackground)
                 .clipShape(Capsule())
         }
     }
@@ -188,18 +187,18 @@ struct ClueBoardView: View {
     // MARK: - Bottom Bar
 
     private var bottomBar: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: AppTheme.Spacing.md) {
             // Give up button
             Button {
                 viewModel.giveUp()
             } label: {
                 Text("Give Up")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, AppTheme.Spacing.md)
                     .padding(.vertical, 12)
                     .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             }
 
             Spacer()
@@ -207,13 +206,13 @@ struct ClueBoardView: View {
             // Score display
             VStack(spacing: 2) {
                 Text("Score")
-                    .font(.caption2)
+                    .font(AppTheme.Typography.tabLabel)
                     .foregroundStyle(.secondary)
                 Text("\(viewModel.potentialScore)")
-                    .font(.title2)
+                    .font(AppTheme.Typography.sectionHeader)
                     .fontWeight(.bold)
                     .monospacedDigit()
-                    .foregroundStyle(.indigo)
+                    .foregroundStyle(GameTheme.castingDirector.accentColor)
                     .contentTransition(.numericText())
                     .animation(.spring(), value: viewModel.potentialScore)
             }
@@ -228,12 +227,12 @@ struct ClueBoardView: View {
                     Image(systemName: "questionmark.circle.fill")
                     Text("Guess")
                 }
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.white)
-                .padding(.horizontal, 24)
+                .padding(.horizontal, AppTheme.Spacing.lg)
                 .padding(.vertical, 12)
-                .background(Color.indigo)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(GameTheme.castingDirector.accentColor)
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             }
             .modifier(ShakeEffect(shakes: viewModel.wrongGuessShake ? 4 : 0))
             .animation(.default, value: viewModel.wrongGuessShake)
@@ -243,22 +242,22 @@ struct ClueBoardView: View {
     // MARK: - Correct Guess Overlay
 
     private var correctGuessOverlay: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 80))
-                .foregroundStyle(.green)
+                .foregroundStyle(AppTheme.success)
                 .symbolEffect(.bounce, value: viewModel.correctGuess)
 
             if let actor = viewModel.roundState.targetActor {
                 Text(actor.name)
-                    .font(.title)
+                    .font(AppTheme.Typography.screenTitle)
                     .fontWeight(.bold)
             }
 
             Text("+\(viewModel.roundState.currentScore) points!")
-                .font(.title2)
+                .font(AppTheme.Typography.sectionHeader)
                 .fontWeight(.semibold)
-                .foregroundStyle(.indigo)
+                .foregroundStyle(GameTheme.castingDirector.accentColor)
         }
         .padding(40)
         .background(.ultraThickMaterial)

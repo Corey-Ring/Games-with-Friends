@@ -19,7 +19,7 @@ struct GameView: View {
                         // Progress indicator
                         HStack {
                             Text("\(viewModel.currentIndex + 1) of \(viewModel.filteredStarters.count)")
-                                .font(.caption)
+                                .font(AppTheme.Typography.caption)
                                 .foregroundColor(.secondary)
 
                             Spacer()
@@ -75,7 +75,7 @@ struct GameView: View {
                             }) {
                                 Image(systemName: "chevron.left.circle.fill")
                                     .font(.system(size: 50))
-                                    .foregroundColor(viewModel.hasPrevious ? .purple : .gray.opacity(0.3))
+                                    .foregroundColor(viewModel.hasPrevious ? GameTheme.conversationStarters.accentColor : AppTheme.mediumGray.opacity(0.3))
                             }
                             .disabled(!viewModel.hasPrevious)
                             .accessibilityLabel("Previous conversation starter")
@@ -90,7 +90,7 @@ struct GameView: View {
                                         Image(systemName: "forward.fill")
                                             .font(.system(size: 30))
                                         Text("Pass")
-                                            .font(.caption)
+                                            .font(AppTheme.Typography.caption)
                                     }
                                     .foregroundColor(.orange)
                                 }
@@ -104,7 +104,7 @@ struct GameView: View {
                             }) {
                                 Image(systemName: "chevron.right.circle.fill")
                                     .font(.system(size: 50))
-                                    .foregroundColor(viewModel.hasNext ? .purple : .gray.opacity(0.3))
+                                    .foregroundColor(viewModel.hasNext ? GameTheme.conversationStarters.accentColor : AppTheme.mediumGray.opacity(0.3))
                             }
                             .disabled(!viewModel.hasNext)
                             .accessibilityLabel("Next conversation starter")
@@ -166,29 +166,29 @@ struct GameView: View {
 
     private var vibeColor: Color {
         switch viewModel.settings.vibeLevel {
-        case 1: return .blue
+        case 1: return GameTheme.conversationStarters.accentColor
         case 2: return .green
         case 3: return .yellow
         case 4: return .orange
         case 5: return .red
-        default: return .blue
+        default: return GameTheme.conversationStarters.accentColor
         }
     }
 
     private var timerView: some View {
         HStack(spacing: 5) {
             Image(systemName: viewModel.isTimerRunning ? "timer" : "pause.circle")
-                .foregroundColor(viewModel.timeRemaining < 10 ? .red : .black)
+                .foregroundColor(viewModel.timeRemaining < 10 ? AppTheme.error : .primary)
             Text(timeString(from: viewModel.timeRemaining))
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(viewModel.timeRemaining < 10 ? .red : .black)
+                .foregroundColor(viewModel.timeRemaining < 10 ? AppTheme.error : .primary)
                 .monospacedDigit()
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
-        .background(Color.white.opacity(0.9))
-        .cornerRadius(15)
+        .background(AppTheme.pureWhite.opacity(0.95))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(viewModel.isTimerRunning ? "\(Int(viewModel.timeRemaining)) seconds remaining" : "Timer paused")
     }
@@ -206,11 +206,10 @@ struct GameView: View {
                 .foregroundColor(.gray)
 
             Text("No Starters Available")
-                .font(.title2)
-                .fontWeight(.bold)
+                .font(AppTheme.Typography.sectionHeader)
 
             Text("Try adjusting your filters or adding more categories")
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
 
@@ -219,8 +218,8 @@ struct GameView: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                     .padding()
-                    .background(Color.purple)
-                    .cornerRadius(10)
+                    .background(GameTheme.conversationStarters.accentColor)
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.small))
             }
         }
         .padding()
@@ -230,14 +229,13 @@ struct GameView: View {
         VStack(spacing: 20) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 80))
-                .foregroundColor(.green)
+                .foregroundColor(AppTheme.success)
 
             Text("All Done!")
-                .font(.title)
-                .fontWeight(.bold)
+                .font(AppTheme.Typography.screenTitle)
 
             Text("You've seen all the conversation starters")
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
                 .foregroundColor(.secondary)
 
             Button(action: {
@@ -247,8 +245,8 @@ struct GameView: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                     .padding()
-                    .background(Color.purple)
-                    .cornerRadius(10)
+                    .background(GameTheme.conversationStarters.accentColor)
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.small))
             }
         }
         .padding()
@@ -266,23 +264,24 @@ struct CardView: View {
             HStack {
                 HStack(spacing: 5) {
                     Image(systemName: starter.category.icon)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                     Text(starter.category.rawValue)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .fontWeight(.medium)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(categoryColor.opacity(0.2))
                 .foregroundColor(categoryColor)
-                .cornerRadius(15)
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
 
                 Spacer()
 
                 Button(action: onStar) {
                     Image(systemName: isStarred ? "star.fill" : "star")
-                        .font(.title2)
-                        .foregroundColor(isStarred ? .yellow : .gray)
+                        .font(AppTheme.Typography.sectionHeader)
+                        .foregroundColor(isStarred ? AppTheme.medalGold : AppTheme.mediumGray)
+
                 }
                 .accessibilityLabel(isStarred ? "Remove from saved" : "Save this starter")
             }
@@ -292,10 +291,10 @@ struct CardView: View {
 
             // Question text
             Text(starter.text)
-                .font(.title2)
+                .font(AppTheme.Typography.sectionHeader)
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
-                .foregroundColor(.black)
+                .foregroundColor(.primary)
                 .padding(.horizontal, 30)
 
             Spacer()
@@ -305,7 +304,7 @@ struct CardView: View {
                 HStack(spacing: 5) {
                     ForEach(1...5, id: \.self) { level in
                         Circle()
-                            .fill(level <= starter.vibeLevel ? vibeColor : Color.gray.opacity(0.3))
+                            .fill(level <= starter.vibeLevel ? vibeColor : AppTheme.mediumGray.opacity(0.3))
                             .frame(width: 10, height: 10)
                     }
                 }
@@ -315,15 +314,15 @@ struct CardView: View {
                         ForEach(starter.themes.filter { $0 != .evergreen }, id: \.self) { theme in
                             HStack(spacing: 3) {
                                 Image(systemName: theme.icon)
-                                    .font(.caption2)
+                                    .font(AppTheme.Typography.tabLabel)
                                 Text(theme.rawValue)
-                                    .font(.caption2)
+                                    .font(AppTheme.Typography.tabLabel)
                             }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.blue.opacity(0.1))
-                            .foregroundColor(.blue)
-                            .cornerRadius(10)
+                            .padding(.horizontal, AppTheme.Spacing.sm)
+                            .padding(.vertical, AppTheme.Spacing.xs)
+                            .background(GameTheme.conversationStarters.lightBackground)
+                            .foregroundColor(GameTheme.conversationStarters.accentColor)
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.small))
                         }
                     }
                 }
@@ -332,31 +331,31 @@ struct CardView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 500)
-        .background(Color.white)
-        .cornerRadius(25)
+        .background(AppTheme.pureWhite)
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.large))
         .shadow(radius: 10)
         .padding(.horizontal, 30)
     }
 
     private var categoryColor: Color {
         switch starter.category {
-        case .wouldYouRather: return .purple
-        case .hotTakes: return .red
-        case .hypotheticals: return .orange
-        case .storyTime: return .blue
-        case .thisOrThat: return .green
-        case .deepDive: return .indigo
+        case .wouldYouRather: return GameTheme.conversationStarters.accentColor
+        case .hotTakes: return AppTheme.error
+        case .hypotheticals: return AppTheme.warning
+        case .storyTime: return GameTheme.conversationStarters.accentColor
+        case .thisOrThat: return AppTheme.success
+        case .deepDive: return GameTheme.conversationStarters.accentColor
         }
     }
 
     private var vibeColor: Color {
         switch starter.vibeLevel {
-        case 1: return .blue
-        case 2: return .green
-        case 3: return .yellow
-        case 4: return .orange
-        case 5: return .red
-        default: return .blue
+        case 1: return GameTheme.conversationStarters.accentColor
+        case 2: return AppTheme.success
+        case 3: return AppTheme.medalGold
+        case 4: return AppTheme.warning
+        case 5: return AppTheme.error
+        default: return GameTheme.conversationStarters.accentColor
         }
     }
 }

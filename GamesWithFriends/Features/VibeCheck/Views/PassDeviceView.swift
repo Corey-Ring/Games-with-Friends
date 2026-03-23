@@ -39,7 +39,7 @@ struct PassDeviceView: View {
     }
 
     var body: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: AppTheme.Spacing.xl) {
             Spacer()
 
             // Device passing icon
@@ -49,21 +49,21 @@ struct PassDeviceView: View {
                 .symbolEffect(.pulse, options: .repeating)
 
             // Pass instruction
-            VStack(spacing: 16) {
+            VStack(spacing: AppTheme.Spacing.md) {
                 Text("Pass the device to")
-                    .font(.title3)
+                    .font(AppTheme.Typography.subsectionHeader)
                     .foregroundStyle(.secondary)
 
                 Text(teamName)
-                    .font(.largeTitle.weight(.bold))
+                    .font(AppTheme.Typography.hero)
                     .foregroundStyle(role.color)
 
                 // Role badge
-                HStack(spacing: 8) {
+                HStack(spacing: AppTheme.Spacing.sm) {
                     Image(systemName: role.icon)
                     Text(role.title)
                 }
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.white)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
@@ -75,10 +75,10 @@ struct PassDeviceView: View {
 
             // Instructions
             Text(role.instruction)
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+                .padding(.horizontal, AppTheme.Spacing.xl)
 
             Spacer()
 
@@ -103,7 +103,7 @@ struct PassDeviceView: View {
                     )
                 }
                 .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
             }
             .buttonStyle(.plain)
             .padding(.horizontal)
@@ -111,11 +111,11 @@ struct PassDeviceView: View {
             // Privacy reminder
             if role == .guessingTeam {
                 Text("Don't look until everyone is ready!")
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
             } else {
                 Text("Keep the target position secret!")
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
             }
         }

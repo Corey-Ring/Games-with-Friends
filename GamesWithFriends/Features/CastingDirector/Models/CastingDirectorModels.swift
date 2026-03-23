@@ -45,13 +45,13 @@ enum ClueTier: Int {
     var color: Color {
         switch self {
         case .vague:
-            return Color.blue.opacity(0.15)
+            return AppTheme.skyBlue.opacity(0.15)
         case .narrowing:
-            return Color.green.opacity(0.15)
+            return AppTheme.forestGreen.opacity(0.15)
         case .strongSignal:
-            return Color.orange.opacity(0.15)
+            return AppTheme.warmGold.opacity(0.15)
         case .giveaway:
-            return Color.red.opacity(0.15)
+            return AppTheme.coralRed.opacity(0.15)
         }
     }
 }

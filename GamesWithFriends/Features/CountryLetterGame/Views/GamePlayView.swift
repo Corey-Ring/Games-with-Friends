@@ -12,9 +12,9 @@ struct GamePlayView: View {
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(AppTheme.Typography.caption)
                         Text("Pick another letter")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(AppTheme.Typography.body)
                     }
                     .foregroundColor(AppTheme.mediumGray)
                 }
@@ -23,7 +23,7 @@ struct GamePlayView: View {
 
                 if let letter = viewModel.selectedLetter {
                     Text(letter)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundColor(GameTheme.countryLetter.accentColor)
                         .padding(.horizontal, AppTheme.Spacing.lg)
                         .padding(.vertical, 10)
@@ -105,7 +105,7 @@ struct GamePlayView: View {
                         HStack(spacing: AppTheme.Spacing.sm) {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(GameTheme.countryLetter.accentColor)
-                                .font(.system(size: 18))
+                                .font(AppTheme.Typography.body)
 
                             Text(country.name)
                                 .font(AppTheme.Typography.cardTitle)

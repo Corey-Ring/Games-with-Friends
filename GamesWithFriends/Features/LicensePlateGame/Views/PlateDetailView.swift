@@ -24,61 +24,61 @@ struct PlateDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: AppTheme.Spacing.lg) {
                 // Header Card
-                VStack(spacing: 16) {
+                VStack(spacing: AppTheme.Spacing.md) {
                     Text(plate.code)
                         .font(.system(size: 72, weight: .bold, design: .rounded))
-                        .foregroundStyle(isSpotted ? .green : .blue)
+                        .foregroundStyle(isSpotted ? AppTheme.success : GameTheme.licensePlate.accentColor)
 
                     Text(plate.name)
-                        .font(.largeTitle)
+                        .font(AppTheme.Typography.hero)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
 
                     if let nickname = plate.nickname {
                         Text(nickname)
-                            .font(.title3)
+                            .font(AppTheme.Typography.subsectionHeader)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
 
                     HStack(spacing: 20) {
-                        VStack(spacing: 4) {
+                        VStack(spacing: AppTheme.Spacing.xs) {
                             Image(systemName: plate.region.icon)
-                                .font(.title3)
+                                .font(AppTheme.Typography.subsectionHeader)
                             Text(plate.region.displayName)
-                                .font(.caption)
+                                .font(AppTheme.Typography.caption)
                         }
 
                         Divider()
                             .frame(height: 40)
 
-                        VStack(spacing: 4) {
+                        VStack(spacing: AppTheme.Spacing.xs) {
                             Image(systemName: plate.rarityTier.icon)
-                                .font(.title3)
+                                .font(AppTheme.Typography.subsectionHeader)
                                 .foregroundStyle(Color(plate.rarityTier.color))
                             Text(plate.rarityTier.rawValue)
-                                .font(.caption)
+                                .font(AppTheme.Typography.caption)
                                 .foregroundStyle(Color(plate.rarityTier.color))
                         }
                     }
-                    .padding(.top, 8)
+                    .padding(.top, AppTheme.Spacing.sm)
 
                     if isSpotted {
                         Label("Spotted", systemImage: "checkmark.circle.fill")
-                            .font(.headline)
-                            .foregroundStyle(.green)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(Color.green.opacity(0.1))
+                            .font(AppTheme.Typography.cardTitle)
+                            .foregroundStyle(AppTheme.success)
+                            .padding(.horizontal, AppTheme.Spacing.md)
+                            .padding(.vertical, AppTheme.Spacing.sm)
+                            .background(AppTheme.success.opacity(0.1))
                             .clipShape(Capsule())
                     }
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.large)
                         .fill(.regularMaterial)
                 )
                 .padding(.horizontal)
@@ -97,7 +97,7 @@ struct PlateDetailView: View {
                         Divider()
 
                         DetailSection(title: "Spotted Information", icon: "clock.fill") {
-                            VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                                 HStack {
                                     Text("Date:")
                                         .foregroundStyle(.secondary)
@@ -119,7 +119,7 @@ struct PlateDetailView: View {
                                 }
 
                                 if let location = spotted.locationDescription {
-                                    VStack(alignment: .leading, spacing: 4) {
+                                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                                         Text("Location:")
                                             .foregroundStyle(.secondary)
                                         Text(location)
@@ -139,9 +139,9 @@ struct PlateDetailView: View {
                         Label("Unspot", systemImage: "xmark.circle.fill")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.red.opacity(0.1))
-                            .foregroundStyle(.red)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .background(AppTheme.error.opacity(0.1))
+                            .foregroundStyle(AppTheme.error)
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
                     }
                     .padding(.horizontal)
                 } else {
@@ -149,12 +149,12 @@ struct PlateDetailView: View {
                         showingSpotSheet = true
                     } label: {
                         Label("Mark as Spotted", systemImage: "checkmark.circle.fill")
-                            .font(.headline)
+                            .font(AppTheme.Typography.cardTitle)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.blue)
+                            .background(GameTheme.licensePlate.accentColor)
                             .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
                     }
                     .padding(.horizontal)
                 }
@@ -186,13 +186,13 @@ struct DetailSection<Content: View>: View {
     @ViewBuilder let content: Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Label(title, systemImage: icon)
-                .font(.headline)
-                .foregroundStyle(.blue)
+                .font(AppTheme.Typography.cardTitle)
+                .foregroundStyle(GameTheme.licensePlate.accentColor)
 
             content
-                .font(.body)
+                .font(AppTheme.Typography.body)
         }
     }
 }

@@ -40,7 +40,7 @@ struct Name5GameView: View {
                             }
                         } label: {
                             Image(systemName: "ellipsis.circle")
-                                .font(.title3)
+                                .font(AppTheme.Typography.subsectionHeader)
                         }
                     }
                 }
@@ -166,12 +166,11 @@ struct FinalStatItem: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: icon)
-                .font(.title)
+                .font(AppTheme.Typography.screenTitle)
                 .foregroundColor(color)
 
             Text(value)
-                .font(.title)
-                .fontWeight(.bold)
+                .font(AppTheme.Typography.screenTitle)
 
             Text(label)
                 .font(AppTheme.Typography.caption)
@@ -201,7 +200,7 @@ struct RecentRoundsCard: View {
                     Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
                         .foregroundColor(result.success ? .green : .orange)
 
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                         Text(result.promptText)
                             .font(AppTheme.Typography.body)
                             .lineLimit(1)
@@ -221,7 +220,7 @@ struct RecentRoundsCard: View {
                             .fontWeight(.semibold)
                             .foregroundColor(AppTheme.mediumGray)
                             .padding(.horizontal, AppTheme.Spacing.sm)
-                            .padding(.vertical, 4)
+                            .padding(.vertical, AppTheme.Spacing.xs)
                             .background(
                                 Capsule()
                                     .fill(AppTheme.mediumGray.opacity(0.15))

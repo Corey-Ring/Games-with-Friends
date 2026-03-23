@@ -87,7 +87,7 @@ struct MovieChainGameView: View {
         HStack(spacing: 6) {
             Image(systemName: "timer")
             Text("\(viewModel.timeRemaining)")
-                .font(.title2.monospacedDigit())
+                .font(AppTheme.Typography.sectionHeader).monospacedDigit()
                 .fontWeight(.bold)
         }
         .foregroundStyle(timerColor)
@@ -192,8 +192,8 @@ struct MovieChainGameView: View {
                 }
 
                 if viewModel.isSearching {
-                    ProgressView()
-                        .scaleEffect(0.8)
+                    GameSpinner(color: GameTheme.movieChain.accentColor)
+                        .scaleEffect(0.6)
                 }
             }
             .padding(AppTheme.Spacing.md)
@@ -251,7 +251,7 @@ struct MovieChainGameView: View {
     private var noResultsView: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "magnifyingglass")
-                .font(.title)
+                .font(AppTheme.Typography.screenTitle)
                 .foregroundStyle(AppTheme.mediumGray)
 
             Text("No results found")
@@ -491,7 +491,7 @@ struct SearchResultRow: View {
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(AppTheme.mediumGray)
             }
             .padding(.vertical, AppTheme.Spacing.sm)

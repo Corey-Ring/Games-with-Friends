@@ -64,13 +64,13 @@ struct AchievementsView: View {
             // Progress Header
             VStack(spacing: 12) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                         Text("\(unlockedAchievements.count) of \(Achievement.allAchievements.count)")
-                            .font(.title2)
+                            .font(AppTheme.Typography.sectionHeader)
                             .fontWeight(.bold)
 
                         Text("Achievements Unlocked")
-                            .font(.subheadline)
+                            .font(AppTheme.Typography.secondary)
                             .foregroundStyle(.secondary)
                     }
 
@@ -78,24 +78,24 @@ struct AchievementsView: View {
 
                     ZStack {
                         Circle()
-                            .stroke(Color.blue.opacity(0.2), lineWidth: 6)
+                            .stroke(GameTheme.licensePlate.accentColor.opacity(0.2), lineWidth: 6)
                             .frame(width: 60, height: 60)
 
                         Circle()
                             .trim(from: 0, to: Double(unlockedAchievements.count) / Double(Achievement.allAchievements.count))
-                            .stroke(Color.blue, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                            .stroke(GameTheme.licensePlate.accentColor, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                             .frame(width: 60, height: 60)
                             .rotationEffect(.degrees(-90))
 
                         Text("\(Int((Double(unlockedAchievements.count) / Double(Achievement.allAchievements.count)) * 100))%")
-                            .font(.caption)
+                            .font(AppTheme.Typography.caption)
                             .fontWeight(.bold)
                     }
                 }
                 .padding(.horizontal)
                 .padding(.bottom)
             }
-            .background(Color(.systemGray6))
+            .background(AppTheme.warmLinen)
 
             // Achievement Lists
             List {
@@ -127,31 +127,31 @@ struct AchievementDetailRow: View {
     let isUnlocked: Bool
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: AppTheme.Spacing.md) {
             // Icon
             ZStack {
                 Circle()
-                    .fill(isUnlocked ? Color.blue.opacity(0.2) : Color(.systemGray5))
+                    .fill(isUnlocked ? GameTheme.licensePlate.accentColor.opacity(0.2) : AppTheme.warmLinen)
                     .frame(width: 56, height: 56)
 
                 Image(systemName: achievement.icon)
-                    .font(.title2)
-                    .foregroundStyle(isUnlocked ? .blue : .gray)
+                    .font(AppTheme.Typography.sectionHeader)
+                    .foregroundStyle(isUnlocked ? GameTheme.licensePlate.accentColor : AppTheme.mediumGray)
             }
 
             // Content
             VStack(alignment: .leading, spacing: 6) {
                 Text(achievement.title)
-                    .font(.headline)
+                    .font(AppTheme.Typography.cardTitle)
                     .foregroundStyle(isUnlocked ? .primary : .secondary)
 
                 Text(achievement.description)
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
                 Label(achievement.category.rawValue, systemImage: "tag.fill")
-                    .font(.caption2)
+                    .font(AppTheme.Typography.tabLabel)
                     .foregroundStyle(.tertiary)
             }
 
@@ -161,13 +161,13 @@ struct AchievementDetailRow: View {
             if isUnlocked {
                 Image(systemName: "checkmark.seal.fill")
                     .foregroundStyle(.green)
-                    .font(.title3)
+                    .font(AppTheme.Typography.subsectionHeader)
             } else {
                 Image(systemName: "lock.fill")
                     .foregroundStyle(.gray)
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, AppTheme.Spacing.sm)
         .opacity(isUnlocked ? 1.0 : 0.6)
     }
 }

@@ -7,7 +7,7 @@ struct VibeCheckHomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: AppTheme.Spacing.lg) {
                 // Header
                 headerSection
 
@@ -37,9 +37,9 @@ struct VibeCheckHomeView: View {
                     showHowToPlay = true
                 } label: {
                     Label("How to Play", systemImage: "book.fill")
-                        .font(.subheadline)
+                        .font(AppTheme.Typography.secondary)
                 }
-                .padding(.top, 8)
+                .padding(.top, AppTheme.Spacing.sm)
                 .padding(.bottom, 20)
             }
             .padding()
@@ -47,7 +47,7 @@ struct VibeCheckHomeView: View {
         .scrollIndicators(.hidden)
         .background {
             LinearGradient(
-                colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -63,7 +63,7 @@ struct VibeCheckHomeView: View {
     private var gameModeSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Game Mode")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             ForEach(VibeCheckGameMode.allCases) { mode in
                 VibeCheckGameModeCard(
@@ -78,7 +78,7 @@ struct VibeCheckHomeView: View {
     private var playerCountSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Players", systemImage: "person.fill")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             HStack {
                 Button {
@@ -87,7 +87,7 @@ struct VibeCheckHomeView: View {
                     }
                 } label: {
                     Image(systemName: "minus.circle.fill")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundStyle(viewModel.competitionSettings.playerCount > 2 ? .primary : .secondary)
                 }
                 .disabled(viewModel.competitionSettings.playerCount <= 2)
@@ -106,7 +106,7 @@ struct VibeCheckHomeView: View {
                     }
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundStyle(viewModel.competitionSettings.playerCount < 10 ? .primary : .secondary)
                 }
                 .disabled(viewModel.competitionSettings.playerCount >= 10)
@@ -114,20 +114,20 @@ struct VibeCheckHomeView: View {
             .padding(.horizontal)
 
             Text("Minimum 2 players")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity)
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
     }
 
     private var headerSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "antenna.radiowaves.left.and.right")
                 .font(.system(size: 50))
                 .foregroundStyle(
@@ -139,10 +139,10 @@ struct VibeCheckHomeView: View {
                 )
 
             Text("VIBE CHECK")
-                .font(.largeTitle.weight(.bold))
+                .font(AppTheme.Typography.hero)
 
             Text("Get on the same wavelength")
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
                 .foregroundStyle(.secondary)
         }
         .padding(.vertical)
@@ -151,7 +151,7 @@ struct VibeCheckHomeView: View {
     private var teamCountSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Teams", systemImage: "person.3.fill")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             HStack {
                 Button {
@@ -160,7 +160,7 @@ struct VibeCheckHomeView: View {
                     }
                 } label: {
                     Image(systemName: "minus.circle.fill")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundStyle(viewModel.settings.teamCount > 1 ? .primary : .secondary)
                 }
                 .disabled(viewModel.settings.teamCount <= 1)
@@ -179,7 +179,7 @@ struct VibeCheckHomeView: View {
                     }
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundStyle(viewModel.settings.teamCount < 4 ? .primary : .secondary)
                 }
                 .disabled(viewModel.settings.teamCount >= 4)
@@ -187,13 +187,13 @@ struct VibeCheckHomeView: View {
             .padding(.horizontal)
 
             Text(viewModel.settings.teamCount == 1 ? "Single team mode" : "1-4 teams")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity)
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
@@ -202,7 +202,7 @@ struct VibeCheckHomeView: View {
     private var playersPerTeamSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Players per Team", systemImage: "person.2.fill")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             HStack {
                 Button {
@@ -211,7 +211,7 @@ struct VibeCheckHomeView: View {
                     }
                 } label: {
                     Image(systemName: "minus.circle.fill")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundStyle(viewModel.settings.playersPerTeam > 2 ? .primary : .secondary)
                 }
                 .disabled(viewModel.settings.playersPerTeam <= 2)
@@ -230,7 +230,7 @@ struct VibeCheckHomeView: View {
                     }
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundStyle(viewModel.settings.playersPerTeam < 8 ? .primary : .secondary)
                 }
                 .disabled(viewModel.settings.playersPerTeam >= 8)
@@ -238,13 +238,13 @@ struct VibeCheckHomeView: View {
             .padding(.horizontal)
 
             Text("Minimum 2 players per team")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity)
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
@@ -255,9 +255,9 @@ struct VibeCheckHomeView: View {
 
         return VStack(alignment: .leading, spacing: 12) {
             Label("Target Score", systemImage: "flag.checkered")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
-            HStack(spacing: 16) {
+            HStack(spacing: AppTheme.Spacing.md) {
                 ForEach([300, 500, 750, 1000], id: \.self) { score in
                     Button {
                         if selectedMode == .classic {
@@ -267,12 +267,12 @@ struct VibeCheckHomeView: View {
                         }
                     } label: {
                         Text("\(score)")
-                            .font(.subheadline.weight(.medium))
-                            .padding(.horizontal, 16)
+                            .font(AppTheme.Typography.secondary.weight(.medium))
+                            .padding(.horizontal, AppTheme.Spacing.md)
                             .padding(.vertical, 10)
                             .background {
                                 RoundedRectangle(cornerRadius: 10)
-                                    .fill(currentScore == score ? Color.purple : Color(.systemGray5))
+                                    .fill(currentScore == score ? GameTheme.vibeCheck.accentColor : AppTheme.warmLinen)
                             }
                             .foregroundStyle(currentScore == score ? .white : .primary)
                     }
@@ -282,7 +282,7 @@ struct VibeCheckHomeView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
@@ -311,7 +311,7 @@ struct VibeCheckHomeView: View {
                 )
             }
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
         .buttonStyle(.plain)
     }
@@ -326,19 +326,19 @@ struct VibeCheckGameModeCard: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 16) {
+            HStack(spacing: AppTheme.Spacing.md) {
                 Image(systemName: mode.iconName)
-                    .font(.title2)
+                    .font(AppTheme.Typography.sectionHeader)
                     .foregroundStyle(isSelected ? .white : .purple)
                     .frame(width: 40)
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text(mode.name)
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
                         .foregroundStyle(isSelected ? .white : .primary)
 
                     Text(mode.description)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
                 }
 
@@ -350,13 +350,13 @@ struct VibeCheckGameModeCard: View {
                 }
             }
             .padding()
-            .background(isSelected ? Color.purple : Color.clear)
+            .background(isSelected ? GameTheme.vibeCheck.accentColor : Color.clear)
             .background(Color(.systemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -370,10 +370,10 @@ struct TeamSetupView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: AppTheme.Spacing.lg) {
                 // Header
                 Text("Set Up Teams")
-                    .font(.title.weight(.bold))
+                    .font(AppTheme.Typography.screenTitle)
 
                 // Team cards
                 ForEach(Array(viewModel.teams.enumerated()), id: \.element.id) { teamIndex, team in
@@ -393,7 +393,7 @@ struct TeamSetupView: View {
         .scrollIndicators(.hidden)
         .background {
             LinearGradient(
-                colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -420,7 +420,7 @@ struct TeamSetupView: View {
                 )
             }
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
         .buttonStyle(.plain)
     }
@@ -432,7 +432,7 @@ struct TeamSetupCard: View {
     var viewModel: VibeCheckViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             // Team name
             HStack {
                 Image(systemName: "person.3.fill")
@@ -441,7 +441,7 @@ struct TeamSetupCard: View {
                     get: { team.name },
                     set: { viewModel.updateTeamName(at: teamIndex, name: $0) }
                 ))
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.primary)
             }
 
@@ -464,7 +464,7 @@ struct TeamSetupCard: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         }
@@ -480,7 +480,7 @@ struct HowToPlayView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
                     // Overview
                     section(title: "Overview", icon: "info.circle.fill") {
                         if gameMode == .classic {
@@ -492,7 +492,7 @@ struct HowToPlayView: View {
 
                     // Vibe Setter
                     section(title: "Vibe Setter", icon: "person.fill.questionmark") {
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                             if gameMode == .competition {
                                 Text("1. A random player becomes the Vibe Setter each round")
                             }
@@ -504,7 +504,7 @@ struct HowToPlayView: View {
 
                     // Guessing
                     section(title: gameMode == .classic ? "Guessing Team" : "Guessing", icon: "hand.tap.fill") {
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                             if gameMode == .classic {
                                 Text("1. See the spectrum and the prompt")
                                 Text("2. Discuss as a team")
@@ -552,7 +552,7 @@ struct HowToPlayView: View {
     private func section<Content: View>(title: String, icon: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Label(title, systemImage: icon)
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.purple)
 
             content()
@@ -560,7 +560,7 @@ struct HowToPlayView: View {
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                 .fill(Color(.systemGray6))
         }
     }
@@ -572,10 +572,10 @@ struct HowToPlayView: View {
                 .frame(width: 16, height: 16)
 
             Text("\(zone.points) points")
-                .font(.subheadline.weight(.medium))
+                .font(AppTheme.Typography.secondary.weight(.medium))
 
             Text("(within \(Int(zone.threshold * 100))%)")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
         }
     }

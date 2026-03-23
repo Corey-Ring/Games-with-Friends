@@ -47,12 +47,12 @@ struct ResultHeader: View {
         VStack(spacing: AppTheme.Spacing.md) {
             ZStack {
                 Circle()
-                    .fill(success ? Color.green.opacity(0.2) : Color.orange.opacity(0.2))
+                    .fill(success ? AppTheme.success.opacity(0.2) : AppTheme.warning.opacity(0.2))
                     .frame(width: 100, height: 100)
 
                 Image(systemName: success ? "checkmark.circle.fill" : "xmark.circle.fill")
                     .font(.system(size: 60))
-                    .foregroundColor(success ? .green : .orange)
+                    .foregroundColor(success ? AppTheme.success : AppTheme.warning)
             }
 
             Text(success ? "Nice Work!" : "So Close!")
@@ -84,7 +84,7 @@ struct CompletedPromptCard: View {
             if let time = result?.timeUsed {
                 HStack {
                     Image(systemName: "clock.fill")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                     Text("Completed in \(time)s")
                         .font(AppTheme.Typography.caption)
                     Spacer()
@@ -93,9 +93,9 @@ struct CompletedPromptCard: View {
             }
 
             HStack(spacing: AppTheme.Spacing.md) {
-                HStack(spacing: 4) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: prompt.category.icon)
-                        .font(.caption2)
+                        .font(AppTheme.Typography.tabLabel)
                     Text(prompt.category.rawValue)
                         .font(AppTheme.Typography.caption)
                 }
@@ -104,7 +104,7 @@ struct CompletedPromptCard: View {
                 HStack(spacing: 2) {
                     ForEach(0..<difficultyStars(prompt.difficulty), id: \.self) { _ in
                         Image(systemName: "star.fill")
-                            .font(.caption2)
+                            .font(AppTheme.Typography.tabLabel)
                             .foregroundColor(difficultyColor(prompt.difficulty))
                     }
                     Text(prompt.difficulty.rawValue)
@@ -224,11 +224,11 @@ struct StatItem: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: icon)
-                .font(.title3)
+                .font(AppTheme.Typography.subsectionHeader)
                 .foregroundColor(GameTheme.name5.accentColor)
 
             Text(value)
-                .font(.title2)
+                .font(AppTheme.Typography.sectionHeader)
                 .fontWeight(.bold)
 
             Text(label)

@@ -2,8 +2,10 @@ import SwiftUI
 
 // Standard warm linen page background
 struct WarmLinenBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
-        AppTheme.warmLinen
+        (colorScheme == .dark ? AppTheme.darkBackground : AppTheme.warmLinen)
             .ignoresSafeArea()
     }
 }
@@ -11,9 +13,12 @@ struct WarmLinenBackground: View {
 // Per-game subtle tinted background (accent at 8% opacity)
 struct GameBackground: View {
     let gameTheme: GameTheme
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        gameTheme.lightBackground
+        (colorScheme == .dark
+            ? gameTheme.accentColor.opacity(0.06)
+            : gameTheme.lightBackground)
             .ignoresSafeArea()
     }
 }

@@ -9,7 +9,7 @@ struct ClueChipView: View {
         HStack(spacing: 6) {
             // Order badge
             Text("\(clue.orderNumber)")
-                .font(.caption2)
+                .font(AppTheme.Typography.tabLabel)
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
                 .frame(width: 18, height: 18)
@@ -18,12 +18,12 @@ struct ClueChipView: View {
 
             // Type icon
             Image(systemName: clue.type.icon)
-                .font(.caption2)
+                .font(AppTheme.Typography.tabLabel)
                 .foregroundStyle(tierAccentColor)
 
             // Clue text
             Text(clue.text)
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .fontWeight(isLatest ? .semibold : .regular)
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
@@ -45,10 +45,10 @@ struct ClueChipView: View {
 
     var tierAccentColor: Color {
         switch clue.tier {
-        case .vague: return .blue
-        case .narrowing: return .green
-        case .strongSignal: return .orange
-        case .giveaway: return .red
+        case .vague: return AppTheme.skyBlue
+        case .narrowing: return AppTheme.forestGreen
+        case .strongSignal: return AppTheme.warmGold
+        case .giveaway: return AppTheme.coralRed
         }
     }
 }

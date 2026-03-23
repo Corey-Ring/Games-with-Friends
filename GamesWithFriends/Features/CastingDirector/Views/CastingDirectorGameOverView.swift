@@ -7,14 +7,14 @@ struct CastingDirectorGameOverView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color.indigo.opacity(0.3), Color.purple.opacity(0.2)],
+                colors: [GameTheme.castingDirector.accentColor.opacity(0.3), GameTheme.castingDirector.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: AppTheme.Spacing.lg) {
                     // Trophy header
                     trophyHeader
 
@@ -46,7 +46,7 @@ struct CastingDirectorGameOverView: View {
                 .foregroundStyle(.yellow)
 
             Text("Game Over!")
-                .font(.largeTitle)
+                .font(AppTheme.Typography.hero)
                 .fontWeight(.bold)
 
             if viewModel.gameMode == .passAndPlay, let winner = viewModel.winner {
@@ -55,7 +55,7 @@ struct CastingDirectorGameOverView: View {
                         .fill(winner.color)
                         .frame(width: 14, height: 14)
                     Text("\(winner.name) wins!")
-                        .font(.title2)
+                        .font(AppTheme.Typography.sectionHeader)
                         .fontWeight(.semibold)
                 }
             }
@@ -68,15 +68,14 @@ struct CastingDirectorGameOverView: View {
     private var standingsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Final Standings")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             ForEach(Array(viewModel.standings.enumerated()), id: \.element.id) { index, player in
                 HStack(spacing: 12) {
                     // Rank
                     Text("#\(index + 1)")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundStyle(index == 0 ? .yellow : .secondary)
+                        .font(AppTheme.Typography.subsectionHeader.weight(.bold))
+                        .foregroundStyle(index == 0 ? AppTheme.medalGold : .secondary)
                         .frame(width: 40)
 
                     Circle()
@@ -85,24 +84,23 @@ struct CastingDirectorGameOverView: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(player.name)
-                            .font(.headline)
+                            .font(AppTheme.Typography.cardTitle)
                         Text("\(player.correctGuesses) correct, \(player.wrongGuesses) wrong")
-                            .font(.caption)
+                            .font(AppTheme.Typography.caption)
                             .foregroundStyle(.secondary)
                     }
 
                     Spacer()
 
                     Text("\(player.score)")
-                        .font(.title3)
-                        .fontWeight(.bold)
+                        .font(AppTheme.Typography.subsectionHeader.weight(.bold))
                         .monospacedDigit()
-                        .foregroundStyle(.indigo)
+                        .foregroundStyle(GameTheme.castingDirector.accentColor)
                 }
                 .padding()
-                .background(index == 0 ? Color.yellow.opacity(0.1) : Color.clear)
+                .background(index == 0 ? AppTheme.medalGold.opacity(0.1) : Color.clear)
                 .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             }
         }
     }
@@ -110,23 +108,23 @@ struct CastingDirectorGameOverView: View {
     // MARK: - Solo Score
 
     private var soloScoreSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppTheme.Spacing.md) {
             let player = viewModel.players.first ?? CastingDirectorPlayer(name: "Player")
 
-            VStack(spacing: 4) {
+            VStack(spacing: AppTheme.Spacing.xs) {
                 Text("Total Score")
-                    .font(.headline)
+                    .font(AppTheme.Typography.cardTitle)
                     .foregroundStyle(.secondary)
                 Text("\(player.score)")
                     .font(.system(size: 48))
                     .fontWeight(.bold)
                     .monospacedDigit()
-                    .foregroundStyle(.indigo)
+                    .foregroundStyle(GameTheme.castingDirector.accentColor)
             }
 
-            HStack(spacing: 24) {
-                StatBubble(label: "Correct", value: "\(player.correctGuesses)", icon: "checkmark.circle.fill", color: .green)
-                StatBubble(label: "Wrong", value: "\(player.wrongGuesses)", icon: "xmark.circle.fill", color: .red)
+            HStack(spacing: AppTheme.Spacing.lg) {
+                StatBubble(label: "Correct", value: "\(player.correctGuesses)", icon: "checkmark.circle.fill", color: AppTheme.success)
+                StatBubble(label: "Wrong", value: "\(player.wrongGuesses)", icon: "xmark.circle.fill", color: AppTheme.error)
                 StatBubble(label: "Streak", value: "\(viewModel.bestStreak)", icon: "flame.fill", color: .orange)
             }
 
@@ -136,21 +134,21 @@ struct CastingDirectorGameOverView: View {
                     Image(systemName: "star.fill")
                         .foregroundStyle(.yellow)
                     Text("New High Score!")
-                        .font(.headline)
+                        .font(AppTheme.Typography.cardTitle)
                         .foregroundStyle(.yellow)
                     Image(systemName: "star.fill")
                         .foregroundStyle(.yellow)
                 }
-                .padding(.top, 4)
+                .padding(.top, AppTheme.Spacing.xs)
             } else if viewModel.highScore > 0 {
                 Text("High Score: \(viewModel.highScore)")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
             }
         }
         .padding()
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
     }
 
     // MARK: - Stats
@@ -158,7 +156,7 @@ struct CastingDirectorGameOverView: View {
     private var statsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Game Stats")
-                .font(.headline)
+                .font(AppTheme.Typography.cardTitle)
 
             HStack(spacing: 12) {
                 CastingDirectorStatCard(label: "Rounds", value: "\(viewModel.numberOfRounds)", icon: "number.circle.fill")
@@ -178,12 +176,12 @@ struct CastingDirectorGameOverView: View {
                     Image(systemName: "arrow.counterclockwise.circle.fill")
                     Text("Play Again")
                 }
-                .font(.title3)
+                .font(AppTheme.Typography.subsectionHeader)
                 .fontWeight(.semibold)
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.indigo)
+                .background(GameTheme.castingDirector.accentColor)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
 
@@ -191,7 +189,7 @@ struct CastingDirectorGameOverView: View {
                 viewModel.returnToSetup()
             } label: {
                 Text("Back to Setup")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
             }
         }
@@ -208,16 +206,16 @@ struct StatBubble: View {
     let color: Color
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             Image(systemName: icon)
-                .font(.title3)
+                .font(AppTheme.Typography.subsectionHeader)
                 .foregroundStyle(color)
             Text(value)
-                .font(.title2)
+                .font(AppTheme.Typography.sectionHeader)
                 .fontWeight(.bold)
                 .monospacedDigit()
             Text(label)
-                .font(.caption2)
+                .font(AppTheme.Typography.tabLabel)
                 .foregroundStyle(.secondary)
         }
     }
@@ -233,20 +231,20 @@ struct CastingDirectorStatCard: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(.indigo)
+                .font(AppTheme.Typography.subsectionHeader)
+                .foregroundStyle(GameTheme.castingDirector.accentColor)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
                 Text(value)
-                    .font(.headline)
+                    .font(AppTheme.Typography.cardTitle)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
     }
 }

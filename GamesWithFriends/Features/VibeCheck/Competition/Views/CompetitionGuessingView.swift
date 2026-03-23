@@ -27,11 +27,11 @@ struct CompetitionGuessingView: View {
             lockInButton
         }
         .padding(.horizontal)
-        .padding(.top, 8)
+        .padding(.top, AppTheme.Spacing.sm)
         .padding(.bottom)
         .background {
             LinearGradient(
-                colors: [Color.orange.opacity(0.1), Color.red.opacity(0.1)],
+                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.1)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -45,28 +45,28 @@ struct CompetitionGuessingView: View {
         HStack {
             if let round = viewModel.currentRound {
                 Text("Round \(round.roundNumber)")
-                    .font(.subheadline)
+                    .font(AppTheme.Typography.secondary)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
             if let player = viewModel.currentGuessingPlayer {
-                HStack(spacing: 4) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: "hand.tap.fill")
                     Text(player.name)
                 }
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.orange)
+                .font(AppTheme.Typography.secondary.weight(.semibold))
+                .foregroundStyle(GameTheme.vibeCheck.accentColor)
             }
         }
     }
 
     private var promptCard: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             if let round = viewModel.currentRound {
                 Text("\"\(round.prompt)\"")
-                    .font(.body.weight(.semibold))
+                    .font(AppTheme.Typography.body.weight(.semibold))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.primary)
                     .lineLimit(2)
@@ -77,7 +77,7 @@ struct CompetitionGuessingView: View {
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity)
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
         }
@@ -86,15 +86,15 @@ struct CompetitionGuessingView: View {
     private var instructionsCard: some View {
         HStack(spacing: 6) {
             Image(systemName: "eye.slash.fill")
-                .foregroundStyle(.orange)
-                .font(.subheadline)
+                .foregroundStyle(GameTheme.vibeCheck.accentColor)
+                .font(AppTheme.Typography.secondary)
 
             Text("Make your guess! Don't let others see your answer.")
-                .font(.caption)
+                .font(AppTheme.Typography.caption)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.vertical, AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: 10)
@@ -115,7 +115,7 @@ struct CompetitionGuessingView: View {
             .padding(.vertical, 14)
             .background {
                 LinearGradient(
-                    colors: [.orange, .red],
+                    colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
                     startPoint: .leading,
                     endPoint: .trailing
                 )

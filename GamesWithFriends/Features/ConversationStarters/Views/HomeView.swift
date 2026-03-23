@@ -11,7 +11,7 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)],
+                colors: [GameTheme.conversationStarters.accentColor.opacity(0.15), GameTheme.conversationStarters.accentColor.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -23,14 +23,13 @@ struct HomeView: View {
                         VStack(spacing: 10) {
                             Image(systemName: "bubble.left.and.bubble.right.fill")
                                 .font(.system(size: 60))
-                                .foregroundColor(.purple)
+                                .foregroundColor(GameTheme.conversationStarters.accentColor)
 
                             Text("Conversation Starters")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
+                                .font(AppTheme.Typography.hero)
 
                             Text("Break the ice and spark great conversations")
-                                .font(.subheadline)
+                                .font(AppTheme.Typography.secondary)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
                         }
@@ -39,7 +38,7 @@ struct HomeView: View {
                         // Player Count
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Number of Players", systemImage: "person.3.fill")
-                                .font(.headline)
+                                .font(AppTheme.Typography.cardTitle)
 
                             HStack {
                                 Button(action: {
@@ -48,34 +47,33 @@ struct HomeView: View {
                                     }
                                 }) {
                                     Image(systemName: "minus.circle.fill")
-                                        .font(.title2)
+                                        .font(AppTheme.Typography.sectionHeader)
                                 }
                                 .disabled(viewModel.settings.playerCount <= 2)
 
                                 Text("\(viewModel.settings.playerCount)")
-                                    .font(.title)
-                                    .fontWeight(.bold)
+                                    .font(AppTheme.Typography.screenTitle)
                                     .frame(minWidth: 50)
 
                                 Button(action: {
                                     viewModel.settings.playerCount += 1
                                 }) {
                                     Image(systemName: "plus.circle.fill")
-                                        .font(.title2)
+                                        .font(AppTheme.Typography.sectionHeader)
                                 }
                             }
-                            .foregroundColor(.purple)
+                            .foregroundColor(GameTheme.conversationStarters.accentColor)
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color(.systemBackground))
-                        .cornerRadius(15)
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
                         // Vibe Level
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Vibe Level", systemImage: "waveform")
-                                .font(.headline)
+                                .font(AppTheme.Typography.cardTitle)
 
                             VStack(alignment: .leading, spacing: 5) {
                                 Slider(value: Binding(
@@ -87,7 +85,7 @@ struct HomeView: View {
                                 HStack {
                                     ForEach(1...5, id: \.self) { level in
                                         Text(vibeLevelName(for: level))
-                                            .font(.caption)
+                                            .font(AppTheme.Typography.caption)
                                             .frame(maxWidth: .infinity)
                                     }
                                 }
@@ -95,25 +93,27 @@ struct HomeView: View {
                             }
 
                             Text(vibeLevelDescription(for: viewModel.settings.vibeLevel))
-                                .font(.subheadline)
+                                .font(AppTheme.Typography.secondary)
                                 .foregroundColor(.secondary)
                                 .padding(.top, 5)
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color(.systemBackground))
-                        .cornerRadius(15)
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
                         // Category Filter
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Categories", systemImage: "tag.fill")
-                                .font(.headline)
+                                .font(AppTheme.Typography.cardTitle)
 
                             FlowLayout(spacing: 10) {
                                 ForEach(Category.allCases, id: \.self) { category in
-                                    CategoryChip(
-                                        category: category,
+                                    CategoryPill(
+                                        title: category.rawValue,
+                                        icon: category.icon,
+                                        color: GameTheme.conversationStarters.accentColor,
                                         isSelected: viewModel.settings.selectedCategories.contains(category),
                                         action: {
                                             if viewModel.settings.selectedCategories.contains(category) {
@@ -129,18 +129,20 @@ struct HomeView: View {
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color(.systemBackground))
-                        .cornerRadius(15)
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
                         // Theme Filter
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Themes", systemImage: "sparkles")
-                                .font(.headline)
+                                .font(AppTheme.Typography.cardTitle)
 
                             FlowLayout(spacing: 10) {
                                 ForEach(Theme.allCases, id: \.self) { theme in
-                                    ThemeChip(
-                                        theme: theme,
+                                    CategoryPill(
+                                        title: theme.rawValue,
+                                        icon: theme.icon,
+                                        color: GameTheme.conversationStarters.accentColor,
                                         isSelected: viewModel.settings.selectedThemes.contains(theme),
                                         action: {
                                             if viewModel.settings.selectedThemes.contains(theme) {
@@ -156,7 +158,7 @@ struct HomeView: View {
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color(.systemBackground))
-                        .cornerRadius(15)
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
                         // Start Button
@@ -169,18 +171,18 @@ struct HomeView: View {
                                 Text("Start Game")
                                     .fontWeight(.semibold)
                             }
-                            .font(.title2)
+                            .font(AppTheme.Typography.sectionHeader)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(
                                 LinearGradient(
-                                    colors: [Color.purple, Color.blue],
+                                    colors: [GameTheme.conversationStarters.accentColor, GameTheme.conversationStarters.darkAccent],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
                             )
-                            .cornerRadius(15)
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         }
                         .shadow(radius: 5)
                         .padding(.bottom, 20)
@@ -223,12 +225,12 @@ struct HomeView: View {
 
     private func vibeColor(for level: Int) -> Color {
         switch level {
-        case 1: return .blue
+        case 1: return GameTheme.conversationStarters.accentColor
         case 2: return .green
         case 3: return .yellow
         case 4: return .orange
         case 5: return .red
-        default: return .blue
+        default: return GameTheme.conversationStarters.accentColor
         }
     }
 
@@ -237,8 +239,8 @@ struct HomeView: View {
         case 1: return "Ice"
         case 2: return "Casual"
         case 3: return "Fun"
-        case 4: return "Spicy"
-        case 5: return "Wild"
+        case 4: return "Deep"
+        case 5: return "Daring"
         default: return ""
         }
     }
@@ -255,53 +257,7 @@ struct HomeView: View {
     }
 }
 
-struct CategoryChip: View {
-    let category: Category
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 5) {
-                Image(systemName: category.icon)
-                    .font(.caption)
-                Text(category.rawValue)
-                    .font(.caption)
-                    .fontWeight(.medium)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(isSelected ? Color.purple : Color.gray.opacity(0.2))
-            .foregroundColor(isSelected ? .white : .primary)
-            .cornerRadius(20)
-        }
-    }
-}
-
-struct ThemeChip: View {
-    let theme: Theme
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 5) {
-                Image(systemName: theme.icon)
-                    .font(.caption)
-                Text(theme.rawValue)
-                    .font(.caption)
-                    .fontWeight(.medium)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(isSelected ? Color.blue : Color.gray.opacity(0.2))
-            .foregroundColor(isSelected ? .white : .primary)
-            .cornerRadius(20)
-        }
-    }
-}
-
-// Simple flow layout for wrapping chips
+// Simple flow layout for wrapping pills
 struct FlowLayout: Layout {
     var spacing: CGFloat = 10
 

@@ -44,11 +44,10 @@ struct SavedStartersView: View {
                 .foregroundColor(.gray)
 
             Text("No Saved Starters")
-                .font(.title2)
-                .fontWeight(.bold)
+                .font(AppTheme.Typography.sectionHeader)
 
             Text("Tap the star icon on any conversation starter to save it here")
-                .font(.subheadline)
+                .font(AppTheme.Typography.secondary)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -87,36 +86,36 @@ struct SavedStarterRow: View {
             HStack {
                 HStack(spacing: 5) {
                     Image(systemName: starter.category.icon)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                     Text(starter.category.rawValue)
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .fontWeight(.medium)
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background(categoryColor.opacity(0.2))
                 .foregroundColor(categoryColor)
-                .cornerRadius(12)
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
 
                 Spacer()
 
                 HStack(spacing: 5) {
                     ForEach(1...5, id: \.self) { level in
                         Circle()
-                            .fill(level <= starter.vibeLevel ? vibeColor : Color.gray.opacity(0.3))
+                            .fill(level <= starter.vibeLevel ? vibeColor : AppTheme.mediumGray.opacity(0.3))
                             .frame(width: 8, height: 8)
                     }
                 }
             }
 
             Text(starter.text)
-                .font(.body)
+                .font(AppTheme.Typography.body)
                 .foregroundColor(.primary)
 
             HStack {
                 Button(action: onShare) {
                     Label("Share", systemImage: "square.and.arrow.up")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                 }
                 .buttonStyle(.bordered)
 
@@ -124,7 +123,7 @@ struct SavedStarterRow: View {
 
                 Button(action: onRemove) {
                     Label("Remove", systemImage: "trash")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                 }
                 .buttonStyle(.bordered)
                 .tint(.red)
@@ -135,10 +134,10 @@ struct SavedStarterRow: View {
 
     private var categoryColor: Color {
         switch starter.category {
-        case .wouldYouRather: return .purple
+        case .wouldYouRather: return GameTheme.conversationStarters.accentColor
         case .hotTakes: return .red
         case .hypotheticals: return .orange
-        case .storyTime: return .blue
+        case .storyTime: return GameTheme.conversationStarters.accentColor
         case .thisOrThat: return .green
         case .deepDive: return .indigo
         }
@@ -146,12 +145,12 @@ struct SavedStarterRow: View {
 
     private var vibeColor: Color {
         switch starter.vibeLevel {
-        case 1: return .blue
+        case 1: return GameTheme.conversationStarters.accentColor
         case 2: return .green
         case 3: return .yellow
         case 4: return .orange
         case 5: return .red
-        default: return .blue
+        default: return GameTheme.conversationStarters.accentColor
         }
     }
 }

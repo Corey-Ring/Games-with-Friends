@@ -32,7 +32,7 @@ struct TripSelectionView: View {
                     showingNewTripSheet = true
                 } label: {
                     Label("Start New Trip", systemImage: "plus.circle.fill")
-                        .font(.headline)
+                        .font(AppTheme.Typography.buttonLabel)
                 }
             }
 
@@ -91,10 +91,10 @@ struct TripRowView: View {
     let isActive: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             HStack {
                 Text(trip.name)
-                    .font(.headline)
+                    .font(AppTheme.Typography.cardTitle)
 
                 Spacer()
 
@@ -106,13 +106,13 @@ struct TripRowView: View {
 
             HStack {
                 Label("\(trip.totalSpotted) spotted", systemImage: "car.fill")
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
 
                 Spacer()
 
                 Text(trip.startDate, style: .date)
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
             }
 
@@ -123,12 +123,12 @@ struct TripRowView: View {
 
             if let notes = trip.notes, !notes.isEmpty {
                 Text(notes)
-                    .font(.caption)
+                    .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, AppTheme.Spacing.xs)
     }
 }
 
