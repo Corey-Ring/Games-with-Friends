@@ -211,6 +211,14 @@ Use the `.gameCard()` modifier to apply standard card styling (white background,
 
 **List Screen**: Left-aligned thumbnail (56pt circle or 56pt rounded square), text block (title + subtitle + metadata), right chevron. Rows separated by 1pt hairline in Warm Linen color.
 
+**Search-Driven Game Screen** (e.g., Movie Chain): Three-zone vertical layout — a fixed top bar (player info / timer), a flexible middle area (chain / content), and a pinned bottom search panel. Key rules:
+
+- The middle area must handle sparse and dense states gracefully. When content is minimal (e.g., initial pick, only 1-2 chain links), center it vertically rather than pinning to top — avoid large dead whitespace gaps.
+- The bottom search panel uses an inverted shadow (negative y-offset) to visually separate from content above.
+- Search results should overlay the middle content area rather than pushing it upward, especially when the keyboard is active. This prevents the content zone from being crushed to near-zero height.
+- Avoid duplicating prompt text — if a prompt already appears in the content area, don't repeat it above the search field. Use the search area for the input only, or show a shorter contextual label.
+- When the keyboard is visible, prioritize search results visibility. Auto-scroll so the active search field and at least 2-3 result rows are visible without scrolling.
+
 ---
 
 ## 5. Component Library
@@ -305,6 +313,15 @@ When a button should use the current game's accent color instead of Brand Orange
 - Empty states use a centered illustration (max 160pt tall) + headline + subhead + optional CTA button
 - **Loading states use skeleton shimmer animation** (`.skeletonLoading()` modifier) on placeholder shapes — **never use `ProgressView()` spinners**
 - Skeleton shapes match the actual content layout: rectangle for text lines, circle for avatars, rounded rect for cards
+
+### Keyboard-Aware Layouts
+
+Games with search fields (Movie Chain, Casting Director, etc.) must handle keyboard appearance gracefully:
+
+- When the keyboard appears, the search field and at least 2-3 result rows must remain visible. Content above should compress or scroll, but search results must not be crushed to near-invisibility.
+- Prefer overlaying search results on top of existing content rather than inserting them inline, which causes the content area to collapse.
+- Avoid duplicating text labels when space is limited — if a prompt appears in the content area, omit it from the search panel when the keyboard is active.
+- Consider auto-focusing the search field on key screens (e.g., initial game pick) to signal the expected interaction and bring the keyboard up proactively.
 
 ---
 
@@ -433,7 +450,24 @@ GameTheme.vibeCheck.darkAccent        // 85% opacity (for dark mode)
 - All animations use `.spring()` with values from the timing standards
 - Use shared components (`PrimaryButton`, `SecondaryButton`, `CategoryPill`) — never reimplement
 
-### 9.4 Mandatory Checklist for Every New View
+### 9.4 Common SwiftUI Pitfalls
+
+**Integer formatting in `Text` interpolation:** SwiftUI's `Text("\(someInt)")` applies locale-aware number formatting, adding thousands separators (e.g., `2019` becomes `"2,019"`). For years, scores displayed as plain numbers, or any integer that should not be formatted:
+```swift
+// BAD — produces "2,019"
+Text("\(year)")
+
+// GOOD — suppresses number formatting
+Text(verbatim: "\(year)")
+// or
+Text(String(year))
+```
+
+**`UIScreen.main.bounds` in SwiftUI:** Avoid `UIScreen.main.bounds` for layout calculations. It doesn't account for safe areas, split-screen, or Stage Manager. Use `GeometryReader` to get actual available dimensions, or rely on SwiftUI's layout system (e.g., `Spacer()` pairs for centering).
+
+**Context-sensitive copy:** When a view's copy references a game mechanic (e.g., "Not finding an actor?"), ensure the text adapts to the current game state. Use the view model's state (e.g., `turnType`) to switch between variants rather than hardcoding a single string.
+
+### 9.5 Mandatory Checklist for Every New View
 
 1. Uses `AppTheme.Typography.*` for all readable text (`.system(size:)` only for decorative display icons/numbers 36pt+)
 2. Uses `AppTheme.Spacing.*` for padding/spacing (intermediate values only inside shared components)
@@ -485,3 +519,5 @@ GameTheme.vibeCheck.darkAccent        // 85% opacity (for dark mode)
 - Center screen titles or use small header text
 - Create custom button/pill implementations when shared components exist
 - Use gradients that mix colors from different games
+- Use `Text("\(someInt)")` for years or plain numbers — use `Text(verbatim:)` or `Text(String(...))` to avoid locale formatting
+- Use `UIScreen.main.bounds` for layout sizing — use `GeometryReader` or SwiftUI's native layout

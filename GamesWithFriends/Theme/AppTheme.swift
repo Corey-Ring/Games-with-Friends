@@ -78,6 +78,10 @@ struct AppTheme {
         static let elevatedRadius: CGFloat = 8
         static let elevatedX: CGFloat = 0
         static let elevatedY: CGFloat = 4
+
+        static let topEdgeColor = Color.black.opacity(0.06)
+        static let topEdgeRadius: CGFloat = 4
+        static let topEdgeY: CGFloat = -2
     }
 
     // MARK: - Animation Timing

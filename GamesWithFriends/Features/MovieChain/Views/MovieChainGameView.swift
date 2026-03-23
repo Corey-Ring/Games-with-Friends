@@ -5,6 +5,7 @@ struct MovieChainGameView: View {
     @ObservedObject var viewModel: MovieChainViewModel
     @FocusState private var isSearchFocused: Bool
     @State private var showingDatabaseInfo = false
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 0) {
@@ -17,8 +18,20 @@ struct MovieChainGameView: View {
             // Prompt and search area
             searchArea
         }
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
+        .onAppear {
+            if viewModel.isInitialPick {
+                isSearchFocused = true
+            }
+        }
+        .toolbar(.hidden, for: .navigationBar)
+    }
+
+    // MARK: - Top Bar
+
+    private var topBar: some View {
+        VStack(spacing: AppTheme.Spacing.md) {
+            // Current player indicator + exit/give up controls
+            HStack {
                 Button {
                     viewModel.returnToSetup()
                 } label: {
@@ -26,25 +39,7 @@ struct MovieChainGameView: View {
                         .foregroundStyle(AppTheme.mediumGray)
                 }
                 .accessibilityLabel("Exit game")
-            }
 
-            ToolbarItem(placement: .topBarTrailing) {
-                if !viewModel.isInitialPick {
-                    Button("Give Up") {
-                        viewModel.giveUp()
-                    }
-                    .foregroundStyle(GameTheme.movieChain.accentColor)
-                }
-            }
-        }
-    }
-
-    // MARK: - Top Bar
-
-    private var topBar: some View {
-        VStack(spacing: AppTheme.Spacing.md) {
-            // Current player indicator
-            HStack {
                 Circle()
                     .fill(viewModel.currentPlayer.color)
                     .frame(width: 16, height: 16)
@@ -52,8 +47,17 @@ struct MovieChainGameView: View {
                 Text(viewModel.currentPlayer.name)
                     .font(AppTheme.Typography.cardTitle)
                     .foregroundColor(AppTheme.deepCharcoal)
+                    .lineLimit(1)
 
                 Spacer()
+
+                if !viewModel.isInitialPick {
+                    Button("Give Up") {
+                        viewModel.giveUp()
+                    }
+                    .font(AppTheme.Typography.caption)
+                    .foregroundStyle(GameTheme.movieChain.accentColor)
+                }
 
                 // Timer or lives display
                 if viewModel.gameMode.hasTimer {
@@ -79,12 +83,17 @@ struct MovieChainGameView: View {
             }
         }
         .padding(AppTheme.Spacing.md)
-        .background(AppTheme.pureWhite)
-        .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
+        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+        .shadow(
+            color: colorScheme == .dark ? Color.white.opacity(0.04) : AppTheme.Shadow.cardColor,
+            radius: AppTheme.Shadow.cardRadius,
+            x: AppTheme.Shadow.cardX,
+            y: AppTheme.Shadow.cardY
+        )
     }
 
     private var timerDisplay: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: AppTheme.Spacing.xs) {
             Image(systemName: "timer")
             Text("\(viewModel.timeRemaining)")
                 .font(AppTheme.Typography.sectionHeader).monospacedDigit()
@@ -101,18 +110,18 @@ struct MovieChainGameView: View {
 
     private var timerColor: Color {
         if viewModel.timeRemaining <= 5 {
-            return .red
+            return AppTheme.error
         } else if viewModel.timeRemaining <= 10 {
-            return .orange
+            return AppTheme.warning
         }
-        return .green
+        return AppTheme.success
     }
 
     private var livesDisplay: some View {
         HStack(spacing: AppTheme.Spacing.xs) {
             ForEach(0..<viewModel.gameMode.defaultLives, id: \.self) { index in
                 Image(systemName: index < viewModel.currentPlayer.lives ? "heart.fill" : "heart")
-                    .foregroundStyle(.red)
+                    .foregroundStyle(AppTheme.error)
             }
         }
     }
@@ -120,38 +129,45 @@ struct MovieChainGameView: View {
     // MARK: - Chain Display
 
     private var chainDisplay: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(Array(viewModel.chain.enumerated()), id: \.element.id) { index, link in
-                        ChainLinkView(link: link, index: index)
-                            .id(link.id)
-                            .staggeredAppear(index: index)
+        GeometryReader { geometry in
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(Array(viewModel.chain.enumerated()), id: \.element.id) { index, link in
+                            ChainLinkView(link: link, index: index)
+                                .id(link.id)
+                                .staggeredAppear(index: index)
 
-                        if index < viewModel.chain.count - 1 {
+                            if index < viewModel.chain.count - 1 {
+                                ChainConnector()
+                            }
+                        }
+
+                        // Show what's needed next
+                        if viewModel.chain.isEmpty {
+                            VStack {
+                                Spacer()
+                                InitialPickView()
+                                    .id("pending-initial")
+                                Spacer()
+                            }
+                            .frame(minHeight: geometry.size.height * 0.45)
+                        } else {
                             ChainConnector()
+
+                            PendingLinkView(turnType: viewModel.turnType)
+                                .id("pending-\(viewModel.chain.count)")
                         }
                     }
-
-                    // Show what's needed next
-                    if viewModel.chain.isEmpty {
-                        InitialPickView()
-                            .id("pending-initial")
-                    } else {
-                        ChainConnector()
-
-                        PendingLinkView(turnType: viewModel.turnType)
-                            .id("pending-\(viewModel.chain.count)")
-                    }
+                    .padding(AppTheme.Spacing.md)
                 }
-                .padding(AppTheme.Spacing.md)
-            }
-            .onChange(of: viewModel.chain.count) { _, newCount in
-                withAnimation {
-                    if newCount == 0 {
-                        proxy.scrollTo("pending-initial", anchor: .bottom)
-                    } else {
-                        proxy.scrollTo("pending-\(newCount)", anchor: .bottom)
+                .onChange(of: viewModel.chain.count) { _, newCount in
+                    withAnimation {
+                        if newCount == 0 {
+                            proxy.scrollTo("pending-initial", anchor: .bottom)
+                        } else {
+                            proxy.scrollTo("pending-\(newCount)", anchor: .bottom)
+                        }
                     }
                 }
             }
@@ -162,12 +178,14 @@ struct MovieChainGameView: View {
 
     private var searchArea: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            // Prompt
-            Text(viewModel.currentPrompt)
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundColor(AppTheme.deepCharcoal)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+            // Prompt (hidden during initial pick — InitialPickView already shows it)
+            if !viewModel.isInitialPick {
+                Text(viewModel.currentPrompt)
+                    .font(AppTheme.Typography.cardTitle)
+                    .foregroundColor(AppTheme.deepCharcoal)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+            }
 
             // Search field
             HStack {
@@ -215,7 +233,11 @@ struct MovieChainGameView: View {
             } label: {
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: "info.circle")
-                    Text("Not finding an actor?")
+                    Text(viewModel.isInitialPick
+                        ? "Not finding what you're looking for?"
+                        : viewModel.turnType == .actor
+                            ? "Not finding an actor?"
+                            : "Not finding a movie?")
                 }
                 .font(AppTheme.Typography.caption)
                 .foregroundStyle(AppTheme.mediumGray)
@@ -223,8 +245,8 @@ struct MovieChainGameView: View {
             .padding(.top, AppTheme.Spacing.xs)
         }
         .padding(.bottom, AppTheme.Spacing.md)
-        .background(AppTheme.pureWhite)
-        .shadow(color: AppTheme.Shadow.cardColor, radius: 4, x: 0, y: -2)
+        .background(AppTheme.warmLinen)
+        .shadow(color: AppTheme.Shadow.topEdgeColor, radius: AppTheme.Shadow.topEdgeRadius, x: 0, y: AppTheme.Shadow.topEdgeY)
         .alert("Database Limitation", isPresented: $showingDatabaseInfo) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -245,7 +267,7 @@ struct MovieChainGameView: View {
             }
             .padding(.horizontal)
         }
-        .frame(maxHeight: 200)
+        .frame(maxHeight: isSearchFocused ? 250 : 200)
     }
 
     private var noResultsView: some View {
@@ -296,7 +318,7 @@ struct ChainLinkView: View {
                     .foregroundColor(AppTheme.deepCharcoal)
 
                 if case .movie(let movie) = link, let year = movie.year {
-                    Text("\(year)")
+                    Text(verbatim: "\(year)")
                         .font(AppTheme.Typography.caption)
                         .foregroundColor(AppTheme.mediumGray)
                 }
@@ -361,10 +383,7 @@ struct InitialPickView: View {
                 .foregroundColor(AppTheme.mediumGray)
         }
         .frame(maxWidth: .infinity)
-        .padding(AppTheme.Spacing.md)
-        .background(AppTheme.pureWhite)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-        .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
+        .gameCard()
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8]))
@@ -403,10 +422,7 @@ struct PendingLinkView: View {
 
             Spacer()
         }
-        .padding(AppTheme.Spacing.md)
-        .background(AppTheme.pureWhite)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-        .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
+        .gameCard()
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8]))
@@ -423,7 +439,7 @@ struct PlayerStatusBadge: View {
     let gameMode: MovieChainGameMode
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: AppTheme.Spacing.xs) {
             Circle()
                 .fill(player.color)
                 .frame(width: 12, height: 12)
@@ -435,7 +451,7 @@ struct PlayerStatusBadge: View {
             if gameMode.hasLives {
                 Text("\(player.lives)")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(AppTheme.error)
             } else if gameMode.hasScoring {
                 Text("\(player.score)")
                     .font(AppTheme.Typography.caption)

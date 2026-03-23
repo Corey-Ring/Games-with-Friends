@@ -7,7 +7,7 @@ struct VibeCheckHomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: AppTheme.Spacing.lg) {
+            VStack(spacing: AppTheme.Spacing.md) {
                 // Header
                 headerSection
 
@@ -38,6 +38,7 @@ struct VibeCheckHomeView: View {
                 } label: {
                     Label("How to Play", systemImage: "book.fill")
                         .font(AppTheme.Typography.secondary)
+                        .foregroundStyle(GameTheme.vibeCheck.accentColor)
                 }
                 .padding(.top, AppTheme.Spacing.sm)
                 .padding(.bottom, AppTheme.Spacing.lg)
@@ -61,7 +62,7 @@ struct VibeCheckHomeView: View {
     // MARK: - Sections
 
     private var gameModeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Text("Game Mode")
                 .font(AppTheme.Typography.cardTitle)
 
@@ -76,7 +77,7 @@ struct VibeCheckHomeView: View {
     }
 
     private var playerCountSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Label("Players", systemImage: "person.fill")
                 .font(AppTheme.Typography.cardTitle)
 
@@ -88,7 +89,7 @@ struct VibeCheckHomeView: View {
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.competitionSettings.playerCount > 2 ? .primary : .secondary)
+                        .foregroundStyle(viewModel.competitionSettings.playerCount > 2 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
                 .disabled(viewModel.competitionSettings.playerCount <= 2)
 
@@ -107,7 +108,7 @@ struct VibeCheckHomeView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.competitionSettings.playerCount < 10 ? .primary : .secondary)
+                        .foregroundStyle(viewModel.competitionSettings.playerCount < 10 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
                 .disabled(viewModel.competitionSettings.playerCount >= 10)
             }
@@ -129,27 +130,21 @@ struct VibeCheckHomeView: View {
     private var headerSection: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "antenna.radiowaves.left.and.right")
-                .font(.system(size: 50))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.purple, .blue],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
+                .font(.system(size: 36))
+                .foregroundStyle(GameTheme.vibeCheck.accentColor)
 
-            Text("VIBE CHECK")
+            Text("Vibe Check")
                 .font(AppTheme.Typography.hero)
 
             Text("Get on the same wavelength")
                 .font(AppTheme.Typography.secondary)
                 .foregroundStyle(.secondary)
         }
-        .padding(.vertical)
+        .padding(.vertical, AppTheme.Spacing.sm)
     }
 
     private var teamCountSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Label("Teams", systemImage: "person.3.fill")
                 .font(AppTheme.Typography.cardTitle)
 
@@ -161,7 +156,7 @@ struct VibeCheckHomeView: View {
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.settings.teamCount > 1 ? .primary : .secondary)
+                        .foregroundStyle(viewModel.settings.teamCount > 1 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
                 .disabled(viewModel.settings.teamCount <= 1)
 
@@ -180,7 +175,7 @@ struct VibeCheckHomeView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.settings.teamCount < 4 ? .primary : .secondary)
+                        .foregroundStyle(viewModel.settings.teamCount < 4 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
                 .disabled(viewModel.settings.teamCount >= 4)
             }
@@ -200,7 +195,7 @@ struct VibeCheckHomeView: View {
     }
 
     private var playersPerTeamSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Label("Players per Team", systemImage: "person.2.fill")
                 .font(AppTheme.Typography.cardTitle)
 
@@ -212,7 +207,7 @@ struct VibeCheckHomeView: View {
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.settings.playersPerTeam > 2 ? .primary : .secondary)
+                        .foregroundStyle(viewModel.settings.playersPerTeam > 2 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
                 .disabled(viewModel.settings.playersPerTeam <= 2)
 
@@ -231,7 +226,7 @@ struct VibeCheckHomeView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.settings.playersPerTeam < 8 ? .primary : .secondary)
+                        .foregroundStyle(viewModel.settings.playersPerTeam < 8 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
                 .disabled(viewModel.settings.playersPerTeam >= 8)
             }
@@ -303,13 +298,7 @@ struct VibeCheckHomeView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background {
-                LinearGradient(
-                    colors: [.purple, .blue],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            }
+            .background(GameTheme.vibeCheck.accentColor)
             .foregroundStyle(.white)
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
@@ -521,7 +510,7 @@ struct HowToPlayView: View {
 
                     // Scoring
                     section(title: "Scoring Zones", icon: "target") {
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                             scoringRow(.perfect)
                             scoringRow(.great)
                             scoringRow(.good)
@@ -550,7 +539,7 @@ struct HowToPlayView: View {
     }
 
     private func section<Content: View>(title: String, icon: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Label(title, systemImage: icon)
                 .font(AppTheme.Typography.cardTitle)
                 .foregroundStyle(.purple)
