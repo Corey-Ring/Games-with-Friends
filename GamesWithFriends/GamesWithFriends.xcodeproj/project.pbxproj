@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C81058FD3AF002326590C757 /* BorderHopGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC6E88AF5B11741EC1036 /* BorderHopGame.swift */; };
+		49B12EB57751052B495143EA /* BorderHopCountry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 448761DB6BFCF0DEF4D01F7B /* BorderHopCountry.swift */; };
+		31CEAA5DD3AA72B2C74BA1BC /* BorderHopDifficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D9BEC93CACB379192250A8 /* BorderHopDifficulty.swift */; };
+		FBBFE9D289FBB4307839C4B1 /* BorderHopRoundResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A0CA6A0BBCE05A9A678569 /* BorderHopRoundResult.swift */; };
+		CFB73CFD1165E460873FD563 /* CountryGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1CDBD0A43F76C79197488E /* CountryGraph.swift */; };
+		3864A347BA0139047864D476 /* BorderHopCountryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B164C28D586C431DB94A76D /* BorderHopCountryData.swift */; };
+		14F68D71A924870DE5BB57BD /* BorderHopViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */; };
+		AA3F082975F7ADFF49CB36D4 /* BorderHopDifficultyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DEBA0D22633744F9DCF952 /* BorderHopDifficultyView.swift */; };
+		4F38E843D7D5B7598CA77582 /* BorderHopLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4EBEADBB01887079FF4B67 /* BorderHopLoadingView.swift */; };
+		646E461D2798F05A5FB0D001 /* BorderHopGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C33059A4FC06BE6FD7B7A6A /* BorderHopGameView.swift */; };
+		2DD62FB808FF825CC081B894 /* BorderHopResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */; };
+		97CE7CE18AEDA00A510093A9 /* MapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFC83BF0058967C0FC4CF8F /* MapRenderer.swift */; };
+		BC5A7E77AF43EC241ED3FD24 /* BorderHopMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163185AC4CA8F9B7D72E7E02 /* BorderHopMapView.swift */; };
+		ED590E7F7DBCEDE5F184948D /* StopwatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E3E539738BF9B87C15E66CB /* StopwatchView.swift */; };
 		4A3F83BB2F3BC7C900F29F5F /* CastingDirectorModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F83BA2F3BC7C900F29F5F /* CastingDirectorModels.swift */; };
 		570D24ADEFC5556E70C7A155 /* CastingDirectorGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4867B2C553A7BCE8B005A8 /* CastingDirectorGame.swift */; };
 		5939DEE3229C784E968DBAFD /* ClueGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C115CCFFDD4E4E3C316FC94 /* ClueGenerator.swift */; };
@@ -129,6 +143,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		80BFC6E88AF5B11741EC1036 /* BorderHopGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopGame.swift; sourceTree = "<group>"; };
+		448761DB6BFCF0DEF4D01F7B /* BorderHopCountry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopCountry.swift; sourceTree = "<group>"; };
+		E4D9BEC93CACB379192250A8 /* BorderHopDifficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopDifficulty.swift; sourceTree = "<group>"; };
+		37A0CA6A0BBCE05A9A678569 /* BorderHopRoundResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopRoundResult.swift; sourceTree = "<group>"; };
+		CD1CDBD0A43F76C79197488E /* CountryGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryGraph.swift; sourceTree = "<group>"; };
+		8B164C28D586C431DB94A76D /* BorderHopCountryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopCountryData.swift; sourceTree = "<group>"; };
+		25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopViewModel.swift; sourceTree = "<group>"; };
+		74DEBA0D22633744F9DCF952 /* BorderHopDifficultyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopDifficultyView.swift; sourceTree = "<group>"; };
+		FE4EBEADBB01887079FF4B67 /* BorderHopLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopLoadingView.swift; sourceTree = "<group>"; };
+		0C33059A4FC06BE6FD7B7A6A /* BorderHopGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopGameView.swift; sourceTree = "<group>"; };
+		30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopResultsView.swift; sourceTree = "<group>"; };
+		9EFC83BF0058967C0FC4CF8F /* MapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRenderer.swift; sourceTree = "<group>"; };
+		163185AC4CA8F9B7D72E7E02 /* BorderHopMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopMapView.swift; sourceTree = "<group>"; };
+		7E3E539738BF9B87C15E66CB /* StopwatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchView.swift; sourceTree = "<group>"; };
 		4A3F83BA2F3BC7C900F29F5F /* CastingDirectorModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorModels.swift; sourceTree = "<group>"; };
 		FE4867B2C553A7BCE8B005A8 /* CastingDirectorGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorGame.swift; sourceTree = "<group>"; };
 		8C115CCFFDD4E4E3C316FC94 /* ClueGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClueGenerator.swift; sourceTree = "<group>"; };
@@ -263,6 +291,68 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+
+		BH00000000000000000001 /* BorderHop */ = {
+			isa = PBXGroup;
+			children = (
+				80BFC6E88AF5B11741EC1036 /* BorderHopGame.swift */,
+				BH00000000000000000002 /* Models */,
+				BH00000000000000000003 /* Data */,
+				BH00000000000000000004 /* ViewModels */,
+				BH00000000000000000005 /* Views */,
+				BH00000000000000000006 /* Components */,
+			);
+			path = BorderHop;
+			sourceTree = "<group>";
+		};
+		BH00000000000000000002 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				448761DB6BFCF0DEF4D01F7B /* BorderHopCountry.swift */,
+				E4D9BEC93CACB379192250A8 /* BorderHopDifficulty.swift */,
+				37A0CA6A0BBCE05A9A678569 /* BorderHopRoundResult.swift */,
+				CD1CDBD0A43F76C79197488E /* CountryGraph.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		BH00000000000000000003 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				8B164C28D586C431DB94A76D /* BorderHopCountryData.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		BH00000000000000000004 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BH00000000000000000005 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				74DEBA0D22633744F9DCF952 /* BorderHopDifficultyView.swift */,
+				FE4EBEADBB01887079FF4B67 /* BorderHopLoadingView.swift */,
+				0C33059A4FC06BE6FD7B7A6A /* BorderHopGameView.swift */,
+				30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BH00000000000000000006 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				9EFC83BF0058967C0FC4CF8F /* MapRenderer.swift */,
+				163185AC4CA8F9B7D72E7E02 /* BorderHopMapView.swift */,
+				7E3E539738BF9B87C15E66CB /* StopwatchView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		4A3F83B52F3BC7B100F29F5F /* CastingDirector */ = {
 			isa = PBXGroup;
 			children = (
@@ -463,6 +553,7 @@
 		F40000010000000000000010 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				BH00000000000000000001 /* BorderHop */,
 				4A883C5B2F04BC5A0046272B /* MovieChain */,
 				F40000010000000000000011 /* GameHub */,
 				F40000010000000000000020 /* ConversationStarters */,
@@ -893,6 +984,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C81058FD3AF002326590C757 /* BorderHopGame.swift in Sources */,
+				49B12EB57751052B495143EA /* BorderHopCountry.swift in Sources */,
+				31CEAA5DD3AA72B2C74BA1BC /* BorderHopDifficulty.swift in Sources */,
+				FBBFE9D289FBB4307839C4B1 /* BorderHopRoundResult.swift in Sources */,
+				CFB73CFD1165E460873FD563 /* CountryGraph.swift in Sources */,
+				3864A347BA0139047864D476 /* BorderHopCountryData.swift in Sources */,
+				14F68D71A924870DE5BB57BD /* BorderHopViewModel.swift in Sources */,
+				AA3F082975F7ADFF49CB36D4 /* BorderHopDifficultyView.swift in Sources */,
+				4F38E843D7D5B7598CA77582 /* BorderHopLoadingView.swift in Sources */,
+				646E461D2798F05A5FB0D001 /* BorderHopGameView.swift in Sources */,
+				2DD62FB808FF825CC081B894 /* BorderHopResultsView.swift in Sources */,
+				97CE7CE18AEDA00A510093A9 /* MapRenderer.swift in Sources */,
+				BC5A7E77AF43EC241ED3FD24 /* BorderHopMapView.swift in Sources */,
+				ED590E7F7DBCEDE5F184948D /* StopwatchView.swift in Sources */,
 				F10000010000000000000001 /* GamesWithFriendsApp.swift in Sources */,
 				4A883C5C2F04BC5A0046272B /* MovieChainViewModel.swift in Sources */,
 				4A883C5D2F04BC5A0046272B /* GameMode.swift in Sources */,

@@ -18,7 +18,8 @@ struct GameRegistry {
             AnyGameDefinition(BorderBlitzGame()),
             AnyGameDefinition(MovieChainGame()),
             AnyGameDefinition(CastingDirectorGame()),
-            AnyGameDefinition(VibeCheckGame())
+            AnyGameDefinition(VibeCheckGame()),
+            AnyGameDefinition(BorderHopGame())
         ]
     }
 }

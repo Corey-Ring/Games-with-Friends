@@ -19,4 +19,5 @@ struct GameTheme {
     static let movieChain = GameTheme(accentColor: AppTheme.warmGold, name: "Movie Chain", iconName: "film.stack")
     static let castingDirector = GameTheme(accentColor: AppTheme.brandOrange, name: "Casting Director", iconName: "person.crop.rectangle.stack")
     static let vibeCheck = GameTheme(accentColor: AppTheme.coralRed, name: "Vibe Check", iconName: "antenna.radiowaves.left.and.right")
+    static let borderHop = GameTheme(accentColor: AppTheme.compassRose, name: "Border Hop", iconName: "globe.europe.africa.fill")
 }

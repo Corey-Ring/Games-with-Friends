@@ -16,6 +16,7 @@ struct AppTheme {
     static let skyBlue = Color(hex: "5B9BD5")
     static let forestGreen = Color(hex: "6DAE6D")
     static let electricIndigo = Color(hex: "7B6CF6")
+    static let compassRose = Color(hex: "D4785A")
 
     // MARK: - Semantic Colors
     static let success = Color(hex: "34C759")
