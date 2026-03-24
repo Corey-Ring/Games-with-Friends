@@ -292,6 +292,23 @@ When a button should use the current game's accent color instead of Brand Orange
 
 ---
 
+### 5.7 Compact Stepper Card Pair
+
+Used when two related numeric steppers appear side-by-side in a horizontal row (e.g., Teams + Players Per Team in Vibe Check setup).
+
+**Rules:**
+- Both cards must use `.frame(maxWidth: .infinity, maxHeight: .infinity)` so SwiftUI's `HStack` equalizes their heights to the taller card automatically
+- Card labels must use `.lineLimit(1)` and `.minimumScaleFactor(0.75)` to prevent wrapping on narrow half-width cards — wrapping causes unequal heights
+- Use `AppTheme.Typography.cardTitle` (`.headline`) for labels; scale factor handles narrower containers
+- Number display: `.system(size: 36, weight: .bold, design: .rounded)` — smaller than full-width stepper cards (36pt vs 48pt) to fit the compact width
+- Internal padding: `AppTheme.Spacing.md` (16pt) on all sides
+- Background: `AppTheme.pureWhite` fill, `AppTheme.Radius.card` (16pt) corner radius, `AppTheme.Shadow.card*` tokens
+- Active stepper button color: `GameTheme.*.accentColor`; disabled: `AppTheme.mediumGray`
+
+**Do not** use a fixed height or explicit `.frame(height:)` — always let equal-height sizing flow from `maxHeight: .infinity` within the HStack.
+
+---
+
 ## 6. Illustrations & Visual Language
 
 ### Illustration Style Rules

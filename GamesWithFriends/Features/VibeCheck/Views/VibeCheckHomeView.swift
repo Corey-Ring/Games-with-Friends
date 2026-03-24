@@ -4,23 +4,21 @@ struct VibeCheckHomeView: View {
     var viewModel: VibeCheckViewModel
     @Binding var selectedMode: VibeCheckGameMode
     @State private var showHowToPlay = false
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.Spacing.md) {
-                // Header
-                headerSection
+                // Compact header with back button
+                compactHeaderRow
 
                 // Game Mode Selection
                 gameModeSection
 
                 // Mode-specific settings
                 if selectedMode == .classic {
-                    // Team count
-                    teamCountSection
-
-                    // Players per team
-                    playersPerTeamSection
+                    // Teams + Players per Team side-by-side
+                    teamsAndPlayersSection
                 } else {
                     // Player count for competition mode
                     playerCountSection
@@ -54,6 +52,7 @@ struct VibeCheckHomeView: View {
             )
             .ignoresSafeArea()
         }
+        .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $showHowToPlay) {
             HowToPlayView(gameMode: selectedMode)
         }
@@ -127,121 +126,107 @@ struct VibeCheckHomeView: View {
         }
     }
 
-    private var headerSection: some View {
+    private var compactHeaderRow: some View {
+        HStack(alignment: .center) {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(AppTheme.deepCharcoal)
+                    .frame(width: 36, height: 36)
+                    .background(AppTheme.pureWhite)
+                    .clipShape(Circle())
+                    .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
+            }
+
+            Spacer()
+
+            VStack(spacing: AppTheme.Spacing.xs) {
+                Image(systemName: "antenna.radiowaves.left.and.right")
+                    .font(.system(size: 24))
+                    .foregroundStyle(GameTheme.vibeCheck.accentColor)
+
+                Text("Vibe Check")
+                    .font(AppTheme.Typography.sectionHeader)
+            }
+
+            Spacer()
+
+            // Balance spacer — keeps title visually centered
+            Color.clear
+                .frame(width: 36, height: 36)
+        }
+        .padding(.top, AppTheme.Spacing.xs)
+    }
+
+    private var teamsAndPlayersSection: some View {
+        HStack(spacing: AppTheme.Spacing.md) {
+            compactStepperCard(
+                label: "Teams", icon: "person.3.fill",
+                value: viewModel.settings.teamCount,
+                minValue: 1, maxValue: 4,
+                onDecrement: { if viewModel.settings.teamCount > 1 { viewModel.settings.teamCount -= 1 } },
+                onIncrement: { if viewModel.settings.teamCount < 4 { viewModel.settings.teamCount += 1 } }
+            )
+            compactStepperCard(
+                label: "Players Per Team", icon: "person.2.fill",
+                value: viewModel.settings.playersPerTeam,
+                minValue: 2, maxValue: 8,
+                onDecrement: { if viewModel.settings.playersPerTeam > 2 { viewModel.settings.playersPerTeam -= 1 } },
+                onIncrement: { if viewModel.settings.playersPerTeam < 8 { viewModel.settings.playersPerTeam += 1 } }
+            )
+        }
+    }
+
+    private func compactStepperCard(
+        label: String, icon: String,
+        value: Int, minValue: Int, maxValue: Int,
+        onDecrement: @escaping () -> Void,
+        onIncrement: @escaping () -> Void
+    ) -> some View {
         VStack(spacing: AppTheme.Spacing.sm) {
-            Image(systemName: "antenna.radiowaves.left.and.right")
-                .font(.system(size: 36))
-                .foregroundStyle(GameTheme.vibeCheck.accentColor)
-
-            Text("Vibe Check")
-                .font(AppTheme.Typography.hero)
-
-            Text("Get on the same wavelength")
-                .font(AppTheme.Typography.secondary)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.vertical, AppTheme.Spacing.sm)
-    }
-
-    private var teamCountSection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            Label("Teams", systemImage: "person.3.fill")
-                .font(AppTheme.Typography.cardTitle)
+            HStack(spacing: AppTheme.Spacing.xs) {
+                Image(systemName: icon)
+                    .font(AppTheme.Typography.secondary)
+                    .foregroundStyle(GameTheme.vibeCheck.accentColor)
+                Text(label)
+                    .font(AppTheme.Typography.secondary.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack {
-                Button {
-                    if viewModel.settings.teamCount > 1 {
-                        viewModel.settings.teamCount -= 1
-                    }
-                } label: {
+                Button(action: onDecrement) {
                     Image(systemName: "minus.circle.fill")
-                        .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.settings.teamCount > 1 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
+                        .font(.title3)
+                        .foregroundStyle(value > minValue ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
-                .disabled(viewModel.settings.teamCount <= 1)
+                .disabled(value <= minValue)
 
                 Spacer()
 
-                Text("\(viewModel.settings.teamCount)")
-                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                Text("\(value)")
+                    .font(.system(size: 36, weight: .bold, design: .rounded))
                     .monospacedDigit()
 
                 Spacer()
 
-                Button {
-                    if viewModel.settings.teamCount < 4 {
-                        viewModel.settings.teamCount += 1
-                    }
-                } label: {
+                Button(action: onIncrement) {
                     Image(systemName: "plus.circle.fill")
-                        .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.settings.teamCount < 4 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
+                        .font(.title3)
+                        .foregroundStyle(value < maxValue ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
-                .disabled(viewModel.settings.teamCount >= 4)
+                .disabled(value >= maxValue)
             }
-            .padding(.horizontal)
-
-            Text(viewModel.settings.teamCount == 1 ? "Single team mode" : "1-4 teams")
-                .font(AppTheme.Typography.caption)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity)
         }
-        .padding()
+        .padding(AppTheme.Spacing.md)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
                 .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
-        }
-    }
-
-    private var playersPerTeamSection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            Label("Players per Team", systemImage: "person.2.fill")
-                .font(AppTheme.Typography.cardTitle)
-
-            HStack {
-                Button {
-                    if viewModel.settings.playersPerTeam > 2 {
-                        viewModel.settings.playersPerTeam -= 1
-                    }
-                } label: {
-                    Image(systemName: "minus.circle.fill")
-                        .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.settings.playersPerTeam > 2 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
-                }
-                .disabled(viewModel.settings.playersPerTeam <= 2)
-
-                Spacer()
-
-                Text("\(viewModel.settings.playersPerTeam)")
-                    .font(.system(size: 48, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-
-                Spacer()
-
-                Button {
-                    if viewModel.settings.playersPerTeam < 8 {
-                        viewModel.settings.playersPerTeam += 1
-                    }
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.settings.playersPerTeam < 8 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
-                }
-                .disabled(viewModel.settings.playersPerTeam >= 8)
-            }
-            .padding(.horizontal)
-
-            Text("Minimum 2 players per team")
-                .font(AppTheme.Typography.caption)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity)
-        }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+                .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
         }
     }
 
@@ -293,7 +278,7 @@ struct VibeCheckHomeView: View {
         } label: {
             HStack {
                 Image(systemName: "arrow.right.circle.fill")
-                Text(selectedMode == .classic ? "SET UP TEAMS" : "SET UP PLAYERS")
+                Text(selectedMode == .classic ? "Set Up Teams" : "Set Up Players")
                     .fontWeight(.bold)
             }
             .frame(maxWidth: .infinity)
@@ -318,7 +303,7 @@ struct VibeCheckGameModeCard: View {
             HStack(spacing: AppTheme.Spacing.md) {
                 Image(systemName: mode.iconName)
                     .font(AppTheme.Typography.sectionHeader)
-                    .foregroundStyle(isSelected ? .white : .purple)
+                    .foregroundStyle(isSelected ? .white : GameTheme.vibeCheck.accentColor)
                     .frame(width: 40)
 
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
