@@ -53,7 +53,7 @@ struct BorderHopMapView: View {
                     DragGesture(minimumDistance: 0)
                         .onChanged { value in
                             let translation = value.translation
-                            if abs(translation.width) > 5 || abs(translation.height) > 5 {
+                            if abs(translation.width) > 12 || abs(translation.height) > 12 {
                                 isDragging = true
                                 offset = CGSize(
                                     width: lastOffset.width + translation.width,
@@ -183,15 +183,38 @@ struct BorderHopMapView: View {
             drawLabel(context: &context, text: viewModel.graph.country(for: projected.id)?.name ?? "", at: projected.centroid, color: .white, bold: true)
 
         case .destination:
-            // Always visible outline
-            context.stroke(path, with: .color(AppTheme.medalGold), lineWidth: 2)
+            let gold = AppTheme.medalGold
+
+            // Outer target ring — makes the destination easy to spot and tap
+            let ringRadius: CGFloat = 32
+            let ringRect = CGRect(
+                x: projected.centroid.x - ringRadius,
+                y: projected.centroid.y - ringRadius,
+                width: ringRadius * 2,
+                height: ringRadius * 2
+            )
+            let ringPath = Path(ellipseIn: ringRect)
+            context.fill(ringPath, with: .color(gold.opacity(isDark ? 0.12 : 0.08)))
+            context.stroke(ringPath, with: .color(gold.opacity(0.3)), style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
+
+            // Pulsing gold glow (mirrors frontier glow)
+            let glowRadius = glowPhase * 10
+            context.drawLayer { ctx in
+                ctx.addFilter(.shadow(color: gold.opacity(0.5), radius: glowRadius))
+                ctx.stroke(path, with: .color(gold.opacity(0.4)), lineWidth: 1.5)
+            }
+
+            // Strong gold fill
             let fillColor = isDark
-                ? AppTheme.medalGold.opacity(0.15)
-                : AppTheme.medalGold.opacity(0.10)
+                ? gold.opacity(0.35)
+                : gold.opacity(0.30)
             context.fill(path, with: .color(fillColor))
 
+            // Bold outline
+            context.stroke(path, with: .color(gold), lineWidth: 3)
+
             // Label
-            drawLabel(context: &context, text: viewModel.graph.country(for: projected.id)?.name ?? "", at: projected.centroid, color: AppTheme.medalGold, bold: true)
+            drawLabel(context: &context, text: viewModel.graph.country(for: projected.id)?.name ?? "", at: projected.centroid, color: gold, bold: true)
         }
     }
 
@@ -253,7 +276,13 @@ struct BorderHopMapView: View {
             y: (location.y - offset.height + canvasSize.height * (scale - 1) / 2) / scale
         )
 
-        if let countryId = renderer.hitTest(point: canvasPoint) {
+        let priorityIds = Set(
+            viewModel.countryStates
+                .filter { $0.value == .frontier || $0.value == .destination }
+                .map { $0.key }
+        )
+
+        if let countryId = renderer.hitTest(point: canvasPoint, priorityIds: priorityIds) {
             viewModel.handleTap(countryId: countryId)
         }
     }

@@ -124,15 +124,49 @@ struct BorderHopResultsView: View {
 
     // MARK: - Path Comparison
 
+    private var isOptimalRoute: Bool {
+        guard let result = viewModel.roundResult else { return false }
+        return result.actualHops == result.optimalHops
+    }
+
     private func pathComparison(result: BorderHopRoundResult) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            Text("Route Comparison")
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+            HStack(spacing: AppTheme.Spacing.sm) {
+                Text("Route Comparison")
+                    .font(AppTheme.Typography.sectionHeader)
+                    .foregroundColor(AppTheme.deepCharcoal)
+
+                if isOptimalRoute {
+                    Spacer()
+                    Text("Perfect!")
+                        .font(AppTheme.Typography.pillLabel)
+                        .foregroundColor(AppTheme.medalGold)
+                        .padding(.horizontal, AppTheme.Spacing.sm)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(AppTheme.medalGold.opacity(0.12))
+                        )
+                }
+            }
+
+            if isOptimalRoute {
+                HStack(spacing: AppTheme.Spacing.sm) {
+                    Image(systemName: "star.fill")
+                        .font(.caption)
+                        .foregroundColor(AppTheme.medalGold)
+                    Text("You found the shortest route!")
+                        .font(AppTheme.Typography.body)
+                        .foregroundColor(AppTheme.mediumGray)
+                }
+                .padding(.bottom, AppTheme.Spacing.xs)
+            }
 
             HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
-                pathColumn(title: "Your Route", path: result.actualPath, color: theme.accentColor)
-                pathColumn(title: "Optimal", path: result.optimalPath, color: AppTheme.success)
+                pathColumn(title: "Your Route", path: result.actualPath, color: isOptimalRoute ? AppTheme.success : theme.accentColor)
+                if !isOptimalRoute {
+                    pathColumn(title: "Optimal", path: result.optimalPath, color: AppTheme.success)
+                }
             }
         }
         .gameCard()

@@ -116,7 +116,7 @@ class BorderHopViewModel {
     }
 
     func moveToCountry(_ id: String) {
-        guard countryStates[id] == .frontier else { return }
+        guard countryStates[id] == .frontier || countryStates[id] == .destination else { return }
         guard !hasArrived else { return }
 
         HapticManager.medium()
@@ -185,6 +185,14 @@ class BorderHopViewModel {
         switch countryStates[countryId] {
         case .frontier:
             moveToCountry(countryId)
+        case .destination:
+            // Destination is tappable when adjacent to current country
+            let neighbors = graph.neighborIds(of: currentCountryId)
+            if neighbors.contains(countryId) {
+                moveToCountry(countryId)
+            } else {
+                HapticManager.light()
+            }
         case .visited:
             requestBacktrack(to: countryId)
         case .fogged:

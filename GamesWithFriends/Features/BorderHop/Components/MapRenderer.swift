@@ -28,23 +28,37 @@ class MapRenderer {
     // MARK: - Hit Testing
 
     func hitTest(point: CGPoint) -> String? {
-        // Check bounding boxes first for performance, then exact path
+        hitTest(point: point, priorityIds: [])
+    }
+
+    func hitTest(point: CGPoint, priorityIds: Set<String>) -> String? {
+        // 1. Check priority countries (frontier/destination) first with generous tolerance
+        for id in priorityIds {
+            guard let projected = projectedCountries[id] else { continue }
+            if projected.boundingBox.insetBy(dx: -30, dy: -30).contains(point) {
+                return id
+            }
+        }
+
+        // 2. Standard exact-path hit test with expanded bounding box
         for (id, projected) in projectedCountries {
-            if projected.boundingBox.insetBy(dx: -10, dy: -10).contains(point) {
+            if projected.boundingBox.insetBy(dx: -20, dy: -20).contains(point) {
                 if projected.path.contains(point) {
                     return id
                 }
             }
         }
 
-        // Fallback: find closest centroid within 22pt (half of 44pt minimum)
+        // 3. Fallback: find closest centroid within 35pt, prioritizing active countries
         var closestId: String?
-        var closestDist: CGFloat = 22
+        var closestDist: CGFloat = 35
 
         for (id, projected) in projectedCountries {
             let dist = hypot(point.x - projected.centroid.x, point.y - projected.centroid.y)
-            if dist < closestDist {
-                closestDist = dist
+            // Give priority countries a distance bonus (effectively larger hit area)
+            let effectiveDist = priorityIds.contains(id) ? dist * 0.6 : dist
+            if effectiveDist < closestDist {
+                closestDist = effectiveDist
                 closestId = id
             }
         }
@@ -111,7 +125,7 @@ class MapRenderer {
             if neighborCount >= 6 { baseSize = 35 }
             else if neighborCount >= 4 { baseSize = 28 }
             else if neighborCount >= 2 { baseSize = 22 }
-            else { baseSize = 18 }
+            else { baseSize = 22 }
         }
 
         // Slightly randomize aspect ratio to avoid uniform look
