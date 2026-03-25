@@ -28,11 +28,28 @@ struct BorderHopGameView: View {
                 backtrackBanner(targetId: targetId)
             }
 
+            // Quiz overlay
+            if viewModel.isQuizActive, let question = viewModel.currentQuizQuestion {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .onTapGesture { } // prevent tap-through
+
+                BorderHopQuizView(
+                    question: question,
+                    eliminatedChoices: viewModel.eliminatedChoices,
+                    strikeCount: viewModel.strikeCount,
+                    onAnswer: { viewModel.submitQuizAnswer($0) },
+                    countryName: viewModel.graph.country(for: question.countryId)?.name ?? ""
+                )
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+
             // Victory overlay
             if viewModel.hasArrived {
                 victoryOverlay
             }
         }
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.isQuizActive)
         .navigationBarHidden(true)
     }
 
@@ -68,7 +85,11 @@ struct BorderHopGameView: View {
             }
 
             // Stopwatch
-            StopwatchView(elapsed: viewModel.elapsedTime, color: viewModel.stopwatchColor)
+            StopwatchView(
+                elapsed: viewModel.elapsedTime,
+                color: viewModel.showTimeReward ? AppTheme.success : viewModel.stopwatchColor,
+                showReward: viewModel.showTimeReward
+            )
 
             Spacer()
 

@@ -82,7 +82,8 @@ struct BorderBlitzGameView: View {
                                     .stroke(theme.accentColor.opacity(0.3), lineWidth: 1)
                             )
                             .autocapitalization(.words)
-                            .disableAutocorrection(true)
+                            .autocorrectionDisabled(true)
+                            .textContentType(.none)
                             .focused($isInputFocused)
                             .onSubmit {
                                 viewModel.submitGuess()

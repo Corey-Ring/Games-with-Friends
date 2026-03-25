@@ -10,69 +10,106 @@ struct CountrySilhouetteView: View {
     let size: CGSize
 
     var body: some View {
-        GeometryReader { geometry in
-            CountryShape(borderPoints: country.borderPoints)
-                .fill(Color.blue.opacity(0.8))
-                .frame(width: geometry.size.width, height: geometry.size.height)
-        }
-        .frame(width: size.width, height: size.height)
+        CountryShape(svgPath: country.svgPath)
+            .fill(Color.white.opacity(0.85))
+            .frame(width: size.width, height: size.height)
     }
 }
 
 struct CountryShape: Shape {
-    let borderPoints: [CGPoint]
+    let svgPath: String
 
     func path(in rect: CGRect) -> Path {
-        guard !borderPoints.isEmpty else {
-            return Path()
+        let commands = parseSVGPath(svgPath)
+        guard !commands.isEmpty else { return Path() }
+
+        // Collect all points to compute bounding box
+        var allPoints: [CGPoint] = []
+        for cmd in commands {
+            if case .moveTo(let p) = cmd { allPoints.append(p) }
+            if case .lineTo(let p) = cmd { allPoints.append(p) }
         }
 
-        var path = Path()
+        guard !allPoints.isEmpty else { return Path() }
 
-        // Normalize points to fit within the rect
-        let normalized = normalizePoints(borderPoints, to: rect.size)
+        let minX = allPoints.map(\.x).min()!
+        let maxX = allPoints.map(\.x).max()!
+        let minY = allPoints.map(\.y).min()!
+        let maxY = allPoints.map(\.y).max()!
 
-        // Start path
-        path.move(to: normalized[0])
+        let dataWidth = maxX - minX
+        let dataHeight = maxY - minY
 
-        // Draw lines between all points
-        for point in normalized.dropFirst() {
-            path.addLine(to: point)
-        }
+        guard dataWidth > 0 && dataHeight > 0 else { return Path() }
 
-        // Close the path
-        path.closeSubpath()
+        // Scale to fit rect, preserving aspect ratio with padding
+        let scale = min(rect.width / dataWidth, rect.height / dataHeight) * 0.9
+        let offsetX = (rect.width - dataWidth * scale) / 2 + rect.minX
+        let offsetY = (rect.height - dataHeight * scale) / 2 + rect.minY
 
-        return path
-    }
-
-    private func normalizePoints(_ points: [CGPoint], to size: CGSize) -> [CGPoint] {
-        guard !points.isEmpty else { return [] }
-
-        // Find bounds of the points
-        let minX = points.map { $0.x }.min() ?? 0
-        let maxX = points.map { $0.x }.max() ?? 1
-        let minY = points.map { $0.y }.min() ?? 0
-        let maxY = points.map { $0.y }.max() ?? 1
-
-        let width = maxX - minX
-        let height = maxY - minY
-
-        guard width > 0 && height > 0 else { return points }
-
-        // Scale to fit, maintaining aspect ratio
-        let scale = min(size.width / width, size.height / height) * 0.9
-
-        // Center the shape
-        let offsetX = (size.width - (width * scale)) / 2
-        let offsetY = (size.height - (height * scale)) / 2
-
-        return points.map { point in
+        func transform(_ point: CGPoint) -> CGPoint {
             CGPoint(
                 x: (point.x - minX) * scale + offsetX,
                 y: (point.y - minY) * scale + offsetY
             )
         }
+
+        var path = Path()
+        for cmd in commands {
+            switch cmd {
+            case .moveTo(let p):
+                path.move(to: transform(p))
+            case .lineTo(let p):
+                path.addLine(to: transform(p))
+            case .close:
+                path.closeSubpath()
+            }
+        }
+
+        return path
+    }
+
+    private enum SVGCommand {
+        case moveTo(CGPoint)
+        case lineTo(CGPoint)
+        case close
+    }
+
+    private func parseSVGPath(_ d: String) -> [SVGCommand] {
+        var commands: [SVGCommand] = []
+        let tokens = d.split(separator: " ")
+        var i = 0
+
+        while i < tokens.count {
+            let token = tokens[i]
+            switch token {
+            case "M":
+                guard i + 2 < tokens.count,
+                      let x = Double(tokens[i + 1]),
+                      let y = Double(tokens[i + 2]) else {
+                    i += 1
+                    continue
+                }
+                commands.append(.moveTo(CGPoint(x: x, y: y)))
+                i += 3
+            case "L":
+                guard i + 2 < tokens.count,
+                      let x = Double(tokens[i + 1]),
+                      let y = Double(tokens[i + 2]) else {
+                    i += 1
+                    continue
+                }
+                commands.append(.lineTo(CGPoint(x: x, y: y)))
+                i += 3
+            case "Z":
+                commands.append(.close)
+                i += 1
+            default:
+                i += 1
+            }
+        }
+
+        return commands
     }
 }
 
@@ -81,13 +118,8 @@ struct CountryShape: Shape {
         country: Country(
             id: "ITA",
             name: "ITALY",
-            borderPoints: [
-                CGPoint(x: 0, y: 0),
-                CGPoint(x: 100, y: 0),
-                CGPoint(x: 100, y: 200),
-                CGPoint(x: 0, y: 200)
-            ]
+            svgPath: "M 500 0 L 1000 0 L 1000 1000 L 0 1000 L 0 500 Z"
         ),
-        size: CGSize(width: 300, height: 300)
+        size: CGSize(width: 250, height: 250)
     )
 }

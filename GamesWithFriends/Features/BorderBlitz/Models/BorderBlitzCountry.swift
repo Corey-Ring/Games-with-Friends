@@ -5,10 +5,10 @@
 
 import Foundation
 
-struct BorderBlitzCountry: Identifiable, Codable {
+struct BorderBlitzCountry: Identifiable {
     let id: String
     let name: String
-    let imageName: String
+    let svgPath: String
 
     /// Alternate names that should be accepted as correct answers
     var alternateNames: [String] = []

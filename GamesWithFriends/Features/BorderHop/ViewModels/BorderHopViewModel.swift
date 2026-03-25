@@ -28,8 +28,16 @@ class BorderHopViewModel {
     var backtrackTargetId: String?
     var hasArrived: Bool = false
 
+    // Quiz state
+    var isQuizActive: Bool = false
+    var currentQuizQuestion: QuizQuestion? = nil
+    var eliminatedChoices: Set<String> = []
+    var strikeCount: Int = 0
+    var showTimeReward: Bool = false
+
     // MARK: - Private State
     private(set) var graph: CountryGraph
+    private var quizEngine = QuizEngine()
     private var optimalPath: [String] = []
     @ObservationIgnored private var timer: Timer?
     @ObservationIgnored private var timerStartDate: Date?
@@ -102,6 +110,12 @@ class BorderHopViewModel {
         lastBenchmarkPulse = 0
         showBacktrackConfirm = false
         backtrackTargetId = nil
+        isQuizActive = false
+        currentQuizQuestion = nil
+        eliminatedChoices = []
+        strikeCount = 0
+        showTimeReward = false
+        quizEngine.resetUsedFacts()
 
         // Initialize country states
         initializeCountryStates()
@@ -180,16 +194,16 @@ class BorderHopViewModel {
     }
 
     func handleTap(countryId: String) {
-        guard !hasArrived else { return }
+        guard !hasArrived, !isQuizActive else { return }
 
         switch countryStates[countryId] {
         case .frontier:
-            moveToCountry(countryId)
+            initiateQuiz(for: countryId)
         case .destination:
             // Destination is tappable when adjacent to current country
             let neighbors = graph.neighborIds(of: currentCountryId)
             if neighbors.contains(countryId) {
-                moveToCountry(countryId)
+                initiateQuiz(for: countryId)
             } else {
                 HapticManager.light()
             }
@@ -200,6 +214,93 @@ class BorderHopViewModel {
         default:
             break
         }
+    }
+
+    // MARK: - Quiz
+
+    func initiateQuiz(for targetCountryId: String) {
+        let question = quizEngine.generateQuestion(
+            correctCountryId: targetCountryId,
+            frontierCountryIds: frontierCountryIds,
+            graph: graph
+        )
+
+        guard let question else {
+            // No fun facts available — free passage
+            moveToCountry(targetCountryId)
+            return
+        }
+
+        currentQuizQuestion = question
+        eliminatedChoices = []
+        strikeCount = 0
+        isQuizActive = true
+        HapticManager.light()
+    }
+
+    func submitQuizAnswer(_ selectedFact: String) {
+        guard let question = currentQuizQuestion else { return }
+
+        if selectedFact == question.correctFact {
+            handleCorrectAnswer()
+        } else {
+            handleWrongAnswer(selectedFact)
+        }
+    }
+
+    private func handleCorrectAnswer() {
+        guard let question = currentQuizQuestion else { return }
+
+        // Subtract 3 seconds reward (adjust pauseOffset so timer computes correctly)
+        pauseOffset -= 3.0
+        elapsedTime = max(0, elapsedTime - 3.0)
+        showTimeReward = true
+
+        // Dismiss quiz and advance
+        isQuizActive = false
+        currentQuizQuestion = nil
+        HapticManager.success()
+        moveToCountry(question.countryId)
+
+        // Reset time reward flash after delay
+        Task {
+            try? await Task.sleep(for: .seconds(1.0))
+            showTimeReward = false
+        }
+    }
+
+    private func handleWrongAnswer(_ selectedFact: String) {
+        eliminatedChoices.insert(selectedFact)
+        strikeCount += 1
+        HapticManager.error()
+
+        if strikeCount >= 3 {
+            handleTeleport()
+        }
+    }
+
+    private func handleTeleport() {
+        isQuizActive = false
+        currentQuizQuestion = nil
+        strikeCount = 0
+        HapticManager.heavy()
+
+        if let teleportTarget = findTeleportDestination() {
+            moveToCountry(teleportTarget)
+        } else {
+            // Fallback: advance to the originally tapped country for free
+            // (prevents deadlock in extremely rare edge case)
+        }
+    }
+
+    private func findTeleportDestination() -> String? {
+        let reachable = graph.reachableWithDistances(from: currentCountryId)
+        let validTargets = reachable.keys.filter { countryId in
+            countryId != currentCountryId &&
+            countryId != destinationCountryId &&
+            graph.shortestPath(from: countryId, to: destinationCountryId) != nil
+        }
+        return validTargets.randomElement()
     }
 
     func playAgain() {

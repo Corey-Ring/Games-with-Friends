@@ -43,7 +43,7 @@ struct GameView: View {
             if let country = viewModel.currentCountry {
                 CountrySilhouetteView(
                     country: country,
-                    size: CGSize(width: 300, height: 300)
+                    size: CGSize(width: 250, height: 250)
                 )
                 .padding()
             }
@@ -73,7 +73,8 @@ struct GameView: View {
                 TextField("Enter country name", text: $viewModel.currentGuess)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .autocapitalization(.words)
-                    .disableAutocorrection(true)
+                    .autocorrectionDisabled(true)
+                    .textContentType(.none)
                     .focused($isInputFocused)
                     .onSubmit {
                         viewModel.submitGuess()

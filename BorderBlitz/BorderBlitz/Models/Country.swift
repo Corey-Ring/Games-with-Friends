@@ -4,12 +4,11 @@
 //
 
 import Foundation
-import CoreGraphics
 
-struct Country: Identifiable, Codable {
+struct Country: Identifiable {
     let id: String
     let name: String
-    let borderPoints: [CGPoint]
+    let svgPath: String
 
     /// Alternate names that should be accepted as correct answers
     var alternateNames: [String] = []
@@ -40,25 +39,5 @@ struct Country: Identifiable, Codable {
             .joined()
 
         return acceptableAnswers.contains(normalizedGuess)
-    }
-}
-
-// MARK: - CGPoint Codable Extension
-extension CGPoint: Codable {
-    enum CodingKeys: String, CodingKey {
-        case x, y
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let x = try container.decode(CGFloat.self, forKey: .x)
-        let y = try container.decode(CGFloat.self, forKey: .y)
-        self.init(x: x, y: y)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(x, forKey: .x)
-        try container.encode(y, forKey: .y)
     }
 }
