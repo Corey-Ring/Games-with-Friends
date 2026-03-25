@@ -10,11 +10,16 @@ class MapRenderer {
     }
 
     private(set) var projectedCountries: [String: ProjectedCountry] = [:]
+    private(set) var decorativeCountries: [String: ProjectedCountry] = [:]
     let canvasSize: CGSize
 
-    init(countries: [BorderHopCountry], canvasSize: CGSize) {
+    /// Set of game country IDs for distinguishing game vs decorative
+    private let gameCountryIds: Set<String>
+
+    init(countries: [BorderHopCountry], geoPolygons: [String: GeoCountryPolygon], canvasSize: CGSize) {
         self.canvasSize = canvasSize
-        buildProjections(countries: countries, canvasSize: canvasSize)
+        self.gameCountryIds = Set(countries.map { $0.id })
+        buildProjections(countries: countries, geoPolygons: geoPolygons)
     }
 
     // MARK: - Equirectangular Projection
@@ -36,20 +41,30 @@ class MapRenderer {
         for id in priorityIds {
             guard let projected = projectedCountries[id] else { continue }
             if projected.boundingBox.insetBy(dx: -30, dy: -30).contains(point) {
-                return id
-            }
-        }
-
-        // 2. Standard exact-path hit test with expanded bounding box
-        for (id, projected) in projectedCountries {
-            if projected.boundingBox.insetBy(dx: -20, dy: -20).contains(point) {
                 if projected.path.contains(point) {
                     return id
                 }
             }
         }
 
-        // 3. Fallback: find closest centroid within 35pt, prioritizing active countries
+        // 2. Check priority countries with expanded bounding box (looser — catches near-misses)
+        for id in priorityIds {
+            guard let projected = projectedCountries[id] else { continue }
+            if projected.boundingBox.insetBy(dx: -30, dy: -30).contains(point) {
+                return id
+            }
+        }
+
+        // 3. Standard exact-path hit test for all game countries
+        for (id, projected) in projectedCountries {
+            if projected.boundingBox.insetBy(dx: -10, dy: -10).contains(point) {
+                if projected.path.contains(point) {
+                    return id
+                }
+            }
+        }
+
+        // 4. Fallback: find closest centroid within 35pt, prioritizing active countries
         var closestId: String?
         var closestDist: CGFloat = 35
 
@@ -86,50 +101,83 @@ class MapRenderer {
 
     // MARK: - Private
 
-    private func buildProjections(countries: [BorderHopCountry], canvasSize: CGSize) {
+    private func buildProjections(countries: [BorderHopCountry], geoPolygons: [String: GeoCountryPolygon]) {
+        // Build game countries
         for country in countries {
-            let centroid = project(latitude: country.latitude, longitude: country.longitude)
+            if let geo = geoPolygons[country.id] {
+                // Real polygon from GeoJSON
+                let projected = buildProjectedCountry(id: country.id, geo: geo)
+                projectedCountries[country.id] = projected
+            } else {
+                // Microstate fallback — small circle at centroid
+                let projected = buildFallbackCountry(country: country)
+                projectedCountries[country.id] = projected
+            }
+        }
 
-            // Create a simple circular/rectangular shape for each country
-            // centered at the projected centroid. The size varies by rough area.
-            let size = countrySize(for: country)
-            let path = CGMutablePath()
-            let rect = CGRect(
-                x: centroid.x - size.width / 2,
-                y: centroid.y - size.height / 2,
-                width: size.width,
-                height: size.height
-            )
-            path.addRoundedRect(in: rect, cornerWidth: size.width * 0.2, cornerHeight: size.height * 0.2)
-
-            projectedCountries[country.id] = ProjectedCountry(
-                id: country.id,
-                path: path,
-                centroid: centroid,
-                boundingBox: rect
-            )
+        // Build decorative countries (in GeoJSON but not in game)
+        for (geoId, geo) in geoPolygons where !gameCountryIds.contains(geoId) {
+            let projected = buildProjectedCountry(id: geoId, geo: geo)
+            decorativeCountries[geoId] = projected
         }
     }
 
-    /// Rough sizing based on country significance — larger countries get bigger shapes
-    private func countrySize(for country: BorderHopCountry) -> CGSize {
-        let neighborCount = country.neighbors.count
-        let baseSize: CGFloat
+    private func buildProjectedCountry(id: String, geo: GeoCountryPolygon) -> ProjectedCountry {
+        let path = CGMutablePath()
+        var allPoints: [CGPoint] = []
 
-        switch country.id {
-        case "RUS": baseSize = 90
-        case "CHN", "USA", "CAN", "BRA": baseSize = 65
-        case "IND", "ARG", "KAZ", "DZA", "COD", "SAU": baseSize = 50
-        case "MEX", "IDN", "IRN", "MNG", "PER", "TCD", "NER", "MLI", "AGO", "ZAF", "ETH", "EGY", "LBY", "SDN", "COL": baseSize = 40
-        default:
-            if neighborCount >= 6 { baseSize = 35 }
-            else if neighborCount >= 4 { baseSize = 28 }
-            else if neighborCount >= 2 { baseSize = 22 }
-            else { baseSize = 22 }
+        for ring in geo.rings {
+            guard ring.count >= 3 else { continue }
+
+            for (i, coord) in ring.enumerated() {
+                guard coord.count >= 2 else { continue }
+                let point = project(latitude: coord[1], longitude: coord[0])
+
+                if i == 0 {
+                    path.move(to: point)
+                } else {
+                    path.addLine(to: point)
+                }
+                allPoints.append(point)
+            }
+            path.closeSubpath()
         }
 
-        // Slightly randomize aspect ratio to avoid uniform look
-        let aspect = 0.8 + CGFloat(country.id.hashValue & 0xFF) / 640.0
-        return CGSize(width: baseSize * aspect, height: baseSize / aspect)
+        // Compute centroid as average of all vertices
+        let centroid: CGPoint
+        if allPoints.isEmpty {
+            centroid = .zero
+        } else {
+            let sumX = allPoints.reduce(0.0) { $0 + $1.x }
+            let sumY = allPoints.reduce(0.0) { $0 + $1.y }
+            centroid = CGPoint(x: sumX / CGFloat(allPoints.count), y: sumY / CGFloat(allPoints.count))
+        }
+
+        return ProjectedCountry(
+            id: id,
+            path: path,
+            centroid: centroid,
+            boundingBox: path.boundingBox
+        )
+    }
+
+    /// Fallback for microstates without GeoJSON data — renders as a small circle
+    private func buildFallbackCountry(country: BorderHopCountry) -> ProjectedCountry {
+        let centroid = project(latitude: country.latitude, longitude: country.longitude)
+        let radius: CGFloat = 8
+        let path = CGMutablePath()
+        path.addEllipse(in: CGRect(
+            x: centroid.x - radius,
+            y: centroid.y - radius,
+            width: radius * 2,
+            height: radius * 2
+        ))
+
+        return ProjectedCountry(
+            id: country.id,
+            path: path,
+            centroid: centroid,
+            boundingBox: CGRect(x: centroid.x - radius, y: centroid.y - radius, width: radius * 2, height: radius * 2)
+        )
     }
 }

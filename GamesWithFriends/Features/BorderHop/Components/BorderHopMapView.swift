@@ -105,10 +105,20 @@ struct BorderHopMapView: View {
         Canvas { context, size in
             let isDark = colorScheme == .dark
 
-            // Draw trail lines first (behind countries)
+            // Draw decorative (non-game) countries as subtle land masses
+            for (_, projected) in renderer.decorativeCountries {
+                let path = Path(projected.path)
+                let fillColor = isDark
+                    ? Color(hex: "2C2C2E").opacity(0.3)
+                    : Color(hex: "D5D0C8")
+                context.fill(path, with: .color(fillColor))
+                context.stroke(path, with: .color(isDark ? Color.white.opacity(0.05) : Color(hex: "B8B4AF").opacity(0.4)), lineWidth: 0.5)
+            }
+
+            // Draw trail lines (behind game countries)
             drawTrailLines(context: &context, renderer: renderer)
 
-            // Draw each country
+            // Draw each game country
             for (id, projected) in renderer.projectedCountries {
                 let state = viewModel.countryStates[id] ?? .fogged
                 drawCountry(
@@ -142,10 +152,10 @@ struct BorderHopMapView: View {
         switch state {
         case .fogged:
             let fillColor = isDark
-                ? Color(hex: "2C2C2E").opacity(0.5)
-                : Color(hex: "2C2C2E").opacity(0.25)
+                ? Color(hex: "3A3A3C").opacity(0.6)
+                : Color(hex: "C8C3BB")
             context.fill(path, with: .color(fillColor))
-            context.stroke(path, with: .color(isDark ? Color.white.opacity(0.1) : Color(hex: "2C2C2E").opacity(0.15)), lineWidth: 0.5)
+            context.stroke(path, with: .color(isDark ? Color.white.opacity(0.08) : Color(hex: "9E9A94").opacity(0.5)), lineWidth: 0.5)
 
         case .frontier:
             let fillColor = isDark
@@ -185,19 +195,7 @@ struct BorderHopMapView: View {
         case .destination:
             let gold = AppTheme.medalGold
 
-            // Outer target ring — makes the destination easy to spot and tap
-            let ringRadius: CGFloat = 32
-            let ringRect = CGRect(
-                x: projected.centroid.x - ringRadius,
-                y: projected.centroid.y - ringRadius,
-                width: ringRadius * 2,
-                height: ringRadius * 2
-            )
-            let ringPath = Path(ellipseIn: ringRect)
-            context.fill(ringPath, with: .color(gold.opacity(isDark ? 0.12 : 0.08)))
-            context.stroke(ringPath, with: .color(gold.opacity(0.3)), style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
-
-            // Pulsing gold glow (mirrors frontier glow)
+            // Pulsing gold glow
             let glowRadius = glowPhase * 10
             context.drawLayer { ctx in
                 ctx.addFilter(.shadow(color: gold.opacity(0.5), radius: glowRadius))
@@ -291,7 +289,8 @@ struct BorderHopMapView: View {
 
     private func setupRenderer() {
         if renderer == nil {
-            renderer = MapRenderer(countries: viewModel.graph.allCountries, canvasSize: canvasSize)
+            let geoPolygons = BorderHopGeoData.loadFeatures()
+            renderer = MapRenderer(countries: viewModel.graph.allCountries, geoPolygons: geoPolygons, canvasSize: canvasSize)
         }
     }
 
