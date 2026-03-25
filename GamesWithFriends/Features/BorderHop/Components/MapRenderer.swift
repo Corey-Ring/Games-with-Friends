@@ -80,6 +80,9 @@ class MapRenderer {
         return closestId
     }
 
+    /// Compute a bounding box that fits all given countries' centroids with padding.
+    /// Uses centroid-based approach to avoid overseas territory distortion
+    /// (e.g., France's bounding box spanning to French Guiana).
     func boundingBox(for countryIds: [String]) -> CGRect {
         var minX: CGFloat = .greatestFiniteMagnitude
         var minY: CGFloat = .greatestFiniteMagnitude
@@ -88,11 +91,13 @@ class MapRenderer {
 
         for id in countryIds {
             guard let projected = projectedCountries[id] else { continue }
-            let box = projected.boundingBox
-            minX = min(minX, box.minX)
-            minY = min(minY, box.minY)
-            maxX = max(maxX, box.maxX)
-            maxY = max(maxY, box.maxY)
+            // Use a region around the centroid — large enough to show the local area,
+            // but not stretched by distant overseas territories
+            let centroidPad: CGFloat = 40  // canvas points of padding around each centroid
+            minX = min(minX, projected.centroid.x - centroidPad)
+            minY = min(minY, projected.centroid.y - centroidPad)
+            maxX = max(maxX, projected.centroid.x + centroidPad)
+            maxY = max(maxY, projected.centroid.y + centroidPad)
         }
 
         guard minX < maxX else { return .zero }
@@ -102,11 +107,11 @@ class MapRenderer {
     // MARK: - Private
 
     private func buildProjections(countries: [BorderHopCountry], geoPolygons: [String: GeoCountryPolygon]) {
-        // Build game countries
+        // Build game countries — use game lat/lon for centroid (avoids overseas territory issues)
         for country in countries {
             if let geo = geoPolygons[country.id] {
-                // Real polygon from GeoJSON
-                let projected = buildProjectedCountry(id: country.id, geo: geo)
+                let gameCentroid = project(latitude: country.latitude, longitude: country.longitude)
+                let projected = buildProjectedCountry(id: country.id, geo: geo, knownCentroid: gameCentroid)
                 projectedCountries[country.id] = projected
             } else {
                 // Microstate fallback — small circle at centroid
@@ -117,18 +122,23 @@ class MapRenderer {
 
         // Build decorative countries (in GeoJSON but not in game)
         for (geoId, geo) in geoPolygons where !gameCountryIds.contains(geoId) {
-            let projected = buildProjectedCountry(id: geoId, geo: geo)
+            let projected = buildProjectedCountry(id: geoId, geo: geo, knownCentroid: nil)
             decorativeCountries[geoId] = projected
         }
     }
 
-    private func buildProjectedCountry(id: String, geo: GeoCountryPolygon) -> ProjectedCountry {
+    /// Build projected country from GeoJSON polygons.
+    /// - `knownCentroid`: if provided (from game data), used as the centroid.
+    ///   Otherwise, uses the centroid of the largest polygon ring.
+    private func buildProjectedCountry(id: String, geo: GeoCountryPolygon, knownCentroid: CGPoint?) -> ProjectedCountry {
         let path = CGMutablePath()
-        var allPoints: [CGPoint] = []
+        var largestRingPoints: [CGPoint] = []
+        var largestRingCount = 0
 
         for ring in geo.rings {
             guard ring.count >= 3 else { continue }
 
+            var ringPoints: [CGPoint] = []
             for (i, coord) in ring.enumerated() {
                 guard coord.count >= 2 else { continue }
                 let point = project(latitude: coord[1], longitude: coord[0])
@@ -138,19 +148,27 @@ class MapRenderer {
                 } else {
                     path.addLine(to: point)
                 }
-                allPoints.append(point)
+                ringPoints.append(point)
             }
             path.closeSubpath()
+
+            // Track the largest ring for fallback centroid
+            if ringPoints.count > largestRingCount {
+                largestRingCount = ringPoints.count
+                largestRingPoints = ringPoints
+            }
         }
 
-        // Compute centroid as average of all vertices
+        // Use known centroid (from game data) or compute from largest polygon
         let centroid: CGPoint
-        if allPoints.isEmpty {
-            centroid = .zero
+        if let knownCentroid {
+            centroid = knownCentroid
+        } else if !largestRingPoints.isEmpty {
+            let sumX = largestRingPoints.reduce(0.0) { $0 + $1.x }
+            let sumY = largestRingPoints.reduce(0.0) { $0 + $1.y }
+            centroid = CGPoint(x: sumX / CGFloat(largestRingPoints.count), y: sumY / CGFloat(largestRingPoints.count))
         } else {
-            let sumX = allPoints.reduce(0.0) { $0 + $1.x }
-            let sumY = allPoints.reduce(0.0) { $0 + $1.y }
-            centroid = CGPoint(x: sumX / CGFloat(allPoints.count), y: sumY / CGFloat(allPoints.count))
+            centroid = .zero
         }
 
         return ProjectedCountry(

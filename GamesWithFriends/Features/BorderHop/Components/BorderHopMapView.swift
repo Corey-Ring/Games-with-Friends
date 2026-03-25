@@ -79,10 +79,10 @@ struct BorderHopMapView: View {
             .onChange(of: viewModel.currentCountryId) { _, newId in
                 if !reduceMotion {
                     withAnimation(.easeInOut(duration: 0.5)) {
-                        centerOnCountry(newId, viewSize: viewSize)
+                        zoomToFitNeighborhood(newId, viewSize: viewSize)
                     }
                 } else {
-                    centerOnCountry(newId, viewSize: viewSize)
+                    zoomToFitNeighborhood(newId, viewSize: viewSize)
                 }
             }
         }
@@ -118,10 +118,10 @@ struct BorderHopMapView: View {
             // Draw trail lines (behind game countries)
             drawTrailLines(context: &context, renderer: renderer)
 
-            // Draw each game country
+            // Draw each game country (shapes only — labels drawn separately to avoid overlap)
             for (id, projected) in renderer.projectedCountries {
                 let state = viewModel.countryStates[id] ?? .fogged
-                drawCountry(
+                drawCountryShape(
                     context: &context,
                     projected: projected,
                     state: state,
@@ -129,6 +129,9 @@ struct BorderHopMapView: View {
                     isDestination: id == viewModel.destinationCountryId
                 )
             }
+
+            // Draw labels with collision avoidance
+            drawLabels(context: &context, renderer: renderer)
 
             // Draw player marker on current country
             if let current = renderer.projectedCountries[viewModel.currentCountryId] {
@@ -145,7 +148,8 @@ struct BorderHopMapView: View {
 
     // MARK: - Drawing Helpers
 
-    private func drawCountry(context: inout GraphicsContext, projected: MapRenderer.ProjectedCountry, state: CountryState, isDark: Bool, isDestination: Bool) {
+    /// Draw country shape only (fill, stroke, glow) — labels handled separately
+    private func drawCountryShape(context: inout GraphicsContext, projected: MapRenderer.ProjectedCountry, state: CountryState, isDark: Bool, isDestination: Bool) {
         let path = Path(projected.path)
         let accent = theme.accentColor
 
@@ -171,9 +175,6 @@ struct BorderHopMapView: View {
                 ctx.stroke(path, with: .color(accent.opacity(0.3)), lineWidth: 1)
             }
 
-            // Label
-            drawLabel(context: &context, text: viewModel.graph.country(for: projected.id)?.name ?? "", at: projected.centroid, color: .white, bold: true)
-
         case .visited:
             let fillColor = isDark
                 ? AppTheme.darkMutedText.opacity(0.15)
@@ -181,16 +182,10 @@ struct BorderHopMapView: View {
             context.fill(path, with: .color(fillColor))
             context.stroke(path, with: .color(accent.opacity(0.4)), style: StrokeStyle(lineWidth: 0.5, dash: [4, 3]))
 
-            // Label
-            drawLabel(context: &context, text: viewModel.graph.country(for: projected.id)?.name ?? "", at: projected.centroid, color: AppTheme.mediumGray, bold: false)
-
         case .current:
             let fillColor = isDark ? accent.opacity(0.9) : accent
             context.fill(path, with: .color(fillColor))
             context.stroke(path, with: .color(.white), lineWidth: 2)
-
-            // Label
-            drawLabel(context: &context, text: viewModel.graph.country(for: projected.id)?.name ?? "", at: projected.centroid, color: .white, bold: true)
 
         case .destination:
             let gold = AppTheme.medalGold
@@ -210,19 +205,83 @@ struct BorderHopMapView: View {
 
             // Bold outline
             context.stroke(path, with: .color(gold), lineWidth: 3)
-
-            // Label
-            drawLabel(context: &context, text: viewModel.graph.country(for: projected.id)?.name ?? "", at: projected.centroid, color: gold, bold: true)
         }
     }
 
-    private func drawLabel(context: inout GraphicsContext, text: String, at point: CGPoint, color: Color, bold: Bool) {
-        let font: Font = bold ? .caption.weight(.semibold) : .caption
-        var textContext = context
-        let resolved = textContext.resolve(Text(text).font(font).foregroundColor(color))
-        let textSize = resolved.measure(in: CGSize(width: 200, height: 50))
-        let origin = CGPoint(x: point.x - textSize.width / 2, y: point.y + 12)
-        textContext.draw(resolved, at: origin, anchor: .topLeading)
+    /// Draw labels for active countries with collision avoidance
+    /// Priority order: current > destination > frontier > visited
+    /// Fogged countries never get labels
+    private func drawLabels(context: inout GraphicsContext, renderer: MapRenderer) {
+        let accent = theme.accentColor
+        let gold = AppTheme.medalGold
+
+        // Build label candidates in priority order
+        struct LabelCandidate {
+            let text: String
+            let centroid: CGPoint
+            let color: Color
+            let bold: Bool
+        }
+
+        var candidates: [LabelCandidate] = []
+
+        // 1. Current country (highest priority — always shown)
+        if let projected = renderer.projectedCountries[viewModel.currentCountryId] {
+            let name = viewModel.graph.country(for: viewModel.currentCountryId)?.name ?? ""
+            candidates.append(LabelCandidate(text: name, centroid: projected.centroid, color: .white, bold: true))
+        }
+
+        // 2. Destination country
+        if viewModel.destinationCountryId != viewModel.currentCountryId,
+           let projected = renderer.projectedCountries[viewModel.destinationCountryId] {
+            let name = viewModel.graph.country(for: viewModel.destinationCountryId)?.name ?? ""
+            candidates.append(LabelCandidate(text: name, centroid: projected.centroid, color: gold, bold: true))
+        }
+
+        // 3. Frontier countries
+        for (id, projected) in renderer.projectedCountries {
+            let state = viewModel.countryStates[id] ?? .fogged
+            guard state == .frontier, id != viewModel.currentCountryId, id != viewModel.destinationCountryId else { continue }
+            let name = viewModel.graph.country(for: id)?.name ?? ""
+            candidates.append(LabelCandidate(text: name, centroid: projected.centroid, color: .white, bold: true))
+        }
+
+        // 4. Visited countries (lowest priority)
+        for (id, projected) in renderer.projectedCountries {
+            let state = viewModel.countryStates[id] ?? .fogged
+            guard state == .visited else { continue }
+            let name = viewModel.graph.country(for: id)?.name ?? ""
+            candidates.append(LabelCandidate(text: name, centroid: projected.centroid, color: AppTheme.mediumGray, bold: false))
+        }
+
+        // Draw labels, skipping any that overlap with already-placed labels
+        var placedRects: [CGRect] = []
+        let labelPadding: CGFloat = 2 // minimum gap between labels
+
+        for candidate in candidates {
+            let font: Font = candidate.bold ? .caption.weight(.semibold) : .caption
+            let resolved = context.resolve(
+                Text(candidate.text).font(font).foregroundColor(candidate.color)
+            )
+            let textSize = resolved.measure(in: CGSize(width: 200, height: 50))
+            let labelRect = CGRect(
+                x: candidate.centroid.x - textSize.width / 2 - labelPadding,
+                y: candidate.centroid.y + 10 - labelPadding,
+                width: textSize.width + labelPadding * 2,
+                height: textSize.height + labelPadding * 2
+            )
+
+            // Check for overlap with already-placed labels
+            let overlaps = placedRects.contains { $0.intersects(labelRect) }
+            if !overlaps {
+                let origin = CGPoint(
+                    x: candidate.centroid.x - textSize.width / 2,
+                    y: candidate.centroid.y + 10
+                )
+                context.draw(resolved, at: origin, anchor: .topLeading)
+                placedRects.append(labelRect)
+            }
+        }
     }
 
     private func drawPlayerMarker(context: inout GraphicsContext, at point: CGPoint) {
@@ -295,7 +354,44 @@ struct BorderHopMapView: View {
     }
 
     private func centerOnStart(viewSize: CGSize) {
-        centerOnCountry(viewModel.startCountryId, viewSize: viewSize)
+        zoomToFitNeighborhood(viewModel.startCountryId, viewSize: viewSize)
+    }
+
+    /// Zoom and center to fit the current country + its frontier neighbors in view
+    private func zoomToFitNeighborhood(_ countryId: String, viewSize: CGSize) {
+        guard let renderer else {
+            centerOnCountry(countryId, viewSize: viewSize)
+            return
+        }
+
+        // Collect current country + all frontier neighbors
+        let neighborIds = viewModel.graph.neighborIds(of: countryId)
+        let allIds = [countryId] + Array(neighborIds)
+        let bbox = renderer.boundingBox(for: allIds)
+
+        guard bbox != .zero, bbox.width > 0, bbox.height > 0 else {
+            centerOnCountry(countryId, viewSize: viewSize)
+            return
+        }
+
+        // Calculate scale to fit bbox with 25% padding into the view
+        let padding: CGFloat = 1.25
+        let scaleX = viewSize.width / (bbox.width * padding)
+        let scaleY = viewSize.height / (bbox.height * padding)
+        let fitScale = min(scaleX, scaleY)
+
+        // Clamp: at least 3× (so small countries stay tappable), at most 6×
+        let newScale = min(max(fitScale, 3.0), 6.0)
+        scale = newScale
+        lastScale = newScale
+
+        // Center on the bbox center
+        let bboxCenter = CGPoint(x: bbox.midX, y: bbox.midY)
+        let centerX = viewSize.width / 2 - bboxCenter.x * scale + (canvasSize.width * scale - canvasSize.width) / 2
+        let centerY = viewSize.height / 2 - bboxCenter.y * scale + (canvasSize.height * scale - canvasSize.height) / 2
+
+        offset = CGSize(width: centerX, height: centerY)
+        lastOffset = offset
     }
 
     private func centerOnCountry(_ countryId: String, viewSize: CGSize) {
