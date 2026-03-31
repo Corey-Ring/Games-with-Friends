@@ -7,14 +7,21 @@ struct CountryFunFact: Codable {
 }
 
 struct QuizQuestion {
-    let countryId: String      // The country being quizzed (tapped country)
-    let correctFact: String    // The true fact for this country
-    let choices: [String]      // 4 fun fact strings, shuffled, includes correctFact
+    let type: QuizType
+    let countryId: String           // alpha-3 code of the country being quizzed
+
+    // Fun fact fields (populated when type == .funFact)
+    let correctFact: String?
+    let factChoices: [String]?      // 4 shuffled fact strings
+
+    // Flag fields (populated when type == .flagIdentification)
+    let countryChoices: [String]?   // 4 shuffled alpha-3 country IDs whose flags are shown as choices
 }
 
 class QuizEngine {
     private var funFacts: [String: [String]] = [:] // countryId -> facts
     private var usedFacts: [String: Set<Int>] = [:]
+    private var typeSelector = QuizTypeSelector()
 
     init() {
         loadFunFacts()
@@ -35,9 +42,36 @@ class QuizEngine {
         usedFacts.removeAll()
     }
 
+    func resetTypeSelector() {
+        typeSelector.reset()
+    }
+
+    // MARK: - Public Generation
+
     /// Generate a quiz question for a target country.
-    /// Returns nil if the country has no fun facts (caller should skip quiz).
+    /// Returns nil only if both quiz types are completely unavailable (extremely rare).
     func generateQuestion(
+        correctCountryId: String,
+        frontierCountryIds: [String],
+        graph: CountryGraph
+    ) -> QuizQuestion? {
+        let type = typeSelector.nextType()
+
+        switch type {
+        case .flagIdentification:
+            // Try flag first, fall back to fact
+            return generateFlagQuestion(correctCountryId: correctCountryId, graph: graph)
+                ?? generateFactQuestion(correctCountryId: correctCountryId, frontierCountryIds: frontierCountryIds, graph: graph)
+        case .funFact:
+            // Try fact first, fall back to flag
+            return generateFactQuestion(correctCountryId: correctCountryId, frontierCountryIds: frontierCountryIds, graph: graph)
+                ?? generateFlagQuestion(correctCountryId: correctCountryId, graph: graph)
+        }
+    }
+
+    // MARK: - Fun Fact Generation
+
+    private func generateFactQuestion(
         correctCountryId: String,
         frontierCountryIds: [String],
         graph: CountryGraph
@@ -46,10 +80,7 @@ class QuizEngine {
             return nil
         }
 
-        // Pick an unused fact for the correct country
         let correctFact = pickFact(for: correctCountryId, from: facts)
-
-        // Build distractor facts from other countries
         let distractorFacts = buildDistractorFacts(
             correctId: correctCountryId,
             correctFact: correctFact,
@@ -57,21 +88,21 @@ class QuizEngine {
             graph: graph
         )
 
-        // Combine and shuffle
         var choices = [correctFact] + distractorFacts
         choices.shuffle()
 
         return QuizQuestion(
+            type: .funFact,
             countryId: correctCountryId,
             correctFact: correctFact,
-            choices: choices
+            factChoices: choices,
+            countryChoices: nil
         )
     }
 
     private func pickFact(for countryId: String, from facts: [String]) -> String {
         var used = usedFacts[countryId] ?? []
 
-        // Reset if all facts have been used
         if used.count >= facts.count {
             used = []
         }
@@ -83,8 +114,6 @@ class QuizEngine {
         return facts[index]
     }
 
-    /// Pick 3 distractor facts from other countries.
-    /// Prefers frontier countries, then neighbors-of-frontier, then any country.
     private func buildDistractorFacts(
         correctId: String,
         correctFact: String,
@@ -118,7 +147,7 @@ class QuizEngine {
             distractorCountries.append(contentsOf: remaining)
         }
 
-        // Deduplicate and pick one random fact from each distractor country
+        // Pick one random fact from each distractor country
         var seen: Set<String> = [correctId]
         var facts: [String] = []
         for countryId in distractorCountries {
@@ -133,5 +162,91 @@ class QuizEngine {
         }
 
         return facts
+    }
+
+    // MARK: - Flag Generation
+
+    private func generateFlagQuestion(
+        correctCountryId: String,
+        graph: CountryGraph
+    ) -> QuizQuestion? {
+        // Correct country must have a mappable flag emoji
+        guard CountryFlagProvider.flag(for: correctCountryId) != nil else {
+            return nil
+        }
+
+        let distractors = buildFlagDistractors(
+            correctId: correctCountryId,
+            graph: graph
+        )
+
+        guard !distractors.isEmpty else { return nil }
+
+        var choices = [correctCountryId] + distractors
+        choices.shuffle()
+
+        return QuizQuestion(
+            type: .flagIdentification,
+            countryId: correctCountryId,
+            correctFact: nil,
+            factChoices: nil,
+            countryChoices: choices
+        )
+    }
+
+    /// Build 3 distractor country IDs for a flag quiz.
+    /// Priority: similar flags → same region → random (never includes direct neighbors).
+    private func buildFlagDistractors(
+        correctId: String,
+        graph: CountryGraph
+    ) -> [String] {
+        let neighbors = graph.neighborIds(of: correctId)
+        let correctRegion = graph.country(for: correctId)?.region
+        let allIds = Set(graph.allCountryIds)
+
+        var distractors: [String] = []
+        var seen: Set<String> = [correctId]
+        seen.formUnion(neighbors) // never use direct neighbors as distractors
+
+        // Tier 1: Visually similar flags
+        let similar = CountryFlagProvider.similarCountries(to: correctId)
+            .filter { allIds.contains($0) && !seen.contains($0) && CountryFlagProvider.flag(for: $0) != nil }
+            .shuffled()
+        for id in similar {
+            if distractors.count >= 2 { break } // up to 2 from similar-flag group
+            distractors.append(id)
+            seen.insert(id)
+        }
+
+        // Tier 2: Same region countries
+        if distractors.count < 3, let region = correctRegion {
+            let sameRegion = graph.allCountries
+                .filter {
+                    $0.region == region &&
+                    !seen.contains($0.id) &&
+                    CountryFlagProvider.flag(for: $0.id) != nil
+                }
+                .map { $0.id }
+                .shuffled()
+            for id in sameRegion {
+                if distractors.count >= 3 { break }
+                distractors.append(id)
+                seen.insert(id)
+            }
+        }
+
+        // Tier 3: Any remaining country
+        if distractors.count < 3 {
+            let fallback = allIds
+                .filter { !seen.contains($0) && CountryFlagProvider.flag(for: $0) != nil }
+                .shuffled()
+            for id in fallback {
+                if distractors.count >= 3 { break }
+                distractors.append(id)
+                seen.insert(id)
+            }
+        }
+
+        return distractors
     }
 }

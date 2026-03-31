@@ -39,7 +39,8 @@ struct BorderHopGameView: View {
                     eliminatedChoices: viewModel.eliminatedChoices,
                     strikeCount: viewModel.strikeCount,
                     onAnswer: { viewModel.submitQuizAnswer($0) },
-                    countryName: viewModel.graph.country(for: question.countryId)?.name ?? ""
+                    countryName: viewModel.graph.country(for: question.countryId)?.name ?? "",
+                    graph: viewModel.graph
                 )
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }

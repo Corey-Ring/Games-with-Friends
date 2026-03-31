@@ -116,6 +116,7 @@ class BorderHopViewModel {
         strikeCount = 0
         showTimeReward = false
         quizEngine.resetUsedFacts()
+        quizEngine.resetTypeSelector()
 
         // Initialize country states
         initializeCountryStates()
@@ -238,13 +239,21 @@ class BorderHopViewModel {
         HapticManager.light()
     }
 
-    func submitQuizAnswer(_ selectedFact: String) {
+    func submitQuizAnswer(_ answer: String) {
         guard let question = currentQuizQuestion else { return }
 
-        if selectedFact == question.correctFact {
+        let isCorrect: Bool
+        switch question.type {
+        case .funFact:
+            isCorrect = (answer == question.correctFact)
+        case .flagIdentification:
+            isCorrect = (answer == question.countryId)
+        }
+
+        if isCorrect {
             handleCorrectAnswer()
         } else {
-            handleWrongAnswer(selectedFact)
+            handleWrongAnswer(answer)
         }
     }
 
@@ -288,8 +297,7 @@ class BorderHopViewModel {
         if let teleportTarget = findTeleportDestination() {
             moveToCountry(teleportTarget)
         } else {
-            // Fallback: advance to the originally tapped country for free
-            // (prevents deadlock in extremely rare edge case)
+            // Fallback: prevents deadlock in extremely rare edge case
         }
     }
 
