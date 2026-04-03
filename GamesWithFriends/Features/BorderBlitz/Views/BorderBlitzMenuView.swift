@@ -62,16 +62,67 @@ struct BorderBlitzMenuView: View {
                 .gameCard()
                 .padding(.horizontal, AppTheme.Spacing.md)
 
+                // Permission status
+                switch viewModel.speechManager.permissionStatus {
+                case .notDetermined:
+                    VStack(spacing: AppTheme.Spacing.md) {
+                        Image(systemName: "mic.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(theme.accentColor)
+                        Text("Microphone Required")
+                            .font(AppTheme.Typography.cardTitle)
+                            .foregroundColor(AppTheme.deepCharcoal)
+                        Text("Border Blitz uses your voice to detect country guesses. Tap below to enable microphone and speech recognition.")
+                            .font(AppTheme.Typography.body)
+                            .foregroundColor(AppTheme.mediumGray)
+                            .multilineTextAlignment(.center)
+                        PrimaryButton(title: "Enable Microphone", icon: "mic.fill") {
+                            Task { await viewModel.speechManager.requestPermissions() }
+                        }
+                    }
+                    .gameCard()
+                    .padding(.horizontal, AppTheme.Spacing.md)
+
+                case .authorized:
+                    EmptyView()
+
+                case .denied:
+                    VStack(spacing: AppTheme.Spacing.md) {
+                        Image(systemName: "mic.slash.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(AppTheme.error)
+                        Text("Microphone Access Denied")
+                            .font(AppTheme.Typography.cardTitle)
+                            .foregroundColor(AppTheme.deepCharcoal)
+                        Text("Border Blitz needs microphone and speech recognition access to work. Please enable them in Settings.")
+                            .font(AppTheme.Typography.body)
+                            .foregroundColor(AppTheme.mediumGray)
+                            .multilineTextAlignment(.center)
+                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                            Link("Open Settings", destination: settingsURL)
+                                .font(AppTheme.Typography.buttonLabel)
+                                .foregroundColor(theme.accentColor)
+                        }
+                    }
+                    .gameCard()
+                    .padding(.horizontal, AppTheme.Spacing.md)
+                }
+
                 // Start button
                 PrimaryButton(title: "Start Game", icon: "play.fill") {
                     viewModel.startGame()
                 }
+                .disabled(viewModel.speechManager.permissionStatus == .denied)
+                .opacity(viewModel.speechManager.permissionStatus == .denied ? 0.5 : 1.0)
                 .padding(.horizontal, AppTheme.Spacing.md)
                 .padding(.bottom, AppTheme.Spacing.lg)
             }
             .padding(.horizontal, AppTheme.Spacing.md)
         }
         .navigationBarBackButtonHidden(viewModel.gameStarted)
+        .onAppear {
+            viewModel.speechManager.checkPermissionStatus()
+        }
     }
 }
 

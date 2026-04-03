@@ -126,6 +126,8 @@
 		F10000010000000000000068 /* BorderBlitzLetterTilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000068 /* BorderBlitzLetterTilesView.swift */; };
 		F10000010000000000000069 /* BorderBlitzMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000069 /* BorderBlitzMenuView.swift */; };
 		F10000010000000000000070 /* BorderBlitzGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000070 /* BorderBlitzGameView.swift */; };
+		F10000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift */; };
+		F10000010000000000000072 /* BorderBlitzWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000072 /* BorderBlitzWaveformView.swift */; };
 		F10000010000000000000080 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000080 /* Assets.xcassets */; };
 		VC0000010000000000000001 /* VibeCheckModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000001 /* VibeCheckModels.swift */; };
 		VC0000010000000000000002 /* VibeCheckCategoryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000002 /* VibeCheckCategoryData.swift */; };
@@ -272,6 +274,8 @@
 		F20000010000000000000068 /* BorderBlitzLetterTilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzLetterTilesView.swift; sourceTree = "<group>"; };
 		F20000010000000000000069 /* BorderBlitzMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzMenuView.swift; sourceTree = "<group>"; };
 		F20000010000000000000070 /* BorderBlitzGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzGameView.swift; sourceTree = "<group>"; };
+		F20000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzSpeechRecognitionManager.swift; sourceTree = "<group>"; };
+		F20000010000000000000072 /* BorderBlitzWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzWaveformView.swift; sourceTree = "<group>"; };
 		F20000010000000000000080 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		VC0000020000000000000001 /* VibeCheckModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckModels.swift; sourceTree = "<group>"; };
 		VC0000020000000000000002 /* VibeCheckCategoryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckCategoryData.swift; sourceTree = "<group>"; };
@@ -818,6 +822,7 @@
 				F40000010000000000000062 /* Data */,
 				F40000010000000000000063 /* ViewModels */,
 				F40000010000000000000064 /* Views */,
+				F40000010000000000000065 /* Services */,
 			);
 			path = BorderBlitz;
 			sourceTree = "<group>";
@@ -858,8 +863,17 @@
 				F20000010000000000000068 /* BorderBlitzLetterTilesView.swift */,
 				F20000010000000000000069 /* BorderBlitzMenuView.swift */,
 				F20000010000000000000070 /* BorderBlitzGameView.swift */,
+				F20000010000000000000072 /* BorderBlitzWaveformView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		F40000010000000000000065 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F20000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		VC0000030000000000000001 /* VibeCheck */ = {
@@ -1126,6 +1140,8 @@
 				4ADAF4D72F0CE55A00AE5ED6 /* CompetitionScoreboardView.swift in Sources */,
 				F10000010000000000000069 /* BorderBlitzMenuView.swift in Sources */,
 				F10000010000000000000070 /* BorderBlitzGameView.swift in Sources */,
+				F10000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift in Sources */,
+				F10000010000000000000072 /* BorderBlitzWaveformView.swift in Sources */,
 				VC0000010000000000000001 /* VibeCheckModels.swift in Sources */,
 				VC0000010000000000000002 /* VibeCheckCategoryData.swift in Sources */,
 				VC0000010000000000000003 /* VibeCheckViewModel.swift in Sources */,
@@ -1293,6 +1309,8 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Border Blitz uses your microphone to listen for country name guesses during gameplay.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Border Blitz uses speech recognition to automatically detect when you say the correct country name.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1322,6 +1340,8 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Border Blitz uses your microphone to listen for country name guesses during gameplay.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Border Blitz uses speech recognition to automatically detect when you say the correct country name.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

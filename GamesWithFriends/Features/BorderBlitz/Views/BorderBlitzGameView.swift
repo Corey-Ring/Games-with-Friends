@@ -7,7 +7,6 @@ import SwiftUI
 
 struct BorderBlitzGameView: View {
     @Bindable var viewModel: BorderBlitzViewModel
-    @FocusState private var isInputFocused: Bool
     private let theme = GameTheme.borderBlitz
 
     var body: some View {
@@ -23,9 +22,6 @@ struct BorderBlitzGameView: View {
             if viewModel.showFeedback {
                 feedbackOverlay
             }
-        }
-        .onAppear {
-            isInputFocused = true
         }
     }
 
@@ -66,30 +62,18 @@ struct BorderBlitzGameView: View {
             }
             .padding(.horizontal, AppTheme.Spacing.md)
 
-            // Input field
+            // Voice input
             VStack(spacing: AppTheme.Spacing.sm) {
-                TextField("Enter country name", text: $viewModel.currentGuess)
-                    .font(AppTheme.Typography.body)
-                    .padding(AppTheme.Spacing.sm)
-                    .background(AppTheme.pureWhite)
-                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                            .stroke(theme.accentColor.opacity(0.3), lineWidth: 1)
-                    )
-                    .autocapitalization(.words)
-                    .autocorrectionDisabled(true)
-                    .textContentType(.none)
-                    .focused($isInputFocused)
-                    .onSubmit {
-                        viewModel.submitGuess()
-                    }
+                BorderBlitzWaveformView(
+                    audioLevel: viewModel.speechManager.audioLevel,
+                    isListening: viewModel.speechManager.isListening,
+                    accentColor: theme.accentColor
+                )
 
                 HStack(spacing: AppTheme.Spacing.md) {
-                    PrimaryButton(title: "Submit") {
-                        viewModel.submitGuess()
+                    PrimaryButton(title: "I Said It!", icon: "hand.raised.fill") {
+                        viewModel.handleManualConfirm()
                     }
-                    .disabled(viewModel.currentGuess.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
                     SecondaryButton(title: "Skip") {
                         viewModel.skipRound()

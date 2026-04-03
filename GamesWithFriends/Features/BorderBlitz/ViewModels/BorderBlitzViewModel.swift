@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import AudioToolbox
 
 enum BorderBlitzGameState {
     case menu
@@ -23,7 +24,6 @@ class BorderBlitzViewModel {
     var currentStreak: Int = 0
     var roundResults: [BorderBlitzRoundResult] = []
     var selectedDifficulty: BorderBlitzDifficulty = .medium
-    var currentGuess: String = ""
     var showFeedback: Bool = false
     var feedbackMessage: String = ""
     var feedbackIsCorrect: Bool = false
@@ -35,6 +35,7 @@ class BorderBlitzViewModel {
     private let scoringConfig = BorderBlitzScoringConfig()
 
     var letterRevealManager: BorderBlitzLetterRevealManager
+    var speechManager = BorderBlitzSpeechRecognitionManager()
 
     // MARK: - Computed Properties
     var gameStarted: Bool {
@@ -52,6 +53,9 @@ class BorderBlitzViewModel {
             shouldRevealLetters: BorderBlitzDifficulty.medium.shouldRevealLetters
         )
         loadCountries()
+        speechManager.matchHandler = { [weak self] transcription in
+            self?.handleSpeechResult(transcription)
+        }
     }
 
     // MARK: - Public Methods
@@ -78,7 +82,6 @@ class BorderBlitzViewModel {
         }
 
         currentCountry = country
-        currentGuess = ""
         showFeedback = false
         timeRemaining = selectedDifficulty.totalTime
         gameState = .playing
@@ -89,19 +92,15 @@ class BorderBlitzViewModel {
 
         // Start countdown timer
         startTimer()
+
+        // Restart speech recognition to clear previous buffer
+        speechManager.stopListening()
+        speechManager.startListening()
     }
 
-    func submitGuess() {
-        guard let country = currentCountry else { return }
-
-        let trimmedGuess = currentGuess.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedGuess.isEmpty else { return }
-
-        if country.isMatch(trimmedGuess) {
-            handleCorrectGuess()
-        } else {
-            handleIncorrectGuess()
-        }
+    func handleManualConfirm() {
+        guard gameState == .playing, currentCountry != nil else { return }
+        handleCorrectGuess()
     }
 
     func skipRound() {
@@ -112,17 +111,20 @@ class BorderBlitzViewModel {
         guard gameState == .playing else { return }
         stopTimer()
         letterRevealManager.stopRevealing()
+        speechManager.stopListening()
     }
 
     func resumeGame() {
         guard gameState == .playing else { return }
         startTimer()
         letterRevealManager.startRevealing()
+        speechManager.startListening()
     }
 
     func returnToMenu() {
         stopTimer()
         letterRevealManager.stopRevealing()
+        speechManager.stopListening()
         gameState = .menu
     }
 
@@ -173,12 +175,41 @@ class BorderBlitzViewModel {
         endRound(correct: true)
         showFeedbackMessage("Correct! 🎉", isCorrect: true)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
+        AudioServicesPlaySystemSound(1025)
     }
 
-    private func handleIncorrectGuess() {
-        showFeedbackMessage("Try again", isCorrect: false)
-        currentGuess = ""
-        UINotificationFeedbackGenerator().notificationOccurred(.error)
+    private func handleSpeechResult(_ transcription: String) {
+        guard let country = currentCountry, gameState == .playing else { return }
+
+        let words = transcription.split(separator: " ").map(String.init)
+
+        // Check individual words
+        for word in words {
+            if country.isMatch(word) || country.isMatch(stripLeadingThe(word)) {
+                handleCorrectGuess()
+                return
+            }
+        }
+
+        // Check sliding windows of 2 and 3 consecutive words
+        for windowSize in 2...3 {
+            guard words.count >= windowSize else { continue }
+            for i in 0...(words.count - windowSize) {
+                let phrase = words[i..<(i + windowSize)].joined(separator: " ")
+                if country.isMatch(phrase) || country.isMatch(stripLeadingThe(phrase)) {
+                    handleCorrectGuess()
+                    return
+                }
+            }
+        }
+    }
+
+    private func stripLeadingThe(_ text: String) -> String {
+        let lowered = text.lowercased()
+        if lowered.hasPrefix("the ") {
+            return String(text.dropFirst(4))
+        }
+        return text
     }
 
     private func handleTimeOut() {
@@ -192,6 +223,7 @@ class BorderBlitzViewModel {
 
         stopTimer()
         letterRevealManager.stopRevealing()
+        speechManager.stopListening()
 
         if !correct {
             currentStreak = 0
@@ -231,6 +263,7 @@ class BorderBlitzViewModel {
     private func endGame() {
         stopTimer()
         letterRevealManager.stopRevealing()
+        speechManager.stopListening()
         gameState = .gameOver
     }
 
