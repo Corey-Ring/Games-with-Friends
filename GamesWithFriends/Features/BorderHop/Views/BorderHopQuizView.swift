@@ -14,6 +14,12 @@ struct BorderHopQuizView: View {
     @State private var selectedCorrect: String? = nil
     @State private var shakingChoice: String? = nil
     @State private var shakeOffset: CGFloat = 0
+    @State private var choicesRevealed: Set<Int> = []
+    @State private var headerGlowPhase: CGFloat = 0
+    @State private var showCelebration: Bool = false
+    @State private var celebrationParticles: [CelebrationParticle] = []
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: 0) {
@@ -22,12 +28,19 @@ struct BorderHopQuizView: View {
             VStack(spacing: 0) {
                 header
 
-                ViewThatFits(in: .vertical) {
-                    choicesStack
-                    ScrollView(.vertical, showsIndicators: false) {
+                ZStack {
+                    ViewThatFits(in: .vertical) {
                         choicesStack
+                        ScrollView(.vertical, showsIndicators: false) {
+                            choicesStack
+                        }
+                        .frame(maxHeight: UIScreen.main.bounds.height * 0.68)
                     }
-                    .frame(maxHeight: UIScreen.main.bounds.height * 0.68)
+
+                    if showCelebration {
+                        celebrationOverlay
+                            .allowsHitTesting(false)
+                    }
                 }
 
                 Color.clear.frame(height: 20)
@@ -41,6 +54,7 @@ struct BorderHopQuizView: View {
             .padding(.horizontal, 12)
         }
         .ignoresSafeArea(edges: .bottom)
+        .onAppear(perform: handleAppear)
     }
 
     // MARK: - Header
@@ -52,14 +66,14 @@ struct BorderHopQuizView: View {
             factHeader
         case .flagIdentification:
             flagHeader
+        case .export:
+            exportHeader
         }
     }
 
     private var factHeader: some View {
         VStack(spacing: 4) {
-            Text(countryName)
-                .font(AppTheme.Typography.subsectionHeader)
-                .foregroundColor(.white)
+            pulsingCountryName
 
             Text("Which fact is true?")
                 .font(AppTheme.Typography.caption)
@@ -73,9 +87,7 @@ struct BorderHopQuizView: View {
 
     private var flagHeader: some View {
         VStack(spacing: 4) {
-            Text(countryName)
-                .font(AppTheme.Typography.subsectionHeader)
-                .foregroundColor(.white)
+            pulsingCountryName
 
             Text("Select the correct flag")
                 .font(AppTheme.Typography.caption)
@@ -85,6 +97,35 @@ struct BorderHopQuizView: View {
         }
         .padding(.top, AppTheme.Spacing.md)
         .padding(.bottom, AppTheme.Spacing.sm)
+    }
+
+    private var exportHeader: some View {
+        VStack(spacing: 4) {
+            pulsingCountryName
+
+            Text("What are the top 5 exports?")
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(.white.opacity(0.6))
+
+            strikeRow
+        }
+        .padding(.top, AppTheme.Spacing.md)
+        .padding(.bottom, AppTheme.Spacing.sm)
+    }
+
+    private var pulsingCountryName: some View {
+        Text(countryName)
+            .font(AppTheme.Typography.subsectionHeader)
+            .foregroundColor(.white)
+            .scaleEffect(1.0 + headerGlowPhase * 0.02)
+            .shadow(
+                color: theme.accentColor.opacity(0.6 * headerGlowPhase),
+                radius: 8 + headerGlowPhase * 6
+            )
+            .shadow(
+                color: theme.accentColor.opacity(0.3 * headerGlowPhase),
+                radius: 16 + headerGlowPhase * 8
+            )
     }
 
     private var strikeRow: some View {
@@ -100,7 +141,8 @@ struct BorderHopQuizView: View {
                                 lineWidth: 1.5
                             )
                     )
-                    .animation(.easeIn(duration: 0.2), value: strikeCount)
+                    .scaleEffect(index < strikeCount ? 1.2 : 1.0)
+                    .animation(.spring(response: 0.25, dampingFraction: 0.5), value: strikeCount)
             }
         }
         .padding(.top, 2)
@@ -115,6 +157,8 @@ struct BorderHopQuizView: View {
             factChoicesStack
         case .flagIdentification:
             flagChoicesStack
+        case .export:
+            exportChoicesStack
         }
     }
 
@@ -122,6 +166,9 @@ struct BorderHopQuizView: View {
         VStack(spacing: 6) {
             ForEach(Array((question.factChoices ?? []).enumerated()), id: \.element) { index, fact in
                 factAnswerButton(for: fact, index: index)
+                    .opacity(choicesRevealed.contains(index) ? 1 : 0)
+                    .offset(y: choicesRevealed.contains(index) ? 0 : 24)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: choicesRevealed)
             }
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
@@ -132,10 +179,26 @@ struct BorderHopQuizView: View {
         VStack(spacing: 6) {
             ForEach(Array((question.countryChoices ?? []).enumerated()), id: \.element) { index, countryId in
                 flagAnswerButton(for: countryId, index: index)
+                    .opacity(choicesRevealed.contains(index) ? 1 : 0)
+                    .offset(y: choicesRevealed.contains(index) ? 0 : 24)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: choicesRevealed)
             }
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
         .padding(.vertical, AppTheme.Spacing.sm)
+    }
+
+    private var exportChoicesStack: some View {
+        VStack(spacing: 6) {
+            ForEach(Array((question.countryChoices ?? []).enumerated()), id: \.element) { index, countryId in
+                exportAnswerButton(for: countryId, index: index)
+                    .opacity(choicesRevealed.contains(index) ? 1 : 0)
+                    .offset(y: choicesRevealed.contains(index) ? 0 : 24)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: choicesRevealed)
+            }
+        }
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.xs)
     }
 
     // MARK: - Answer Buttons
@@ -212,14 +275,87 @@ struct BorderHopQuizView: View {
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isCorrectReveal)
     }
 
+    @ViewBuilder
+    private func exportAnswerButton(for countryId: String, index: Int) -> some View {
+        let isEliminated = eliminatedChoices.contains(countryId)
+        let isCorrectReveal = selectedCorrect == countryId
+        let isShaking = shakingChoice == countryId
+        let label = isCorrectReveal ? "✓" : (index < choiceLabels.count ? choiceLabels[index] : "?")
+
+        // Change to 3 to switch to top-3 mode (also update the header text).
+        let exportsToShow = 5
+        let exports = (CountryExportProvider.exports(for: countryId) ?? []).prefix(exportsToShow)
+        let countryName = graph.country(for: countryId)?.name ?? countryId
+        let flagEmoji = CountryFlagProvider.flag(for: countryId) ?? "🏳️"
+
+        Button {
+            guard !isEliminated && selectedCorrect == nil else { return }
+            handleSelection(countryId, correctValue: question.countryId)
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                if isEliminated {
+                    HStack(spacing: 6) {
+                        Text(flagEmoji)
+                            .font(.system(size: 18))
+                        Text(countryName)
+                            .font(AppTheme.Typography.footnote.weight(.semibold))
+                            .foregroundColor(.gray)
+                    }
+                }
+
+                HStack(alignment: .center, spacing: 10) {
+                    Text(label)
+                        .font(AppTheme.Typography.cardTitle)
+                        .foregroundColor(prefixColor(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal))
+                        .frame(width: 24, alignment: .leading)
+
+                    HStack(alignment: .top, spacing: 8) {
+                        let exportsArray = Array(exports)
+                        let splitIndex = (exportsArray.count + 1) / 2
+                        let firstColumn = Array(exportsArray.prefix(splitIndex))
+                        let secondColumn = Array(exportsArray.dropFirst(splitIndex))
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            ForEach(Array(firstColumn.enumerated()), id: \.offset) { i, commodity in
+                                Text("\(i + 1). \(commodity.localizedCapitalized)")
+                                    .font(AppTheme.Typography.footnote)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            ForEach(Array(secondColumn.enumerated()), id: \.offset) { i, commodity in
+                                Text("\(i + splitIndex + 1). \(commodity.localizedCapitalized)")
+                                    .font(AppTheme.Typography.footnote)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .buttonChrome(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal)
+        }
+        .disabled(isEliminated || selectedCorrect != nil)
+        .scaleEffect(isCorrectReveal ? 1.01 : 1.0)
+        .offset(x: isShaking ? shakeOffset : 0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isCorrectReveal)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isEliminated)
+    }
+
     // MARK: - Interaction
 
     private func handleSelection(_ answer: String, correctValue: String) {
         if answer == correctValue {
+            triggerCelebration()
             withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                 selectedCorrect = answer
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
                 onAnswer(answer)
             }
         } else {
@@ -230,6 +366,78 @@ struct BorderHopQuizView: View {
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { shakingChoice = nil }
             onAnswer(answer)
+        }
+    }
+
+    // MARK: - Lifecycle
+
+    private func handleAppear() {
+        if reduceMotion {
+            // Reveal all choices immediately, skip pulsing glow
+            choicesRevealed = Set(0..<8)
+            return
+        }
+
+        // Header glow pulse
+        withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true)) {
+            headerGlowPhase = 1
+        }
+
+        // Staggered choice entrance — 150ms initial delay, then 120ms between each
+        for i in 0..<8 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15 + Double(i) * 0.12) {
+                _ = withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                    choicesRevealed.insert(i)
+                }
+            }
+        }
+    }
+
+    // MARK: - Celebration
+
+    private func triggerCelebration() {
+        let palette: [Color] = [
+            AppTheme.success,
+            AppTheme.medalGold,
+            theme.accentColor,
+            .white
+        ]
+        var particles: [CelebrationParticle] = []
+        for i in 0..<20 {
+            particles.append(
+                CelebrationParticle(
+                    id: i,
+                    x: CGFloat.random(in: 0.1...0.9),
+                    y: CGFloat.random(in: 0.2...0.8),
+                    size: CGFloat.random(in: 4...10),
+                    color: palette[i % palette.count],
+                    angle: .degrees(Double.random(in: 0..<360)),
+                    distance: CGFloat.random(in: 40...120),
+                    delay: Double(i) * 0.02
+                )
+            )
+        }
+        celebrationParticles = particles
+        showCelebration = true
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
+            showCelebration = false
+        }
+    }
+
+    @ViewBuilder
+    private var celebrationOverlay: some View {
+        GeometryReader { geo in
+            ZStack {
+                CelebrationRipple()
+                ForEach(celebrationParticles) { particle in
+                    CelebrationDot(particle: particle)
+                        .position(
+                            x: particle.x * geo.size.width,
+                            y: particle.y * geo.size.height
+                        )
+                }
+            }
         }
     }
 
@@ -282,5 +490,60 @@ private struct ButtonChromeModifier: ViewModifier {
 private extension View {
     func buttonChrome(isEliminated: Bool, isCorrectReveal: Bool) -> some View {
         modifier(ButtonChromeModifier(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal))
+    }
+}
+
+// MARK: - Celebration Effects
+
+private struct CelebrationParticle: Identifiable {
+    let id: Int
+    let x: CGFloat       // 0-1 normalized
+    let y: CGFloat       // 0-1 normalized
+    let size: CGFloat
+    let color: Color
+    let angle: Angle
+    let distance: CGFloat
+    let delay: Double
+}
+
+private struct CelebrationDot: View {
+    let particle: CelebrationParticle
+    @State private var animate: Bool = false
+
+    var body: some View {
+        let dx = animate ? cos(CGFloat(particle.angle.radians)) * particle.distance : 0
+        let dy = animate ? sin(CGFloat(particle.angle.radians)) * particle.distance : 0
+
+        Circle()
+            .fill(particle.color)
+            .frame(width: particle.size, height: particle.size)
+            .offset(x: dx, y: dy)
+            .scaleEffect(animate ? 0.1 : 1.0)
+            .opacity(animate ? 0 : 1)
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.6).delay(particle.delay)) {
+                    animate = true
+                }
+            }
+    }
+}
+
+private struct CelebrationRipple: View {
+    @State private var progress: CGFloat = 0
+
+    var body: some View {
+        GeometryReader { geo in
+            let maxDim = max(geo.size.width, geo.size.height)
+            let diameter = 20 + progress * (maxDim - 20)
+            Circle()
+                .stroke(AppTheme.success.opacity(0.6 * (1 - progress)), lineWidth: 3)
+                .frame(width: diameter, height: diameter)
+                .position(x: geo.size.width / 2, y: geo.size.height / 2)
+                .onAppear {
+                    withAnimation(.easeOut(duration: 0.6)) {
+                        progress = 1
+                    }
+                }
+        }
     }
 }

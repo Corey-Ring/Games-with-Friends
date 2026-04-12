@@ -14,8 +14,10 @@ struct QuizQuestion {
     let correctFact: String?
     let factChoices: [String]?      // 4 shuffled fact strings
 
-    // Flag fields (populated when type == .flagIdentification)
-    let countryChoices: [String]?   // 4 shuffled alpha-3 country IDs whose flags are shown as choices
+    // Country-choice fields (populated when type == .flagIdentification or .export)
+    // 4 shuffled alpha-3 country IDs. For flags, each ID is rendered as its
+    // emoji. For exports, each ID is rendered as its top-N export list.
+    let countryChoices: [String]?
 }
 
 class QuizEngine {
@@ -65,6 +67,11 @@ class QuizEngine {
         case .funFact:
             // Try fact first, fall back to flag
             return generateFactQuestion(correctCountryId: correctCountryId, frontierCountryIds: frontierCountryIds, graph: graph)
+                ?? generateFlagQuestion(correctCountryId: correctCountryId, graph: graph)
+        case .export:
+            // Try export first, fall back to fact, then flag
+            return generateExportQuestion(correctCountryId: correctCountryId)
+                ?? generateFactQuestion(correctCountryId: correctCountryId, frontierCountryIds: frontierCountryIds, graph: graph)
                 ?? generateFlagQuestion(correctCountryId: correctCountryId, graph: graph)
         }
     }
@@ -248,5 +255,32 @@ class QuizEngine {
         }
 
         return distractors
+    }
+
+    // MARK: - Export Generation
+
+    private func generateExportQuestion(
+        correctCountryId: String
+    ) -> QuizQuestion? {
+        guard CountryExportProvider.exports(for: correctCountryId) != nil else {
+            return nil
+        }
+
+        let distractors = CountryExportProvider.distractorCountries(
+            excluding: correctCountryId,
+            count: 3
+        )
+        guard distractors.count >= 3 else { return nil }
+
+        var choices = [correctCountryId] + distractors
+        choices.shuffle()
+
+        return QuizQuestion(
+            type: .export,
+            countryId: correctCountryId,
+            correctFact: nil,
+            factChoices: nil,
+            countryChoices: choices
+        )
     }
 }

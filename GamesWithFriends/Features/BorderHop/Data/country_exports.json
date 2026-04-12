@@ -1,0 +1,1652 @@
+[
+  {
+    "id": "AFG",
+    "name": "Afghanistan",
+    "exports": [
+      "coal",
+      "grapes",
+      "tropical fruits",
+      "gum resins",
+      "other nuts"
+    ]
+  },
+  {
+    "id": "AGO",
+    "name": "Angola",
+    "exports": [
+      "crude petroleum",
+      "diamonds",
+      "natural gas",
+      "ships",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "ALB",
+    "name": "Albania",
+    "exports": [
+      "garments",
+      "footwear",
+      "electricity",
+      "crude petroleum",
+      "iron alloys"
+    ]
+  },
+  {
+    "id": "AND",
+    "name": "Andorra",
+    "exports": [
+      "paintings",
+      "integrated circuits",
+      "cars",
+      "orthopedic appliances",
+      "garments"
+    ]
+  },
+  {
+    "id": "ARE",
+    "name": "United Arab Emirates",
+    "exports": [
+      "crude petroleum",
+      "refined petroleum",
+      "gold",
+      "broadcasting equipment",
+      "natural gas"
+    ]
+  },
+  {
+    "id": "ARG",
+    "name": "Argentina",
+    "exports": [
+      "soybean meal",
+      "corn",
+      "trucks",
+      "soybean oil",
+      "crude petroleum"
+    ]
+  },
+  {
+    "id": "ARM",
+    "name": "Armenia",
+    "exports": [
+      "gold",
+      "diamonds",
+      "copper ore",
+      "broadcasting equipment",
+      "jewelry"
+    ]
+  },
+  {
+    "id": "AUT",
+    "name": "Austria",
+    "exports": [
+      "cars",
+      "packaged medicine",
+      "vaccines",
+      "vehicle parts",
+      "nitrogen compounds"
+    ]
+  },
+  {
+    "id": "AZE",
+    "name": "Azerbaijan",
+    "exports": [
+      "crude petroleum",
+      "natural gas",
+      "refined petroleum",
+      "plastics",
+      "electricity"
+    ]
+  },
+  {
+    "id": "BDI",
+    "name": "Burundi",
+    "exports": [
+      "gold",
+      "coffee",
+      "tea",
+      "tin ores",
+      "iron bars"
+    ]
+  },
+  {
+    "id": "BEL",
+    "name": "Belgium",
+    "exports": [
+      "refined petroleum",
+      "natural gas",
+      "vaccines",
+      "cars",
+      "packaged medicine"
+    ]
+  },
+  {
+    "id": "BEN",
+    "name": "Benin",
+    "exports": [
+      "gold",
+      "cotton",
+      "coconuts/brazil nuts/cashews",
+      "soybeans",
+      "wood"
+    ]
+  },
+  {
+    "id": "BFA",
+    "name": "Burkina Faso",
+    "exports": [
+      "gold",
+      "cotton",
+      "oil seeds",
+      "coconuts/brazil nuts/cashews",
+      "cement"
+    ]
+  },
+  {
+    "id": "BGD",
+    "name": "Bangladesh",
+    "exports": [
+      "garments",
+      "footwear",
+      "fabric",
+      "fabric",
+      "trunks and cases"
+    ]
+  },
+  {
+    "id": "BGR",
+    "name": "Bulgaria",
+    "exports": [
+      "refined petroleum",
+      "garments",
+      "refined copper",
+      "wheat",
+      "natural gas"
+    ]
+  },
+  {
+    "id": "BIH",
+    "name": "Bosnia and Herzegovina",
+    "exports": [
+      "footwear",
+      "electricity",
+      "garments",
+      "plastic products",
+      "insulated wire"
+    ]
+  },
+  {
+    "id": "BLR",
+    "name": "Belarus",
+    "exports": [
+      "fertilizers",
+      "rapeseed oil",
+      "wood",
+      "poultry",
+      "beef"
+    ]
+  },
+  {
+    "id": "BLZ",
+    "name": "Belize",
+    "exports": [
+      "raw sugar",
+      "bananas",
+      "fish",
+      "shellfish",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "BOL",
+    "name": "Bolivia",
+    "exports": [
+      "gold",
+      "natural gas",
+      "precious metal ore",
+      "zinc ore",
+      "soybean meal"
+    ]
+  },
+  {
+    "id": "BRA",
+    "name": "Brazil",
+    "exports": [
+      "soybeans",
+      "crude petroleum",
+      "iron ore",
+      "raw sugar",
+      "corn"
+    ]
+  },
+  {
+    "id": "BRN",
+    "name": "Brunei",
+    "exports": [
+      "refined petroleum",
+      "natural gas",
+      "crude petroleum",
+      "hydrocarbons",
+      "fertilizers"
+    ]
+  },
+  {
+    "id": "BTN",
+    "name": "Bhutan",
+    "exports": [
+      "iron alloys",
+      "aircraft",
+      "dolomite",
+      "semi-finished iron",
+      "cement"
+    ]
+  },
+  {
+    "id": "BWA",
+    "name": "Botswana",
+    "exports": [
+      "diamonds",
+      "copper ore",
+      "insulated wire",
+      "carbonates",
+      "cattle"
+    ]
+  },
+  {
+    "id": "CAF",
+    "name": "Central African Republic",
+    "exports": [
+      "gold",
+      "wood",
+      "diamonds",
+      "vehicle parts",
+      "cotton"
+    ]
+  },
+  {
+    "id": "CAN",
+    "name": "Canada",
+    "exports": [
+      "crude petroleum",
+      "cars",
+      "gold",
+      "natural gas",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "CHE",
+    "name": "Switzerland",
+    "exports": [
+      "gold",
+      "packaged medicine",
+      "vaccines",
+      "nitrogen compounds",
+      "base metal watches"
+    ]
+  },
+  {
+    "id": "CHL",
+    "name": "Chile",
+    "exports": [
+      "copper ore",
+      "refined copper",
+      "fish",
+      "carbonates",
+      "pitted fruits"
+    ]
+  },
+  {
+    "id": "CHN",
+    "name": "China",
+    "exports": [
+      "broadcasting equipment",
+      "computers",
+      "integrated circuits",
+      "garments",
+      "machine parts"
+    ]
+  },
+  {
+    "id": "CIV",
+    "name": "Cote d'Ivoire",
+    "exports": [
+      "gold",
+      "cocoa beans",
+      "rubber",
+      "refined petroleum",
+      "coconuts/brazil nuts/cashews"
+    ]
+  },
+  {
+    "id": "CMR",
+    "name": "Cameroon",
+    "exports": [
+      "crude petroleum",
+      "natural gas",
+      "gold",
+      "cocoa beans",
+      "wood"
+    ]
+  },
+  {
+    "id": "COD",
+    "name": "Congo DR",
+    "exports": [
+      "refined copper",
+      "cobalt",
+      "copper ore",
+      "raw copper",
+      "crude petroleum"
+    ]
+  },
+  {
+    "id": "COG",
+    "name": "Congo",
+    "exports": [
+      "crude petroleum",
+      "refined copper",
+      "gold",
+      "wood",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "COL",
+    "name": "Colombia",
+    "exports": [
+      "crude petroleum",
+      "coal",
+      "gold",
+      "coffee",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "CRI",
+    "name": "Costa Rica",
+    "exports": [
+      "medical instruments",
+      "integrated circuits",
+      "orthopedic appliances",
+      "bananas",
+      "tropical fruits"
+    ]
+  },
+  {
+    "id": "CZE",
+    "name": "Czech Republic",
+    "exports": [
+      "cars",
+      "vehicle parts",
+      "broadcasting equipment",
+      "computers",
+      "plastic products"
+    ]
+  },
+  {
+    "id": "DEU",
+    "name": "Germany",
+    "exports": [
+      "cars",
+      "vehicle parts",
+      "packaged medicine",
+      "plastic products",
+      "vaccines"
+    ]
+  },
+  {
+    "id": "DJI",
+    "name": "Djibouti",
+    "exports": [
+      "raw sugar",
+      "seed oils",
+      "cars",
+      "palm oil",
+      "rice"
+    ]
+  },
+  {
+    "id": "DNK",
+    "name": "Denmark",
+    "exports": [
+      "packaged medicine",
+      "fish",
+      "vaccines",
+      "refined petroleum",
+      "pork"
+    ]
+  },
+  {
+    "id": "DZA",
+    "name": "Algeria",
+    "exports": [
+      "natural gas",
+      "crude petroleum",
+      "refined petroleum",
+      "fertilizers",
+      "iron bars"
+    ]
+  },
+  {
+    "id": "ECU",
+    "name": "Ecuador",
+    "exports": [
+      "crude petroleum",
+      "shellfish",
+      "bananas",
+      "fish",
+      "gold"
+    ]
+  },
+  {
+    "id": "EGY",
+    "name": "Egypt",
+    "exports": [
+      "refined petroleum",
+      "natural gas",
+      "fertilizers",
+      "garments",
+      "crude petroleum"
+    ]
+  },
+  {
+    "id": "ERI",
+    "name": "Eritrea",
+    "exports": [
+      "copper ore",
+      "zinc ore",
+      "gold",
+      "garments",
+      "liquor"
+    ]
+  },
+  {
+    "id": "ESP",
+    "name": "Spain",
+    "exports": [
+      "cars",
+      "packaged medicine",
+      "refined petroleum",
+      "vehicle parts",
+      "garments"
+    ]
+  },
+  {
+    "id": "EST",
+    "name": "Estonia",
+    "exports": [
+      "cars",
+      "wood",
+      "broadcasting equipment",
+      "refined petroleum",
+      "prefabricated buildings"
+    ]
+  },
+  {
+    "id": "ETH",
+    "name": "Ethiopia",
+    "exports": [
+      "coffee",
+      "garments",
+      "dried legumes",
+      "cut flowers",
+      "oil seeds"
+    ]
+  },
+  {
+    "id": "FIN",
+    "name": "Finland",
+    "exports": [
+      "paper",
+      "refined petroleum",
+      "steel",
+      "wood pulp",
+      "ships"
+    ]
+  },
+  {
+    "id": "FRA",
+    "name": "France",
+    "exports": [
+      "aircraft",
+      "cars",
+      "packaged medicine",
+      "gas turbines",
+      "vehicle parts"
+    ]
+  },
+  {
+    "id": "GAB",
+    "name": "Gabon",
+    "exports": [
+      "crude petroleum",
+      "ships",
+      "manganese ore",
+      "refined petroleum",
+      "wood"
+    ]
+  },
+  {
+    "id": "GEO",
+    "name": "Georgia",
+    "exports": [
+      "cars",
+      "copper ore",
+      "electricity",
+      "garments",
+      "wine"
+    ]
+  },
+  {
+    "id": "GHA",
+    "name": "Ghana",
+    "exports": [
+      "gold",
+      "crude petroleum",
+      "cocoa beans",
+      "manganese ore",
+      "cocoa paste"
+    ]
+  },
+  {
+    "id": "GIN",
+    "name": "Guinea",
+    "exports": [
+      "gold",
+      "aluminum ore",
+      "cocoa beans",
+      "crude petroleum",
+      "coconuts/brazil nuts/cashews"
+    ]
+  },
+  {
+    "id": "GMB",
+    "name": "The Gambia",
+    "exports": [
+      "packaged medicine",
+      "cars",
+      "harvesting machinery",
+      "refined petroleum",
+      "trailers"
+    ]
+  },
+  {
+    "id": "GNB",
+    "name": "Guinea-Bissau",
+    "exports": [
+      "coconuts/brazil nuts/cashews",
+      "fish",
+      "fish oil",
+      "processed crustaceans",
+      "malt extract"
+    ]
+  },
+  {
+    "id": "GNQ",
+    "name": "Equatorial Guinea",
+    "exports": [
+      "crude petroleum",
+      "natural gas",
+      "alcohols",
+      "wood",
+      "scrap iron"
+    ]
+  },
+  {
+    "id": "GRC",
+    "name": "Greece",
+    "exports": [
+      "refined petroleum",
+      "packaged medicine",
+      "aluminum",
+      "olive oil",
+      "tobacco"
+    ]
+  },
+  {
+    "id": "GTM",
+    "name": "Guatemala",
+    "exports": [
+      "garments",
+      "bananas",
+      "coffee",
+      "palm oil",
+      "raw sugar"
+    ]
+  },
+  {
+    "id": "GUY",
+    "name": "Guyana",
+    "exports": [
+      "crude petroleum",
+      "railway cargo containers",
+      "gold",
+      "ships",
+      "rice"
+    ]
+  },
+  {
+    "id": "HND",
+    "name": "Honduras",
+    "exports": [
+      "garments",
+      "coffee",
+      "insulated wire",
+      "palm oil",
+      "shellfish"
+    ]
+  },
+  {
+    "id": "HRV",
+    "name": "Croatia",
+    "exports": [
+      "ships",
+      "garments",
+      "electricity",
+      "packaged medicine",
+      "wood"
+    ]
+  },
+  {
+    "id": "HUN",
+    "name": "Hungary",
+    "exports": [
+      "cars",
+      "vehicle parts",
+      "electric batteries",
+      "packaged medicine",
+      "computers"
+    ]
+  },
+  {
+    "id": "IDN",
+    "name": "Indonesia",
+    "exports": [
+      "coal",
+      "palm oil",
+      "iron alloys",
+      "lignite",
+      "garments"
+    ]
+  },
+  {
+    "id": "IND",
+    "name": "India",
+    "exports": [
+      "refined petroleum",
+      "packaged medicine",
+      "diamonds",
+      "broadcasting equipment",
+      "garments"
+    ]
+  },
+  {
+    "id": "IRN",
+    "name": "Iran",
+    "exports": [
+      "plastics",
+      "iron ore",
+      "alcohols",
+      "natural gas",
+      "refined copper"
+    ]
+  },
+  {
+    "id": "IRQ",
+    "name": "Iraq",
+    "exports": [
+      "crude petroleum",
+      "refined petroleum",
+      "petroleum coke",
+      "gold",
+      "natural gas"
+    ]
+  },
+  {
+    "id": "ISR",
+    "name": "Israel",
+    "exports": [
+      "integrated circuits",
+      "diamonds",
+      "broadcasting equipment",
+      "medical instruments",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "ITA",
+    "name": "Italy",
+    "exports": [
+      "packaged medicine",
+      "garments",
+      "cars",
+      "refined petroleum",
+      "vehicle parts"
+    ]
+  },
+  {
+    "id": "JOR",
+    "name": "Jordan",
+    "exports": [
+      "fertilizers",
+      "garments",
+      "phosphates",
+      "jewelry",
+      "phosphoric acid"
+    ]
+  },
+  {
+    "id": "KAZ",
+    "name": "Kazakhstan",
+    "exports": [
+      "crude petroleum",
+      "gold",
+      "radioactive chemicals",
+      "refined copper",
+      "copper ore"
+    ]
+  },
+  {
+    "id": "KEN",
+    "name": "Kenya",
+    "exports": [
+      "tea",
+      "cut flowers",
+      "garments",
+      "gold",
+      "tropical fruits"
+    ]
+  },
+  {
+    "id": "KGZ",
+    "name": "Kyrgyzstan",
+    "exports": [
+      "gold",
+      "coal",
+      "precious metal ore",
+      "refined petroleum",
+      "garments"
+    ]
+  },
+  {
+    "id": "KHM",
+    "name": "Cambodia",
+    "exports": [
+      "garments",
+      "integrated circuits",
+      "trunks and cases",
+      "footwear",
+      "gold"
+    ]
+  },
+  {
+    "id": "KOR",
+    "name": "South Korea",
+    "exports": [
+      "integrated circuits",
+      "cars",
+      "refined petroleum",
+      "plastics",
+      "machine parts"
+    ]
+  },
+  {
+    "id": "KWT",
+    "name": "Kuwait",
+    "exports": [
+      "crude petroleum",
+      "refined petroleum",
+      "natural gas",
+      "hydrocarbons",
+      "plastics"
+    ]
+  },
+  {
+    "id": "LAO",
+    "name": "Laos",
+    "exports": [
+      "electricity",
+      "fertilizers",
+      "gold",
+      "garments",
+      "paper"
+    ]
+  },
+  {
+    "id": "LBN",
+    "name": "Lebanon",
+    "exports": [
+      "jewelry",
+      "cars",
+      "diamonds",
+      "scrap iron",
+      "gold"
+    ]
+  },
+  {
+    "id": "LBR",
+    "name": "Liberia",
+    "exports": [
+      "gold",
+      "ships",
+      "iron ore",
+      "rubber",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "LBY",
+    "name": "Libya",
+    "exports": [
+      "crude petroleum",
+      "natural gas",
+      "refined petroleum",
+      "gold",
+      "scrap iron"
+    ]
+  },
+  {
+    "id": "LIE",
+    "name": "Liechtenstein",
+    "exports": [
+      "small specialty machinery",
+      "connectors for audio and video",
+      "vehicle parts",
+      "dental products",
+      "hardware"
+    ]
+  },
+  {
+    "id": "LSO",
+    "name": "Lesotho",
+    "exports": [
+      "diamonds",
+      "garments",
+      "wool",
+      "power equipment",
+      "bedding"
+    ]
+  },
+  {
+    "id": "LTU",
+    "name": "Lithuania",
+    "exports": [
+      "refined petroleum",
+      "furniture",
+      "plastic products",
+      "wheat",
+      "cars"
+    ]
+  },
+  {
+    "id": "LUX",
+    "name": "Luxembourg",
+    "exports": [
+      "iron blocks",
+      "gas turbines",
+      "plastic products",
+      "rubber tires",
+      "plastics"
+    ]
+  },
+  {
+    "id": "LVA",
+    "name": "Latvia",
+    "exports": [
+      "wood",
+      "wheat",
+      "broadcasting equipment",
+      "packaged medicine",
+      "natural gas"
+    ]
+  },
+  {
+    "id": "MAR",
+    "name": "Morocco",
+    "exports": [
+      "fertilizers",
+      "cars",
+      "garments",
+      "insulated wire",
+      "tomatoes"
+    ]
+  },
+  {
+    "id": "MCO",
+    "name": "Monaco",
+    "exports": [
+      "jewelry",
+      "perfumes",
+      "watches",
+      "packaged medicine",
+      "cars"
+    ]
+  },
+  {
+    "id": "MDA",
+    "name": "Moldova",
+    "exports": [
+      "insulated wire",
+      "garments",
+      "refined petroleum",
+      "seed oils",
+      "wheat"
+    ]
+  },
+  {
+    "id": "MEX",
+    "name": "Mexico",
+    "exports": [
+      "cars",
+      "vehicle parts",
+      "crude petroleum",
+      "trucks",
+      "computers"
+    ]
+  },
+  {
+    "id": "MKD",
+    "name": "North Macedonia",
+    "exports": [
+      "reaction and catalytic products",
+      "insulated wire",
+      "electricity",
+      "garments",
+      "seats"
+    ]
+  },
+  {
+    "id": "MLI",
+    "name": "Mali",
+    "exports": [
+      "gold",
+      "cotton",
+      "oil seeds",
+      "fertilizers",
+      "gum resins"
+    ]
+  },
+  {
+    "id": "MMR",
+    "name": "Burma",
+    "exports": [
+      "garments",
+      "natural gas",
+      "dried legumes",
+      "rare-earth metal compounds",
+      "diamonds"
+    ]
+  },
+  {
+    "id": "MNE",
+    "name": "Montenegro",
+    "exports": [
+      "electricity",
+      "aluminum",
+      "copper ore",
+      "aluminum ore",
+      "packaged medicine"
+    ]
+  },
+  {
+    "id": "MNG",
+    "name": "Mongolia",
+    "exports": [
+      "coal",
+      "copper ore",
+      "gold",
+      "iron ore",
+      "crude petroleum"
+    ]
+  },
+  {
+    "id": "MOZ",
+    "name": "Mozambique",
+    "exports": [
+      "coal",
+      "natural gas",
+      "aluminum",
+      "gold",
+      "diamonds"
+    ]
+  },
+  {
+    "id": "MRT",
+    "name": "Mauritania",
+    "exports": [
+      "gold",
+      "iron ore",
+      "fish",
+      "processed crustaceans",
+      "copper ore"
+    ]
+  },
+  {
+    "id": "MWI",
+    "name": "Malawi",
+    "exports": [
+      "tobacco",
+      "tea",
+      "dried legumes",
+      "soybean meal",
+      "raw sugar"
+    ]
+  },
+  {
+    "id": "MYS",
+    "name": "Malaysia",
+    "exports": [
+      "integrated circuits",
+      "refined petroleum",
+      "crude petroleum",
+      "natural gas",
+      "palm oil"
+    ]
+  },
+  {
+    "id": "NAM",
+    "name": "Namibia",
+    "exports": [
+      "gold",
+      "diamonds",
+      "radioactive chemicals",
+      "fish",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "NER",
+    "name": "Niger",
+    "exports": [
+      "gold",
+      "oil seeds",
+      "uranium and thorium ore",
+      "radioactive chemicals",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "NGA",
+    "name": "Nigeria",
+    "exports": [
+      "crude petroleum",
+      "natural gas",
+      "gold",
+      "fertilizers",
+      "cocoa beans"
+    ]
+  },
+  {
+    "id": "NIC",
+    "name": "Nicaragua",
+    "exports": [
+      "garments",
+      "gold",
+      "insulated wire",
+      "coffee",
+      "beef"
+    ]
+  },
+  {
+    "id": "NLD",
+    "name": "Netherlands",
+    "exports": [
+      "refined petroleum",
+      "vaccines",
+      "machinery",
+      "crude petroleum",
+      "broadcasting equipment"
+    ]
+  },
+  {
+    "id": "NOR",
+    "name": "Norway",
+    "exports": [
+      "natural gas",
+      "crude petroleum",
+      "fish",
+      "refined petroleum",
+      "aluminum"
+    ]
+  },
+  {
+    "id": "NPL",
+    "name": "Nepal",
+    "exports": [
+      "knotted carpets",
+      "garments",
+      "flat-rolled iron",
+      "synthetic fibers",
+      "palm oil"
+    ]
+  },
+  {
+    "id": "OMN",
+    "name": "Oman",
+    "exports": [
+      "crude petroleum",
+      "refined petroleum",
+      "natural gas",
+      "semi-finished iron",
+      "fertilizers"
+    ]
+  },
+  {
+    "id": "PAK",
+    "name": "Pakistan",
+    "exports": [
+      "garments",
+      "fabric",
+      "refined petroleum",
+      "rice",
+      "cotton fabric"
+    ]
+  },
+  {
+    "id": "PAN",
+    "name": "Panama",
+    "exports": [
+      "copper ore",
+      "ships",
+      "refined petroleum",
+      "bananas",
+      "fish"
+    ]
+  },
+  {
+    "id": "PER",
+    "name": "Peru",
+    "exports": [
+      "copper ore",
+      "gold",
+      "refined copper",
+      "refined petroleum",
+      "grapes"
+    ]
+  },
+  {
+    "id": "PNG",
+    "name": "Papua New Guinea",
+    "exports": [
+      "natural gas",
+      "gold",
+      "copper ore",
+      "palm oil",
+      "nickel"
+    ]
+  },
+  {
+    "id": "POL",
+    "name": "Poland",
+    "exports": [
+      "vehicle parts",
+      "electric batteries",
+      "plastic products",
+      "cars",
+      "seats"
+    ]
+  },
+  {
+    "id": "PRK",
+    "name": "North Korea",
+    "exports": [
+      "fake hair",
+      "iron alloys",
+      "tungsten ore",
+      "electricity",
+      "cars"
+    ]
+  },
+  {
+    "id": "PRT",
+    "name": "Portugal",
+    "exports": [
+      "cars",
+      "garments",
+      "vehicle parts",
+      "unpackaged medicine",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "PRY",
+    "name": "Paraguay",
+    "exports": [
+      "soybeans",
+      "beef",
+      "electricity",
+      "corn",
+      "soybean meal"
+    ]
+  },
+  {
+    "id": "QAT",
+    "name": "Qatar",
+    "exports": [
+      "natural gas",
+      "crude petroleum",
+      "refined petroleum",
+      "plastics",
+      "fertilizers"
+    ]
+  },
+  {
+    "id": "ROU",
+    "name": "Romania",
+    "exports": [
+      "cars",
+      "vehicle parts",
+      "insulated wire",
+      "garments",
+      "wheat"
+    ]
+  },
+  {
+    "id": "RUS",
+    "name": "Russia",
+    "exports": [
+      "crude petroleum",
+      "refined petroleum",
+      "natural gas",
+      "coal",
+      "fertilizers"
+    ]
+  },
+  {
+    "id": "RWA",
+    "name": "Rwanda",
+    "exports": [
+      "gold",
+      "rare earth ores",
+      "coffee",
+      "tea",
+      "tin ores"
+    ]
+  },
+  {
+    "id": "SAU",
+    "name": "Saudi Arabia",
+    "exports": [
+      "crude petroleum",
+      "refined petroleum",
+      "plastics",
+      "alcohols",
+      "ships"
+    ]
+  },
+  {
+    "id": "SDN",
+    "name": "Sudan",
+    "exports": [
+      "crude petroleum",
+      "gold",
+      "oil seeds",
+      "sheep and goats",
+      "ground nuts"
+    ]
+  },
+  {
+    "id": "SEN",
+    "name": "Senegal",
+    "exports": [
+      "gold",
+      "refined petroleum",
+      "phosphoric acid",
+      "fish",
+      "cement"
+    ]
+  },
+  {
+    "id": "SLE",
+    "name": "Sierra Leone",
+    "exports": [
+      "iron ore",
+      "titanium ore",
+      "diamonds",
+      "aluminum ore",
+      "cocoa beans"
+    ]
+  },
+  {
+    "id": "SLV",
+    "name": "El Salvador",
+    "exports": [
+      "garments",
+      "plastic products",
+      "electrical capacitors",
+      "raw sugar",
+      "toilet paper"
+    ]
+  },
+  {
+    "id": "SMR",
+    "name": "San Marino",
+    "exports": [
+      "washing and bottling machines",
+      "other foods",
+      "packaged medicine",
+      "woodworking machines",
+      "aircraft"
+    ]
+  },
+  {
+    "id": "SOM",
+    "name": "Somalia",
+    "exports": [
+      "sheep and goats",
+      "gold",
+      "postage stamps/documents",
+      "other animals",
+      "cattle"
+    ]
+  },
+  {
+    "id": "SRB",
+    "name": "Serbia",
+    "exports": [
+      "insulated wire",
+      "electricity",
+      "copper ore",
+      "plastic products",
+      "electric motors"
+    ]
+  },
+  {
+    "id": "SSD",
+    "name": "South Sudan",
+    "exports": [
+      "crude petroleum",
+      "refined petroleum",
+      "forage crops",
+      "gold",
+      "scrap iron"
+    ]
+  },
+  {
+    "id": "SUR",
+    "name": "Suriname",
+    "exports": [
+      "gold",
+      "fish",
+      "refined petroleum",
+      "wood",
+      "tobacco"
+    ]
+  },
+  {
+    "id": "SVK",
+    "name": "Slovakia",
+    "exports": [
+      "cars",
+      "vehicle parts",
+      "video displays",
+      "broadcasting equipment",
+      "refined petroleum"
+    ]
+  },
+  {
+    "id": "SVN",
+    "name": "Slovenia",
+    "exports": [
+      "packaged medicine",
+      "cars",
+      "refined petroleum",
+      "vehicle parts",
+      "plastic products"
+    ]
+  },
+  {
+    "id": "SWE",
+    "name": "Sweden",
+    "exports": [
+      "cars",
+      "refined petroleum",
+      "packaged medicine",
+      "paper",
+      "vehicle parts"
+    ]
+  },
+  {
+    "id": "SWZ",
+    "name": "Eswatini",
+    "exports": [
+      "scented mixtures",
+      "raw sugar",
+      "industrial acids/oils/alcohols",
+      "garments",
+      "wood"
+    ]
+  },
+  {
+    "id": "SYR",
+    "name": "Syria",
+    "exports": [
+      "olive oil",
+      "phosphates",
+      "spice seeds",
+      "cotton",
+      "tomatoes"
+    ]
+  },
+  {
+    "id": "TCD",
+    "name": "Chad",
+    "exports": [
+      "crude petroleum",
+      "gold",
+      "oil seeds",
+      "gum resins",
+      "cotton"
+    ]
+  },
+  {
+    "id": "TGO",
+    "name": "Togo",
+    "exports": [
+      "gold",
+      "refined petroleum",
+      "soybeans",
+      "phosphates",
+      "coconuts/brazil nuts/cashews"
+    ]
+  },
+  {
+    "id": "THA",
+    "name": "Thailand",
+    "exports": [
+      "machine parts",
+      "integrated circuits",
+      "trucks",
+      "cars",
+      "broadcasting equipment"
+    ]
+  },
+  {
+    "id": "TJK",
+    "name": "Tajikistan",
+    "exports": [
+      "gold",
+      "precious metal ore",
+      "aluminum",
+      "lead ore",
+      "antimony"
+    ]
+  },
+  {
+    "id": "TKM",
+    "name": "Turkmenistan",
+    "exports": [
+      "natural gas",
+      "refined petroleum",
+      "fertilizers",
+      "crude petroleum",
+      "electricity"
+    ]
+  },
+  {
+    "id": "TLS",
+    "name": "Timor-Leste",
+    "exports": [
+      "crude petroleum",
+      "natural gas",
+      "coffee",
+      "scrap iron",
+      "broadcasting equipment"
+    ]
+  },
+  {
+    "id": "TUN",
+    "name": "Tunisia",
+    "exports": [
+      "garments",
+      "insulated wire",
+      "olive oil",
+      "refined petroleum",
+      "crude petroleum"
+    ]
+  },
+  {
+    "id": "TUR",
+    "name": "Turkey",
+    "exports": [
+      "garments",
+      "cars",
+      "gold",
+      "refined petroleum",
+      "vehicle parts"
+    ]
+  },
+  {
+    "id": "TZA",
+    "name": "Tanzania",
+    "exports": [
+      "gold",
+      "refined petroleum",
+      "dried legumes",
+      "refined copper",
+      "coal"
+    ]
+  },
+  {
+    "id": "UGA",
+    "name": "Uganda",
+    "exports": [
+      "gold",
+      "coffee",
+      "fish",
+      "refined petroleum",
+      "tobacco"
+    ]
+  },
+  {
+    "id": "UKR",
+    "name": "Ukraine",
+    "exports": [
+      "corn",
+      "seed oils",
+      "wheat",
+      "iron ore",
+      "soybeans"
+    ]
+  },
+  {
+    "id": "URY",
+    "name": "Uruguay",
+    "exports": [
+      "wood pulp",
+      "beef",
+      "milk",
+      "rice",
+      "wood"
+    ]
+  },
+  {
+    "id": "USA",
+    "name": "United States",
+    "exports": [
+      "crude petroleum",
+      "refined petroleum",
+      "natural gas",
+      "gas turbines",
+      "cars"
+    ]
+  },
+  {
+    "id": "UZB",
+    "name": "Uzbekistan",
+    "exports": [
+      "gold",
+      "cotton yarn",
+      "garments",
+      "fertilizers",
+      "fabric"
+    ]
+  },
+  {
+    "id": "VEN",
+    "name": "Venezuela",
+    "exports": [
+      "crude petroleum",
+      "petroleum coke",
+      "scrap iron",
+      "alcohols",
+      "fertilizers"
+    ]
+  },
+  {
+    "id": "VNM",
+    "name": "Vietnam",
+    "exports": [
+      "broadcasting equipment",
+      "garments",
+      "integrated circuits",
+      "machine parts",
+      "footwear"
+    ]
+  },
+  {
+    "id": "YEM",
+    "name": "Yemen",
+    "exports": [
+      "gold",
+      "fish",
+      "scrap iron",
+      "shellfish",
+      "industrial acids/oils/alcohols"
+    ]
+  },
+  {
+    "id": "ZAF",
+    "name": "South Africa",
+    "exports": [
+      "gold",
+      "platinum",
+      "coal",
+      "cars",
+      "iron ore"
+    ]
+  },
+  {
+    "id": "ZMB",
+    "name": "Zambia",
+    "exports": [
+      "raw copper",
+      "refined copper",
+      "gold",
+      "diamonds",
+      "electricity"
+    ]
+  },
+  {
+    "id": "ZWE",
+    "name": "Zimbabwe",
+    "exports": [
+      "gold",
+      "tobacco",
+      "nickel",
+      "minerals",
+      "diamonds"
+    ]
+  }
+]
