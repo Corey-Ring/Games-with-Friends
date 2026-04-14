@@ -1,5 +1,5 @@
 //
-//  BorderBlitzSpeechRecognitionManager.swift
+//  FinishTheLineSpeechRecognitionManager.swift
 //  GamesWithFriends
 //
 //  TODO: CONSOLIDATION — This manager is duplicated in both BorderBlitz and
@@ -7,11 +7,16 @@
 //  logic to Core/Services/SpeechRecognitionManager.swift with a generic match
 //  callback. See FinishTheLine_PRD.md §6.
 //
+//  Behaviorally identical to BorderBlitzSpeechRecognitionManager — the only
+//  difference is the class name and enum prefix. The `matchHandler` callback
+//  is already generic (`(String) -> Void`), so the quote-matching logic lives
+//  in FinishTheLineViewModel rather than here.
+//
 
 import Speech
 import AVFoundation
 
-enum BorderBlitzSpeechPermissionStatus {
+enum FinishTheLineSpeechPermissionStatus {
     case notDetermined
     case authorized
     case denied
@@ -19,12 +24,12 @@ enum BorderBlitzSpeechPermissionStatus {
 
 @MainActor
 @Observable
-class BorderBlitzSpeechRecognitionManager {
+class FinishTheLineSpeechRecognitionManager {
     // MARK: - Properties
     var audioLevel: Float = 0.0
     var recognizedText: String = ""
     var isListening: Bool = false
-    var permissionStatus: BorderBlitzSpeechPermissionStatus = .notDetermined
+    var permissionStatus: FinishTheLineSpeechPermissionStatus = .notDetermined
 
     var matchHandler: ((String) -> Void)?
 
@@ -167,7 +172,7 @@ class BorderBlitzSpeechRecognitionManager {
                 }
 
                 if let error = error as? NSError {
-                    // Code 1110 = no speech detected; code 216 = task cancelled
+                    // Code 1110 = no speech detected; code 301 = task cancelled
                     // Auto-restart on timeout/no-speech errors, ignore cancellations
                     let recoverableCodes = [1110, 301]
                     if recoverableCodes.contains(error.code) {

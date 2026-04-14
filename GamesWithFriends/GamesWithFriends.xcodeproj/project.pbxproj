@@ -153,6 +153,24 @@
 		TH0000010000000000000007 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000007 /* SharedComponents.swift */; };
 		TH0000010000000000000008 /* SkeletonLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000008 /* SkeletonLoading.swift */; };
 		TH0000010000000000000009 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000009 /* ViewModifiers.swift */; };
+		FTL0000010000000000000001 /* FinishTheLineGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000001 /* FinishTheLineGame.swift */; };
+		FTL0000010000000000000002 /* Quote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000002 /* Quote.swift */; };
+		FTL0000010000000000000003 /* QuoteCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000003 /* QuoteCategory.swift */; };
+		FTL0000010000000000000004 /* QuoteDecade.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000004 /* QuoteDecade.swift */; };
+		FTL0000010000000000000005 /* QuoteDifficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000005 /* QuoteDifficulty.swift */; };
+		FTL0000010000000000000006 /* BlankPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000006 /* BlankPosition.swift */; };
+		FTL0000010000000000000007 /* FinishTheLineRoundResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000007 /* FinishTheLineRoundResult.swift */; };
+		FTL0000010000000000000008 /* FinishTheLineQuoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000008 /* FinishTheLineQuoteData.swift */; };
+		FTL0000010000000000000009 /* FinishTheLineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000009 /* FinishTheLineViewModel.swift */; };
+		FTL0000010000000000000010 /* FinishTheLineSpeechRecognitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000010 /* FinishTheLineSpeechRecognitionManager.swift */; };
+		FTL0000010000000000000011 /* FinishTheLineMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000011 /* FinishTheLineMenuView.swift */; };
+		FTL0000010000000000000012 /* FinishTheLineCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000012 /* FinishTheLineCountdownView.swift */; };
+		FTL0000010000000000000013 /* FinishTheLineGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000013 /* FinishTheLineGameView.swift */; };
+		FTL0000010000000000000014 /* FinishTheLineResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000014 /* FinishTheLineResultsView.swift */; };
+		FTL0000010000000000000015 /* QuoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000015 /* QuoteCardView.swift */; };
+		FTL0000010000000000000016 /* SpotlightTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000016 /* SpotlightTimerView.swift */; };
+		FTL0000010000000000000017 /* StreakBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000017 /* StreakBadge.swift */; };
+		FTL0000010000000000000018 /* FinishTheLineWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000018 /* FinishTheLineWaveformView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -303,6 +321,24 @@
 		TH0000020000000000000007 /* SharedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedComponents.swift; sourceTree = "<group>"; };
 		TH0000020000000000000008 /* SkeletonLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonLoading.swift; sourceTree = "<group>"; };
 		TH0000020000000000000009 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000001 /* FinishTheLineGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineGame.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000002 /* Quote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quote.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000003 /* QuoteCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteCategory.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000004 /* QuoteDecade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteDecade.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000005 /* QuoteDifficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteDifficulty.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000006 /* BlankPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlankPosition.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000007 /* FinishTheLineRoundResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineRoundResult.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000008 /* FinishTheLineQuoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineQuoteData.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000009 /* FinishTheLineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineViewModel.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000010 /* FinishTheLineSpeechRecognitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineSpeechRecognitionManager.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000011 /* FinishTheLineMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineMenuView.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000012 /* FinishTheLineCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineCountdownView.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000013 /* FinishTheLineGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineGameView.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000014 /* FinishTheLineResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineResultsView.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000015 /* QuoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteCardView.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000016 /* SpotlightTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightTimerView.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000017 /* StreakBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakBadge.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000018 /* FinishTheLineWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineWaveformView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -598,6 +634,7 @@
 				F40000010000000000000060 /* BorderBlitz */,
 				VC0000030000000000000001 /* VibeCheck */,
 				4A3F83B52F3BC7B100F29F5F /* CastingDirector */,
+				FTL0000030000000000000001 /* FinishTheLine */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -959,6 +996,79 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
+		FTL0000030000000000000001 /* FinishTheLine */ = {
+			isa = PBXGroup;
+			children = (
+				FTL0000020000000000000001 /* FinishTheLineGame.swift */,
+				FTL0000030000000000000002 /* Models */,
+				FTL0000030000000000000003 /* Data */,
+				FTL0000030000000000000004 /* ViewModels */,
+				FTL0000030000000000000005 /* Services */,
+				FTL0000030000000000000006 /* Views */,
+			);
+			path = FinishTheLine;
+			sourceTree = "<group>";
+		};
+		FTL0000030000000000000002 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FTL0000020000000000000002 /* Quote.swift */,
+				FTL0000020000000000000003 /* QuoteCategory.swift */,
+				FTL0000020000000000000004 /* QuoteDecade.swift */,
+				FTL0000020000000000000005 /* QuoteDifficulty.swift */,
+				FTL0000020000000000000006 /* BlankPosition.swift */,
+				FTL0000020000000000000007 /* FinishTheLineRoundResult.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FTL0000030000000000000003 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				FTL0000020000000000000008 /* FinishTheLineQuoteData.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		FTL0000030000000000000004 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				FTL0000020000000000000009 /* FinishTheLineViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		FTL0000030000000000000005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				FTL0000020000000000000010 /* FinishTheLineSpeechRecognitionManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		FTL0000030000000000000006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FTL0000020000000000000011 /* FinishTheLineMenuView.swift */,
+				FTL0000020000000000000012 /* FinishTheLineCountdownView.swift */,
+				FTL0000020000000000000013 /* FinishTheLineGameView.swift */,
+				FTL0000020000000000000014 /* FinishTheLineResultsView.swift */,
+				FTL0000030000000000000007 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FTL0000030000000000000007 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				FTL0000020000000000000015 /* QuoteCardView.swift */,
+				FTL0000020000000000000016 /* SpotlightTimerView.swift */,
+				FTL0000020000000000000017 /* StreakBadge.swift */,
+				FTL0000020000000000000018 /* FinishTheLineWaveformView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1172,6 +1282,24 @@
 				TH0000010000000000000007 /* SharedComponents.swift in Sources */,
 				TH0000010000000000000008 /* SkeletonLoading.swift in Sources */,
 				TH0000010000000000000009 /* ViewModifiers.swift in Sources */,
+				FTL0000010000000000000001 /* FinishTheLineGame.swift in Sources */,
+				FTL0000010000000000000002 /* Quote.swift in Sources */,
+				FTL0000010000000000000003 /* QuoteCategory.swift in Sources */,
+				FTL0000010000000000000004 /* QuoteDecade.swift in Sources */,
+				FTL0000010000000000000005 /* QuoteDifficulty.swift in Sources */,
+				FTL0000010000000000000006 /* BlankPosition.swift in Sources */,
+				FTL0000010000000000000007 /* FinishTheLineRoundResult.swift in Sources */,
+				FTL0000010000000000000008 /* FinishTheLineQuoteData.swift in Sources */,
+				FTL0000010000000000000009 /* FinishTheLineViewModel.swift in Sources */,
+				FTL0000010000000000000010 /* FinishTheLineSpeechRecognitionManager.swift in Sources */,
+				FTL0000010000000000000011 /* FinishTheLineMenuView.swift in Sources */,
+				FTL0000010000000000000012 /* FinishTheLineCountdownView.swift in Sources */,
+				FTL0000010000000000000013 /* FinishTheLineGameView.swift in Sources */,
+				FTL0000010000000000000014 /* FinishTheLineResultsView.swift in Sources */,
+				FTL0000010000000000000015 /* QuoteCardView.swift in Sources */,
+				FTL0000010000000000000016 /* SpotlightTimerView.swift in Sources */,
+				FTL0000010000000000000017 /* StreakBadge.swift in Sources */,
+				FTL0000010000000000000018 /* FinishTheLineWaveformView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

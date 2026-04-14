@@ -28,6 +28,34 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-04-13 — Finish the Line speech manager is a verbatim duplicate of Border Blitz's [gotcha]
+
+**What:** `FinishTheLineSpeechRecognitionManager` is an intentional copy of `BorderBlitzSpeechRecognitionManager` — same class shape, same `matchHandler: ((String) -> Void)?` callback, same audio-engine tap, same auto-restart-on-silence behavior. Only the class name and the permission-status enum prefix differ.
+
+**Why:** The existing manager is already generic enough to reuse as-is — the fuzzy-matching logic (sliding-window + normalization) lives in each game's ViewModel, not in the manager. A real shared `Core/Services/SpeechRecognitionManager.swift` would be nice, but hoisting it also means reconciling audio-session teardown behavior across two games while introducing a new feature. The duplication is the smaller risk for now.
+
+**Impact:**
+- Two managers to keep in sync until consolidation. Bug fixes to the audio session / SFSpeechRecognizer path must be applied to both files.
+- A consolidation `TODO` comment has been added at the top of both managers referencing `FinishTheLine_PRD.md §6`. When Finish the Line ships and stabilizes, extract the common logic to `Core/Services/SpeechRecognitionManager.swift`.
+
+**Alternatives considered:** Extract-first — rejected because the refactor would block the Finish the Line feature and put Border Blitz into regression risk for a purely internal cleanup.
+
+---
+
+## 2026-04-13 — Spotlight Plum (#8E3B5D) picked for Finish the Line accent [decision]
+
+**What:** Finish the Line's accent color is `AppTheme.spotlightPlum` (`#8E3B5D`). Lives in `Theme/AppTheme.swift` alongside the other game accents and is wired through `GameTheme.finishTheLine`.
+
+**Why:** The FinishTheLine PRD proposed a terracotta (~`#C4654E`), but Border Hop already owns `compassRose` (`#D4785A`) which is effectively the same warm terracotta. A deep plum reads as theatrical velvet-curtain — fits "spotlight on a quote" — while staying visually distinct from every other game's accent.
+
+**Impact:**
+- Do not reuse `compassRose` / `coralRed` / `brandOrange` for new warm-toned games — we're running out of warm hues and the Finish the Line / Border Hop pairing is already the closest collision.
+- `GameTheme.finishTheLine.darkAccent` / `lightBackground` computed colors inherit from the plum automatically — no per-shade constants needed.
+
+**Alternatives considered:** The PRD's terracotta (too close to Border Hop); a cooler navy (loses the "stage spotlight" warmth); reusing `softMauve` (already Conversation Starters).
+
+---
+
 ## 2026-04-11 — Seeded agent memory with CLAUDE.md + AGENTS.md + DECISIONS.md [convention]
 
 **What:** Adopted `AGENTS.md` as the single cross-tool source of truth for AI coding assistants. `CLAUDE.md` is a thin pointer that intentionally contains no rules of its own. `DECISIONS.md` (this file) is the running log.
