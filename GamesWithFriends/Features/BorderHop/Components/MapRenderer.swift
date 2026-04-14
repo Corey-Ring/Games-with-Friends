@@ -80,28 +80,35 @@ class MapRenderer {
         return closestId
     }
 
-    /// Compute a bounding box that fits all given countries' centroids with padding.
-    /// Uses centroid-based approach to avoid overseas territory distortion
-    /// (e.g., France's bounding box spanning to French Guiana).
-    func boundingBox(for countryIds: [String]) -> CGRect {
-        var minX: CGFloat = .greatestFiniteMagnitude
-        var minY: CGFloat = .greatestFiniteMagnitude
-        var maxX: CGFloat = -.greatestFiniteMagnitude
-        var maxY: CGFloat = -.greatestFiniteMagnitude
+    /// Compute the anchor point and canvas extent the camera must fit when showing
+    /// `currentId` and its neighbors. Anchors on the current country's centroid so the
+    /// player stays visually centered, sizes the view from the current country's actual
+    /// polygon so zoom adapts to country size, and clamps each neighbor's pull at
+    /// `maxNeighborInfluence` so a faraway centroid (e.g. Russia's Siberian centroid
+    /// when the player is in Latvia) can't drag the view across the map.
+    func neighborhoodFit(
+        currentId: String,
+        neighborIds: [String],
+        maxNeighborInfluence: CGFloat = 300
+    ) -> (anchor: CGPoint, size: CGSize)? {
+        guard let current = projectedCountries[currentId] else { return nil }
 
-        for id in countryIds {
-            guard let projected = projectedCountries[id] else { continue }
-            // Use a region around the centroid — large enough to show the local area,
-            // but not stretched by distant overseas territories
-            let centroidPad: CGFloat = 40  // canvas points of padding around each centroid
-            minX = min(minX, projected.centroid.x - centroidPad)
-            minY = min(minY, projected.centroid.y - centroidPad)
-            maxX = max(maxX, projected.centroid.x + centroidPad)
-            maxY = max(maxY, projected.centroid.y + centroidPad)
+        let anchor = current.centroid
+        let polyBox = current.boundingBox
+
+        var halfWidth = max(anchor.x - polyBox.minX, polyBox.maxX - anchor.x)
+        var halfHeight = max(anchor.y - polyBox.minY, polyBox.maxY - anchor.y)
+
+        let neighborPad: CGFloat = 40
+        for id in neighborIds {
+            guard let neighbor = projectedCountries[id] else { continue }
+            let dx = min(abs(neighbor.centroid.x - anchor.x), maxNeighborInfluence)
+            let dy = min(abs(neighbor.centroid.y - anchor.y), maxNeighborInfluence)
+            halfWidth = max(halfWidth, dx + neighborPad)
+            halfHeight = max(halfHeight, dy + neighborPad)
         }
 
-        guard minX < maxX else { return .zero }
-        return CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+        return (anchor, CGSize(width: halfWidth * 2, height: halfHeight * 2))
     }
 
     // MARK: - Private

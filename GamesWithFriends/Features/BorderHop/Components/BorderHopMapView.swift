@@ -364,31 +364,27 @@ struct BorderHopMapView: View {
             return
         }
 
-        // Collect current country + all frontier neighbors
-        let neighborIds = viewModel.graph.neighborIds(of: countryId)
-        let allIds = [countryId] + Array(neighborIds)
-        let bbox = renderer.boundingBox(for: allIds)
-
-        guard bbox != .zero, bbox.width > 0, bbox.height > 0 else {
+        let neighborIds = Array(viewModel.graph.neighborIds(of: countryId))
+        guard let fit = renderer.neighborhoodFit(currentId: countryId, neighborIds: neighborIds),
+              fit.size.width > 0, fit.size.height > 0 else {
             centerOnCountry(countryId, viewSize: viewSize)
             return
         }
 
-        // Calculate scale to fit bbox with 25% padding into the view
+        // Calculate scale to fit the required area with 25% padding
         let padding: CGFloat = 1.25
-        let scaleX = viewSize.width / (bbox.width * padding)
-        let scaleY = viewSize.height / (bbox.height * padding)
+        let scaleX = viewSize.width / (fit.size.width * padding)
+        let scaleY = viewSize.height / (fit.size.height * padding)
         let fitScale = min(scaleX, scaleY)
 
-        // Clamp: at least 3× (so small countries stay tappable), at most 6×
-        let newScale = min(max(fitScale, 3.0), 6.0)
+        // Clamp: min 2× lets huge countries (Russia, USA) fit; max 6× keeps microstates readable
+        let newScale = min(max(fitScale, 2.0), 6.0)
         scale = newScale
         lastScale = newScale
 
-        // Center on the bbox center
-        let bboxCenter = CGPoint(x: bbox.midX, y: bbox.midY)
-        let centerX = viewSize.width / 2 - bboxCenter.x * scale + (canvasSize.width * scale - canvasSize.width) / 2
-        let centerY = viewSize.height / 2 - bboxCenter.y * scale + (canvasSize.height * scale - canvasSize.height) / 2
+        // Anchor on the current country's centroid — keeps the player visually centered
+        let centerX = viewSize.width / 2 - fit.anchor.x * scale + (canvasSize.width * scale - canvasSize.width) / 2
+        let centerY = viewSize.height / 2 - fit.anchor.y * scale + (canvasSize.height * scale - canvasSize.height) / 2
 
         offset = CGSize(width: centerX, height: centerY)
         lastOffset = offset
