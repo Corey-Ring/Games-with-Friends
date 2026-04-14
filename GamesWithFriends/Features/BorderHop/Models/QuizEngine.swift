@@ -73,6 +73,11 @@ class QuizEngine {
             return generateExportQuestion(correctCountryId: correctCountryId)
                 ?? generateFactQuestion(correctCountryId: correctCountryId, frontierCountryIds: frontierCountryIds, graph: graph)
                 ?? generateFlagQuestion(correctCountryId: correctCountryId, graph: graph)
+        case .capital:
+            // Try capital first, fall back to fact, then flag
+            return generateCapitalQuestion(correctCountryId: correctCountryId, graph: graph)
+                ?? generateFactQuestion(correctCountryId: correctCountryId, frontierCountryIds: frontierCountryIds, graph: graph)
+                ?? generateFlagQuestion(correctCountryId: correctCountryId, graph: graph)
         }
     }
 
@@ -282,5 +287,83 @@ class QuizEngine {
             factChoices: nil,
             countryChoices: choices
         )
+    }
+
+    // MARK: - Capital Generation
+
+    private func generateCapitalQuestion(
+        correctCountryId: String,
+        graph: CountryGraph
+    ) -> QuizQuestion? {
+        // Correct country must have a non-empty capital
+        guard let correct = graph.country(for: correctCountryId),
+              !correct.capital.isEmpty else {
+            return nil
+        }
+
+        let distractors = buildCapitalDistractors(
+            correctId: correctCountryId,
+            graph: graph
+        )
+
+        guard distractors.count >= 3 else { return nil }
+
+        var choices = [correctCountryId] + distractors
+        choices.shuffle()
+
+        return QuizQuestion(
+            type: .capital,
+            countryId: correctCountryId,
+            correctFact: nil,
+            factChoices: nil,
+            countryChoices: choices
+        )
+    }
+
+    /// Build 3 distractor country IDs for a capital quiz.
+    /// Priority: same region → random (never includes direct neighbors).
+    /// Only countries with non-empty capitals are eligible.
+    private func buildCapitalDistractors(
+        correctId: String,
+        graph: CountryGraph
+    ) -> [String] {
+        let neighbors = graph.neighborIds(of: correctId)
+        let correctRegion = graph.country(for: correctId)?.region
+
+        var distractors: [String] = []
+        var seen: Set<String> = [correctId]
+        seen.formUnion(neighbors) // never use direct neighbors as distractors
+
+        // Tier 1: Same region countries
+        if let region = correctRegion {
+            let sameRegion = graph.allCountries
+                .filter {
+                    $0.region == region &&
+                    !seen.contains($0.id) &&
+                    !$0.capital.isEmpty
+                }
+                .map { $0.id }
+                .shuffled()
+            for id in sameRegion {
+                if distractors.count >= 3 { break }
+                distractors.append(id)
+                seen.insert(id)
+            }
+        }
+
+        // Tier 2: Any remaining country with a capital
+        if distractors.count < 3 {
+            let fallback = graph.allCountries
+                .filter { !seen.contains($0.id) && !$0.capital.isEmpty }
+                .map { $0.id }
+                .shuffled()
+            for id in fallback {
+                if distractors.count >= 3 { break }
+                distractors.append(id)
+                seen.insert(id)
+            }
+        }
+
+        return distractors
     }
 }

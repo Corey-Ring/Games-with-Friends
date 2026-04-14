@@ -246,7 +246,7 @@ class BorderHopViewModel {
         switch question.type {
         case .funFact:
             isCorrect = (answer == question.correctFact)
-        case .flagIdentification, .export:
+        case .flagIdentification, .export, .capital:
             isCorrect = (answer == question.countryId)
         }
 

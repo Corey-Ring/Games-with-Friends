@@ -68,6 +68,8 @@ struct BorderHopQuizView: View {
             flagHeader
         case .export:
             exportHeader
+        case .capital:
+            capitalHeader
         }
     }
 
@@ -104,6 +106,20 @@ struct BorderHopQuizView: View {
             pulsingCountryName
 
             Text("What are the top 5 exports?")
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(.white.opacity(0.6))
+
+            strikeRow
+        }
+        .padding(.top, AppTheme.Spacing.md)
+        .padding(.bottom, AppTheme.Spacing.sm)
+    }
+
+    private var capitalHeader: some View {
+        VStack(spacing: 4) {
+            pulsingCountryName
+
+            Text("What is the capital city?")
                 .font(AppTheme.Typography.caption)
                 .foregroundColor(.white.opacity(0.6))
 
@@ -159,6 +175,8 @@ struct BorderHopQuizView: View {
             flagChoicesStack
         case .export:
             exportChoicesStack
+        case .capital:
+            capitalChoicesStack
         }
     }
 
@@ -199,6 +217,19 @@ struct BorderHopQuizView: View {
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
         .padding(.vertical, AppTheme.Spacing.xs)
+    }
+
+    private var capitalChoicesStack: some View {
+        VStack(spacing: 6) {
+            ForEach(Array((question.countryChoices ?? []).enumerated()), id: \.element) { index, countryId in
+                capitalAnswerButton(for: countryId, index: index)
+                    .opacity(choicesRevealed.contains(index) ? 1 : 0)
+                    .offset(y: choicesRevealed.contains(index) ? 0 : 24)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: choicesRevealed)
+            }
+        }
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.sm)
     }
 
     // MARK: - Answer Buttons
@@ -345,6 +376,38 @@ struct BorderHopQuizView: View {
         .offset(x: isShaking ? shakeOffset : 0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isCorrectReveal)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isEliminated)
+    }
+
+    @ViewBuilder
+    private func capitalAnswerButton(for countryId: String, index: Int) -> some View {
+        let isEliminated = eliminatedChoices.contains(countryId)
+        let isCorrectReveal = selectedCorrect == countryId
+        let isShaking = shakingChoice == countryId
+        let label = isCorrectReveal ? "✓" : (index < choiceLabels.count ? choiceLabels[index] : "?")
+        let capital = graph.country(for: countryId)?.capital ?? ""
+
+        Button {
+            guard !isEliminated && selectedCorrect == nil else { return }
+            handleSelection(countryId, correctValue: question.countryId)
+        } label: {
+            HStack(alignment: .top, spacing: 4) {
+                Text(label)
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(prefixColor(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal))
+                    .frame(width: 18, alignment: .leading)
+
+                Text(capital)
+                    .font(AppTheme.Typography.caption)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonChrome(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal)
+        }
+        .disabled(isEliminated || selectedCorrect != nil)
+        .scaleEffect(isCorrectReveal ? 1.01 : 1.0)
+        .offset(x: isShaking ? shakeOffset : 0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isCorrectReveal)
     }
 
     // MARK: - Interaction
