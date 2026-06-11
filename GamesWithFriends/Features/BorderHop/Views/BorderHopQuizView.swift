@@ -1,9 +1,15 @@
 import SwiftUI
 
+/// Border-crossing quiz sheet. Every question is built to be glanceable: a one-line stem
+/// naming the country, short choices, and — once answered — a one-line takeaway that
+/// states the fact worth remembering before the map returns.
 struct BorderHopQuizView: View {
     let question: QuizQuestion
     let eliminatedChoices: Set<String>
     let strikeCount: Int
+    let resolved: Bool
+    let revealed: Bool
+    let takeaway: LearnedFact?
     let onAnswer: (String) -> Void
     let countryName: String
     let graph: CountryGraph
@@ -11,15 +17,23 @@ struct BorderHopQuizView: View {
     private let theme = GameTheme.borderHop
     private let choiceLabels = ["A", "B", "C", "D"]
 
-    @State private var selectedCorrect: String? = nil
     @State private var shakingChoice: String? = nil
     @State private var shakeOffset: CGFloat = 0
     @State private var choicesRevealed: Set<Int> = []
-    @State private var headerGlowPhase: CGFloat = 0
     @State private var showCelebration: Bool = false
     @State private var celebrationParticles: [CelebrationParticle] = []
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// The value that counts as correct for this question type
+    private var correctValue: String {
+        switch question.type {
+        case .funFact, .export:
+            return question.correctFact ?? ""
+        case .flagIdentification, .capital:
+            return question.countryId
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,21 +43,16 @@ struct BorderHopQuizView: View {
                 header
 
                 ZStack {
-                    ViewThatFits(in: .vertical) {
-                        choicesStack
-                        ScrollView(.vertical, showsIndicators: false) {
-                            choicesStack
-                        }
-                        .frame(maxHeight: UIScreen.main.bounds.height * 0.68)
-                    }
-
+                    choicesStack
                     if showCelebration {
                         celebrationOverlay
                             .allowsHitTesting(false)
                     }
                 }
 
-                Color.clear.frame(height: 20)
+                takeawayFooter
+
+                Color.clear.frame(height: AppTheme.Spacing.lg)
             }
             .background(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.large)
@@ -51,7 +60,7 @@ struct BorderHopQuizView: View {
                     .padding(.bottom, -AppTheme.Radius.large)
             )
             .clipped()
-            .padding(.horizontal, 12)
+            .padding(.horizontal, AppTheme.Spacing.sm)
         }
         .ignoresSafeArea(edges: .bottom)
         .onAppear(perform: handleAppear)
@@ -59,89 +68,39 @@ struct BorderHopQuizView: View {
 
     // MARK: - Header
 
-    @ViewBuilder
     private var header: some View {
+        VStack(spacing: AppTheme.Spacing.xs) {
+            Text(stem)
+                .font(AppTheme.Typography.subsectionHeader)
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+                .padding(.horizontal, AppTheme.Spacing.md)
+
+            if !resolved {
+                Text("Answer to cross the border")
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(.white.opacity(0.6))
+            }
+
+            strikeRow
+        }
+        .padding(.top, AppTheme.Spacing.md)
+        .padding(.bottom, AppTheme.Spacing.sm)
+    }
+
+    private var stem: String {
         switch question.type {
         case .funFact:
-            factHeader
+            return "Which is true of \(countryName)?"
         case .flagIdentification:
-            flagHeader
+            return "Which flag belongs to \(countryName)?"
         case .export:
-            exportHeader
+            return "What's \(countryName)'s #1 export?"
         case .capital:
-            capitalHeader
+            return "What's the capital of \(countryName)?"
         }
-    }
-
-    private var factHeader: some View {
-        VStack(spacing: 4) {
-            pulsingCountryName
-
-            Text("Which fact is true?")
-                .font(AppTheme.Typography.caption)
-                .foregroundColor(.white.opacity(0.6))
-
-            strikeRow
-        }
-        .padding(.top, AppTheme.Spacing.md)
-        .padding(.bottom, AppTheme.Spacing.sm)
-    }
-
-    private var flagHeader: some View {
-        VStack(spacing: 4) {
-            pulsingCountryName
-
-            Text("Select the correct flag")
-                .font(AppTheme.Typography.caption)
-                .foregroundColor(.white.opacity(0.6))
-
-            strikeRow
-        }
-        .padding(.top, AppTheme.Spacing.md)
-        .padding(.bottom, AppTheme.Spacing.sm)
-    }
-
-    private var exportHeader: some View {
-        VStack(spacing: 4) {
-            pulsingCountryName
-
-            Text("What are the top 5 exports?")
-                .font(AppTheme.Typography.caption)
-                .foregroundColor(.white.opacity(0.6))
-
-            strikeRow
-        }
-        .padding(.top, AppTheme.Spacing.md)
-        .padding(.bottom, AppTheme.Spacing.sm)
-    }
-
-    private var capitalHeader: some View {
-        VStack(spacing: 4) {
-            pulsingCountryName
-
-            Text("What is the capital city?")
-                .font(AppTheme.Typography.caption)
-                .foregroundColor(.white.opacity(0.6))
-
-            strikeRow
-        }
-        .padding(.top, AppTheme.Spacing.md)
-        .padding(.bottom, AppTheme.Spacing.sm)
-    }
-
-    private var pulsingCountryName: some View {
-        Text(countryName)
-            .font(AppTheme.Typography.subsectionHeader)
-            .foregroundColor(.white)
-            .scaleEffect(1.0 + headerGlowPhase * 0.02)
-            .shadow(
-                color: theme.accentColor.opacity(0.6 * headerGlowPhase),
-                radius: 8 + headerGlowPhase * 6
-            )
-            .shadow(
-                color: theme.accentColor.opacity(0.3 * headerGlowPhase),
-                radius: 16 + headerGlowPhase * 8
-            )
     }
 
     private var strikeRow: some View {
@@ -169,21 +128,20 @@ struct BorderHopQuizView: View {
     @ViewBuilder
     private var choicesStack: some View {
         switch question.type {
-        case .funFact:
-            factChoicesStack
         case .flagIdentification:
-            flagChoicesStack
-        case .export:
-            exportChoicesStack
+            flagChoicesGrid
+        case .funFact, .export:
+            textChoicesStack(choices: question.factChoices ?? [])
         case .capital:
-            capitalChoicesStack
+            textChoicesStack(choices: (question.countryChoices ?? []).map { $0 }, isCapital: true)
         }
     }
 
-    private var factChoicesStack: some View {
+    /// Short text rows — used for facts, exports, and capitals
+    private func textChoicesStack(choices: [String], isCapital: Bool = false) -> some View {
         VStack(spacing: 6) {
-            ForEach(Array((question.factChoices ?? []).enumerated()), id: \.element) { index, fact in
-                factAnswerButton(for: fact, index: index)
+            ForEach(Array(choices.enumerated()), id: \.element) { index, choice in
+                textAnswerButton(for: choice, index: index, isCapital: isCapital)
                     .opacity(choicesRevealed.contains(index) ? 1 : 0)
                     .offset(y: choicesRevealed.contains(index) ? 0 : 24)
                     .animation(.spring(response: 0.4, dampingFraction: 0.75), value: choicesRevealed)
@@ -193,36 +151,10 @@ struct BorderHopQuizView: View {
         .padding(.vertical, AppTheme.Spacing.sm)
     }
 
-    private var flagChoicesStack: some View {
-        VStack(spacing: 6) {
+    private var flagChoicesGrid: some View {
+        LazyVGrid(columns: [GridItem(.flexible(), spacing: 6), GridItem(.flexible(), spacing: 6)], spacing: 6) {
             ForEach(Array((question.countryChoices ?? []).enumerated()), id: \.element) { index, countryId in
-                flagAnswerButton(for: countryId, index: index)
-                    .opacity(choicesRevealed.contains(index) ? 1 : 0)
-                    .offset(y: choicesRevealed.contains(index) ? 0 : 24)
-                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: choicesRevealed)
-            }
-        }
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.vertical, AppTheme.Spacing.sm)
-    }
-
-    private var exportChoicesStack: some View {
-        VStack(spacing: 6) {
-            ForEach(Array((question.countryChoices ?? []).enumerated()), id: \.element) { index, countryId in
-                exportAnswerButton(for: countryId, index: index)
-                    .opacity(choicesRevealed.contains(index) ? 1 : 0)
-                    .offset(y: choicesRevealed.contains(index) ? 0 : 24)
-                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: choicesRevealed)
-            }
-        }
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.vertical, AppTheme.Spacing.xs)
-    }
-
-    private var capitalChoicesStack: some View {
-        VStack(spacing: 6) {
-            ForEach(Array((question.countryChoices ?? []).enumerated()), id: \.element) { index, countryId in
-                capitalAnswerButton(for: countryId, index: index)
+                flagAnswerButton(for: countryId)
                     .opacity(choicesRevealed.contains(index) ? 1 : 0)
                     .offset(y: choicesRevealed.contains(index) ? 0 : 24)
                     .animation(.spring(response: 0.4, dampingFraction: 0.75), value: choicesRevealed)
@@ -235,192 +167,117 @@ struct BorderHopQuizView: View {
     // MARK: - Answer Buttons
 
     @ViewBuilder
-    private func factAnswerButton(for fact: String, index: Int) -> some View {
-        let isEliminated = eliminatedChoices.contains(fact)
-        let isCorrectReveal = selectedCorrect == fact
-        let isShaking = shakingChoice == fact
+    private func textAnswerButton(for choice: String, index: Int, isCapital: Bool) -> some View {
+        let isEliminated = eliminatedChoices.contains(choice)
+        let isCorrectChoice = choice == correctValue
+        let isCorrectReveal = resolved && isCorrectChoice
+        let isShaking = shakingChoice == choice
         let label = isCorrectReveal ? "✓" : (index < choiceLabels.count ? choiceLabels[index] : "?")
 
+        let display: String = {
+            if isCapital {
+                return graph.country(for: choice)?.capital ?? choice
+            }
+            if question.type == .export {
+                return choice.localizedCapitalized
+            }
+            return choice
+        }()
+
         Button {
-            guard !isEliminated && selectedCorrect == nil else { return }
-            handleSelection(fact, correctValue: question.correctFact ?? "")
+            handleSelection(choice)
         } label: {
-            HStack(alignment: .top, spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.sm) {
                 Text(label)
-                    .font(.caption.weight(.semibold))
+                    .font(AppTheme.Typography.pillLabel)
                     .foregroundColor(prefixColor(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal))
                     .frame(width: 18, alignment: .leading)
 
-                Text(fact)
-                    .font(AppTheme.Typography.caption)
+                Text(display)
+                    .font(AppTheme.Typography.secondary)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .buttonChrome(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal)
+            .buttonChrome(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal, isRevealedAnswer: revealed && isCorrectChoice)
         }
-        .disabled(isEliminated || selectedCorrect != nil)
-        .scaleEffect(isCorrectReveal ? 1.01 : 1.0)
+        .disabled(isEliminated || resolved)
+        .scaleEffect(isCorrectReveal ? 1.02 : 1.0)
         .offset(x: isShaking ? shakeOffset : 0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isCorrectReveal)
     }
 
     @ViewBuilder
-    private func flagAnswerButton(for countryId: String, index: Int) -> some View {
+    private func flagAnswerButton(for countryId: String) -> some View {
         let isEliminated = eliminatedChoices.contains(countryId)
-        let isCorrectReveal = selectedCorrect == countryId
+        let isCorrectChoice = countryId == correctValue
+        let isCorrectReveal = resolved && isCorrectChoice
         let isShaking = shakingChoice == countryId
         let emoji = CountryFlagProvider.flag(for: countryId) ?? "🏳️"
         let name = graph.country(for: countryId)?.name ?? countryId
 
         Button {
-            guard !isEliminated && selectedCorrect == nil else { return }
-            handleSelection(countryId, correctValue: question.countryId)
+            handleSelection(countryId)
         } label: {
-            if isCorrectReveal {
-                Text("✓")
-                    .font(.title.weight(.semibold))
-                    .frame(maxWidth: .infinity, minHeight: 64)
-                    .buttonChrome(isEliminated: false, isCorrectReveal: true)
-            } else if isEliminated {
-                // Show flag + country name so the user knows what they wrongly picked
-                VStack(spacing: 2) {
-                    Text(emoji)
-                        .font(.system(size: 40))
+            VStack(spacing: 2) {
+                Text(emoji)
+                    .font(.system(size: 44))
+                // Reveal the country name once this choice is settled — every
+                // eliminated flag teaches "that one was X", not just "wrong"
+                if isEliminated || isCorrectReveal {
                     Text(name)
                         .font(AppTheme.Typography.caption)
-                        .multilineTextAlignment(.center)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                 }
-                .frame(maxWidth: .infinity, minHeight: 64)
-                .buttonChrome(isEliminated: true, isCorrectReveal: false)
-            } else {
-                Text(emoji)
-                    .font(.system(size: 52))
-                    .frame(maxWidth: .infinity, minHeight: 64)
-                    .buttonChrome(isEliminated: false, isCorrectReveal: false)
             }
+            .frame(maxWidth: .infinity, minHeight: 72)
+            .buttonChrome(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal, isRevealedAnswer: revealed && isCorrectChoice)
         }
-        .disabled(isEliminated || selectedCorrect != nil)
+        .disabled(isEliminated || resolved)
         .scaleEffect(isCorrectReveal ? 1.03 : 1.0)
-        .offset(x: isShaking ? shakeOffset : 0)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isCorrectReveal)
-    }
-
-    @ViewBuilder
-    private func exportAnswerButton(for countryId: String, index: Int) -> some View {
-        let isEliminated = eliminatedChoices.contains(countryId)
-        let isCorrectReveal = selectedCorrect == countryId
-        let isShaking = shakingChoice == countryId
-        let label = isCorrectReveal ? "✓" : (index < choiceLabels.count ? choiceLabels[index] : "?")
-
-        // Change to 3 to switch to top-3 mode (also update the header text).
-        let exportsToShow = 5
-        let exports = (CountryExportProvider.exports(for: countryId) ?? []).prefix(exportsToShow)
-        let countryName = graph.country(for: countryId)?.name ?? countryId
-        let flagEmoji = CountryFlagProvider.flag(for: countryId) ?? "🏳️"
-
-        Button {
-            guard !isEliminated && selectedCorrect == nil else { return }
-            handleSelection(countryId, correctValue: question.countryId)
-        } label: {
-            VStack(alignment: .leading, spacing: 4) {
-                if isEliminated {
-                    HStack(spacing: 6) {
-                        Text(flagEmoji)
-                            .font(.system(size: 18))
-                        Text(countryName)
-                            .font(AppTheme.Typography.footnote.weight(.semibold))
-                            .foregroundColor(.gray)
-                    }
-                }
-
-                HStack(alignment: .center, spacing: 10) {
-                    Text(label)
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(prefixColor(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal))
-                        .frame(width: 24, alignment: .leading)
-
-                    HStack(alignment: .top, spacing: 8) {
-                        let exportsArray = Array(exports)
-                        let splitIndex = (exportsArray.count + 1) / 2
-                        let firstColumn = Array(exportsArray.prefix(splitIndex))
-                        let secondColumn = Array(exportsArray.dropFirst(splitIndex))
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            ForEach(Array(firstColumn.enumerated()), id: \.offset) { i, commodity in
-                                Text("\(i + 1). \(commodity.localizedCapitalized)")
-                                    .font(AppTheme.Typography.footnote)
-                                    .multilineTextAlignment(.leading)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            ForEach(Array(secondColumn.enumerated()), id: \.offset) { i, commodity in
-                                Text("\(i + splitIndex + 1). \(commodity.localizedCapitalized)")
-                                    .font(AppTheme.Typography.footnote)
-                                    .multilineTextAlignment(.leading)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-            .buttonChrome(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal)
-        }
-        .disabled(isEliminated || selectedCorrect != nil)
-        .scaleEffect(isCorrectReveal ? 1.01 : 1.0)
         .offset(x: isShaking ? shakeOffset : 0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isCorrectReveal)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isEliminated)
     }
 
+    // MARK: - Takeaway
+
+    /// The one-line fact stamp shown after the question resolves — the thing to remember
     @ViewBuilder
-    private func capitalAnswerButton(for countryId: String, index: Int) -> some View {
-        let isEliminated = eliminatedChoices.contains(countryId)
-        let isCorrectReveal = selectedCorrect == countryId
-        let isShaking = shakingChoice == countryId
-        let label = isCorrectReveal ? "✓" : (index < choiceLabels.count ? choiceLabels[index] : "?")
-        let capital = graph.country(for: countryId)?.capital ?? ""
+    private var takeawayFooter: some View {
+        if let takeaway {
+            HStack(spacing: AppTheme.Spacing.sm) {
+                Image(systemName: revealed ? "lightbulb.fill" : "checkmark.seal.fill")
+                    .foregroundColor(revealed ? AppTheme.warning : AppTheme.success)
 
-        Button {
-            guard !isEliminated && selectedCorrect == nil else { return }
-            handleSelection(countryId, correctValue: question.countryId)
-        } label: {
-            HStack(alignment: .top, spacing: 4) {
-                Text(label)
-                    .font(.caption.weight(.semibold))
-                    .foregroundColor(prefixColor(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal))
-                    .frame(width: 18, alignment: .leading)
-
-                Text(capital)
-                    .font(AppTheme.Typography.caption)
+                Text(takeaway.text)
+                    .font(AppTheme.Typography.secondary)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Spacer(minLength: 0)
             }
-            .buttonChrome(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal)
+            .padding(AppTheme.Spacing.md)
+            .background(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                    .fill((revealed ? AppTheme.warning : AppTheme.success).opacity(0.18))
+            )
+            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.top, AppTheme.Spacing.xs)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .animation(.spring(response: 0.35, dampingFraction: 0.8), value: takeaway)
         }
-        .disabled(isEliminated || selectedCorrect != nil)
-        .scaleEffect(isCorrectReveal ? 1.01 : 1.0)
-        .offset(x: isShaking ? shakeOffset : 0)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isCorrectReveal)
     }
 
     // MARK: - Interaction
 
-    private func handleSelection(_ answer: String, correctValue: String) {
+    private func handleSelection(_ answer: String) {
+        guard !resolved, !eliminatedChoices.contains(answer) else { return }
+
         if answer == correctValue {
             triggerCelebration()
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                selectedCorrect = answer
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
-                onAnswer(answer)
-            }
         } else {
             shakingChoice = answer
             withAnimation(.default) { shakeOffset = 10 }
@@ -428,27 +285,21 @@ struct BorderHopQuizView: View {
                 withAnimation(.interpolatingSpring(stiffness: 300, damping: 8)) { shakeOffset = 0 }
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { shakingChoice = nil }
-            onAnswer(answer)
         }
+        onAnswer(answer)
     }
 
     // MARK: - Lifecycle
 
     private func handleAppear() {
         if reduceMotion {
-            // Reveal all choices immediately, skip pulsing glow
             choicesRevealed = Set(0..<8)
             return
         }
 
-        // Header glow pulse
-        withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true)) {
-            headerGlowPhase = 1
-        }
-
-        // Staggered choice entrance — 150ms initial delay, then 120ms between each
+        // Staggered choice entrance — 150ms initial delay, then 100ms between each
         for i in 0..<8 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15 + Double(i) * 0.12) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15 + Double(i) * 0.1) {
                 _ = withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
                     choicesRevealed.insert(i)
                 }
@@ -459,6 +310,7 @@ struct BorderHopQuizView: View {
     // MARK: - Celebration
 
     private func triggerCelebration() {
+        guard !reduceMotion else { return }
         let palette: [Color] = [
             AppTheme.success,
             AppTheme.medalGold,
@@ -518,6 +370,8 @@ struct BorderHopQuizView: View {
 private struct ButtonChromeModifier: ViewModifier {
     let isEliminated: Bool
     let isCorrectReveal: Bool
+    /// Correct answer surfaced after 3 strikes — teaching styling, not celebration
+    let isRevealedAnswer: Bool
 
     func body(content: Content) -> some View {
         content
@@ -528,11 +382,12 @@ private struct ButtonChromeModifier: ViewModifier {
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             .overlay(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .stroke(border, lineWidth: 1)
+                    .stroke(border, lineWidth: isCorrectReveal ? 1.5 : 1)
             )
     }
 
     private var background: some ShapeStyle {
+        if isRevealedAnswer { return AnyShapeStyle(AppTheme.warning.opacity(0.15)) }
         if isCorrectReveal { return AnyShapeStyle(AppTheme.success.opacity(0.12)) }
         if isEliminated { return AnyShapeStyle(AppTheme.error.opacity(0.08)) }
         return AnyShapeStyle(Color.white)
@@ -544,6 +399,7 @@ private struct ButtonChromeModifier: ViewModifier {
     }
 
     private var border: some ShapeStyle {
+        if isRevealedAnswer { return AnyShapeStyle(AppTheme.warning) }
         if isCorrectReveal { return AnyShapeStyle(AppTheme.success) }
         if isEliminated { return AnyShapeStyle(Color.gray.opacity(0.2)) }
         return AnyShapeStyle(AppTheme.compassRose.opacity(0.4))
@@ -551,8 +407,8 @@ private struct ButtonChromeModifier: ViewModifier {
 }
 
 private extension View {
-    func buttonChrome(isEliminated: Bool, isCorrectReveal: Bool) -> some View {
-        modifier(ButtonChromeModifier(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal))
+    func buttonChrome(isEliminated: Bool, isCorrectReveal: Bool, isRevealedAnswer: Bool) -> some View {
+        modifier(ButtonChromeModifier(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal, isRevealedAnswer: isRevealedAnswer))
     }
 }
 

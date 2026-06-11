@@ -22,6 +22,9 @@ class BorderHopViewModel {
     var actualPath: [String] = []
     var elapsedTime: TimeInterval = 0
     var hopCount: Int = 0
+    var bordersRemaining: Int = 0
+    /// Change in bordersRemaining from the last hop: negative = got closer
+    var bordersRemainingDelta: Int = 0
     var currentStreak: Int = 0
     var roundResult: BorderHopRoundResult?
     var showBacktrackConfirm: Bool = false
@@ -33,17 +36,24 @@ class BorderHopViewModel {
     var currentQuizQuestion: QuizQuestion? = nil
     var eliminatedChoices: Set<String> = []
     var strikeCount: Int = 0
-    var showTimeReward: Bool = false
+    /// True once the current question is answered (correctly or revealed) — input locked,
+    /// takeaway showing, dismissal scheduled.
+    var quizResolved: Bool = false
+    /// True when the question was resolved by revealing the answer after 3 strikes
+    var quizRevealedAnswer: Bool = false
+    /// The takeaway for the question that just resolved, shown briefly in the quiz sheet
+    var currentTakeaway: LearnedFact? = nil
+    /// Everything the player saw this round, recapped on the results screen
+    private(set) var learnedFacts: [LearnedFact] = []
 
     // MARK: - Private State
     private(set) var graph: CountryGraph
     private var quizEngine = QuizEngine()
     private var optimalPath: [String] = []
+    private var questionCredits: [Double] = []
     @ObservationIgnored private var timer: Timer?
     @ObservationIgnored private var timerStartDate: Date?
     @ObservationIgnored private var pauseOffset: TimeInterval = 0
-    private var benchmarkCrossed: Bool = false
-    @ObservationIgnored private var lastBenchmarkPulse: TimeInterval = 0
 
     // MARK: - Computed
     var gameStarted: Bool {
@@ -74,10 +84,10 @@ class BorderHopViewModel {
         min(1.0 + Double(max(currentStreak - 1, 0)) * 0.1, 2.0)
     }
 
-    var stopwatchColor: Color {
-        if elapsedTime < 120 { return .white }
-        else if elapsedTime < 300 { return AppTheme.warning }
-        else { return AppTheme.error }
+    /// Quiz credit earned so far this round, as a 0–1 ratio
+    var roundAccuracy: Double {
+        guard !questionCredits.isEmpty else { return 1.0 }
+        return questionCredits.reduce(0, +) / Double(questionCredits.count)
     }
 
     // MARK: - Initialization
@@ -103,23 +113,22 @@ class BorderHopViewModel {
         currentCountryId = route.startId
         actualPath = [route.startId]
         elapsedTime = 0
+        pauseOffset = 0
         hopCount = 0
         hasArrived = false
         roundResult = nil
-        benchmarkCrossed = false
-        lastBenchmarkPulse = 0
         showBacktrackConfirm = false
         backtrackTargetId = nil
-        isQuizActive = false
-        currentQuizQuestion = nil
-        eliminatedChoices = []
-        strikeCount = 0
-        showTimeReward = false
+        resetQuizState()
+        learnedFacts = []
+        questionCredits = []
         quizEngine.resetUsedFacts()
         quizEngine.resetTypeSelector()
 
         // Initialize country states
         initializeCountryStates()
+        bordersRemaining = max(optimalPath.count - 1, 0)
+        bordersRemainingDelta = 0
 
         HapticManager.medium()
         phase = .loading
@@ -145,6 +154,8 @@ class BorderHopViewModel {
         hopCount += 1
         countryStates[id] = .current
 
+        updateBordersRemaining()
+
         // Check arrival
         if id == destinationCountryId {
             arriveAtDestination()
@@ -168,12 +179,10 @@ class BorderHopViewModel {
         guard let targetId = backtrackTargetId else { return }
         showBacktrackConfirm = false
 
-        HapticManager.error()
+        HapticManager.medium()
 
-        // Apply time penalty
-        elapsedTime += 5.0
-
-        // Update previous current to visited
+        // Backtracking costs a hop (route efficiency) — no time penalty; the score
+        // model rewards routing and knowledge, not speed.
         countryStates[currentCountryId] = .visited
 
         // Move back
@@ -181,6 +190,8 @@ class BorderHopViewModel {
         actualPath.append(targetId)
         hopCount += 1
         countryStates[targetId] = .current
+
+        updateBordersRemaining()
 
         // Re-reveal neighbors
         revealNeighbors(of: targetId)
@@ -227,7 +238,7 @@ class BorderHopViewModel {
         )
 
         guard let question else {
-            // No fun facts available — free passage
+            // No quiz material available — free passage
             moveToCountry(targetCountryId)
             return
         }
@@ -235,80 +246,111 @@ class BorderHopViewModel {
         currentQuizQuestion = question
         eliminatedChoices = []
         strikeCount = 0
+        quizResolved = false
+        quizRevealedAnswer = false
+        currentTakeaway = nil
         isQuizActive = true
         HapticManager.light()
     }
 
     func submitQuizAnswer(_ answer: String) {
-        guard let question = currentQuizQuestion else { return }
+        guard let question = currentQuizQuestion, !quizResolved else { return }
 
         let isCorrect: Bool
         switch question.type {
-        case .funFact:
+        case .funFact, .export:
             isCorrect = (answer == question.correctFact)
-        case .flagIdentification, .export, .capital:
+        case .flagIdentification, .capital:
             isCorrect = (answer == question.countryId)
         }
 
         if isCorrect {
-            handleCorrectAnswer()
+            let credit: Double
+            switch strikeCount {
+            case 0: credit = 1.0
+            case 1: credit = 0.5
+            default: credit = 0.25
+            }
+            resolveQuiz(question: question, credit: credit, revealed: false)
         } else {
-            handleWrongAnswer(answer)
+            eliminatedChoices.insert(answer)
+            strikeCount += 1
+            HapticManager.error()
+
+            // Third strike: reveal the answer (the teaching moment) and cross anyway.
+            // Progress is never blocked — the cost is knowledge credit, not a random
+            // teleport that disorients the player.
+            if strikeCount >= 3 {
+                resolveQuiz(question: question, credit: 0, revealed: true)
+            }
         }
     }
 
-    private func handleCorrectAnswer() {
-        guard let question = currentQuizQuestion else { return }
+    private func resolveQuiz(question: QuizQuestion, credit: Double, revealed: Bool) {
+        quizResolved = true
+        quizRevealedAnswer = revealed
+        questionCredits.append(credit)
 
-        // Subtract 3 seconds reward (adjust pauseOffset so timer computes correctly)
-        pauseOffset -= 3.0
-        elapsedTime = max(0, elapsedTime - 3.0)
-        showTimeReward = true
+        let takeaway = makeTakeaway(for: question, credit: credit)
+        currentTakeaway = takeaway
+        learnedFacts.append(takeaway)
 
-        // Dismiss quiz and advance
-        isQuizActive = false
-        currentQuizQuestion = nil
-        HapticManager.success()
-        moveToCountry(question.countryId)
+        if revealed {
+            HapticManager.heavy()
+        } else {
+            HapticManager.success()
+        }
 
-        // Reset time reward flash after delay
+        // Hold the takeaway on screen long enough to read, then cross the border
+        let holdDuration: Double = revealed ? 2.2 : 1.4
         Task {
-            try? await Task.sleep(for: .seconds(1.0))
-            showTimeReward = false
+            try? await Task.sleep(for: .seconds(holdDuration))
+            guard phase == .playing, isQuizActive,
+                  currentQuizQuestion?.countryId == question.countryId else { return }
+            isQuizActive = false
+            currentQuizQuestion = nil
+            currentTakeaway = nil
+            quizResolved = false
+            quizRevealedAnswer = false
+            moveToCountry(question.countryId)
         }
     }
 
-    private func handleWrongAnswer(_ selectedFact: String) {
-        eliminatedChoices.insert(selectedFact)
-        strikeCount += 1
-        HapticManager.error()
+    /// The one-line fact this question taught, phrased for retention
+    private func makeTakeaway(for question: QuizQuestion, credit: Double) -> LearnedFact {
+        let name = graph.country(for: question.countryId)?.name ?? question.countryId
+        let flag = CountryFlagProvider.flag(for: question.countryId) ?? ""
 
-        if strikeCount >= 3 {
-            handleTeleport()
+        let text: String
+        switch question.type {
+        case .flagIdentification:
+            text = "\(flag) is the flag of \(name)"
+        case .capital:
+            let capital = graph.country(for: question.countryId)?.capital ?? ""
+            text = "\(capital) is the capital of \(name)"
+        case .export:
+            let export = (question.correctFact ?? "").localizedCapitalized
+            text = "\(name)'s #1 export is \(export.isEmpty ? "—" : export)"
+        case .funFact:
+            text = "\(name): \(question.correctFact ?? "")"
         }
+
+        return LearnedFact(
+            countryId: question.countryId,
+            flag: flag,
+            text: text,
+            gotItFirstTry: credit >= 1.0
+        )
     }
 
-    private func handleTeleport() {
+    private func resetQuizState() {
         isQuizActive = false
         currentQuizQuestion = nil
+        eliminatedChoices = []
         strikeCount = 0
-        HapticManager.heavy()
-
-        if let teleportTarget = findTeleportDestination() {
-            moveToCountry(teleportTarget)
-        } else {
-            // Fallback: prevents deadlock in extremely rare edge case
-        }
-    }
-
-    private func findTeleportDestination() -> String? {
-        let reachable = graph.reachableWithDistances(from: currentCountryId)
-        let validTargets = reachable.keys.filter { countryId in
-            countryId != currentCountryId &&
-            countryId != destinationCountryId &&
-            graph.shortestPath(from: countryId, to: destinationCountryId) != nil
-        }
-        return validTargets.randomElement()
+        quizResolved = false
+        quizRevealedAnswer = false
+        currentTakeaway = nil
     }
 
     func playAgain() {
@@ -317,11 +359,13 @@ class BorderHopViewModel {
 
     func changeDifficulty() {
         stopTimer()
+        resetQuizState()
         phase = .menu
     }
 
     func quitGame() {
         stopTimer()
+        resetQuizState()
         phase = .menu
     }
 
@@ -382,6 +426,13 @@ class BorderHopViewModel {
         }
     }
 
+    private func updateBordersRemaining() {
+        let previous = bordersRemaining
+        let path = graph.shortestPath(from: currentCountryId, to: destinationCountryId)
+        bordersRemaining = max((path?.count ?? 1) - 1, 0)
+        bordersRemainingDelta = bordersRemaining - previous
+    }
+
     private func cleanupOrphanedFrontiers() {
         // Get all neighbors of all visited + current countries
         var validFrontierIds: Set<String> = []
@@ -405,10 +456,6 @@ class BorderHopViewModel {
         // Keep destination marked as current upon arrival
         countryStates[destinationCountryId] = .current
 
-        // Calculate result
-        let funFacts = optimalPath.compactMap { graph.country(for: $0)?.funFacts.first }
-        let shuffledFacts = Array(funFacts.shuffled().prefix(3))
-
         var result = BorderHopRoundResult(
             difficulty: selectedDifficulty,
             startCountryId: startCountryId,
@@ -416,13 +463,15 @@ class BorderHopViewModel {
             actualPath: actualPath,
             optimalPath: optimalPath,
             elapsedTime: elapsedTime,
-            funFacts: shuffledFacts
+            learnedFacts: learnedFacts,
+            questionCredits: questionCredits
         )
         result.streakMultiplier = streakMultiplier
         roundResult = result
 
-        // Update streak
-        if elapsedTime < selectedDifficulty.benchmarkTime * 2 {
+        // Streak rewards knowledge, not speed: it continues when the round's quiz
+        // accuracy stays at 75%+ credit
+        if roundAccuracy >= 0.75 {
             currentStreak += 1
         } else {
             currentStreak = 0
@@ -442,7 +491,6 @@ class BorderHopViewModel {
             Task { @MainActor [weak self] in
                 guard let self, let startDate = self.timerStartDate else { return }
                 self.elapsedTime = Date().timeIntervalSince(startDate) + self.pauseOffset
-                self.checkBenchmarkCrossing()
             }
         }
     }
@@ -451,17 +499,5 @@ class BorderHopViewModel {
         timer?.invalidate()
         timer = nil
         timerStartDate = nil
-    }
-
-    private func checkBenchmarkCrossing() {
-        let benchmark = selectedDifficulty.benchmarkTime
-        if !benchmarkCrossed && elapsedTime >= benchmark {
-            benchmarkCrossed = true
-            lastBenchmarkPulse = elapsedTime
-            HapticManager.heavy()
-        } else if benchmarkCrossed && elapsedTime - lastBenchmarkPulse >= 30 {
-            lastBenchmarkPulse = elapsedTime
-            HapticManager.heavy()
-        }
     }
 }

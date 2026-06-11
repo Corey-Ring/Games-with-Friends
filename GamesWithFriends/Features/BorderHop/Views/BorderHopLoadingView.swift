@@ -53,11 +53,28 @@ struct BorderHopLoadingView: View {
                 .opacity(showContent ? 1 : 0)
                 .offset(y: showContent ? 0 : 20)
 
-                // Optimal hops hint
-                Text("Optimal route: \(viewModel.optimalHopCount) hops")
+                // Target framing: the number to beat
+                Text("Shortest route: \(viewModel.optimalHopCount) border crossings")
                     .font(AppTheme.Typography.detail)
                     .foregroundColor(AppTheme.mediumGray)
                     .opacity(showContent ? 1 : 0)
+
+                // The verb of the game, right before the map appears
+                HStack(spacing: AppTheme.Spacing.sm) {
+                    Image(systemName: "hand.tap.fill")
+                        .foregroundColor(theme.accentColor)
+                    Text("Tap a glowing neighbor to hop. Answer one quick question to cross each border.")
+                        .font(AppTheme.Typography.secondary)
+                        .foregroundColor(AppTheme.mediumGray)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(AppTheme.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
+                        .fill(theme.accentColor.opacity(0.08))
+                )
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .opacity(showContent ? 1 : 0)
 
                 Spacer()
 

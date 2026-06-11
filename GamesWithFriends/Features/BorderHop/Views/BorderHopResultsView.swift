@@ -20,13 +20,13 @@ struct BorderHopResultsView: View {
                         scoreBreakdown(result: result)
                             .staggeredAppear(index: 1)
 
-                        pathComparison(result: result)
-                            .staggeredAppear(index: 2)
-
-                        if !result.funFacts.isEmpty {
-                            funFactsCard(facts: result.funFacts)
-                                .staggeredAppear(index: 3)
+                        if !result.learnedFacts.isEmpty {
+                            learnedFactsCard(result: result)
+                                .staggeredAppear(index: 2)
                         }
+
+                        pathComparison(result: result)
+                            .staggeredAppear(index: 3)
                     }
 
                     // Action buttons
@@ -79,8 +79,9 @@ struct BorderHopResultsView: View {
                 .font(AppTheme.Typography.sectionHeader)
                 .foregroundColor(AppTheme.deepCharcoal)
 
-            scoreRow(label: "Efficiency", detail: "\(result.actualHops) hops (optimal: \(result.optimalHops))", value: "\(Int(result.efficiency.rounded()))")
-            scoreRow(label: "Time Bonus", detail: formatTime(result.elapsedTime), value: "\(Int(result.timeBonus.rounded()))")
+            scoreRow(label: "Route", detail: "\(result.actualHops) hops (shortest: \(result.optimalHops))", value: "\(Int(result.efficiency.rounded()))")
+            scoreRow(label: "Knowledge", detail: "\(result.firstTryCount) of \(result.questionCredits.count) first try", value: "\(Int(result.knowledgeScore.rounded()))")
+            scoreRow(label: "Time", detail: "Just for reference — it doesn't score", value: formatTime(result.elapsedTime))
 
             if result.streakMultiplier > 1.0 {
                 scoreRow(label: "Streak", detail: "×\(String(format: "%.1f", result.streakMultiplier))", value: "")
@@ -208,23 +209,39 @@ struct BorderHopResultsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    // MARK: - Fun Facts
+    // MARK: - What You Learned
 
-    private func funFactsCard(facts: [String]) -> some View {
+    /// Recap of the exact facts the player saw this round — re-surfacing them here is
+    /// what makes them stick, unlike random trivia about countries never visited.
+    private func learnedFactsCard(result: BorderHopRoundResult) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             HStack(spacing: AppTheme.Spacing.sm) {
                 Image(systemName: "lightbulb.fill")
                     .foregroundColor(AppTheme.medalGold)
-                Text("Fun Facts")
+                Text("What you learned")
                     .font(AppTheme.Typography.sectionHeader)
                     .foregroundColor(AppTheme.deepCharcoal)
             }
 
-            ForEach(facts, id: \.self) { fact in
-                Text(fact)
-                    .font(AppTheme.Typography.body)
+            ForEach(Array(result.learnedFacts.enumerated()), id: \.element.id) { index, fact in
+                HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.sm) {
+                    Image(systemName: fact.gotItFirstTry ? "checkmark.circle.fill" : "arrow.counterclockwise.circle.fill")
+                        .font(.caption)
+                        .foregroundColor(fact.gotItFirstTry ? AppTheme.success : AppTheme.warning)
+
+                    Text(fact.text)
+                        .font(AppTheme.Typography.secondary)
+                        .foregroundColor(AppTheme.deepCharcoal)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .staggeredAppear(index: index)
+            }
+
+            let missed = result.learnedFacts.filter { !$0.gotItFirstTry }.count
+            if missed > 0 {
+                Text("Facts marked with the orange arrow are worth a second look — they'll come around again.")
+                    .font(AppTheme.Typography.caption)
                     .foregroundColor(AppTheme.mediumGray)
-                    .padding(.vertical, AppTheme.Spacing.xs)
             }
         }
         .padding(AppTheme.Spacing.md)

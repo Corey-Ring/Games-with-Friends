@@ -28,11 +28,21 @@ struct CountryExportProvider {
         return (list?.isEmpty == false) ? list : nil
     }
 
-    /// Returns random distractor country IDs whose top-export lists can serve
-    /// as wrong answers for the country whose ID is `countryId`. Truly random
-    /// across all countries with export data — no region weighting.
-    static func distractorCountries(excluding countryId: String, count: Int) -> [String] {
-        let candidates = exportData.keys.filter { $0 != countryId }
-        return Array(candidates.shuffled().prefix(count))
+    /// Returns distractor commodities for a "top export" quiz about `countryId`:
+    /// other countries' #1 exports that do not appear anywhere in the target
+    /// country's own export list (so every wrong answer is genuinely wrong).
+    static func distractorExports(excluding countryId: String, count: Int) -> [String] {
+        let targetExports = Set((exportData[countryId] ?? []).map { $0.lowercased() })
+
+        var seen: Set<String> = []
+        var pool: [String] = []
+        for (id, exports) in exportData {
+            guard id != countryId, let top = exports.first else { continue }
+            let key = top.lowercased()
+            guard !targetExports.contains(key), !seen.contains(key) else { continue }
+            seen.insert(key)
+            pool.append(top)
+        }
+        return Array(pool.shuffled().prefix(count))
     }
 }

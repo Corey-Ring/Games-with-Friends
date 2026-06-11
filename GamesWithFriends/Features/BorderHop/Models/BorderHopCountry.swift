@@ -9,7 +9,6 @@ struct BorderHopCountry: Identifiable, Codable, Hashable {
     let latitude: Double
     let longitude: Double
     let neighbors: [String]     // Adjacent country IDs (land borders only)
-    let funFacts: [String]      // 2-3 curated facts
 
     var coordinate: (lat: Double, lon: Double) {
         (latitude, longitude)

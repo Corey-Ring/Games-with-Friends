@@ -28,6 +28,47 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-06-11 — Border Hop scoring is Route + Knowledge; time no longer scores [decision]
+
+**What:** Border Hop's round score changed from `(efficiency + timeBonus) × streak` to `(Route + Knowledge) / 2 × streak`. Route is the existing hop-efficiency formula; Knowledge is per-question quiz credit (1.0 first try, 0.5 second, 0.25 third, 0 on reveal). The streak now continues on ≥75% round accuracy instead of beating a time benchmark. The −3s quiz reward, +5s backtrack penalty, and benchmark haptics are gone; the stopwatch remains as a display-only pace stat. The 3-strikes random-teleport was replaced with "reveal the answer and cross anyway" (zero credit).
+
+**Why:** The game's north star is a solo geography *trainer*. Time pressure trained skimming — the optimal strategy was to rush past the educational content — and the teleport punished a wrong answer with disorientation right before the player would have seen the correct answer.
+
+**Impact:**
+- `BorderHopRoundResult` is a plain struct (no SwiftData involvement anywhere in Border Hop) — no migration concerns.
+- The VM logs a `LearnedFact` per question; the results screen recaps them ("What you learned"). Any future quiz type must produce a one-line takeaway in `BorderHopViewModel.makeTakeaway(for:credit:)`.
+- `BorderHopDifficulty.benchmarkTime` still exists but is unused by scoring; safe to remove later.
+
+**Alternatives considered:** Keeping a small time bonus (rejected — any time scoring rewards skipping the facts); blocking passage on 3 strikes (rejected — progress-blocking in a trainer is pure frustration).
+
+---
+
+## 2026-06-11 — country_fun_facts.json replaced with short anonymous facts [decision]
+
+**What:** The quiz fact bank (`Features/BorderHop/Data/country_fun_facts.json`) was replaced wholesale: 152 entries (exactly the playable set in `BorderHopCountryData`), 3 facts each, all ≤75 characters, phrased anonymously ("Westernmost country in mainland Europe") so they work as multiple-choice options. The old file held ~230-character CIA-factbook paragraphs; reading four of them per question was the single biggest usability failure in the game.
+
+**Why:** Quiz content must be glanceable and quiz-able. Facts are derived from the already-curated short facts in `BorderHopCountryData.swift` plus well-established geography knowledge, biased toward superlatives and proper nouns so each fact uniquely identifies its country (a distractor fact must be *false* for the quizzed country — avoid generic claims like "over half is forest" that are true of several neighbors).
+
+**Impact:**
+- Same filename and schema (`{id, name, funFacts[]}`) — no pbxproj changes, `QuizEngine` decoding untouched. Old content is in git history; `facts_for_review.md` describes the old bank.
+- When adding countries, add a JSON entry with 2–3 *anonymous, uniquely-identifying, ≤75-char* facts.
+- Export quizzes also switched to single-commodity answers (`CountryExportProvider.distractorExports` filters out anything in the target's own top-5 list).
+
+---
+
+## 2026-06-11 — Border Hop map camera lives in canvas space with an Animatable view [decision]
+
+**What:** `BorderHopMapView` now models the camera as `MapCamera { center, zoom }` in canvas coordinates, rendered by a private view conforming to `Animatable` (`animatableData` = center + zoom) so SwiftUI interpolates the camera itself. Labels/markers/trail are drawn in screen space at constant size; shapes are drawn through a `GraphicsContext` transform with stroke widths divided by zoom. `MapRenderer` switched to a Mercator projection (clamped ±78°), unwraps antimeridian-crossing rings (Russia), and exposes a per-country `focusBox` (mainland ring, clamped) for camera fitting.
+
+**Why:** The old `scaleEffect + offset` approach arced/overshot when both animated, rasterized blurry at zoom, and framed countries by full-polygon bbox — so France framed French Guiana and Russia's bbox spanned the whole canvas.
+
+**Impact:**
+- Never animate the map by `scaleEffect`/`offset`; mutate `camera` (gestures set it directly, programmatic moves use `withAnimation`).
+- Off-screen frontier countries and the destination render as tappable edge-indicator pills — camera fitting deliberately does *not* zoom out to include far neighbors.
+- A Canvas does not interpolate plain `@State` — anything that must animate inside the map Canvas has to ride through `animatableData` (this is why the old "pulsing glow" never actually pulsed; glows are now static).
+
+---
+
 ## 2026-04-13 — Finish the Line speech manager is a verbatim duplicate of Border Blitz's [gotcha]
 
 **What:** `FinishTheLineSpeechRecognitionManager` is an intentional copy of `BorderBlitzSpeechRecognitionManager` — same class shape, same `matchHandler: ((String) -> Void)?` callback, same audio-engine tap, same auto-restart-on-silence behavior. Only the class name and the permission-status enum prefix differ.

@@ -10,13 +10,14 @@ struct QuizQuestion {
     let type: QuizType
     let countryId: String           // alpha-3 code of the country being quizzed
 
-    // Fun fact fields (populated when type == .funFact)
+    // String-answer fields (type == .funFact or .export).
+    // For fun facts: the correct short fact + 4 shuffled fact choices.
+    // For exports: the country's #1 export commodity + 4 shuffled commodity choices.
     let correctFact: String?
-    let factChoices: [String]?      // 4 shuffled fact strings
+    let factChoices: [String]?
 
-    // Country-choice fields (populated when type == .flagIdentification or .export)
-    // 4 shuffled alpha-3 country IDs. For flags, each ID is rendered as its
-    // emoji. For exports, each ID is rendered as its top-N export list.
+    // Country-answer fields (type == .flagIdentification or .capital):
+    // 4 shuffled alpha-3 country IDs rendered as flag emoji / capital city names.
     let countryChoices: [String]?
 }
 
@@ -264,28 +265,31 @@ class QuizEngine {
 
     // MARK: - Export Generation
 
+    /// "What's {country}'s #1 export?" — one glanceable commodity per choice,
+    /// instead of the old four lists of five commodities each.
     private func generateExportQuestion(
         correctCountryId: String
     ) -> QuizQuestion? {
-        guard CountryExportProvider.exports(for: correctCountryId) != nil else {
+        guard let exports = CountryExportProvider.exports(for: correctCountryId),
+              let topExport = exports.first else {
             return nil
         }
 
-        let distractors = CountryExportProvider.distractorCountries(
+        let distractors = CountryExportProvider.distractorExports(
             excluding: correctCountryId,
             count: 3
         )
         guard distractors.count >= 3 else { return nil }
 
-        var choices = [correctCountryId] + distractors
+        var choices = [topExport] + distractors
         choices.shuffle()
 
         return QuizQuestion(
             type: .export,
             countryId: correctCountryId,
-            correctFact: nil,
-            factChoices: nil,
-            countryChoices: choices
+            correctFact: topExport,
+            factChoices: choices,
+            countryChoices: nil
         )
     }
 

@@ -17,29 +17,16 @@ struct BorderHopDifficultyView: View {
                             .font(AppTheme.Typography.hero)
                             .foregroundColor(AppTheme.deepCharcoal)
 
-                        Text("Navigate from country to country!")
+                        Text("Cross the world one land border at a time")
                             .font(AppTheme.Typography.body)
                             .foregroundColor(AppTheme.mediumGray)
                     }
                     .padding(.top, AppTheme.Spacing.lg)
 
-                    // Hero icon
-                    ZStack {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [theme.accentColor, theme.accentColor.opacity(0.6)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 150, height: 150)
-
-                        Image(systemName: theme.iconName)
-                            .font(.system(size: 70))
-                            .foregroundColor(.white)
-                    }
-                    .padding(.vertical, AppTheme.Spacing.lg)
+                    // How it works — a first-time player should get the whole game
+                    // from this one card
+                    howItWorksCard
+                        .padding(.horizontal, AppTheme.Spacing.md)
 
                     // Difficulty selection
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
@@ -71,6 +58,52 @@ struct BorderHopDifficultyView: View {
                 .padding(.horizontal, AppTheme.Spacing.md)
             }
         }
+    }
+
+    // MARK: - How It Works
+
+    private var howItWorksCard: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            howItWorksRow(
+                step: 1,
+                icon: "mappin.and.ellipse",
+                iconColor: theme.accentColor,
+                text: "You're dropped in a country with a faraway destination"
+            )
+            howItWorksRow(
+                step: 2,
+                icon: "hand.tap.fill",
+                iconColor: theme.accentColor,
+                text: "Tap a neighbor to hop — answer one quick geography question to cross"
+            )
+            howItWorksRow(
+                step: 3,
+                icon: "flag.checkered",
+                iconColor: AppTheme.medalGold,
+                text: "Reach the destination in as few hops as you can"
+            )
+        }
+        .gameCard()
+    }
+
+    private func howItWorksRow(step: Int, icon: String, iconColor: Color, text: String) -> some View {
+        HStack(alignment: .center, spacing: AppTheme.Spacing.md) {
+            ZStack {
+                Circle()
+                    .fill(iconColor.opacity(0.12))
+                    .frame(width: 44, height: 44)
+                Image(systemName: icon)
+                    .font(.system(size: 20))
+                    .foregroundColor(iconColor)
+            }
+
+            Text(text)
+                .font(AppTheme.Typography.secondary)
+                .foregroundColor(AppTheme.deepCharcoal)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .staggeredAppear(index: step - 1)
     }
 }
 
@@ -104,7 +137,7 @@ struct BorderHopDifficultyButton: View {
                         .font(AppTheme.Typography.caption)
                         .foregroundColor(isSelected ? .white.opacity(0.9) : AppTheme.mediumGray)
 
-                    Text("Benchmark: \(Int(difficulty.benchmarkTime))s")
+                    Text("Route: \(difficulty.minHops)+ borders")
                         .font(AppTheme.Typography.caption)
                         .foregroundColor(isSelected ? .white.opacity(0.7) : AppTheme.mediumGray.opacity(0.7))
                 }

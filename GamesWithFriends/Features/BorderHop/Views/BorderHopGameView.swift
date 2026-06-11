@@ -5,6 +5,11 @@ struct BorderHopGameView: View {
     private let theme = GameTheme.borderHop
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AppStorage("borderHopHasSeenCoach") private var hasSeenCoach = false
+
+    private var showCoachOverlay: Bool {
+        !hasSeenCoach && !viewModel.isQuizActive && !viewModel.hasArrived
+    }
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -38,11 +43,19 @@ struct BorderHopGameView: View {
                     question: question,
                     eliminatedChoices: viewModel.eliminatedChoices,
                     strikeCount: viewModel.strikeCount,
+                    resolved: viewModel.quizResolved,
+                    revealed: viewModel.quizRevealedAnswer,
+                    takeaway: viewModel.currentTakeaway,
                     onAnswer: { viewModel.submitQuizAnswer($0) },
                     countryName: viewModel.graph.country(for: question.countryId)?.name ?? "",
                     graph: viewModel.graph
                 )
                 .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+
+            // First-run coach overlay — one screen that explains the objective
+            if showCoachOverlay {
+                coachOverlay
             }
 
             // Victory overlay
@@ -85,11 +98,10 @@ struct BorderHopGameView: View {
                 .background(Capsule().fill(Color.orange.opacity(0.15)))
             }
 
-            // Stopwatch
+            // Stopwatch — informational pace stat; time doesn't affect the score
             StopwatchView(
                 elapsed: viewModel.elapsedTime,
-                color: viewModel.showTimeReward ? AppTheme.success : viewModel.stopwatchColor,
-                showReward: viewModel.showTimeReward
+                color: .white
             )
 
             Spacer()
@@ -113,24 +125,44 @@ struct BorderHopGameView: View {
     // MARK: - Bottom Bar
 
     private var destinationBar: some View {
-        HStack {
+        HStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "flag.checkered")
                 .foregroundColor(AppTheme.medalGold)
 
-            Text("Destination: \(viewModel.destinationCountry?.name ?? "")")
+            Text(viewModel.destinationCountry?.name ?? "")
                 .font(AppTheme.Typography.cardTitle)
                 .foregroundColor(.white)
                 .lineLimit(1)
 
             Spacer()
 
-            Text("\(viewModel.hopCount) hops")
-                .font(AppTheme.Typography.detail)
-                .foregroundColor(.white.opacity(0.8))
+            bordersRemainingBadge
         }
         .padding(AppTheme.Spacing.md)
         .background(.ultraThinMaterial)
         .ignoresSafeArea(.container, edges: .bottom)
+    }
+
+    /// "Am I winning?" — live distance to the goal, colored by whether the last hop helped
+    private var bordersRemainingBadge: some View {
+        let delta = viewModel.bordersRemainingDelta
+        let deltaColor: Color = delta < 0 ? AppTheme.success : (delta > 0 ? AppTheme.error : .white.opacity(0.8))
+
+        return HStack(spacing: AppTheme.Spacing.xs) {
+            if viewModel.hopCount > 0 && delta != 0 {
+                Image(systemName: delta < 0 ? "arrow.down.right" : "arrow.up.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundColor(deltaColor)
+            }
+            Text(viewModel.bordersRemaining == 1
+                 ? "1 border away"
+                 : "\(viewModel.bordersRemaining) borders away")
+                .font(AppTheme.Typography.detail)
+                .foregroundColor(deltaColor)
+                .monospacedDigit()
+                .contentTransition(.numericText())
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.bordersRemaining)
     }
 
     // MARK: - Backtrack Banner
@@ -142,9 +174,9 @@ struct BorderHopGameView: View {
                     Text("Backtrack to \(viewModel.graph.country(for: targetId)?.name ?? "")?")
                         .font(AppTheme.Typography.cardTitle)
                         .foregroundColor(.white)
-                    Text("+5 second penalty")
+                    Text("Adds a hop to your route")
                         .font(AppTheme.Typography.caption)
-                        .foregroundColor(AppTheme.error)
+                        .foregroundColor(AppTheme.warning)
                 }
 
                 Spacer()
@@ -177,6 +209,78 @@ struct BorderHopGameView: View {
         }
         .transition(.move(edge: .top).combined(with: .opacity))
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.showBacktrackConfirm)
+    }
+
+    // MARK: - Coach Overlay
+
+    /// Shown once, on the first round ever — answers "what am I looking at?"
+    private var coachOverlay: some View {
+        ZStack {
+            AppTheme.overlay
+                .ignoresSafeArea()
+
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
+                Text("How to play")
+                    .font(AppTheme.Typography.sectionHeader)
+                    .foregroundColor(coachTextColor)
+
+                coachRow(
+                    icon: "mappin.circle.fill",
+                    iconColor: theme.accentColor,
+                    title: "You are here",
+                    detail: "The bright country with the pin is you."
+                )
+
+                coachRow(
+                    icon: "hand.tap.fill",
+                    iconColor: theme.accentColor,
+                    title: "Tap a glowing neighbor to hop",
+                    detail: "Answer one quick question to cross each border."
+                )
+
+                coachRow(
+                    icon: "flag.checkered",
+                    iconColor: AppTheme.medalGold,
+                    title: "Reach the gold country",
+                    detail: "Fewest hops wins. The bar below counts the borders left."
+                )
+
+                PrimaryButton(title: "Got it", icon: "checkmark") {
+                    HapticManager.light()
+                    hasSeenCoach = true
+                }
+            }
+            .padding(AppTheme.Spacing.lg)
+            .background(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.large)
+                    .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.pureWhite)
+            )
+            .padding(.horizontal, AppTheme.Spacing.lg)
+        }
+        .transition(.opacity)
+    }
+
+    private var coachTextColor: Color {
+        colorScheme == .dark ? .white : AppTheme.deepCharcoal
+    }
+
+    private func coachRow(icon: String, iconColor: Color, title: String, detail: String) -> some View {
+        HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
+            Image(systemName: icon)
+                .font(.system(size: 24))
+                .foregroundColor(iconColor)
+                .frame(width: 32)
+
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                Text(title)
+                    .font(AppTheme.Typography.cardTitle)
+                    .foregroundColor(coachTextColor)
+                Text(detail)
+                    .font(AppTheme.Typography.secondary)
+                    .foregroundColor(colorScheme == .dark ? AppTheme.darkMutedText : AppTheme.mediumGray)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
     }
 
     // MARK: - Victory Overlay
