@@ -79,5 +79,5 @@ struct HubGameCard: View {
 
 #Preview {
     GameHubView()
-        .modelContainer(for: [RoadTrip.self, SpottedPlate.self], inMemory: true)
+        .modelContainer(for: FinishTheLineRoundResult.self, inMemory: true)
 }

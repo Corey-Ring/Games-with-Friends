@@ -11,7 +11,6 @@ struct GameTheme {
     var darkAccent: Color { accentColor.opacity(0.85) }
 
     // MARK: - Pre-built Themes
-    static let licensePlate = GameTheme(accentColor: AppTheme.skyBlue, name: "License Plate Game", iconName: "car.fill")
     static let conversationStarters = GameTheme(accentColor: AppTheme.softMauve, name: "Conversation Starters", iconName: "bubble.left.and.bubble.right.fill")
     static let countryLetter = GameTheme(accentColor: AppTheme.forestGreen, name: "Country Letter Challenge", iconName: "globe.americas.fill")
     static let name5 = GameTheme(accentColor: AppTheme.electricIndigo, name: "Name 5", iconName: "hand.raised.fingers.spread.fill")

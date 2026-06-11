@@ -15,6 +15,6 @@ struct GamesWithFriendsApp: App {
             GameHubView()
                 .preferredColorScheme(.light)
         }
-        .modelContainer(for: [RoadTrip.self, SpottedPlate.self, FinishTheLineRoundResult.self])
+        .modelContainer(for: [FinishTheLineRoundResult.self])
     }
 }

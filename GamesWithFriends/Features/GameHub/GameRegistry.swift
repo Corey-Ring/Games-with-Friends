@@ -5,7 +5,6 @@ struct GameRegistry {
     /// Returns all available games in the app
     static func allGames() -> [AnyGameDefinition] {
         return [
-            AnyGameDefinition(LicensePlateGame()),
             AnyGameDefinition(ConversationStartersGame(
                 id: "conversation-starters",
                 name: "Conversation Starters",
