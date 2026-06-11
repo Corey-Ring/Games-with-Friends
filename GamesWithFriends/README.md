@@ -1,29 +1,24 @@
 # Games with Friends
-Building connections through games
+
+Building connections through games.
 
 ## Overview
 
-GamesWithFriends is an iOS app built with SwiftUI that brings classic games to your mobile device. Perfect for road trips, family gatherings, and creating lasting memories.
+GamesWithFriends is a native iOS app (SwiftUI + SwiftData) that bundles a growing
+collection of quick party and road-trip games behind a single Game Hub. Pick a
+game, play a round with the people around you, hand the phone off.
 
-## Features
+## Games
 
-### License Plate Game
-A complete implementation of the classic road trip game where players spot license plates from different regions.
-
-**Key Features:**
-- Track plates from all 50 US states, DC, and 5 US territories
-- Canadian provinces and territories (10 provinces + 3 territories)
-- Optional Mexican states (32 states)
-- Persistent data with SwiftData - never lose your progress
-- Multiple trip management - track different road trips separately
-- Achievement system with 19+ achievements
-- Family member tracking for friendly competition
-- Rarity tiers (Common, Uncommon, Rare, Ultra-Rare)
-- Fun facts about each state/province
-- Comprehensive statistics (trip stats + lifetime stats)
-- Grid and list view options
-
-See [LICENSE_PLATE_GAME_README.md](LICENSE_PLATE_GAME_README.md) for complete documentation.
+- **Conversation Starters** — break the ice and spark great conversations
+- **Country Letter Challenge** — pick a letter and name every country that starts with it
+- **Name 5** — race the clock to name 5 things
+- **Border Blitz** — guess countries by their borders
+- **Movie Chain** — connect movies through their actors
+- **Casting Director** — guess the actor from progressive clues
+- **Vibe Check** — get on the same wavelength
+- **Border Hop** — a solo geography trainer; navigate the world one border at a time
+- **Finish the Line** — race the clock to shout the missing word from iconic quotes
 
 ## Requirements
 
@@ -31,46 +26,22 @@ See [LICENSE_PLATE_GAME_README.md](LICENSE_PLATE_GAME_README.md) for complete do
 - Xcode 15.0 or later
 - Swift 5.9 or later
 
-## Project Structure
-
-```
-GamesWithFriends/
-├── GamesWithFriendsApp.swift
-├── ContentView.swift
-├── Core/
-│   ├── Protocols/
-│   └── Theme/
-└── Features/
-    └── LicensePlateGame/
-        ├── Models/
-        ├── ViewModels/
-        ├── Views/
-        └── Resources/
-```
-
 ## Getting Started
 
-1. Open the project in Xcode
-2. Build and run on the iOS simulator or a physical device
-3. Navigate to "License Plate Game"
-4. Create your first road trip
-5. Start spotting license plates!
+1. Open `GamesWithFriends.xcodeproj` in Xcode.
+2. Build and run on an iOS 17+ simulator or device (⌘R).
+3. Pick a game from the hub and play.
 
 ## Architecture
 
-- **SwiftUI** for modern, declarative UI
-- **MVVM** pattern for clean separation of concerns
-- **SwiftData** for persistent storage
-- **@Observable** macro for reactive state management
-- **Protocol-oriented** design for extensibility
+- **SwiftUI** for the UI (no UIKit view controllers)
+- **MVVM** with the `@Observable` macro (iOS 17 Observation framework)
+- **SwiftData** (`@Model`) for persistence — zero external dependencies
+- **Protocol-oriented** game registry: each game conforms to `GameDefinition` and
+  is registered in `Features/GameHub/GameRegistry.swift`
 
-## Future Games
-
-This architecture is designed to support multiple games. Future additions could include:
-- Conversation Starters
-- Road Trip Bingo
-- 20 Questions
-- And more!
+For the full stack, architecture, coding rules, and "add a new game" workflow, see
+[`AGENTS.md`](AGENTS.md) — the single source of truth for this repo.
 
 ## Contributing
 
@@ -82,4 +53,4 @@ All rights reserved.
 
 ---
 
-Made with ❤️ for road trippers and game lovers everywhere.
+Made with ❤️ for game lovers everywhere.

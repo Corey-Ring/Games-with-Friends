@@ -20,7 +20,7 @@
 - **Target:** single iOS target `GamesWithFriends`
 
 **Shipped / in-progress games** (all registered in `Features/GameHub/GameRegistry.swift`):
-License Plate Game, Conversation Starters, Country Letter Game, Name 5, Border Blitz, Movie Chain, Casting Director, Vibe Check, Border Hop.
+Conversation Starters, Country Letter Game, Name 5, Border Blitz, Movie Chain, Casting Director, Vibe Check, Border Hop, Finish the Line.
 
 ---
 
@@ -123,11 +123,8 @@ These files already exist and are considered authoritative for their domain. Do 
 |---|---|
 | `DESIGN_GUIDE.md` | **Before any UI work.** Colors, typography, spacing, components, animation, dark mode, accessibility, keyboard behavior, SwiftUI pitfalls. This is the UI bible. |
 | `README.md` | Quick project overview for humans. |
-| `LICENSE_PLATE_GAME_README.md` | Deep dive on the first shipped game's data model + features. Useful as a reference implementation when building new games. |
-| `IMPLEMENTATION_SUMMARY.md` | Historical implementation notes for License Plate Game. |
-| `QUICK_START.md` | How to get the project building locally. |
-| `BUILD_CHECKLIST.md` | License-Plate-specific QA checklist. Template to copy when shipping a new game. |
 | `BorderHop_PRD.docx` / `BorderHop_DesignHandoff.docx` / `BorderHop_ImplementationPlan.docx` | Active spec for the Border Hop game. Read before touching `Features/BorderHop/`. |
+| `FinishTheLine_PRD.md` | Active spec for the Finish the Line game. Read before touching `Features/FinishTheLine/`. |
 | `AUDIT_SUMMARY.txt` | Rolling audit notes. Check before a release. |
 | `DECISIONS.md` | Running log of architectural decisions and gotchas. **Append here** when you make a non-obvious choice so the next session inherits the context. |
 
@@ -206,7 +203,7 @@ After any non-trivial change the agent is expected to at least:
 2. The affected game's Xcode Preview still compiles (previews are how this project catches regressions early).
 3. If a UI change: eyeball it in light **and** dark mode previews.
 4. If a data-model change: add a one-liner to `DECISIONS.md` about migration impact.
-5. For shipping-grade work, copy the relevant sections of `BUILD_CHECKLIST.md` into a per-game checklist and walk through it.
+5. For shipping-grade work, walk through a manual QA pass (light + dark mode, empty/edge states, persistence) before considering the game done.
 
 ---
 

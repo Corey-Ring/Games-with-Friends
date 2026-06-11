@@ -60,7 +60,6 @@ Each game module is assigned a unique accent color. This color appears in that g
 | Movie Chain | Warm Gold (`#D4943A`) | `GameTheme.movieChain` |
 | Vibe Check | Coral Red (`#E8533F`) | `GameTheme.vibeCheck` |
 | Casting Director | Brand Orange (`#FF6B35`) | `GameTheme.castingDirector` |
-| License Plate Game | Sky Blue (`#5B9BD5`) | `GameTheme.licensePlate` |
 | Country Letter Challenge | Forest Green (`#6DAE6D`) | `GameTheme.countryLetter` |
 | Name 5 | Electric Indigo (`#7B6CF6`) | `GameTheme.name5` |
 

@@ -28,6 +28,21 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-06-11 — Removed the License Plate Game [migration]
+
+**What:** Deleted `Features/LicensePlateGame/` (16 files), its `project.pbxproj` references, `GameTheme.licensePlate`, and the registry entry. Dropped `RoadTrip` and `SpottedPlate` from the SwiftData container in `GamesWithFriendsApp.swift` (now `[FinishTheLineRoundResult.self]`). Deleted the license-plate-era docs (`LICENSE_PLATE_GAME_README.md`, `IMPLEMENTATION_SUMMARY.md`, `QUICK_START.md`, `BUILD_CHECKLIST.md`).
+
+**Why:** License Plate was the only passive, solo, long-running *collection tracker* in a library that is otherwise active, session-based party games. It read as off-format next to the rest of the hub. This is a deliberate product-narrowing decision, not a quality issue with the game.
+
+**Impact:**
+- **SwiftData:** `RoadTrip`/`SpottedPlate` are no longer in any container. There is no `VersionedSchema`/`MigrationPlan` in this project, so SwiftData applies default lightweight handling. Any existing install's saved trips/spotted plates become unreachable (acceptable — the game is gone). New installs are unaffected.
+- The `AppTheme.skyBlue` token is now unused but left defined.
+- License Plate was previously the codebase's "reference implementation." Use Border Hop or Finish the Line as the current reference for a new game.
+
+**Alternatives considered:** Keeping it but grouping the hub into "Party" vs "Solo/Road Trip" sections (rejected — the goal was to narrow the product, not recategorize it).
+
+---
+
 ## 2026-06-11 — Border Hop scoring is Route + Knowledge; time no longer scores [decision]
 
 **What:** Border Hop's round score changed from `(efficiency + timeBonus) × streak` to `(Route + Knowledge) / 2 × streak`. Route is the existing hop-efficiency formula; Knowledge is per-question quiz credit (1.0 first try, 0.5 second, 0.25 third, 0 on reveal). The streak now continues on ≥75% round accuracy instead of beating a time benchmark. The −3s quiz reward, +5s backtrack penalty, and benchmark haptics are gone; the stopwatch remains as a display-only pace stat. The 3-strikes random-teleport was replaced with "reveal the answer and cross anyway" (zero credit).

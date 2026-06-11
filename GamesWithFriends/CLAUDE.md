@@ -18,7 +18,7 @@
 - Build commands → `AGENTS.md` §6
 - UI bible → `DESIGN_GUIDE.md`
 - Running decision log → `DECISIONS.md`
-- Game-specific specs → `LICENSE_PLATE_GAME_README.md`, `BorderHop_PRD.docx` (+ handoff + plan)
+- Game-specific specs → `BorderHop_PRD.docx` (+ handoff + plan), `FinishTheLine_PRD.md`
 
 ## When in doubt
 
