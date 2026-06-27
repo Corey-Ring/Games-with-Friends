@@ -48,6 +48,7 @@
 		570D24ADEFC5556E70C7A155 /* CastingDirectorGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4867B2C553A7BCE8B005A8 /* CastingDirectorGame.swift */; };
 		5939DEE3229C784E968DBAFD /* ClueGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C115CCFFDD4E4E3C316FC94 /* ClueGenerator.swift */; };
 		646E461D2798F05A5FB0D001 /* BorderHopGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C33059A4FC06BE6FD7B7A6A /* BorderHopGameView.swift */; };
+		647A9A2B787B189313CE4D46 /* ClueTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFFA2186BF8E5C1F529A7F0 /* ClueTuning.swift */; };
 		6FE6F6AAC29D1617EDF874D3 /* RoundResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83740FBD51D88D6DE3842BD /* RoundResultsView.swift */; };
 		825F7A053E36D71162F92F71 /* CastingDirectorGameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771CD3B545EF4CF697598FAD /* CastingDirectorGameOverView.swift */; };
 		8500BD5EE18A2ABBC54C25E5 /* CastingDirectorRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6426E0F9D2A5C1A3A922CD4A /* CastingDirectorRootView.swift */; };
@@ -230,6 +231,7 @@
 		C83740FBD51D88D6DE3842BD /* RoundResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundResultsView.swift; sourceTree = "<group>"; };
 		CD1CDBD0A43F76C79197488E /* CountryGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryGraph.swift; sourceTree = "<group>"; };
 		D3F4A82E5B6C7D9E0A1F3E4B /* country_fun_facts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = country_fun_facts.json; sourceTree = "<group>"; };
+		DDFFA2186BF8E5C1F529A7F0 /* ClueTuning.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueTuning.swift; path = Features/CastingDirector/Services/ClueGeneration/ClueTuning.swift; sourceTree = "<group>"; };
 		E4D9BEC93CACB379192250A8 /* BorderHopDifficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopDifficulty.swift; sourceTree = "<group>"; };
 		EX00000000000000000002 /* CountryExportProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryExportProvider.swift; sourceTree = "<group>"; };
 		EX00000000000000000004 /* country_exports.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = country_exports.json; sourceTree = "<group>"; };
@@ -526,6 +528,38 @@
 			path = Scripts;
 			sourceTree = "<group>";
 		};
+		69342068494283E6365ACD2E /* CastingDirector */ = {
+			isa = PBXGroup;
+			children = (
+				AAA410786D9FD4572C30AD96 /* Services */,
+			);
+			name = CastingDirector;
+			sourceTree = "<group>";
+		};
+		6AEF65DEBD16C289BFFF69AC /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				69342068494283E6365ACD2E /* CastingDirector */,
+			);
+			name = Features;
+			sourceTree = "<group>";
+		};
+		71AAA4BE153A579769FE8042 /* ClueGeneration */ = {
+			isa = PBXGroup;
+			children = (
+				DDFFA2186BF8E5C1F529A7F0 /* ClueTuning.swift */,
+			);
+			name = ClueGeneration;
+			sourceTree = "<group>";
+		};
+		AAA410786D9FD4572C30AD96 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				71AAA4BE153A579769FE8042 /* ClueGeneration */,
+			);
+			name = Services;
+			sourceTree = "<group>";
+		};
 		BH00000000000000000001 /* BorderHop */ = {
 			isa = PBXGroup;
 			children = (
@@ -603,6 +637,7 @@
 				4AF67CBA2F37D936009A3801 /* Frameworks */,
 				F40000010000000000000003 /* Products */,
 				3C29AEBC55D450E2097B266B /* GamesWithFriendsTests */,
+				6AEF65DEBD16C289BFFF69AC /* Features */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1276,6 +1311,7 @@
 				FTL0000010000000000000016 /* SpotlightTimerView.swift in Sources */,
 				FTL0000010000000000000017 /* StreakBadge.swift in Sources */,
 				FTL0000010000000000000018 /* FinishTheLineWaveformView.swift in Sources */,
+				647A9A2B787B189313CE4D46 /* ClueTuning.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
