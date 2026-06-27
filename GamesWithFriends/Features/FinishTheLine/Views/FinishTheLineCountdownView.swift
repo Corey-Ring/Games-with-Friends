@@ -30,6 +30,22 @@ struct FinishTheLineCountdownView: View {
                     .foregroundColor(AppTheme.mediumGray)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, AppTheme.Spacing.lg)
+
+                if let target = viewModel.scoreToBeat {
+                    HStack(spacing: AppTheme.Spacing.xs) {
+                        Image(systemName: "trophy.fill")
+                            .font(.system(size: 12, weight: .bold))
+                        Text(verbatim: "Score to beat: \(target)")
+                            .font(AppTheme.Typography.pillLabel)
+                    }
+                    .foregroundColor(theme.accentColor)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.vertical, AppTheme.Spacing.xs)
+                    .background(
+                        Capsule().fill(theme.accentColor.opacity(0.12))
+                    )
+                    .accessibilityLabel("Score to beat: \(target) points")
+                }
             }
         }
         .accessibilityElement(children: .combine)

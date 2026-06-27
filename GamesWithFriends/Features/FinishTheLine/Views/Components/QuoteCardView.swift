@@ -5,12 +5,17 @@
 
 import SwiftUI
 
-/// The headline card players read aloud. Renders the setup string with the
-/// blank visually called out and flashes on a correct answer.
+/// The headline card players read aloud. The source is hidden while the card
+/// is live (no spoilers — that's the tip-of-tongue tension), fading in only as
+/// a lifeline hint or once the card resolves. On resolution the blank fills
+/// with the missing word — green for a correct answer, amber for the skip
+/// "groan reveal" — and the attribution slides in underneath.
 struct QuoteCardView: View {
     let quote: Quote
     let accentColor: Color
-    let isFlashing: Bool
+    let resolution: FinishTheLineViewModel.CardResolution?
+    let showSource: Bool
+    let isOnFire: Bool
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -32,22 +37,29 @@ struct QuoteCardView: View {
                 Capsule().fill(accentColor)
             )
 
-            // Quote body — styled with a called-out blank
-            QuoteBodyText(setup: quote.setup, accentColor: accentColor)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            // Quote body — blank fills in with the answer on resolution
+            QuoteBodyText(
+                setup: quote.setup,
+                accentColor: accentColor,
+                fill: fillTreatment
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Divider()
-                .overlay(accentColor.opacity(0.3))
+            // Source line — hidden until resolved or hint-revealed
+            if showSource {
+                Divider()
+                    .overlay(accentColor.opacity(0.3))
 
-            // Source line
-            HStack(spacing: AppTheme.Spacing.xs) {
-                Image(systemName: "quote.opening")
-                    .font(.caption)
-                    .foregroundColor(accentColor.opacity(0.65))
-                Text(quote.source)
-                    .font(AppTheme.Typography.detail.italic())
-                    .foregroundColor(AppTheme.mediumGray)
-                    .lineLimit(2)
+                HStack(spacing: AppTheme.Spacing.xs) {
+                    Image(systemName: resolution == nil ? "lightbulb.fill" : "quote.opening")
+                        .font(.caption)
+                        .foregroundColor(accentColor.opacity(0.65))
+                    Text(quote.source)
+                        .font(AppTheme.Typography.detail.italic())
+                        .foregroundColor(AppTheme.mediumGray)
+                        .lineLimit(2)
+                }
+                .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
             }
         }
         .padding(AppTheme.Spacing.lg)
@@ -58,32 +70,101 @@ struct QuoteCardView: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.Radius.large)
-                .stroke(isFlashing ? AppTheme.success : accentColor.opacity(0.18), lineWidth: isFlashing ? 4 : 1.5)
+                .stroke(borderStyle, lineWidth: borderWidth)
         )
         .shadow(
-            color: isFlashing ? AppTheme.success.opacity(0.4) : accentColor.opacity(0.18),
-            radius: isFlashing ? 24 : 12,
+            color: shadowColor,
+            radius: resolution != nil ? 24 : 12,
             x: 0,
             y: 6
         )
-        .scaleEffect(isFlashing && !reduceMotion ? 1.03 : 1.0)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isFlashing)
+        .scaleEffect(resolution == .correct && !reduceMotion ? 1.03 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: resolution)
+        .animation(.easeOut(duration: 0.3), value: showSource)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Quote from \(quote.source). Complete the line: \(accessibleSetup)")
+        .accessibilityLabel(accessibilityText)
     }
 
-    private var accessibleSetup: String {
-        quote.setup.replacingOccurrences(of: "___", with: "blank")
+    // MARK: - Resolution styling
+
+    private var fillTreatment: QuoteBodyText.Fill? {
+        switch resolution {
+        case .correct:
+            return QuoteBodyText.Fill(word: quote.missingWord, color: AppTheme.success)
+        case .skipped:
+            return QuoteBodyText.Fill(word: quote.missingWord, color: AppTheme.warning)
+        case nil:
+            return nil
+        }
+    }
+
+    private var borderStyle: AnyShapeStyle {
+        switch resolution {
+        case .correct:
+            return AnyShapeStyle(AppTheme.success)
+        case .skipped:
+            return AnyShapeStyle(AppTheme.warning)
+        case nil:
+            if isOnFire {
+                // Ember treatment matches the StreakBadge flame gradient.
+                return AnyShapeStyle(
+                    LinearGradient(
+                        colors: [AppTheme.warning, AppTheme.brandOrange],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            }
+            return AnyShapeStyle(accentColor.opacity(0.18))
+        }
+    }
+
+    private var borderWidth: CGFloat {
+        switch resolution {
+        case .correct: return 4
+        case .skipped: return 3
+        case nil: return isOnFire ? 2.5 : 1.5
+        }
+    }
+
+    private var shadowColor: Color {
+        switch resolution {
+        case .correct: return AppTheme.success.opacity(0.4)
+        case .skipped: return AppTheme.warning.opacity(0.35)
+        case nil: return isOnFire ? AppTheme.brandOrange.opacity(0.3) : accentColor.opacity(0.18)
+        }
+    }
+
+    private var accessibilityText: String {
+        let line = quote.setup.replacingOccurrences(of: "___", with: "blank")
+        switch resolution {
+        case .correct:
+            return "Correct! The word was \(quote.missingWord). From \(quote.source)."
+        case .skipped:
+            return "Skipped. The word was \(quote.missingWord). From \(quote.source)."
+        case nil:
+            if showSource {
+                return "Hint: from \(quote.source). Complete the line: \(line)"
+            }
+            return "Complete the line: \(line)"
+        }
     }
 }
 
 // MARK: - Quote body text with styled blank
 
 /// Renders the setup string with the ___ token replaced by a stylized pill so
-/// the blank reads at a glance and matches the accent color.
+/// the blank reads at a glance — or, once resolved, by the missing word in the
+/// resolution color.
 private struct QuoteBodyText: View {
+    struct Fill {
+        let word: String
+        let color: Color
+    }
+
     let setup: String
     let accentColor: Color
+    let fill: Fill?
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 0) {
@@ -95,17 +176,23 @@ private struct QuoteBodyText: View {
         }
     }
 
-    /// Uses AttributedString with a colored underline on the blank token.
     private var styledText: Text {
         let parts = setup.components(separatedBy: "___")
         var result = Text("")
         for (index, part) in parts.enumerated() {
             result = result + Text(part)
             if index < parts.count - 1 {
-                // The styled blank: underscored in accent color, same weight.
-                result = result + Text("______")
-                    .foregroundColor(accentColor)
-                    .underline()
+                if let fill {
+                    // The reveal: the answer lands in the sentence.
+                    result = result + Text(fill.word)
+                        .foregroundColor(fill.color)
+                        .underline()
+                } else {
+                    // The styled blank: underscored in accent color, same weight.
+                    result = result + Text("______")
+                        .foregroundColor(accentColor)
+                        .underline()
+                }
             }
         }
         return result

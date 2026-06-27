@@ -147,6 +147,7 @@
 		FTL0000010000000000000008 /* FinishTheLineQuoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000008 /* FinishTheLineQuoteData.swift */; };
 		FTL0000010000000000000009 /* FinishTheLineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000009 /* FinishTheLineViewModel.swift */; };
 		FTL0000010000000000000010 /* FinishTheLineSpeechRecognitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000010 /* FinishTheLineSpeechRecognitionManager.swift */; };
+		FTL0000010000000000000099 /* FinishTheLineSoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000099 /* FinishTheLineSoundPlayer.swift */; };
 		FTL0000010000000000000011 /* FinishTheLineMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000011 /* FinishTheLineMenuView.swift */; };
 		FTL0000010000000000000012 /* FinishTheLineCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000012 /* FinishTheLineCountdownView.swift */; };
 		FTL0000010000000000000013 /* FinishTheLineGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000013 /* FinishTheLineGameView.swift */; };
@@ -299,6 +300,7 @@
 		FTL0000020000000000000008 /* FinishTheLineQuoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineQuoteData.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000009 /* FinishTheLineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineViewModel.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000010 /* FinishTheLineSpeechRecognitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineSpeechRecognitionManager.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000099 /* FinishTheLineSoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineSoundPlayer.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000011 /* FinishTheLineMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineMenuView.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000012 /* FinishTheLineCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineCountdownView.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000013 /* FinishTheLineGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineGameView.swift; sourceTree = "<group>"; };
@@ -954,6 +956,7 @@
 			isa = PBXGroup;
 			children = (
 				FTL0000020000000000000010 /* FinishTheLineSpeechRecognitionManager.swift */,
+				FTL0000020000000000000099 /* FinishTheLineSoundPlayer.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1188,6 +1191,7 @@
 				FTL0000010000000000000008 /* FinishTheLineQuoteData.swift in Sources */,
 				FTL0000010000000000000009 /* FinishTheLineViewModel.swift in Sources */,
 				FTL0000010000000000000010 /* FinishTheLineSpeechRecognitionManager.swift in Sources */,
+				FTL0000010000000000000099 /* FinishTheLineSoundPlayer.swift in Sources */,
 				FTL0000010000000000000011 /* FinishTheLineMenuView.swift in Sources */,
 				FTL0000010000000000000012 /* FinishTheLineCountdownView.swift in Sources */,
 				FTL0000010000000000000013 /* FinishTheLineGameView.swift in Sources */,

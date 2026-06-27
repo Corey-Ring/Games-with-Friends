@@ -148,9 +148,8 @@ struct FinishTheLineResultsView: View {
     }
 
     private var multiplierLabel: String {
-        let m = viewModel.difficulty.multiplier
-        let formatted = String(format: "%.1f×", m)
-        return "\(viewModel.difficulty.displayName) multiplier (\(formatted))"
+        let points = FinishTheLineViewModel.pointsPerCorrect(for: viewModel.difficulty)
+        return "\(viewModel.difficulty.displayName) quotes · \(points) pts each, scored live"
     }
 
     // MARK: - Stats
@@ -239,8 +238,15 @@ struct FinishTheLineResultsView: View {
                 viewModel.playAgain()
             }
 
-            SecondaryButton(title: "Back to Menu", icon: "line.3.horizontal") {
+            SecondaryButton(title: "Pass the Phone", icon: "person.2.fill") {
                 viewModel.passPhone()
+            }
+
+            if viewModel.score > 0 {
+                Text(verbatim: "Pass the phone and \(viewModel.score) becomes the score to beat.")
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(AppTheme.mediumGray)
+                    .multilineTextAlignment(.center)
             }
         }
     }

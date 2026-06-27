@@ -28,6 +28,20 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-06-11 — Finish the Line fun-upgrade pass: live scoring, reveal beat, synthesized audio [decision]
+
+**What:** Landed the approved game-feel slate for Finish the Line: (1) **Reveal Beat** — the source is now hidden while a card is live, fading in after 6s of being stuck as a lifeline hint; on correct/skip the blank fills with the answer (green/amber) for a ~0.9s beat before the next card. (2) **Live per-answer scoring** — difficulty now sets points per correct (easy 100 / medium 150 / hard 200) instead of an end-of-round score multiplier; `QuoteDifficulty.multiplier` still exists but is no longer used in scoring. (3) **Free skips** (streak reset is the only price) with the answer revealed on skip. (4) **On Fire** at streak 5: +2s per correct, capped at a 90s clock. (5) **Encore**: final 10s double points with per-second ticks. (6) **Pass-the-phone gauntlet**: session-only `scoreToBeat` (in-memory, not persisted). (7) **Mic trust**: matching only considers speech spoken after the current card appeared, and single-word answers of ≤4 letters must be among the last 3 words heard (stops ambient "it"/"go"/"back" from auto-scoring). (8) **Synthesized audio** via `FinishTheLineSoundPlayer` — tones rendered into `AVAudioPCMBuffer`s at runtime through `AVAudioEngine`; zero bundled assets, zero licensing. Also a full quote-library audit (~33 entries fixed/re-tiered/replaced; library is 201 quotes).
+
+**Why:** Playtests read flat: the always-visible source line spoiled the tip-of-tongue tension and silently broke difficulty tiers; the end-of-round multiplier made the on-screen score a lie; whole-transcript matching gave false positives on common words; skips were doubly punished.
+
+**Impact:**
+- **SwiftData:** schema untouched. Saved `FinishTheLineRoundResult.score` values from the multiplier era remain comparable in magnitude (medium 1.5× ≈ 150/answer) but are not exactly equivalent — acceptable for a personal-best display.
+- The audio session is shared with `FinishTheLineSpeechRecognitionManager` (`.playAndRecord`, `.defaultToSpeaker`); synthesized sounds therefore play **regardless of the silent switch**. Revisit if users complain.
+- PG-13 judgment call: kept Taken's "I will ___ you → kill" at medium; cut "Welcome to the O.C., bitch" (profanity).
+- New file `Features/FinishTheLine/Services/FinishTheLineSoundPlayer.swift` is registered in `project.pbxproj` with the `FTL…99` ID pair.
+
+---
+
 ## 2026-06-11 — Removed the License Plate Game [migration]
 
 **What:** Deleted `Features/LicensePlateGame/` (16 files), its `project.pbxproj` references, `GameTheme.licensePlate`, and the registry entry. Dropped `RoadTrip` and `SpottedPlate` from the SwiftData container in `GamesWithFriendsApp.swift` (now `[FinishTheLineRoundResult.self]`). Deleted the license-plate-era docs (`LICENSE_PLATE_GAME_README.md`, `IMPLEMENTATION_SUMMARY.md`, `QUICK_START.md`, `BUILD_CHECKLIST.md`).

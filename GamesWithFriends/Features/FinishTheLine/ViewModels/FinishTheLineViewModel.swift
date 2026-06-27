@@ -19,13 +19,36 @@ final class FinishTheLineViewModel {
         case results
     }
 
+    /// How the current card was resolved. While non-nil the card holds on
+    /// screen for a short "reveal beat" — the blank fills in, the source
+    /// appears — before the next quote slides in.
+    enum CardResolution: Equatable {
+        case correct
+        case skipped
+    }
+
     // MARK: - Configuration (tuneable during playtesting)
 
     static let roundDuration: TimeInterval = 60
+    static let maxRoundDuration: TimeInterval = 90
     static let countdownDuration: TimeInterval = 3
-    static let pointsPerCorrect: Int = 100
     static let streakBonusPerStep: Int = 25
-    static let skipPenalty: Int = 25
+    static let onFireThreshold: Int = 5
+    static let onFireTimeBonus: TimeInterval = 2
+    static let encoreWindow: TimeInterval = 10
+    static let hintDelay: TimeInterval = 6
+    static let correctBeatDuration: TimeInterval = 0.85
+    static let skipBeatDuration: TimeInterval = 0.95
+
+    /// Points are difficulty-weighted per answer so the score on screen is
+    /// always the real score — no invisible end-of-round multiplier jump.
+    static func pointsPerCorrect(for difficulty: QuoteDifficulty) -> Int {
+        switch difficulty {
+        case .easy: return 100
+        case .medium: return 150
+        case .hard: return 200
+        }
+    }
 
     // MARK: - Observed state
 
@@ -46,9 +69,16 @@ final class FinishTheLineViewModel {
     private(set) var correctQuotes: [Quote] = []
     private(set) var skippedQuotes: [Quote] = []
 
-    // Feedback state
-    private(set) var lastMatchedAt: Date?
-    private(set) var showCorrectFlash: Bool = false
+    // Reveal beat / feedback state
+    private(set) var cardResolution: CardResolution?
+    private(set) var hintRevealed: Bool = false
+    private(set) var nearMissCount: Int = 0
+    private(set) var timeBonusCount: Int = 0
+    private(set) var heardSnippet: String = ""
+
+    // Pass-the-phone gauntlet (session-only, not persisted)
+    private(set) var scoreToBeat: Int?
+    private(set) var hasBeatenTarget: Bool = false
 
     // Countdown
     private(set) var countdownValue: Int = 3
@@ -56,14 +86,41 @@ final class FinishTheLineViewModel {
     // Best score (loaded from SwiftData)
     private(set) var personalBest: Int = 0
 
+    // MARK: - Derived
+
+    var isOnFire: Bool {
+        currentStreak >= Self.onFireThreshold
+    }
+
+    var isEncore: Bool {
+        phase == .playing && timeRemaining > 0 && timeRemaining <= Self.encoreWindow
+    }
+
+    /// Number of quotes that match the current filter selections.
+    var availableQuoteCount: Int {
+        filteredQuotes().count
+    }
+
+    var canStart: Bool {
+        !selectedCategories.isEmpty && !selectedDecades.isEmpty && availableQuoteCount > 0
+    }
+
     // MARK: - Infrastructure
 
     let speechManager = FinishTheLineSpeechRecognitionManager()
+    let soundPlayer = FinishTheLineSoundPlayer()
     private let modelContext: ModelContext?
 
     @ObservationIgnored private var timer: Timer?
     @ObservationIgnored private var countdownTimer: Timer?
+    @ObservationIgnored private var hintTask: Task<Void, Never>?
     @ObservationIgnored private var lastHandledTranscription: String = ""
+    /// Full transcription at the moment the current card appeared. Only speech
+    /// spoken AFTER this point can answer the card — earlier chatter (or the
+    /// previous card's answer) must not score.
+    @ObservationIgnored private var cardTranscriptBaseline: String = ""
+    @ObservationIgnored private var latestTranscription: String = ""
+    @ObservationIgnored private var lastNearMissAt: Date = .distantPast
 
     // MARK: - Init
 
@@ -73,17 +130,6 @@ final class FinishTheLineViewModel {
             self?.handleSpeechResult(transcription)
         }
         loadPersonalBest()
-    }
-
-    // MARK: - Derived
-
-    /// Number of quotes that match the current filter selections.
-    var availableQuoteCount: Int {
-        filteredQuotes().count
-    }
-
-    var canStart: Bool {
-        !selectedCategories.isEmpty && !selectedDecades.isEmpty && availableQuoteCount > 0
     }
 
     // MARK: - Menu toggles
@@ -126,6 +172,12 @@ final class FinishTheLineViewModel {
         skippedQuotes = []
         timeRemaining = Self.roundDuration
         lastHandledTranscription = ""
+        cardTranscriptBaseline = ""
+        latestTranscription = ""
+        cardResolution = nil
+        hintRevealed = false
+        heardSnippet = ""
+        hasBeatenTarget = false
 
         // Build the queue
         var pool = filteredQuotes()
@@ -144,7 +196,12 @@ final class FinishTheLineViewModel {
         startGame()
     }
 
+    /// Hands the phone to the next player: the finished score becomes the
+    /// session's score to beat.
     func passPhone() {
+        if score > 0 {
+            scoreToBeat = max(scoreToBeat ?? 0, score)
+        }
         tearDownRound()
         phase = .menu
         loadPersonalBest()
@@ -156,12 +213,16 @@ final class FinishTheLineViewModel {
     }
 
     func skipCurrentQuote() {
-        guard phase == .playing, let skipped = currentQuote else { return }
+        guard phase == .playing, cardResolution == nil, let skipped = currentQuote else { return }
+
+        // Skipping is free — the streak reset is the price. The answer is
+        // revealed for a beat so the room gets its groan.
+        cardResolution = .skipped
         skippedQuotes.append(skipped)
-        score = max(0, score - Self.skipPenalty)
         currentStreak = 0
         HapticManager.selection()
-        advanceToNextQuote()
+        soundPlayer.playSkip()
+        scheduleAdvance(after: Self.skipBeatDuration)
     }
 
     // MARK: - Scene phase
@@ -217,6 +278,7 @@ final class FinishTheLineViewModel {
         timeRemaining = Self.roundDuration
         startTimer()
         speechManager.startListening()
+        scheduleHint()
     }
 
     // MARK: - Round timer
@@ -230,9 +292,19 @@ final class FinishTheLineViewModel {
                 let previousTime = self.timeRemaining
                 self.timeRemaining = max(0, self.timeRemaining - 0.1)
 
-                // Trigger warning haptic once when crossing the 10s threshold
-                if previousTime > 10 && self.timeRemaining <= 10 {
+                // Crossing into the Encore window
+                if previousTime > Self.encoreWindow && self.timeRemaining <= Self.encoreWindow {
                     HapticManager.medium()
+                }
+
+                // Heartbeat tick on each whole-second crossing inside Encore
+                if self.timeRemaining <= Self.encoreWindow && self.timeRemaining > 0 {
+                    let previousSecond = Int(ceil(previousTime))
+                    let currentSecond = Int(ceil(self.timeRemaining))
+                    if previousSecond != currentSecond {
+                        HapticManager.light()
+                        self.soundPlayer.playTick()
+                    }
                 }
 
                 if self.timeRemaining <= 0 {
@@ -249,105 +321,177 @@ final class FinishTheLineViewModel {
 
     // MARK: - Quote flow
 
+    private func scheduleAdvance(after delay: TimeInterval) {
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            self?.advanceToNextQuote()
+        }
+    }
+
     private func advanceToNextQuote() {
         guard phase == .playing else { return }
 
+        hintTask?.cancel()
+        cardResolution = nil
+        hintRevealed = false
+        heardSnippet = ""
+        lastHandledTranscription = ""
+        cardTranscriptBaseline = latestTranscription
+
         if let next = quoteQueue.popLast() {
             currentQuote = next
-            lastHandledTranscription = ""
+            scheduleHint()
         } else {
             // Ran out of quotes — end the round gracefully
             endRound()
         }
     }
 
+    /// After a stretch of silence on a card, the source fades in as a lifeline
+    /// (some quotes need it: "Talk to me, ___"). No score penalty — the lost
+    /// seconds are the price.
+    private func scheduleHint() {
+        hintTask?.cancel()
+        guard let cardID = currentQuote?.id else { return }
+        hintTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(Self.hintDelay * 1_000_000_000))
+            guard let self, !Task.isCancelled else { return }
+            guard self.phase == .playing,
+                  self.cardResolution == nil,
+                  self.currentQuote?.id == cardID else { return }
+            self.hintRevealed = true
+        }
+    }
+
     // MARK: - Speech handling
 
     private func handleSpeechResult(_ transcription: String) {
-        guard phase == .playing, let quote = currentQuote else { return }
+        latestTranscription = transcription
+
+        guard phase == .playing, cardResolution == nil, let quote = currentQuote else { return }
 
         // Avoid reprocessing the same transcription repeatedly.
         guard transcription != lastHandledTranscription else { return }
         lastHandledTranscription = transcription
 
-        let normalized = normalize(transcription)
+        // Only speech spoken after this card appeared may answer it. If the
+        // recognizer restarted mid-card the transcript starts over, so the
+        // baseline no longer prefixes it — treat the whole thing as new.
+        var newPortion = transcription
+        if !cardTranscriptBaseline.isEmpty {
+            if transcription.hasPrefix(cardTranscriptBaseline) {
+                newPortion = String(transcription.dropFirst(cardTranscriptBaseline.count))
+            } else {
+                cardTranscriptBaseline = ""
+            }
+        }
+
+        let normalized = normalize(newPortion)
         guard !normalized.isEmpty else { return }
 
-        let candidates = quote.acceptableAnswers.map(normalize)
+        let words = normalized.split(separator: " ").map(String.init)
+        guard !words.isEmpty else { return }
+        heardSnippet = words.suffix(4).joined(separator: " ")
 
-        // Fast path: whole-string match
-        for target in candidates where !target.isEmpty {
-            if containsPhrase(target, in: normalized) {
+        let candidates = quote.acceptableAnswers.map(normalize).filter { !$0.isEmpty }
+
+        for target in candidates {
+            if isShortCommonAnswer(target) {
+                // Short everyday words ("it", "go", "back") show up constantly
+                // in ambient chatter — only accept them as the freshest speech.
+                let recent = words.suffix(3).joined(separator: " ")
+                if containsPhrase(target, in: recent) {
+                    registerCorrect(for: quote)
+                    return
+                }
+            } else if containsPhrase(target, in: normalized) {
                 registerCorrect(for: quote)
                 return
             }
         }
 
-        // Sliding window match (1-4 word windows).
-        let words = normalized.split(separator: " ").map(String.init)
-        guard !words.isEmpty else { return }
+        detectNearMiss(lastWords: words, candidates: candidates)
+    }
 
-        for windowSize in 1...min(4, words.count) {
-            for start in 0...(words.count - windowSize) {
-                let phrase = words[start..<(start + windowSize)].joined(separator: " ")
-                if candidates.contains(phrase) {
-                    registerCorrect(for: quote)
-                    return
-                }
+    /// Single words of four letters or fewer are too common to match anywhere
+    /// in the transcript — they must be among the last few words spoken.
+    private func isShortCommonAnswer(_ candidate: String) -> Bool {
+        !candidate.contains(" ") && candidate.count <= 4
+    }
+
+    private func detectNearMiss(lastWords: [String], candidates: [String]) {
+        guard let lastWord = lastWords.last, lastWord.count >= 3 else { return }
+        guard Date().timeIntervalSince(lastNearMissAt) > 1.5 else { return }
+
+        for candidate in candidates where !candidate.contains(" ") && candidate.count >= 4 {
+            let tolerance = candidate.count >= 7 ? 2 : 1
+            if editDistance(lastWord, candidate) <= tolerance {
+                lastNearMissAt = Date()
+                nearMissCount += 1
+                HapticManager.light()
+                return
             }
         }
     }
 
     private func registerCorrect(for quote: Quote) {
+        cardResolution = .correct
         correctQuotes.append(quote)
         currentStreak += 1
         bestStreak = max(bestStreak, currentStreak)
-        let streakBonus = max(0, currentStreak - 1) * Self.streakBonusPerStep
-        score += Self.pointsPerCorrect + streakBonus
-        lastMatchedAt = Date()
+
+        var award = Self.pointsPerCorrect(for: quote.difficulty)
+            + max(0, currentStreak - 1) * Self.streakBonusPerStep
+        if isEncore {
+            award *= 2
+        }
+        score += award
+
+        if currentStreak == Self.onFireThreshold {
+            soundPlayer.playIgnite()
+        }
+        if isOnFire {
+            // Hot streaks buy time back — skill extends the performance.
+            timeRemaining = min(timeRemaining + Self.onFireTimeBonus, Self.maxRoundDuration)
+            timeBonusCount += 1
+        }
+
+        if let target = scoreToBeat, !hasBeatenTarget, score > target {
+            hasBeatenTarget = true
+            HapticManager.heavy()
+            soundPlayer.playFanfare()
+        }
 
         HapticManager.success()
-        flashCorrect()
-
-        // Small transition delay to let the card flash animate before the next quote lands.
-        Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 400_000_000)
-            self?.advanceToNextQuote()
-        }
-    }
-
-    private func flashCorrect() {
-        showCorrectFlash = true
-        Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 350_000_000)
-            self?.showCorrectFlash = false
-        }
+        soundPlayer.playCorrect(streak: currentStreak)
+        scheduleAdvance(after: Self.correctBeatDuration)
     }
 
     // MARK: - End of round
 
     private func endRound() {
         stopTimer()
+        hintTask?.cancel()
         speechManager.stopListening()
-
-        // Apply difficulty multiplier
-        let finalScore = Int(Double(score) * difficulty.multiplier)
-        score = finalScore
 
         saveResult()
         loadPersonalBest()
         phase = .results
         HapticManager.heavy()
+        soundPlayer.playBuzzer()
     }
 
     private func tearDownRound() {
         stopTimer()
         countdownTimer?.invalidate()
         countdownTimer = nil
+        hintTask?.cancel()
         speechManager.stopListening()
         currentQuote = nil
         quoteQueue = []
-        showCorrectFlash = false
+        cardResolution = nil
+        hintRevealed = false
+        heardSnippet = ""
     }
 
     // MARK: - Filtering
@@ -384,6 +528,26 @@ final class FinishTheLineViewModel {
         return paddedHaystack.contains(paddedNeedle)
     }
 
+    /// Levenshtein distance over characters; inputs are short spoken words.
+    private func editDistance(_ a: String, _ b: String) -> Int {
+        let aChars = Array(a), bChars = Array(b)
+        if aChars.isEmpty { return bChars.count }
+        if bChars.isEmpty { return aChars.count }
+
+        var previous = Array(0...bChars.count)
+        var current = [Int](repeating: 0, count: bChars.count + 1)
+
+        for i in 1...aChars.count {
+            current[0] = i
+            for j in 1...bChars.count {
+                let substitution = previous[j - 1] + (aChars[i - 1] == bChars[j - 1] ? 0 : 1)
+                current[j] = min(previous[j] + 1, current[j - 1] + 1, substitution)
+            }
+            swap(&previous, &current)
+        }
+        return previous[bChars.count]
+    }
+
     // MARK: - Personal best persistence
 
     private func loadPersonalBest() {
@@ -416,5 +580,6 @@ final class FinishTheLineViewModel {
     deinit {
         timer?.invalidate()
         countdownTimer?.invalidate()
+        hintTask?.cancel()
     }
 }

@@ -9,6 +9,10 @@ struct FinishTheLineGameView: View {
     @Bindable var viewModel: FinishTheLineViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    @State private var shakeCount: CGFloat = 0
+    @State private var showNearMissPip = false
+    @State private var showTimeBonusPip = false
+
     private let theme = GameTheme.finishTheLine
 
     var body: some View {
@@ -28,6 +32,12 @@ struct FinishTheLineGameView: View {
                     .padding(.horizontal, AppTheme.Spacing.md)
                     .padding(.bottom, AppTheme.Spacing.md)
             }
+        }
+        .onChange(of: viewModel.nearMissCount) { _, _ in
+            triggerNearMiss()
+        }
+        .onChange(of: viewModel.timeBonusCount) { _, _ in
+            triggerTimeBonusPip()
         }
     }
 
@@ -61,11 +71,21 @@ struct FinishTheLineGameView: View {
                 totalDuration: FinishTheLineViewModel.roundDuration,
                 accentColor: theme.accentColor
             )
+            .overlay(alignment: .top) {
+                if showTimeBonusPip {
+                    Text("+2s")
+                        .font(AppTheme.Typography.caption.weight(.bold))
+                        .foregroundColor(AppTheme.success)
+                        .offset(y: -22)
+                        .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
+                }
+            }
 
             Spacer()
 
             scorePill
         }
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: showTimeBonusPip)
     }
 
     private var scorePill: some View {
@@ -94,9 +114,10 @@ struct FinishTheLineGameView: View {
 
     private var quoteStage: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            // Streak badge — only once you're on a roll
-            if viewModel.currentStreak >= 2 {
-                StreakBadge(streak: viewModel.currentStreak)
+            statusRow
+
+            if viewModel.isEncore {
+                encoreBanner
                     .transition(.scale.combined(with: .opacity))
             }
 
@@ -106,23 +127,116 @@ struct FinishTheLineGameView: View {
                 QuoteCardView(
                     quote: quote,
                     accentColor: theme.accentColor,
-                    isFlashing: viewModel.showCorrectFlash
+                    resolution: viewModel.cardResolution,
+                    showSource: viewModel.cardResolution != nil || viewModel.hintRevealed,
+                    isOnFire: viewModel.isOnFire
                 )
                 .id(quote.id)
                 .transition(reduceMotion ? .opacity : quoteTransition)
+                .modifier(FinishTheLineShakeEffect(animatableData: shakeCount))
             }
 
             Spacer(minLength: 0)
+
+            if showNearMissPip {
+                Text("So close — say it again!")
+                    .font(AppTheme.Typography.footnote.weight(.semibold))
+                    .foregroundColor(AppTheme.warning)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.vertical, AppTheme.Spacing.xs)
+                    .background(
+                        Capsule().fill(AppTheme.warning.opacity(0.12))
+                    )
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
 
             FinishTheLineWaveformView(
                 audioLevel: viewModel.speechManager.audioLevel,
                 isListening: viewModel.speechManager.isListening,
                 accentColor: theme.accentColor
             )
-            .padding(.bottom, AppTheme.Spacing.sm)
+
+            heardCaption
+                .padding(.bottom, AppTheme.Spacing.sm)
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.75), value: viewModel.currentStreak)
         .animation(.spring(response: 0.45, dampingFraction: 0.78), value: viewModel.currentQuote?.id)
+        .animation(.spring(response: 0.35, dampingFraction: 0.7), value: viewModel.isEncore)
+        .animation(.easeOut(duration: 0.25), value: showNearMissPip)
+    }
+
+    /// Streak badge + pass-the-phone target, floating under the HUD.
+    @ViewBuilder
+    private var statusRow: some View {
+        if viewModel.currentStreak >= 2 || viewModel.scoreToBeat != nil {
+            HStack(spacing: AppTheme.Spacing.sm) {
+                if viewModel.currentStreak >= 2 {
+                    StreakBadge(streak: viewModel.currentStreak, isOnFire: viewModel.isOnFire)
+                        .transition(.scale.combined(with: .opacity))
+                }
+
+                if viewModel.scoreToBeat != nil {
+                    targetChip
+                }
+            }
+        }
+    }
+
+    private var targetChip: some View {
+        HStack(spacing: AppTheme.Spacing.xs) {
+            Image(systemName: viewModel.hasBeatenTarget ? "crown.fill" : "trophy.fill")
+                .font(.system(size: 12, weight: .bold))
+            Text(verbatim: viewModel.hasBeatenTarget ? "Beaten!" : "Beat \(viewModel.scoreToBeat ?? 0)")
+                .font(AppTheme.Typography.pillLabel)
+        }
+        .foregroundColor(viewModel.hasBeatenTarget ? .white : theme.accentColor)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.xs)
+        .background(
+            Capsule().fill(
+                viewModel.hasBeatenTarget
+                    ? AnyShapeStyle(
+                        LinearGradient(
+                            colors: [AppTheme.medalGold, AppTheme.warmGold],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    : AnyShapeStyle(theme.accentColor.opacity(0.12))
+            )
+        )
+        .animation(.spring(response: 0.35, dampingFraction: 0.65), value: viewModel.hasBeatenTarget)
+        .accessibilityLabel(
+            viewModel.hasBeatenTarget
+                ? "Target beaten!"
+                : "Score to beat: \(viewModel.scoreToBeat ?? 0)"
+        )
+    }
+
+    private var encoreBanner: some View {
+        HStack(spacing: AppTheme.Spacing.xs) {
+            Image(systemName: "bolt.fill")
+                .font(.system(size: 12, weight: .bold))
+            Text("ENCORE — 2× POINTS")
+                .font(AppTheme.Typography.pillLabel)
+                .tracking(1.5)
+        }
+        .foregroundColor(.white)
+        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.vertical, AppTheme.Spacing.xs)
+        .background(
+            Capsule().fill(AppTheme.error)
+        )
+        .shadow(color: AppTheme.error.opacity(0.4), radius: 8, x: 0, y: 3)
+        .accessibilityLabel("Encore: double points for the final seconds")
+    }
+
+    private var heardCaption: some View {
+        Text(viewModel.heardSnippet.isEmpty ? " " : "Heard: \u{201C}\(viewModel.heardSnippet)\u{201D}")
+            .font(AppTheme.Typography.caption)
+            .foregroundColor(AppTheme.mediumGray.opacity(0.8))
+            .lineLimit(1)
+            .accessibilityHidden(viewModel.heardSnippet.isEmpty)
     }
 
     private var quoteTransition: AnyTransition {
@@ -130,6 +244,29 @@ struct FinishTheLineGameView: View {
             insertion: .move(edge: .trailing).combined(with: .opacity),
             removal: .move(edge: .leading).combined(with: .opacity)
         )
+    }
+
+    // MARK: - Feedback triggers
+
+    private func triggerNearMiss() {
+        if !reduceMotion {
+            withAnimation(.linear(duration: 0.35)) {
+                shakeCount += 1
+            }
+        }
+        showNearMissPip = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_400_000_000)
+            showNearMissPip = false
+        }
+    }
+
+    private func triggerTimeBonusPip() {
+        showTimeBonusPip = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 900_000_000)
+            showTimeBonusPip = false
+        }
     }
 
     // MARK: - Bottom controls
@@ -157,7 +294,21 @@ struct FinishTheLineGameView: View {
                 )
             }
             .pressable()
-            .accessibilityLabel("Skip this quote. Costs \(FinishTheLineViewModel.skipPenalty) points.")
+            .accessibilityLabel("Skip this quote. Free, but resets your streak.")
         }
+    }
+}
+
+// MARK: - Shake effect
+
+/// Quick horizontal jitter for near-miss feedback. Named to avoid colliding
+/// with Casting Director's ShakeEffect — game folders stay isolated.
+private struct FinishTheLineShakeEffect: GeometryEffect {
+    var animatableData: CGFloat
+
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        ProjectionTransform(
+            CGAffineTransform(translationX: -6 * sin(animatableData * .pi * 3), y: 0)
+        )
     }
 }

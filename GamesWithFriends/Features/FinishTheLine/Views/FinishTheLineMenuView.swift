@@ -366,11 +366,11 @@ private struct DifficultySegmentButton: View {
             )
         }
         .pressable()
-        .accessibilityLabel("\(difficulty.displayName) difficulty, \(multiplierLabel) score multiplier")
+        .accessibilityLabel("\(difficulty.displayName) difficulty, \(multiplierLabel) per correct answer")
     }
 
     private var multiplierLabel: String {
-        String(format: "%.1f×", difficulty.multiplier)
+        "\(FinishTheLineViewModel.pointsPerCorrect(for: difficulty)) pts"
     }
 }
 
