@@ -28,7 +28,6 @@ final class ActorFactsTests: XCTestCase {
         XCTAssertEqual(facts.totalCredits, 3)
         XCTAssertEqual(facts.sortedGenres.first?.genre, "Drama")
         XCTAssertEqual(facts.careerSpanYears, 18)
-        XCTAssertEqual(facts.mostActiveDecade, 2010)
     }
 
     func testIdentifiesAcclaimAndBlockbusters() {

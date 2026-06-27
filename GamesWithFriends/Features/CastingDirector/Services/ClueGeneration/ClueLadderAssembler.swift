@@ -22,10 +22,15 @@ enum ClueLadderAssembler {
         ].compactMap { $0 }
 
         var strong: [Clue] = []
-        if let freq = ClueBuilders.frequentDirector(facts) { strong.append(freq) }
+        // The top-ranked director is named exactly once: "A regular in X's films" when they
+        // are a frequent collaborator, otherwise the richer film-anchored combined clue.
+        if let freq = ClueBuilders.frequentDirector(facts) {
+            strong.append(freq)
+        } else if let combined = ClueBuilders.combinedDirectorFilm(facts) {
+            strong.append(combined)
+        }
         strong.append(contentsOf: ClueBuilders.namedDirectors(facts))
         if let named = ClueBuilders.franchiseNamed(facts) { strong.append(named) }
-        if let combined = ClueBuilders.combinedDirectorFilm(facts) { strong.append(combined) }
 
         let coStarClues = ClueBuilders.namedCoStars(facts)
 

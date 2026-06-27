@@ -49,6 +49,12 @@ final class ClueLadderAssemblerTests: XCTestCase {
         }
     }
 
+    func testTopDirectorNamedAtMostOnce() {
+        let clues = ClueLadderAssembler.assemble(facts: richFacts(), difficulty: .easy, tuning: .default)
+        let nolanMentions = clues.filter { $0.text.contains("Nolan") }.count
+        XCTAssertLessThanOrEqual(nolanMentions, 1, "a director must not be named in more than one clue")
+    }
+
     func testFallbackActorStillGetsTitle() {
         // Actor that triggers no special gates: few films, mixed genres, short career, low ratings.
         let movies = [movie("A", year: 2018, genres: "Drama", rating: 6.0, votes: 60_000),

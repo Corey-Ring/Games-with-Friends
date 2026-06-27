@@ -18,7 +18,6 @@ struct ActorFacts {
     let totalCredits: Int
     let sortedGenres: [GenreCount]      // desc by count
     let topGenreShare: Double
-    let mostActiveDecade: Int?
     let breakoutDecade: Int?            // decade of earliest recognizable film
     let careerSpanYears: Int
     let acclaimedFilms: [Movie]         // rating >= acclaimRating, votes desc
@@ -60,13 +59,6 @@ struct ActorFacts {
             : Double(sortedGenres.first?.count ?? 0) / Double(sorted.count)
 
         // Decades
-        var decadeCounts: [Int: Int] = [:]
-        for movie in sorted {
-            guard let year = movie.year else { continue }
-            decadeCounts[(year / 10) * 10, default: 0] += 1
-        }
-        self.mostActiveDecade = decadeCounts.max { $0.value < $1.value }?.key
-
         let years = sorted.compactMap(\.year)
         self.careerSpanYears = (years.max() ?? 0) - (years.min() ?? 0)
 

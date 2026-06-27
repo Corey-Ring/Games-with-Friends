@@ -76,12 +76,14 @@ enum ClueBuilders {
         return clue("A regular in \(top.director.name)'s films", .director, .strongSignal)
     }
 
-    /// Named directors, excluding any already covered by the frequent-director clue.
+    /// Named directors other than the top-ranked one (the top director is covered by
+    /// `frequentDirector` or `combinedDirectorFilm`), excluding any frequent collaborators.
     static func namedDirectors(_ f: ActorFacts, limit: Int = 2) -> [Clue] {
         f.directorsByFrequency
-            .filter { $0.count < f.tuning.frequentDirectorCount }
+            .enumerated()
+            .filter { index, credit in index != 0 && credit.count < f.tuning.frequentDirectorCount }
             .prefix(limit)
-            .map { clue("Worked with director \($0.director.name)", .director, .strongSignal) }
+            .map { clue("Worked with director \($0.element.director.name)", .director, .strongSignal) }
     }
 
     static func namedCoStars(_ f: ActorFacts, limit: Int = 2) -> [Clue] {
