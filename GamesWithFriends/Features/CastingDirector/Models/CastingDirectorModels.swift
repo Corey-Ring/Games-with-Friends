@@ -7,21 +7,29 @@ enum ClueType {
     case movieCount
     case decade
     case genre
+    case genreIdentity
+    case longevity
+    case blockbuster
+    case franchise
     case movieYearGenre
     case rating
     case director
     case coStar
     case combined
     case movieTitle
-    
+
     var icon: String {
         switch self {
         case .movieCount, .movieYearGenre, .movieTitle:
             return "film.stack"
-        case .decade:
+        case .decade, .longevity:
             return "calendar"
-        case .genre:
+        case .genre, .genreIdentity:
             return "film"
+        case .blockbuster:
+            return "flame.fill"
+        case .franchise:
+            return "rectangle.stack.fill"
         case .rating:
             return "star.fill"
         case .director:
