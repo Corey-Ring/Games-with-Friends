@@ -53,6 +53,7 @@
 		63813C131E53D9FDB85F4559 /* ClueBuilders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 738B8B6A213DA4C3C836EBEA /* ClueBuilders.swift */; };
 		646E461D2798F05A5FB0D001 /* BorderHopGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C33059A4FC06BE6FD7B7A6A /* BorderHopGameView.swift */; };
 		647A9A2B787B189313CE4D46 /* ClueTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFFA2186BF8E5C1F529A7F0 /* ClueTuning.swift */; };
+		6E2CD5015590CF7B726705B3 /* ClueGeneratorIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8760B25E57A779684B408F4E /* ClueGeneratorIntegrationTests.swift */; };
 		6FE6F6AAC29D1617EDF874D3 /* RoundResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83740FBD51D88D6DE3842BD /* RoundResultsView.swift */; };
 		78E8E3AA4AAEF0A29A351075 /* ActorFacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511E75D624B1C5511E4979D7 /* ActorFacts.swift */; };
 		7D29D48E0BCE96EB1A56AD51 /* ClueLadderAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B530D0984BED1BE39031EE2 /* ClueLadderAssembler.swift */; };
@@ -232,6 +233,7 @@
 		771CD3B545EF4CF697598FAD /* CastingDirectorGameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorGameOverView.swift; sourceTree = "<group>"; };
 		7E3E539738BF9B87C15E66CB /* StopwatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchView.swift; sourceTree = "<group>"; };
 		80BFC6E88AF5B11741EC1036 /* BorderHopGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopGame.swift; sourceTree = "<group>"; };
+		8760B25E57A779684B408F4E /* ClueGeneratorIntegrationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueGeneratorIntegrationTests.swift; path = ../../GamesWithFriendsTests/ClueGeneratorIntegrationTests.swift; sourceTree = "<group>"; };
 		8B164C28D586C431DB94A76D /* BorderHopCountryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopCountryData.swift; sourceTree = "<group>"; };
 		8C115CCFFDD4E4E3C316FC94 /* ClueGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClueGenerator.swift; sourceTree = "<group>"; };
 		9EFC83BF0058967C0FC4CF8F /* MapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRenderer.swift; sourceTree = "<group>"; };
@@ -370,6 +372,7 @@
 				D9D2EFBE20E2F6ECC969E759 /* FranchiseDetectorTests.swift */,
 				D3DCB539E3F859283CFC33B3 /* ActorFactsTests.swift */,
 				C4659BABA6B3904065DD6133 /* ClueLadderAssemblerTests.swift */,
+				8760B25E57A779684B408F4E /* ClueGeneratorIntegrationTests.swift */,
 			);
 			name = GamesWithFriendsTests;
 			path = GamesWithFriends/GamesWithFriendsTests;
@@ -1188,6 +1191,7 @@
 				1100CF9D3457D8D775409119 /* FranchiseDetectorTests.swift in Sources */,
 				86E6F4294F19721EB6D70A7B /* ActorFactsTests.swift in Sources */,
 				10C3B9F8C0D46A672F386884 /* ClueLadderAssemblerTests.swift in Sources */,
+				6E2CD5015590CF7B726705B3 /* ClueGeneratorIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
