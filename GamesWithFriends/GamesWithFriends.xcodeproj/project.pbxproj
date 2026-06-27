@@ -10,6 +10,7 @@
 		0013CC9E2603BF0F03A2CA62 /* GuessOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E24AF47ECEE9765542BD20 /* GuessOverlayView.swift */; };
 		06D5EA4A9B2DDC4145745EC1 /* FranchiseDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36ECEBF2AC09E319B228A592 /* FranchiseDetector.swift */; };
 		06FC50D097F5DC0D0B5EE7EC /* ClueBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE79220ABF60EDD425B86DF /* ClueBoardView.swift */; };
+		10C3B9F8C0D46A672F386884 /* ClueLadderAssemblerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4659BABA6B3904065DD6133 /* ClueLadderAssemblerTests.swift */; };
 		1100CF9D3457D8D775409119 /* FranchiseDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D2EFBE20E2F6ECC969E759 /* FranchiseDetectorTests.swift */; };
 		14F68D71A924870DE5BB57BD /* BorderHopViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */; };
 		2DD62FB808FF825CC081B894 /* BorderHopResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */; };
@@ -54,6 +55,7 @@
 		647A9A2B787B189313CE4D46 /* ClueTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFFA2186BF8E5C1F529A7F0 /* ClueTuning.swift */; };
 		6FE6F6AAC29D1617EDF874D3 /* RoundResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83740FBD51D88D6DE3842BD /* RoundResultsView.swift */; };
 		78E8E3AA4AAEF0A29A351075 /* ActorFacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511E75D624B1C5511E4979D7 /* ActorFacts.swift */; };
+		7D29D48E0BCE96EB1A56AD51 /* ClueLadderAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B530D0984BED1BE39031EE2 /* ClueLadderAssembler.swift */; };
 		825F7A053E36D71162F92F71 /* CastingDirectorGameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771CD3B545EF4CF697598FAD /* CastingDirectorGameOverView.swift */; };
 		8500BD5EE18A2ABBC54C25E5 /* CastingDirectorRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6426E0F9D2A5C1A3A922CD4A /* CastingDirectorRootView.swift */; };
 		86E6F4294F19721EB6D70A7B /* ActorFactsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DCB539E3F859283CFC33B3 /* ActorFactsTests.swift */; };
@@ -177,6 +179,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0B530D0984BED1BE39031EE2 /* ClueLadderAssembler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueLadderAssembler.swift; path = Features/CastingDirector/Services/ClueGeneration/ClueLadderAssembler.swift; sourceTree = "<group>"; };
 		0C33059A4FC06BE6FD7B7A6A /* BorderHopGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopGameView.swift; sourceTree = "<group>"; };
 		0CC84603689E26C6A2B560E2 /* SmokeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SmokeTests.swift; path = ../../GamesWithFriendsTests/SmokeTests.swift; sourceTree = "<group>"; };
 		0EFFD6B5E1EB7845691621AE /* ClueBuildersTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueBuildersTests.swift; path = ../../GamesWithFriendsTests/ClueBuildersTests.swift; sourceTree = "<group>"; };
@@ -236,6 +239,7 @@
 		A1B2C3D4E5F6071829304152 /* ne_110m_admin_0_countries.geojson */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ne_110m_admin_0_countries.geojson; sourceTree = "<group>"; };
 		BH00000000000000000010 /* CountryFlagProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryFlagProvider.swift; sourceTree = "<group>"; };
 		BH00000000000000000012 /* QuizTypeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizTypeSelector.swift; sourceTree = "<group>"; };
+		C4659BABA6B3904065DD6133 /* ClueLadderAssemblerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueLadderAssemblerTests.swift; path = ../../GamesWithFriendsTests/ClueLadderAssemblerTests.swift; sourceTree = "<group>"; };
 		C83740FBD51D88D6DE3842BD /* RoundResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundResultsView.swift; sourceTree = "<group>"; };
 		CD1CDBD0A43F76C79197488E /* CountryGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryGraph.swift; sourceTree = "<group>"; };
 		D3DCB539E3F859283CFC33B3 /* ActorFactsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ActorFactsTests.swift; path = ../../GamesWithFriendsTests/ActorFactsTests.swift; sourceTree = "<group>"; };
@@ -365,6 +369,7 @@
 				0EFFD6B5E1EB7845691621AE /* ClueBuildersTests.swift */,
 				D9D2EFBE20E2F6ECC969E759 /* FranchiseDetectorTests.swift */,
 				D3DCB539E3F859283CFC33B3 /* ActorFactsTests.swift */,
+				C4659BABA6B3904065DD6133 /* ClueLadderAssemblerTests.swift */,
 			);
 			name = GamesWithFriendsTests;
 			path = GamesWithFriends/GamesWithFriendsTests;
@@ -563,6 +568,7 @@
 				36ECEBF2AC09E319B228A592 /* FranchiseDetector.swift */,
 				511E75D624B1C5511E4979D7 /* ActorFacts.swift */,
 				738B8B6A213DA4C3C836EBEA /* ClueBuilders.swift */,
+				0B530D0984BED1BE39031EE2 /* ClueLadderAssembler.swift */,
 			);
 			name = ClueGeneration;
 			sourceTree = "<group>";
@@ -1181,6 +1187,7 @@
 				3B7C856BB50C57C3759A66CC /* ClueBuildersTests.swift in Sources */,
 				1100CF9D3457D8D775409119 /* FranchiseDetectorTests.swift in Sources */,
 				86E6F4294F19721EB6D70A7B /* ActorFactsTests.swift in Sources */,
+				10C3B9F8C0D46A672F386884 /* ClueLadderAssemblerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1332,6 +1339,7 @@
 				06D5EA4A9B2DDC4145745EC1 /* FranchiseDetector.swift in Sources */,
 				78E8E3AA4AAEF0A29A351075 /* ActorFacts.swift in Sources */,
 				63813C131E53D9FDB85F4559 /* ClueBuilders.swift in Sources */,
+				7D29D48E0BCE96EB1A56AD51 /* ClueLadderAssembler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
