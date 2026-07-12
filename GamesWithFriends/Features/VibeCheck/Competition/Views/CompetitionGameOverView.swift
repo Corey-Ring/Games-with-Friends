@@ -3,6 +3,8 @@ import SwiftUI
 struct CompetitionGameOverView: View {
     var viewModel: CompetitionVibeCheckViewModel
     @State private var showConfetti = false
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.lg) {
@@ -33,8 +35,11 @@ struct CompetitionGameOverView: View {
             }
         }
         .onAppear {
-            withAnimation(.easeInOut(duration: 0.5).delay(0.3)) {
-                showConfetti = true
+            // Skip confetti entirely under Reduce Motion; keep the celebratory haptic
+            if !reduceMotion {
+                withAnimation(.easeInOut(duration: 0.5).delay(0.3)) {
+                    showConfetti = true
+                }
             }
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
@@ -91,7 +96,7 @@ struct CompetitionGameOverView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
+                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }

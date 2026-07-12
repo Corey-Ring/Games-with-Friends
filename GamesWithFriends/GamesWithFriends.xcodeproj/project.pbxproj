@@ -72,6 +72,7 @@
 		BH00000000000000000011 /* CountryFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BH00000000000000000010 /* CountryFlagProvider.swift */; };
 		BH00000000000000000013 /* QuizTypeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = BH00000000000000000012 /* QuizTypeSelector.swift */; };
 		C50C046FE5CA1CE43FE9F2CD /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC84603689E26C6A2B560E2 /* SmokeTests.swift */; };
+		0DDF00D5BEEFCAFE00000002 /* BorderHopRouteGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DDF00D5BEEFCAFE00000001 /* BorderHopRouteGenerationTests.swift */; };
 		C81058FD3AF002326590C757 /* BorderHopGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC6E88AF5B11741EC1036 /* BorderHopGame.swift */; };
 		CFB73CFD1165E460873FD563 /* CountryGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1CDBD0A43F76C79197488E /* CountryGraph.swift */; };
 		EC6DF7F939F1429F53979E41 /* CastingDirectorSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF032457008CACCB62515BA /* CastingDirectorSetupView.swift */; };
@@ -184,6 +185,7 @@
 		0B530D0984BED1BE39031EE2 /* ClueLadderAssembler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueLadderAssembler.swift; path = Features/CastingDirector/Services/ClueGeneration/ClueLadderAssembler.swift; sourceTree = "<group>"; };
 		0C33059A4FC06BE6FD7B7A6A /* BorderHopGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopGameView.swift; sourceTree = "<group>"; };
 		0CC84603689E26C6A2B560E2 /* SmokeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SmokeTests.swift; path = ../../GamesWithFriendsTests/SmokeTests.swift; sourceTree = "<group>"; };
+		0DDF00D5BEEFCAFE00000001 /* BorderHopRouteGenerationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BorderHopRouteGenerationTests.swift; path = ../../GamesWithFriendsTests/BorderHopRouteGenerationTests.swift; sourceTree = "<group>"; };
 		0EFFD6B5E1EB7845691621AE /* ClueBuildersTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueBuildersTests.swift; path = ../../GamesWithFriendsTests/ClueBuildersTests.swift; sourceTree = "<group>"; };
 		163185AC4CA8F9B7D72E7E02 /* BorderHopMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopMapView.swift; sourceTree = "<group>"; };
 		22E24AF47ECEE9765542BD20 /* GuessOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuessOverlayView.swift; sourceTree = "<group>"; };
@@ -370,6 +372,7 @@
 			isa = PBXGroup;
 			children = (
 				0CC84603689E26C6A2B560E2 /* SmokeTests.swift */,
+				0DDF00D5BEEFCAFE00000001 /* BorderHopRouteGenerationTests.swift */,
 				0EFFD6B5E1EB7845691621AE /* ClueBuildersTests.swift */,
 				D9D2EFBE20E2F6ECC969E759 /* FranchiseDetectorTests.swift */,
 				D3DCB539E3F859283CFC33B3 /* ActorFactsTests.swift */,
@@ -1190,6 +1193,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C50C046FE5CA1CE43FE9F2CD /* SmokeTests.swift in Sources */,
+				0DDF00D5BEEFCAFE00000002 /* BorderHopRouteGenerationTests.swift in Sources */,
 				3B7C856BB50C57C3759A66CC /* ClueBuildersTests.swift in Sources */,
 				1100CF9D3457D8D775409119 /* FranchiseDetectorTests.swift in Sources */,
 				86E6F4294F19721EB6D70A7B /* ActorFactsTests.swift in Sources */,
@@ -1528,13 +1532,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleIconName = AppIcon;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Border Blitz uses your microphone to listen for country name guesses during gameplay.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Border Blitz uses speech recognition to automatically detect when you say the correct country name.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Games With Friends uses your microphone to hear your spoken answers in voice-controlled games like Border Blitz and Finish the Line.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Games With Friends uses speech recognition to automatically detect when you say a correct answer in voice-controlled games.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1544,7 +1547,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1559,13 +1562,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleIconName = AppIcon;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Border Blitz uses your microphone to listen for country name guesses during gameplay.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Border Blitz uses speech recognition to automatically detect when you say the correct country name.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Games With Friends uses your microphone to hear your spoken answers in voice-controlled games like Border Blitz and Finish the Line.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Games With Friends uses speech recognition to automatically detect when you say a correct answer in voice-controlled games.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1575,7 +1577,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

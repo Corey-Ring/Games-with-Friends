@@ -3,11 +3,24 @@ import SwiftUI
 struct GameView: View {
     var viewModel: GameViewModel
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dragOffset: CGSize = .zero
     @State private var showingResetAlert = false
 
+    /// Runs a state change with a spring animation, or immediately when Reduce Motion is on.
+    private func withNavAnimation(_ action: () -> Void) {
+        if reduceMotion {
+            action()
+        } else {
+            withAnimation(.spring()) {
+                action()
+            }
+        }
+    }
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 backgroundGradient
                     .ignoresSafeArea()
@@ -40,7 +53,7 @@ struct GameView: View {
                             onStar: { viewModel.toggleStar(starter) }
                         )
                         .offset(dragOffset)
-                        .rotationEffect(.degrees(Double(dragOffset.width / 20)))
+                        .rotationEffect(.degrees(reduceMotion ? 0 : Double(dragOffset.width / 20)))
                         .gesture(
                             DragGesture()
                                 .onChanged { gesture in
@@ -49,16 +62,17 @@ struct GameView: View {
                                 .onEnded { gesture in
                                     if abs(gesture.translation.width) > 100 {
                                         if gesture.translation.width > 0 && viewModel.hasPrevious {
-                                            withAnimation(.spring()) {
+                                            withNavAnimation {
                                                 viewModel.previousStarter()
                                             }
-                                        } else if gesture.translation.width < 0 && viewModel.hasNext {
-                                            withAnimation(.spring()) {
+                                        } else if gesture.translation.width < 0 {
+                                            // Swiping past the last card reaches "All Done"
+                                            withNavAnimation {
                                                 viewModel.nextStarter()
                                             }
                                         }
                                     }
-                                    withAnimation(.spring()) {
+                                    withNavAnimation {
                                         dragOffset = .zero
                                     }
                                 }
@@ -69,7 +83,7 @@ struct GameView: View {
                         // Navigation buttons
                         HStack(spacing: 40) {
                             Button(action: {
-                                withAnimation(.spring()) {
+                                withNavAnimation {
                                     viewModel.previousStarter()
                                 }
                             }) {
@@ -82,7 +96,7 @@ struct GameView: View {
 
                             if viewModel.settings.timerEnabled {
                                 Button(action: {
-                                    withAnimation(.spring()) {
+                                    withNavAnimation {
                                         viewModel.nextStarter()
                                     }
                                 }) {
@@ -92,21 +106,22 @@ struct GameView: View {
                                         Text("Pass")
                                             .font(AppTheme.Typography.caption)
                                     }
-                                    .foregroundColor(.orange)
+                                    .foregroundColor(AppTheme.warning)
                                 }
                                 .accessibilityLabel("Pass and skip to next")
                             }
 
+                            // Stays enabled on the last card — advancing past it
+                            // shows the "All Done" screen.
                             Button(action: {
-                                withAnimation(.spring()) {
+                                withNavAnimation {
                                     viewModel.nextStarter()
                                 }
                             }) {
                                 Image(systemName: "chevron.right.circle.fill")
                                     .font(.system(size: 50))
-                                    .foregroundColor(viewModel.hasNext ? GameTheme.conversationStarters.accentColor : AppTheme.mediumGray.opacity(0.3))
+                                    .foregroundColor(GameTheme.conversationStarters.accentColor)
                             }
-                            .disabled(!viewModel.hasNext)
                             .accessibilityLabel("Next conversation starter")
                         }
                         .padding(.bottom, AppTheme.Spacing.xl)
@@ -150,6 +165,10 @@ struct GameView: View {
             } message: {
                 Text("This will mark all cards as unseen and reshuffle the deck.")
             }
+            .onAppear {
+                // Start the round timer for the first card — nothing else does.
+                viewModel.resetTimer()
+            }
         }
     }
 
@@ -167,10 +186,10 @@ struct GameView: View {
     private var vibeColor: Color {
         switch viewModel.settings.vibeLevel {
         case 1: return GameTheme.conversationStarters.accentColor
-        case 2: return .green
-        case 3: return .yellow
-        case 4: return .orange
-        case 5: return .red
+        case 2: return AppTheme.success
+        case 3: return AppTheme.medalGold
+        case 4: return AppTheme.warning
+        case 5: return AppTheme.error
         default: return GameTheme.conversationStarters.accentColor
         }
     }
@@ -187,7 +206,7 @@ struct GameView: View {
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
         .padding(.vertical, AppTheme.Spacing.xs)
-        .background(AppTheme.pureWhite.opacity(0.95))
+        .background((colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite).opacity(0.95))
         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(viewModel.isTimerRunning ? "\(Int(viewModel.timeRemaining)) seconds remaining" : "Timer paused")
@@ -203,7 +222,7 @@ struct GameView: View {
         VStack(spacing: 20) {
             Image(systemName: "questionmark.circle")
                 .font(.system(size: 80))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondary)
 
             Text("No Starters Available")
                 .font(AppTheme.Typography.sectionHeader)
@@ -257,6 +276,7 @@ struct CardView: View {
     let starter: ConversationStarter
     let isStarred: Bool
     let onStar: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 0) {
@@ -330,8 +350,8 @@ struct CardView: View {
             .padding()
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 500)
-        .background(AppTheme.pureWhite)
+        .frame(minHeight: 320, maxHeight: 500)
+        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.large))
         .shadow(radius: 10)
         .padding(.horizontal, AppTheme.Spacing.xl)

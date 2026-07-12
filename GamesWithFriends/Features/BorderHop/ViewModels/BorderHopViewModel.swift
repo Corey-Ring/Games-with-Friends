@@ -28,6 +28,7 @@ class BorderHopViewModel {
     var currentStreak: Int = 0
     var roundResult: BorderHopRoundResult?
     var showBacktrackConfirm: Bool = false
+    var routeGenerationFailed: Bool = false
     var backtrackTargetId: String?
     var hasArrived: Bool = false
 
@@ -105,7 +106,14 @@ class BorderHopViewModel {
     }
 
     func startGame() {
-        guard let route = graph.generateRoute(difficulty: selectedDifficulty) else { return }
+        guard let route = graph.generateRoute(difficulty: selectedDifficulty) else {
+            // Should be near-impossible (see BorderHopRouteGenerationTests), but a
+            // dead Start button with no feedback is worse than an honest message.
+            routeGenerationFailed = true
+            HapticManager.error()
+            return
+        }
+        routeGenerationFailed = false
 
         startCountryId = route.startId
         destinationCountryId = route.destinationId
@@ -210,7 +218,15 @@ class BorderHopViewModel {
 
         switch countryStates[countryId] {
         case .frontier:
-            initiateQuiz(for: countryId)
+            // A hop must cross a real border from the CURRENT country. A frontier
+            // revealed by an earlier stop stays visible but isn't reachable from
+            // here — without this check the recorded route could contain
+            // geographically impossible jumps.
+            if graph.neighborIds(of: currentCountryId).contains(countryId) {
+                initiateQuiz(for: countryId)
+            } else {
+                HapticManager.light()
+            }
         case .destination:
             // Destination is tappable when adjacent to current country
             let neighbors = graph.neighborIds(of: currentCountryId)

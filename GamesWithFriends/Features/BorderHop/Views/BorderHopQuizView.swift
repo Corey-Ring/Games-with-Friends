@@ -360,7 +360,7 @@ struct BorderHopQuizView: View {
 
     private func prefixColor(isEliminated: Bool, isCorrectReveal: Bool) -> Color {
         if isCorrectReveal { return AppTheme.success }
-        if isEliminated { return .gray }
+        if isEliminated { return AppTheme.mediumGray }
         return AppTheme.compassRose
     }
 }
@@ -394,14 +394,14 @@ private struct ButtonChromeModifier: ViewModifier {
     }
 
     private var foreground: Color {
-        if isEliminated { return .gray }
+        if isEliminated { return AppTheme.mediumGray }
         return AppTheme.deepCharcoal
     }
 
     private var border: some ShapeStyle {
         if isRevealedAnswer { return AnyShapeStyle(AppTheme.warning) }
         if isCorrectReveal { return AnyShapeStyle(AppTheme.success) }
-        if isEliminated { return AnyShapeStyle(Color.gray.opacity(0.2)) }
+        if isEliminated { return AnyShapeStyle(AppTheme.mediumGray.opacity(0.2)) }
         return AnyShapeStyle(AppTheme.compassRose.opacity(0.4))
     }
 }

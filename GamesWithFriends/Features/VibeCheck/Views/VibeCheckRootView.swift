@@ -2,7 +2,9 @@ import SwiftUI
 
 struct VibeCheckRootView: View {
     @State private var classicViewModel = VibeCheckViewModel()
-    @State private var selectedMode: VibeCheckGameMode = .classic
+    // Classic mode is hidden for 1.0 (see DECISIONS.md) — Competition is the only
+    // player-facing mode. The classic flow below is kept intact for a future release.
+    @State private var selectedMode: VibeCheckGameMode = .competition
     @State private var competitionViewModel: CompetitionVibeCheckViewModel?
 
     var body: some View {

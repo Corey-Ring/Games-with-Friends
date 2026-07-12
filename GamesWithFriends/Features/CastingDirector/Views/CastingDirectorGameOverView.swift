@@ -43,7 +43,7 @@ struct CastingDirectorGameOverView: View {
         VStack(spacing: 12) {
             Image(systemName: "trophy.fill")
                 .font(.system(size: 70))
-                .foregroundStyle(.yellow)
+                .foregroundStyle(AppTheme.medalGold)
 
             Text("Game Over!")
                 .font(AppTheme.Typography.hero)
@@ -125,19 +125,19 @@ struct CastingDirectorGameOverView: View {
             HStack(spacing: AppTheme.Spacing.lg) {
                 StatBubble(label: "Correct", value: "\(player.correctGuesses)", icon: "checkmark.circle.fill", color: AppTheme.success)
                 StatBubble(label: "Wrong", value: "\(player.wrongGuesses)", icon: "xmark.circle.fill", color: AppTheme.error)
-                StatBubble(label: "Streak", value: "\(viewModel.bestStreak)", icon: "flame.fill", color: .orange)
+                StatBubble(label: "Streak", value: "\(viewModel.bestStreak)", icon: "flame.fill", color: AppTheme.warning)
             }
 
             // High score comparison
             if player.score >= viewModel.highScore && player.score > 0 {
                 HStack(spacing: 6) {
                     Image(systemName: "star.fill")
-                        .foregroundStyle(.yellow)
+                        .foregroundStyle(AppTheme.medalGold)
                     Text("New High Score!")
                         .font(AppTheme.Typography.cardTitle)
-                        .foregroundStyle(.yellow)
+                        .foregroundStyle(AppTheme.medalGold)
                     Image(systemName: "star.fill")
-                        .foregroundStyle(.yellow)
+                        .foregroundStyle(AppTheme.medalGold)
                 }
                 .padding(.top, AppTheme.Spacing.xs)
             } else if viewModel.highScore > 0 {
@@ -182,7 +182,7 @@ struct CastingDirectorGameOverView: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(GameTheme.castingDirector.accentColor)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             }
 
             Button {

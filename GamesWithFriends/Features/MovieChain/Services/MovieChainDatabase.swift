@@ -23,12 +23,39 @@ final class MovieChainDatabase: ObservableObject {
     /// Error information if loading failed
     private(set) var loadError: String?
 
-    /// Path to the decompressed database in the app's documents directory
+    /// Filename of the decompressed database.
+    private static let dbFileName = "moviechain_core.sqlite"
+
+    /// Path to the decompressed database in the app's Application Support
+    /// directory. This location is not synced to iCloud by default and, once
+    /// created, we also flag it as excluded from backups so the ~557MB file
+    /// never bloats the user's iCloud backup.
     private var decompressedDBPath: URL? {
+        guard let supportPath = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+
+        // Application Support is not guaranteed to exist; create it if needed.
+        if !FileManager.default.fileExists(atPath: supportPath.path) {
+            do {
+                try FileManager.default.createDirectory(at: supportPath, withIntermediateDirectories: true)
+            } catch {
+                print("MovieChainDatabase: Failed to create Application Support directory: \(error.localizedDescription)")
+                return nil
+            }
+        }
+
+        return supportPath.appendingPathComponent(Self.dbFileName)
+    }
+
+    /// Legacy path where earlier (pre-release) builds decompressed the database.
+    /// Used to migrate existing installs off of the iCloud-backed Documents
+    /// directory rather than re-decompressing.
+    private var legacyDocumentsDBPath: URL? {
         guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             return nil
         }
-        return documentsPath.appendingPathComponent("moviechain_core.sqlite")
+        return documentsPath.appendingPathComponent(Self.dbFileName)
     }
 
     private init() {
@@ -50,14 +77,32 @@ final class MovieChainDatabase: ObservableObject {
             return
         }
 
-        // Check if we already have a decompressed database
+        // Check if we already have a decompressed database at the new location.
         if FileManager.default.fileExists(atPath: dbPath.path) {
+            excludeFromBackup(at: dbPath)
             openDatabase(at: dbPath.path)
             return
         }
 
+        // Migrate a database left in the legacy Documents directory by an
+        // earlier build instead of re-decompressing the ~557MB file.
+        if let legacyPath = legacyDocumentsDBPath,
+           FileManager.default.fileExists(atPath: legacyPath.path) {
+            do {
+                try FileManager.default.moveItem(at: legacyPath, to: dbPath)
+                print("MovieChainDatabase: Migrated database from Documents to Application Support")
+                excludeFromBackup(at: dbPath)
+                openDatabase(at: dbPath.path)
+                return
+            } catch {
+                // If the move fails, fall through to a fresh decompression so
+                // the game still works; the stale legacy copy is left in place.
+                print("MovieChainDatabase: Failed to migrate legacy database: \(error.localizedDescription)")
+            }
+        }
+
         // Look for compressed database in bundle
-        guard let compressedPath = Bundle.main.path(forResource: "moviechain_core.sqlite", ofType: "gz") else {
+        guard let compressedPath = Bundle.main.path(forResource: Self.dbFileName, ofType: "gz") else {
             loadError = "Compressed database file not found in bundle"
             print("MovieChainDatabase: \(loadError ?? "unknown error")")
             return
@@ -74,6 +119,7 @@ final class MovieChainDatabase: ObservableObject {
                 DispatchQueue.main.async {
                     self.isDecompressing = false
                     self.decompressionProgress = 1.0
+                    self.excludeFromBackup(at: dbPath)
                     self.openDatabase(at: dbPath.path)
                 }
             } catch {
@@ -83,6 +129,20 @@ final class MovieChainDatabase: ObservableObject {
                     print("MovieChainDatabase: \(self.loadError ?? "unknown error")")
                 }
             }
+        }
+    }
+
+    /// Flag the database file as excluded from iCloud/iTunes backups. The file
+    /// is large and fully regenerable from the bundled archive, so it should
+    /// never be backed up. Failure here is non-fatal.
+    private func excludeFromBackup(at url: URL) {
+        var fileURL = url
+        do {
+            var values = URLResourceValues()
+            values.isExcludedFromBackup = true
+            try fileURL.setResourceValues(values)
+        } catch {
+            print("MovieChainDatabase: Failed to exclude database from backup: \(error.localizedDescription)")
         }
     }
 
@@ -336,11 +396,21 @@ final class MovieChainDatabase: ObservableObject {
             .map { "\($0)*" }
             .joined(separator: " ")
 
+        // Rank by the actor's most popular movie (MAX votes) so famous actors
+        // surface first for common-name searches. The correlated subquery only
+        // runs over the FTS-matched rows and uses the movie_actors/movies
+        // indexes, keeping it fast without a full-table scan.
         let sql = """
             SELECT a.nconst, a.name, a.known_for
             FROM actors a
             JOIN actors_fts fts ON a.rowid = fts.rowid
             WHERE actors_fts MATCH ?
+            ORDER BY (
+                SELECT MAX(m.votes)
+                FROM movie_actors ma
+                JOIN movies m ON ma.tconst = m.tconst
+                WHERE ma.nconst = a.nconst
+            ) DESC
             LIMIT ?
             """
 
@@ -471,12 +541,23 @@ final class MovieChainDatabase: ObservableObject {
             .map { "\($0)*" }
             .joined(separator: " ")
 
+        // Rank the matches within this movie by each actor's most popular movie
+        // (MAX votes across their whole filmography) so famous names surface
+        // first. The correlated subquery uses a distinct alias (ma2) so it does
+        // not clash with the movie-scoping join, and only runs over the small
+        // set of actors matched inside this movie.
         let sql = """
             SELECT a.nconst, a.name, a.known_for
             FROM actors a
             JOIN actors_fts fts ON a.rowid = fts.rowid
             JOIN movie_actors ma ON a.nconst = ma.nconst
             WHERE actors_fts MATCH ? AND ma.tconst = ?
+            ORDER BY (
+                SELECT MAX(m.votes)
+                FROM movie_actors ma2
+                JOIN movies m ON ma2.tconst = m.tconst
+                WHERE ma2.nconst = a.nconst
+            ) DESC
             LIMIT ?
             """
 

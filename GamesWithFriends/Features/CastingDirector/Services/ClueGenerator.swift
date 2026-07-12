@@ -43,17 +43,47 @@ final class ClueGenerator {
         Self.usedActorIdsThisSession.removeAll()
     }
 
-    /// Pick a random actor from the qualified pool, avoiding recent repeats
-    func pickRandomActor() -> Actor? {
+    /// Pick a random actor from the qualified pool, avoiding recent repeats.
+    /// When an era is selected, sample candidates until one's career fits it
+    /// (falling back to any actor if the sample turns up no match).
+    func pickRandomActor(era: CastingDirectorEra = .allEras) -> Actor? {
         let pool = getQualifiedActors()
         let available = pool.filter { !Self.usedActorIdsThisSession.contains($0) }
 
         // If we've used all actors, reset
-        let candidates = available.isEmpty ? pool : available
+        let candidates = (available.isEmpty ? pool : available).shuffled()
 
-        guard let randomId = candidates.randomElement() else { return nil }
+        if era != .allEras {
+            for id in candidates.prefix(60) {
+                if matchesEra(actorId: id, era: era), let actor = database.getActor(byId: id) {
+                    Self.usedActorIdsThisSession.insert(id)
+                    return actor
+                }
+            }
+            // No era match in the sample — fall through to an unfiltered pick
+            // rather than returning nil and leaving a dead Start button.
+        }
+
+        guard let randomId = candidates.first else { return nil }
         Self.usedActorIdsThisSession.insert(randomId)
         return database.getActor(byId: randomId)
+    }
+
+    /// An actor "belongs" to an era when the median release year of their
+    /// filmography falls inside it.
+    private func matchesEra(actorId: String, era: CastingDirectorEra) -> Bool {
+        let years = database.getMoviesWithActor(actorId: actorId)
+            .compactMap { $0.year }
+            .sorted()
+        guard !years.isEmpty else { return false }
+        let median = years[years.count / 2]
+
+        switch era {
+        case .allEras: return true
+        case .classic: return median < 1990
+        case .modern: return (1990..<2010).contains(median)
+        case .recent: return median >= 2010
+        }
     }
 
     // MARK: - Clue Generation

@@ -3,6 +3,7 @@ import SwiftUI
 struct CompetitionPromptEntryView: View {
     @Bindable var viewModel: CompetitionVibeCheckViewModel
     @FocusState private var isPromptFieldFocused: Bool
+    @Environment(\.colorScheme) private var colorScheme
 
     private var canSubmit: Bool {
         !viewModel.currentPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -87,7 +88,7 @@ struct CompetitionPromptEntryView: View {
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(AppTheme.pureWhite)
+                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
         }
     }
@@ -111,7 +112,7 @@ struct CompetitionPromptEntryView: View {
         .padding(AppTheme.Spacing.sm)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(AppTheme.pureWhite)
+                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
         }
     }

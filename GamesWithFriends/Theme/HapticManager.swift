@@ -9,6 +9,10 @@ struct HapticManager {
         UINotificationFeedbackGenerator().notificationOccurred(.error)
     }
 
+    static func warning() {
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+    }
+
     static func light() {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }

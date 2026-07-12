@@ -7,6 +7,7 @@ struct HomeView: View {
     @State private var showingSavedStarters = false
     @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ZStack {
@@ -66,7 +67,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.pureWhite)
+                        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -99,7 +100,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.pureWhite)
+                        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -128,7 +129,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.pureWhite)
+                        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -157,7 +158,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.pureWhite)
+                        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -226,10 +227,10 @@ struct HomeView: View {
     private func vibeColor(for level: Int) -> Color {
         switch level {
         case 1: return GameTheme.conversationStarters.accentColor
-        case 2: return .green
-        case 3: return .yellow
-        case 4: return .orange
-        case 5: return .red
+        case 2: return AppTheme.success
+        case 3: return AppTheme.medalGold
+        case 4: return AppTheme.warning
+        case 5: return AppTheme.error
         default: return GameTheme.conversationStarters.accentColor
         }
     }

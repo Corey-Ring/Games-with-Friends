@@ -23,7 +23,9 @@ struct BorderBlitzRootView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        Group {
+        ZStack {
+            GameBackground(gameTheme: GameTheme.borderBlitz)
+
             if viewModel.gameStarted {
                 BorderBlitzGameView(viewModel: viewModel)
             } else {

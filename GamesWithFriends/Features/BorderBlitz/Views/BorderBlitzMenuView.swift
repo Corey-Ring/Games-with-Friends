@@ -17,11 +17,11 @@ struct BorderBlitzMenuView: View {
                 VStack(spacing: AppTheme.Spacing.sm) {
                     Text("Border Blitz")
                         .font(AppTheme.Typography.hero)
-                        .foregroundColor(AppTheme.deepCharcoal)
+                        .foregroundColor(.primary)
 
                     Text("Identify countries by their borders!")
                         .font(AppTheme.Typography.body)
-                        .foregroundColor(AppTheme.mediumGray)
+                        .foregroundColor(.secondary)
                 }
                 .padding(.top, AppTheme.Spacing.lg)
 
@@ -47,7 +47,7 @@ struct BorderBlitzMenuView: View {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                     Text("Select Difficulty")
                         .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(AppTheme.deepCharcoal)
+                        .foregroundColor(.primary)
 
                     ForEach(BorderBlitzDifficulty.allCases) { difficulty in
                         BorderBlitzDifficultyButton(
@@ -71,10 +71,10 @@ struct BorderBlitzMenuView: View {
                             .foregroundColor(theme.accentColor)
                         Text("Microphone Required")
                             .font(AppTheme.Typography.cardTitle)
-                            .foregroundColor(AppTheme.deepCharcoal)
+                            .foregroundColor(.primary)
                         Text("Border Blitz uses your voice to detect country guesses. Tap below to enable microphone and speech recognition.")
                             .font(AppTheme.Typography.body)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                         PrimaryButton(title: "Enable Microphone", icon: "mic.fill") {
                             Task { await viewModel.speechManager.requestPermissions() }
@@ -93,10 +93,10 @@ struct BorderBlitzMenuView: View {
                             .foregroundColor(AppTheme.error)
                         Text("Microphone Access Denied")
                             .font(AppTheme.Typography.cardTitle)
-                            .foregroundColor(AppTheme.deepCharcoal)
+                            .foregroundColor(.primary)
                         Text("Border Blitz needs microphone and speech recognition access to work. Please enable them in Settings.")
                             .font(AppTheme.Typography.body)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                             Link("Open Settings", destination: settingsURL)
@@ -108,9 +108,17 @@ struct BorderBlitzMenuView: View {
                     .padding(.horizontal, AppTheme.Spacing.md)
                 }
 
-                // Start button
+                // Start button — if the mic permission hasn't been decided yet,
+                // request it first so a round never runs with a silently dead mic.
                 PrimaryButton(title: "Start Game", icon: "play.fill") {
-                    viewModel.startGame()
+                    Task {
+                        if viewModel.speechManager.permissionStatus == .notDetermined {
+                            await viewModel.speechManager.requestPermissions()
+                        }
+                        if viewModel.speechManager.permissionStatus != .denied {
+                            viewModel.startGame()
+                        }
+                    }
                 }
                 .disabled(viewModel.speechManager.permissionStatus == .denied)
                 .opacity(viewModel.speechManager.permissionStatus == .denied ? 0.5 : 1.0)
@@ -138,11 +146,11 @@ struct BorderBlitzDifficultyButton: View {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text(difficulty.rawValue)
                         .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
+                        .foregroundColor(isSelected ? .white : .primary)
 
                     Text(difficulty.description)
                         .font(AppTheme.Typography.caption)
-                        .foregroundColor(isSelected ? .white.opacity(0.9) : AppTheme.mediumGray)
+                        .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary)
                 }
 
                 Spacer()

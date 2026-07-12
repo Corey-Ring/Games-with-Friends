@@ -71,19 +71,28 @@ struct GameOverView: View {
                 VStack(spacing: AppTheme.Spacing.lg) {
                     // Header
                     VStack(spacing: AppTheme.Spacing.md) {
-                        Image(systemName: "flag.checkered")
+                        Image(systemName: viewModel.playerStandings.isEmpty ? "flag.checkered" : "trophy.fill")
                             .font(.system(size: 60))
-                            .foregroundStyle(GameTheme.name5.accentColor)
+                            .foregroundStyle(viewModel.playerStandings.isEmpty ? GameTheme.name5.accentColor : AppTheme.medalGold)
 
                         Text("Game Over!")
                             .font(AppTheme.Typography.hero)
                             .fontWeight(.bold)
 
-                        Text("Great job playing!")
+                        Text(winnerText)
                             .font(AppTheme.Typography.body)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
                     }
                     .padding(.top, 40)
+
+                    // Standings (pass-and-play only)
+                    if !viewModel.playerStandings.isEmpty {
+                        StandingsCard(
+                            standings: viewModel.playerStandings,
+                            winners: viewModel.winningPlayerNumbers
+                        )
+                    }
 
                     // Final Stats
                     FinalStatsCard(stats: viewModel.stats)
@@ -110,6 +119,55 @@ struct GameOverView: View {
             }
         }
     }
+
+    private var winnerText: String {
+        let winners = viewModel.winningPlayerNumbers
+        if winners.isEmpty {
+            return "Great job playing!"
+        } else if winners.count == 1 {
+            return "Player \(winners[0]) wins!"
+        } else {
+            let names = winners.map { "Player \($0)" }.joined(separator: " & ")
+            return "It's a tie — \(names)!"
+        }
+    }
+}
+
+// MARK: - Standings Card
+struct StandingsCard: View {
+    let standings: [Name5PlayerStanding]
+    let winners: [Int]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            Text("Standings")
+                .font(AppTheme.Typography.sectionHeader)
+                .fontWeight(.bold)
+
+            ForEach(standings) { standing in
+                HStack(spacing: AppTheme.Spacing.md) {
+                    Image(systemName: winners.contains(standing.playerNumber) ? "crown.fill" : "person.fill")
+                        .foregroundColor(winners.contains(standing.playerNumber) ? AppTheme.medalGold : .secondary)
+                        .frame(width: 24)
+
+                    Text("Player \(standing.playerNumber)")
+                        .font(AppTheme.Typography.cardTitle)
+                        .fontWeight(winners.contains(standing.playerNumber) ? .bold : .regular)
+
+                    Spacer()
+
+                    Text("\(standing.successes) of \(standing.attempts)")
+                        .font(AppTheme.Typography.cardTitle)
+                        .monospacedDigit()
+                        .foregroundColor(winners.contains(standing.playerNumber) ? GameTheme.name5.accentColor : .secondary)
+                }
+                .padding(.vertical, AppTheme.Spacing.xs)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .gameCard()
+        .accessibilityElement(children: .combine)
+    }
 }
 
 // MARK: - Final Stats Card
@@ -135,14 +193,14 @@ struct FinalStatsCard: View {
                     icon: "checkmark.circle.fill",
                     label: "Successful",
                     value: "\(stats.roundsWon)",
-                    color: .green
+                    color: AppTheme.success
                 )
 
                 FinalStatItem(
                     icon: "flame.fill",
                     label: "Best Streak",
                     value: "\(stats.bestStreak)",
-                    color: .orange
+                    color: AppTheme.warning
                 )
 
                 FinalStatItem(
@@ -198,7 +256,7 @@ struct RecentRoundsCard: View {
             ForEach(results.suffix(5).reversed()) { result in
                 HStack {
                     Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
-                        .foregroundColor(result.success ? .green : .orange)
+                        .foregroundColor(result.success ? AppTheme.success : AppTheme.warning)
 
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                         Text(result.promptText)

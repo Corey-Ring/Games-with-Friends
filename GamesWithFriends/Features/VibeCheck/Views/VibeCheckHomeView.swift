@@ -5,6 +5,7 @@ struct VibeCheckHomeView: View {
     @Binding var selectedMode: VibeCheckGameMode
     @State private var showHowToPlay = false
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ScrollView {
@@ -12,17 +13,9 @@ struct VibeCheckHomeView: View {
                 // Compact header with back button
                 compactHeaderRow
 
-                // Game Mode Selection
-                gameModeSection
-
-                // Mode-specific settings
-                if selectedMode == .classic {
-                    // Teams + Players per Team side-by-side
-                    teamsAndPlayersSection
-                } else {
-                    // Player count for competition mode
-                    playerCountSection
-                }
+                // Classic mode is hidden for 1.0 (see DECISIONS.md) — no mode picker;
+                // the flow is Competition only.
+                playerCountSection
 
                 // Target score
                 targetScoreSection
@@ -54,26 +47,11 @@ struct VibeCheckHomeView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $showHowToPlay) {
-            HowToPlayView(gameMode: selectedMode)
+            HowToPlayView(gameMode: .competition)
         }
     }
 
     // MARK: - Sections
-
-    private var gameModeSection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            Text("Game Mode")
-                .font(AppTheme.Typography.cardTitle)
-
-            ForEach(VibeCheckGameMode.allCases) { mode in
-                VibeCheckGameModeCard(
-                    mode: mode,
-                    isSelected: selectedMode == mode,
-                    action: { selectedMode = mode }
-                )
-            }
-        }
-    }
 
     private var playerCountSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
@@ -118,12 +96,7 @@ struct VibeCheckHomeView: View {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity)
         }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
-        }
+        .gameCard()
     }
 
     private var compactHeaderRow: some View {
@@ -133,9 +106,9 @@ struct VibeCheckHomeView: View {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(AppTheme.deepCharcoal)
+                    .foregroundStyle(.primary)
                     .frame(width: 36, height: 36)
-                    .background(AppTheme.pureWhite)
+                    .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                     .clipShape(Circle())
                     .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
             }
@@ -231,28 +204,26 @@ struct VibeCheckHomeView: View {
     }
 
     private var targetScoreSection: some View {
-        let currentScore = selectedMode == .classic ? viewModel.settings.targetScore : viewModel.competitionSettings.targetScore
+        let currentScore = viewModel.competitionSettings.targetScore
 
-        return VStack(alignment: .leading, spacing: 12) {
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Label("Target Score", systemImage: "flag.checkered")
                 .font(AppTheme.Typography.cardTitle)
 
             HStack(spacing: AppTheme.Spacing.md) {
                 ForEach([300, 500, 750, 1000], id: \.self) { score in
                     Button {
-                        if selectedMode == .classic {
-                            viewModel.settings.targetScore = score
-                        } else {
-                            viewModel.competitionSettings.targetScore = score
-                        }
+                        viewModel.competitionSettings.targetScore = score
                     } label: {
                         Text("\(score)")
                             .font(AppTheme.Typography.secondary.weight(.medium))
                             .padding(.horizontal, AppTheme.Spacing.md)
                             .padding(.vertical, AppTheme.Spacing.sm)
                             .background {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(currentScore == score ? GameTheme.vibeCheck.accentColor : AppTheme.warmLinen)
+                                RoundedRectangle(cornerRadius: AppTheme.Radius.small)
+                                    .fill(currentScore == score
+                                          ? GameTheme.vibeCheck.accentColor
+                                          : (colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen))
                             }
                             .foregroundStyle(currentScore == score ? .white : .primary)
                     }
@@ -260,25 +231,17 @@ struct VibeCheckHomeView: View {
                 }
             }
         }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
-        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .gameCard()
     }
 
     private var continueButton: some View {
         Button {
-            if selectedMode == .classic {
-                viewModel.proceedToTeamSetup()
-            } else {
-                viewModel.proceedToCompetitionPlayerSetup()
-            }
+            viewModel.proceedToCompetitionPlayerSetup()
         } label: {
             HStack {
                 Image(systemName: "arrow.right.circle.fill")
-                Text(selectedMode == .classic ? "Set Up Teams" : "Set Up Players")
+                Text("Set Up Players")
                     .fontWeight(.bold)
             }
             .frame(maxWidth: .infinity)
@@ -449,7 +412,8 @@ struct TeamSetupCard: View {
 
 struct HowToPlayView: View {
     @Environment(\.dismiss) private var dismiss
-    var gameMode: VibeCheckGameMode = .classic
+    @Environment(\.colorScheme) private var colorScheme
+    var gameMode: VibeCheckGameMode = .competition
 
     var body: some View {
         NavigationStack {
@@ -527,7 +491,7 @@ struct HowToPlayView: View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Label(title, systemImage: icon)
                 .font(AppTheme.Typography.cardTitle)
-                .foregroundStyle(.purple)
+                .foregroundStyle(GameTheme.vibeCheck.accentColor)
 
             content()
         }
@@ -535,7 +499,7 @@ struct HowToPlayView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(AppTheme.warmLinen)
+                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.warmLinen)
         }
     }
 

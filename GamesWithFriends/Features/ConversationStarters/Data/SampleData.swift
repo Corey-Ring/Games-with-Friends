@@ -36,7 +36,7 @@ class ConversationStarterData {
         ConversationStarter(text: "Share a time when you stood up for something you believed in", vibeLevel: 4, category: .storyTime),
         ConversationStarter(text: "Brutal honesty or white lies to protect feelings?", vibeLevel: 4, category: .thisOrThat),
         ConversationStarter(text: "What's something about yourself that most people misunderstand?", vibeLevel: 4, category: .deepDive),
-        ConversationStarter(text: "What's a opinion you have that would surprise people who know you?", vibeLevel: 4, category: .deepDive),
+        ConversationStarter(text: "What's an opinion you have that would surprise people who know you?", vibeLevel: 4, category: .deepDive),
 
         // VIBE LEVEL 5 - Daring
         ConversationStarter(text: "Would you rather be famous but hated or unknown but loved by those close to you?", vibeLevel: 5, category: .wouldYouRather),

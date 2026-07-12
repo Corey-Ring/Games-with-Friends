@@ -128,11 +128,11 @@ enum ScoringZone: CaseIterable {
 
     var color: Color {
         switch self {
-        case .perfect: return .green
-        case .great: return Color(red: 0.6, green: 0.8, blue: 0.2)
-        case .good: return .yellow
-        case .okay: return .orange
-        case .miss: return .red
+        case .perfect: return AppTheme.success
+        case .great: return AppTheme.tealGreen
+        case .good: return AppTheme.medalGold
+        case .okay: return AppTheme.warning
+        case .miss: return AppTheme.error
         }
     }
 

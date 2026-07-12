@@ -46,7 +46,7 @@ struct MovieChainGameView: View {
 
                 Text(viewModel.currentPlayer.name)
                     .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .foregroundColor(.primary)
                     .lineLimit(1)
 
                 Spacer()
@@ -182,7 +182,7 @@ struct MovieChainGameView: View {
             if !viewModel.isInitialPick {
                 Text(viewModel.currentPrompt)
                     .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
@@ -293,13 +293,19 @@ struct MovieChainGameView: View {
 struct ChainLinkView: View {
     let link: ChainLink
     let index: Int
+    @Environment(\.colorScheme) private var colorScheme
+
+    // Same treatment as MiniChainLinkView: deepCharcoal is invisible on darkCard.
+    private var actorCircleColor: Color {
+        colorScheme == .dark ? AppTheme.darkElevated : AppTheme.deepCharcoal
+    }
 
     var body: some View {
         HStack(spacing: AppTheme.Spacing.md) {
             // Icon
             ZStack {
                 Circle()
-                    .fill(link.isMovie ? GameTheme.movieChain.accentColor : AppTheme.deepCharcoal)
+                    .fill(link.isMovie ? GameTheme.movieChain.accentColor : actorCircleColor)
                     .frame(width: 44, height: 44)
 
                 Image(systemName: link.isMovie ? "film" : "person.fill")
@@ -311,11 +317,11 @@ struct ChainLinkView: View {
                 Text(link.isMovie ? "MOVIE" : "ACTOR")
                     .font(AppTheme.Typography.caption)
                     .fontWeight(.semibold)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .foregroundColor(.secondary)
 
                 Text(link.displayName)
                     .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .foregroundColor(.primary)
 
                 if case .movie(let movie) = link, let year = movie.year {
                     Text(verbatim: "\(year)")
@@ -370,11 +376,11 @@ struct InitialPickView: View {
                 ZStack {
                     Circle()
                         .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5]))
-                        .foregroundStyle(AppTheme.deepCharcoal)
+                        .foregroundStyle(.primary)
                         .frame(width: 44, height: 44)
 
                     Image(systemName: "person.fill")
-                        .foregroundStyle(AppTheme.deepCharcoal)
+                        .foregroundStyle(.primary)
                 }
             }
 
@@ -476,6 +482,11 @@ struct PlayerStatusBadge: View {
 struct SearchResultRow: View {
     let result: SearchResult
     let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var actorTint: Color {
+        colorScheme == .dark ? AppTheme.darkMutedText : AppTheme.deepCharcoal
+    }
 
     var body: some View {
         Button(action: action) {
@@ -483,18 +494,18 @@ struct SearchResultRow: View {
                 // Icon
                 ZStack {
                     Circle()
-                        .fill(isMovie ? GameTheme.movieChain.accentColor.opacity(0.2) : AppTheme.deepCharcoal.opacity(0.2))
+                        .fill(isMovie ? GameTheme.movieChain.accentColor.opacity(0.2) : actorTint.opacity(0.2))
                         .frame(width: 40, height: 40)
 
                     Image(systemName: isMovie ? "film" : "person.fill")
-                        .foregroundStyle(isMovie ? GameTheme.movieChain.accentColor : AppTheme.deepCharcoal)
+                        .foregroundStyle(isMovie ? GameTheme.movieChain.accentColor : actorTint)
                 }
 
                 // Content
                 VStack(alignment: .leading, spacing: 2) {
                     Text(result.displayName)
                         .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(AppTheme.deepCharcoal)
+                        .foregroundColor(.primary)
 
                     if let subtitle = result.subtitle, !subtitle.isEmpty {
                         Text(subtitle)

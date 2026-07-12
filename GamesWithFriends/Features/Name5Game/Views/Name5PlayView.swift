@@ -144,11 +144,11 @@ struct PromptCard: View {
                 .background(Capsule().fill(difficultyColor))
             }
 
-            // Prompt text
+            // Prompt text — .primary so it stays readable on .gameCard()'s dark surface
             Text(prompt.text)
                 .font(AppTheme.Typography.sectionHeader)
                 .multilineTextAlignment(.center)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(.primary)
                 .padding(.horizontal)
         }
         .padding(AppTheme.Spacing.xl)
@@ -168,9 +168,9 @@ struct PromptCard: View {
 
     private var difficultyColor: Color {
         switch prompt.difficulty {
-        case .easy: return .green
-        case .medium: return .orange
-        case .hard: return .red
+        case .easy: return AppTheme.success
+        case .medium: return AppTheme.warning
+        case .hard: return AppTheme.error
         }
     }
 }

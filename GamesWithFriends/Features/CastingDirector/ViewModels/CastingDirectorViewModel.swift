@@ -157,17 +157,21 @@ class CastingDirectorViewModel: ObservableObject {
         // Show the playing/loading screen immediately
         gamePhase = .playing
 
+        // Capture settings on the main thread before hopping to the background.
+        let era = self.era
+        let difficulty = self.difficulty
+
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
 
-            guard let actor = self.clueGenerator.pickRandomActor() else {
+            guard let actor = self.clueGenerator.pickRandomActor(era: era) else {
                 DispatchQueue.main.async {
                     self.isLoadingRound = false
                 }
                 return
             }
 
-            let clues = self.clueGenerator.generateClues(for: actor, difficulty: self.difficulty)
+            let clues = self.clueGenerator.generateClues(for: actor, difficulty: difficulty)
 
             DispatchQueue.main.async {
                 self.roundState.targetActor = actor
@@ -207,8 +211,12 @@ class CastingDirectorViewModel: ObservableObject {
 
         let clue = allClues[nextClueIndex]
         roundState.revealedClues.append(clue)
+        // The first clue is free — you can't guess with zero clues, so the full
+        // 1,000 base must be reachable. Cost applies from the second clue on.
+        if roundState.cluesRevealed > 0 {
+            roundState.currentScore = max(0, roundState.currentScore - 50)
+        }
         roundState.cluesRevealed += 1
-        roundState.currentScore = max(0, roundState.currentScore - 50)
 
         // Assign a random position on the clue board
         assignPosition(for: clue)
@@ -238,7 +246,9 @@ class CastingDirectorViewModel: ObservableObject {
         searchQuery = ""
         searchResults = []
 
-        guard let target = roundState.targetActor else { return }
+        // isComplete guard blocks a second submission during the 1.5s
+        // success-overlay window, which would double-award the round score.
+        guard let target = roundState.targetActor, !roundState.isComplete else { return }
 
         if actor.nconst == target.nconst {
             // Correct!
@@ -293,6 +303,7 @@ class CastingDirectorViewModel: ObservableObject {
     func giveUp() {
         stopClueTimer()
         roundState.currentScore = 0
+        roundState.gaveUp = true
         currentStreak = 0
         endRound(guessed: false)
     }

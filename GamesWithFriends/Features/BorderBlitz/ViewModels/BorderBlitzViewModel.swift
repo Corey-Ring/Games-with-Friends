@@ -24,6 +24,8 @@ class BorderBlitzViewModel {
     var currentStreak: Int = 0
     var roundResults: [BorderBlitzRoundResult] = []
     var selectedDifficulty: BorderBlitzDifficulty = .medium
+    /// A session is a fixed number of rounds — "blitz" means short.
+    let maxRounds = 10
     var showFeedback: Bool = false
     var feedbackMessage: String = ""
     var feedbackIsCorrect: Bool = false
@@ -40,6 +42,10 @@ class BorderBlitzViewModel {
     // MARK: - Computed Properties
     var gameStarted: Bool {
         gameState != .menu
+    }
+
+    var currentRoundNumber: Int {
+        min(roundResults.count + 1, maxRounds)
     }
 
     var totalTime: TimeInterval {
@@ -100,7 +106,9 @@ class BorderBlitzViewModel {
 
     func handleManualConfirm() {
         guard gameState == .playing, currentCountry != nil else { return }
-        handleCorrectGuess()
+        // Honor-system confirm: counts as correct, but never earns the perfect bonus
+        // (otherwise an instant tap beats every genuine spoken answer).
+        handleCorrectGuess(manual: true)
     }
 
     func skipRound() {
@@ -129,7 +137,11 @@ class BorderBlitzViewModel {
     }
 
     func continueToNextRound() {
-        startNewRound()
+        if roundResults.count >= maxRounds {
+            endGame()
+        } else {
+            startNewRound()
+        }
     }
 
     // MARK: - Private Methods
@@ -170,9 +182,9 @@ class BorderBlitzViewModel {
     }
 
 
-    private func handleCorrectGuess() {
+    private func handleCorrectGuess(manual: Bool = false) {
         currentStreak += 1
-        endRound(correct: true)
+        endRound(correct: true, manual: manual)
         showFeedbackMessage("Correct! 🎉", isCorrect: true)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         AudioServicesPlaySystemSound(1025)
@@ -218,8 +230,10 @@ class BorderBlitzViewModel {
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
     }
 
-    private func endRound(correct: Bool) {
-        guard let country = currentCountry else { return }
+    private func endRound(correct: Bool, manual: Bool = false) {
+        // Guard against double entry: a queued timer tick can fire handleTimeOut
+        // in the same runloop as a correct guess that already ended the round.
+        guard gameState == .playing, let country = currentCountry else { return }
 
         stopTimer()
         letterRevealManager.stopRevealing()
@@ -231,7 +245,8 @@ class BorderBlitzViewModel {
         }
 
         let hiddenCount = letterRevealManager.hiddenCount
-        let isPerfect = hiddenCount == country.name.filter { !$0.isWhitespace && $0 != "-" && $0 != "'" }.count
+        let isPerfect = !manual
+            && hiddenCount == country.name.filter { !$0.isWhitespace && $0 != "-" && $0 != "'" }.count
 
         let score = correct ? scoringConfig.calculateScore(
             hiddenLettersCount: hiddenCount,

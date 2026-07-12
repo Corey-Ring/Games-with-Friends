@@ -39,6 +39,9 @@ final class FinishTheLineViewModel {
     static let hintDelay: TimeInterval = 6
     static let correctBeatDuration: TimeInterval = 0.85
     static let skipBeatDuration: TimeInterval = 0.95
+    /// How long the "GO" frame holds on screen before play begins, so it
+    /// actually renders instead of being skipped as the phase flips.
+    static let goFrameHold: TimeInterval = 0.4
 
     /// Points are difficulty-weighted per answer so the score on screen is
     /// always the real score — no invisible end-of-round multiplier jump.
@@ -113,6 +116,7 @@ final class FinishTheLineViewModel {
 
     @ObservationIgnored private var timer: Timer?
     @ObservationIgnored private var countdownTimer: Timer?
+    @ObservationIgnored private var goHoldTask: Task<Void, Never>?
     @ObservationIgnored private var hintTask: Task<Void, Never>?
     @ObservationIgnored private var lastHandledTranscription: String = ""
     /// Full transcription at the moment the current card appeared. Only speech
@@ -193,6 +197,9 @@ final class FinishTheLineViewModel {
     }
 
     func playAgain() {
+        // Solo replay from the results screen — a fresh run, not the
+        // pass-the-phone gauntlet, so clear any lingering score to beat.
+        scoreToBeat = nil
         startGame()
     }
 
@@ -208,6 +215,8 @@ final class FinishTheLineViewModel {
     }
 
     func quitRound() {
+        // Returning to the menu abandons any in-progress gauntlet.
+        scoreToBeat = nil
         tearDownRound()
         phase = .menu
     }
@@ -264,12 +273,25 @@ final class FinishTheLineViewModel {
                 if self.countdownValue > 0 {
                     HapticManager.light()
                 } else {
+                    // countdownValue is now 0 — the view shows the "GO" frame.
+                    // Hold it briefly so it renders before play begins.
                     self.countdownTimer?.invalidate()
                     self.countdownTimer = nil
                     HapticManager.heavy()
-                    self.enterPlayingPhase()
+                    self.holdGoFrameThenPlay()
                 }
             }
+        }
+    }
+
+    /// Keeps the "GO" frame on screen for a beat, then begins play. Guarded so
+    /// a pause/quit during the hold can't strand the state machine in .countdown.
+    private func holdGoFrameThenPlay() {
+        goHoldTask?.cancel()
+        goHoldTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(Self.goFrameHold * 1_000_000_000))
+            guard let self, !Task.isCancelled, self.phase == .countdown else { return }
+            self.enterPlayingPhase()
         }
     }
 
@@ -485,6 +507,7 @@ final class FinishTheLineViewModel {
         stopTimer()
         countdownTimer?.invalidate()
         countdownTimer = nil
+        goHoldTask?.cancel()
         hintTask?.cancel()
         speechManager.stopListening()
         currentQuote = nil
@@ -580,6 +603,7 @@ final class FinishTheLineViewModel {
     deinit {
         timer?.invalidate()
         countdownTimer?.invalidate()
+        goHoldTask?.cancel()
         hintTask?.cancel()
     }
 }

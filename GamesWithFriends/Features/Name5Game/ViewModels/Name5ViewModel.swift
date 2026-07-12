@@ -331,12 +331,36 @@ class Name5ViewModel {
     var timerColor: Color {
         let progress = timerProgress
         if progress > 0.5 {
-            return .green
+            return AppTheme.success
         } else if progress > 0.2 {
-            return .yellow
+            return AppTheme.warning
         } else {
-            return .red
+            return AppTheme.error
         }
+    }
+
+    /// Pass-and-play standings, best first. Empty in solo play.
+    var playerStandings: [Name5PlayerStanding] {
+        guard playerCount > 1 else { return [] }
+        return (1...playerCount).map { number in
+            let results = roundResults.filter { $0.playerNumber == number }
+            return Name5PlayerStanding(
+                playerNumber: number,
+                successes: results.filter(\.success).count,
+                attempts: results.count
+            )
+        }
+        .sorted {
+            if $0.successes != $1.successes { return $0.successes > $1.successes }
+            return $0.playerNumber < $1.playerNumber
+        }
+    }
+
+    /// The player number(s) with the most successes — more than one means a tie.
+    var winningPlayerNumbers: [Int] {
+        let standings = playerStandings
+        guard let top = standings.first?.successes else { return [] }
+        return standings.filter { $0.successes == top }.map(\.playerNumber)
     }
 
     var canStart: Bool {

@@ -35,7 +35,7 @@ struct BorderHopGameView: View {
 
             // Quiz overlay
             if viewModel.isQuizActive, let question = viewModel.currentQuizQuestion {
-                Color.black.opacity(0.3)
+                AppTheme.overlay
                     .ignoresSafeArea()
                     .onTapGesture { } // prevent tap-through
 
@@ -50,7 +50,7 @@ struct BorderHopGameView: View {
                     countryName: viewModel.graph.country(for: question.countryId)?.name ?? "",
                     graph: viewModel.graph
                 )
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
             }
 
             // First-run coach overlay — one screen that explains the objective
@@ -63,7 +63,7 @@ struct BorderHopGameView: View {
                 victoryOverlay
             }
         }
-        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.isQuizActive)
+        .animation(reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.8), value: viewModel.isQuizActive)
         .navigationBarHidden(true)
     }
 
@@ -87,15 +87,15 @@ struct BorderHopGameView: View {
             if viewModel.currentStreak > 1 {
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: "flame.fill")
-                        .foregroundColor(.orange)
+                        .foregroundColor(AppTheme.warning)
                     Text(verbatim: "\(viewModel.currentStreak)")
                         .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(.orange)
+                        .foregroundColor(AppTheme.warning)
                         .monospacedDigit()
                 }
                 .padding(.horizontal, AppTheme.Spacing.sm)
                 .padding(.vertical, AppTheme.Spacing.xs)
-                .background(Capsule().fill(Color.orange.opacity(0.15)))
+                .background(Capsule().fill(AppTheme.warning.opacity(0.15)))
             }
 
             // Stopwatch — informational pace stat; time doesn't affect the score
@@ -207,8 +207,8 @@ struct BorderHopGameView: View {
 
             Spacer()
         }
-        .transition(.move(edge: .top).combined(with: .opacity))
-        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.showBacktrackConfirm)
+        .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
+        .animation(reduceMotion ? nil : .spring(response: 0.3, dampingFraction: 0.8), value: viewModel.showBacktrackConfirm)
     }
 
     // MARK: - Coach Overlay
@@ -287,14 +287,14 @@ struct BorderHopGameView: View {
 
     private var victoryOverlay: some View {
         ZStack {
-            Color.black.opacity(0.3)
+            AppTheme.overlay
                 .ignoresSafeArea()
 
             VStack(spacing: AppTheme.Spacing.lg) {
                 Image(systemName: "flag.checkered.circle.fill")
                     .font(.system(size: 80))
                     .foregroundColor(AppTheme.medalGold)
-                    .symbolEffect(.bounce, value: viewModel.hasArrived)
+                    .symbolEffect(.bounce, value: reduceMotion ? false : viewModel.hasArrived)
 
                 Text("Route Complete!")
                     .font(AppTheme.Typography.hero)

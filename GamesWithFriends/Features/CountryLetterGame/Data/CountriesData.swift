@@ -199,15 +199,14 @@ struct CountriesData {
         Country(name: "Zimbabwe")
     ]
 
-    static var letterIndex: [String: [Country]] {
+    // Built once at first access and cached — the full 195-country dictionary is
+    // never rebuilt on subsequent reads (e.g. LetterSelectionView's 26-item ForEach).
+    static let letterIndex: [String: [Country]] = {
         var index: [String: [Country]] = [:]
 
         for country in all {
             let letter = country.firstLetter
-            if index[letter] == nil {
-                index[letter] = []
-            }
-            index[letter]?.append(country)
+            index[letter, default: []].append(country)
         }
 
         // Sort countries within each letter
@@ -216,9 +215,7 @@ struct CountriesData {
         }
 
         return index
-    }
+    }()
 
-    static var availableLetters: [String] {
-        letterIndex.keys.sorted()
-    }
+    static let availableLetters: [String] = letterIndex.keys.sorted()
 }

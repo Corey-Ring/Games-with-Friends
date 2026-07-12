@@ -32,9 +32,9 @@ struct ClueChipView: View {
         .padding(.vertical, AppTheme.Spacing.xs)
         .background(clue.tier.color)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.small))
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
                 .stroke(isLatest ? tierAccentColor.opacity(0.5) : Color.clear, lineWidth: 1.5)
         )
         .opacity(isLatest ? 1.0 : 0.85)

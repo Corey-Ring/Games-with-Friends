@@ -3,6 +3,7 @@ import SwiftUI
 /// The main gameplay view — scattered clue board with guess button
 struct ClueBoardView: View {
     @ObservedObject var viewModel: CastingDirectorViewModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -64,11 +65,11 @@ struct ClueBoardView: View {
             // Correct guess celebration
             if viewModel.correctGuess {
                 correctGuessOverlay
-                    .transition(.scale.combined(with: .opacity))
+                    .transition(reduceMotion ? .opacity : .scale.combined(with: .opacity))
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.showingGuessOverlay)
-        .animation(.spring(), value: viewModel.correctGuess)
+        .animation(reduceMotion ? nil : .spring(), value: viewModel.correctGuess)
     }
 
     // MARK: - Clue Board (scattered stagger layout)
@@ -94,11 +95,13 @@ struct ClueBoardView: View {
                         Spacer(minLength: 0)
                     }
                 }
-                .transition(.asymmetric(
-                    insertion: .scale(scale: 0.6).combined(with: .opacity).combined(with: .offset(y: 10)),
-                    removal: .opacity
-                ))
-                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: viewModel.roundState.revealedClues.count)
+                .transition(reduceMotion
+                    ? .opacity
+                    : .asymmetric(
+                        insertion: .scale(scale: 0.6).combined(with: .opacity).combined(with: .offset(y: 10)),
+                        removal: .opacity
+                    ))
+                .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.7), value: viewModel.roundState.revealedClues.count)
                 .accessibilityAddTraits(.updatesFrequently)
             }
         }
@@ -163,7 +166,7 @@ struct ClueBoardView: View {
             HStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: "lightbulb.fill")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(AppTheme.warning)
                 Text("\(viewModel.roundState.cluesRevealed)/\(viewModel.allClues.count)")
                     .font(AppTheme.Typography.secondary)
                     .monospacedDigit()
@@ -214,7 +217,11 @@ struct ClueBoardView: View {
                     .monospacedDigit()
                     .foregroundStyle(GameTheme.castingDirector.accentColor)
                     .contentTransition(.numericText())
-                    .animation(.spring(), value: viewModel.potentialScore)
+                    .animation(reduceMotion ? nil : .spring(), value: viewModel.potentialScore)
+
+                Text("Each extra clue costs 50 points")
+                    .font(AppTheme.Typography.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Spacer()
@@ -234,8 +241,8 @@ struct ClueBoardView: View {
                 .background(GameTheme.castingDirector.accentColor)
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
             }
-            .modifier(ShakeEffect(shakes: viewModel.wrongGuessShake ? 4 : 0))
-            .animation(.default, value: viewModel.wrongGuessShake)
+            .modifier(ShakeEffect(shakes: (reduceMotion || !viewModel.wrongGuessShake) ? 0 : 4))
+            .animation(reduceMotion ? nil : .default, value: viewModel.wrongGuessShake)
         }
     }
 
@@ -246,7 +253,7 @@ struct ClueBoardView: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 80))
                 .foregroundStyle(AppTheme.success)
-                .symbolEffect(.bounce, value: viewModel.correctGuess)
+                .symbolEffect(.bounce, value: reduceMotion ? false : viewModel.correctGuess)
 
             if let actor = viewModel.roundState.targetActor {
                 Text(actor.name)
@@ -261,7 +268,7 @@ struct ClueBoardView: View {
         }
         .padding(40)
         .background(.ultraThickMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.large))
     }
 }
 

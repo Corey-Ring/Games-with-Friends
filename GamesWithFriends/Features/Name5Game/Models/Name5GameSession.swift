@@ -46,6 +46,15 @@ struct RoundResult: Identifiable, Codable {
     }
 }
 
+/// Per-player tally for pass-and-play, derived from RoundResults at display time.
+struct Name5PlayerStanding: Identifiable, Equatable {
+    let playerNumber: Int
+    let successes: Int
+    let attempts: Int
+
+    var id: Int { playerNumber }
+}
+
 struct GameStats {
     var roundsPlayed: Int = 0
     var roundsWon: Int = 0

@@ -7,7 +7,7 @@ struct SettingsView: View {
     @State private var customTimerSeconds: Int = 0
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section {
                     Toggle("Enable Timer", isOn: $viewModel.settings.timerEnabled)

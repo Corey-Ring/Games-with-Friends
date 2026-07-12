@@ -35,17 +35,17 @@ struct SpectrumSliderView: View {
 
                     // Target position indicator
                     if showTargetPosition {
-                        targetIndicator(height: geometry.size.height)
+                        targetIndicator(height: geometry.size.height, width: geometry.size.width)
                     }
 
                     // Guess position indicator (for reveal)
                     if showGuessPosition {
-                        guessIndicator(height: geometry.size.height)
+                        guessIndicator(height: geometry.size.height, width: geometry.size.width)
                     }
 
                     // Draggable handle (when interactive)
                     if isInteractive {
-                        draggableHandle(height: geometry.size.height)
+                        draggableHandle(height: geometry.size.height, width: geometry.size.width)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -127,7 +127,7 @@ struct SpectrumSliderView: View {
         .clipped()
     }
 
-    private func targetIndicator(height: CGFloat) -> some View {
+    private func targetIndicator(height: CGFloat, width: CGFloat) -> some View {
         let yPosition = targetPosition * (height - handleSize) + handleSize / 2
 
         return ZStack {
@@ -145,12 +145,10 @@ struct SpectrumSliderView: View {
                         .stroke(AppTheme.pureWhite, lineWidth: 2)
                 }
         }
-        .position(x: trackWidth / 2 + (UIScreen.main.bounds.width - trackWidth) / 2 - 16, y: yPosition)
-        .frame(width: trackWidth)
-        .frame(maxWidth: .infinity)
+        .position(x: width / 2, y: yPosition)
     }
 
-    private func guessIndicator(height: CGFloat) -> some View {
+    private func guessIndicator(height: CGFloat, width: CGFloat) -> some View {
         let yPosition = guessPosition * (height - handleSize) + handleSize / 2
 
         return ZStack {
@@ -168,14 +166,12 @@ struct SpectrumSliderView: View {
                         .stroke(AppTheme.pureWhite, lineWidth: 2)
                 }
         }
-        .position(x: trackWidth / 2 + (UIScreen.main.bounds.width - trackWidth) / 2 - 16, y: yPosition)
-        .frame(width: trackWidth)
-        .frame(maxWidth: .infinity)
+        .position(x: width / 2, y: yPosition)
     }
 
-    private func draggableHandle(height: CGFloat) -> some View {
+    private func draggableHandle(height: CGFloat, width: CGFloat) -> some View {
         let yPosition = position * (height - handleSize) + handleSize / 2
-        let centerX = (UIScreen.main.bounds.width - 32) / 2  // Account for horizontal padding
+        let centerX = width / 2
 
         return ZStack {
             // Position indicator line inside the bar, connecting to the handle
@@ -275,7 +271,7 @@ struct PromptSetterSliderView: View {
                     scoringZonesView(height: geometry.size.height)
 
                     // Target indicator line
-                    targetLine(height: geometry.size.height)
+                    targetLine(height: geometry.size.height, width: geometry.size.width)
                 }
             }
             .frame(height: sliderHeight)
@@ -320,7 +316,7 @@ struct PromptSetterSliderView: View {
         }
     }
 
-    private func targetLine(height: CGFloat) -> some View {
+    private func targetLine(height: CGFloat, width: CGFloat) -> some View {
         // Match the coordinate system of the main slider (no handle adjustment needed here)
         let yPosition = targetPosition * height
 
@@ -328,7 +324,7 @@ struct PromptSetterSliderView: View {
             .fill(AppTheme.pureWhite)
             .frame(width: trackWidth + 30, height: 3)
             .shadow(color: .black.opacity(0.3), radius: 2)
-            .position(x: UIScreen.main.bounds.width / 2 - 16, y: yPosition)
+            .position(x: width / 2, y: yPosition)
     }
 
     private var scoringLegend: some View {
@@ -380,6 +376,7 @@ struct RevealSliderView: View {
                     // Target line (green)
                     positionLine(
                         y: targetPosition * geometry.size.height,
+                        width: geometry.size.width,
                         color: AppTheme.success,
                         label: "Target"
                     )
@@ -387,6 +384,7 @@ struct RevealSliderView: View {
                     // Guess line (team color)
                     positionLine(
                         y: guessPosition * geometry.size.height,
+                        width: geometry.size.width,
                         color: AppTheme.warning,
                         label: "Guess"
                     )
@@ -445,7 +443,7 @@ struct RevealSliderView: View {
         }
     }
 
-    private func positionLine(y: CGFloat, color: Color, label: String) -> some View {
+    private func positionLine(y: CGFloat, width: CGFloat, color: Color, label: String) -> some View {
         HStack(spacing: AppTheme.Spacing.sm) {
             Text(label)
                 .font(AppTheme.Typography.caption.weight(.semibold))
@@ -461,7 +459,7 @@ struct RevealSliderView: View {
                 .fill(color)
                 .frame(width: 12, height: 12)
         }
-        .position(x: UIScreen.main.bounds.width / 2 - 16, y: y)
+        .position(x: width / 2, y: y)
     }
 }
 

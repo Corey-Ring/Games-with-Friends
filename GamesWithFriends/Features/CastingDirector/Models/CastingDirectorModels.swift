@@ -157,6 +157,17 @@ enum CastingDirectorEra: String, CaseIterable {
         case .recent: return "sparkles.tv"
         }
     }
+
+    /// Shown in setup so the filter's meaning is concrete. An actor belongs to
+    /// an era when the median release year of their filmography falls inside it.
+    var subtitle: String {
+        switch self {
+        case .allEras: return "Actors from any era"
+        case .classic: return "Careers centered before 1990"
+        case .modern: return "Careers centered 1990–2009"
+        case .recent: return "Careers centered 2010 and later"
+        }
+    }
 }
 
 // MARK: - Game Phase
@@ -178,7 +189,10 @@ struct CastingDirectorPlayer: Identifiable, Equatable {
     var wrongGuesses: Int = 0
     
     var color: Color {
-        let colors: [Color] = [.blue, .green, .orange, .purple, .pink, .red, .yellow, .cyan]
+        let colors: [Color] = [
+            AppTheme.skyBlue, AppTheme.forestGreen, AppTheme.coralRed, AppTheme.warmGold,
+            AppTheme.electricIndigo, AppTheme.softMauve, AppTheme.tealGreen, AppTheme.compassRose
+        ]
         return colors[abs(id.hashValue) % colors.count]
     }
 }
@@ -194,7 +208,8 @@ struct RoundState {
     var currentScore: Int = 1000
     var cluesRevealed: Int = 0
     var wrongGuessCount: Int = 0
-    
+    var gaveUp: Bool = false
+
     mutating func reset() {
         targetActor = nil
         revealedClues = []
@@ -204,6 +219,7 @@ struct RoundState {
         currentScore = 1000
         cluesRevealed = 0
         wrongGuessCount = 0
+        gaveUp = false
     }
 }
 

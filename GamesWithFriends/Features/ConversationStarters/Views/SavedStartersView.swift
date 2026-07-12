@@ -5,7 +5,7 @@ struct SavedStartersView: View {
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 if viewModel.savedStarters.isEmpty {
                     emptyStateView
@@ -41,7 +41,7 @@ struct SavedStartersView: View {
         VStack(spacing: 20) {
             Image(systemName: "star.slash")
                 .font(.system(size: 60))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondary)
 
             Text("No Saved Starters")
                 .font(AppTheme.Typography.sectionHeader)
@@ -66,8 +66,8 @@ struct SavedStartersView: View {
            let rootVC = window.rootViewController {
             activityVC.popoverPresentationController?.sourceView = rootVC.view
             activityVC.popoverPresentationController?.sourceRect = CGRect(
-                x: UIScreen.main.bounds.width / 2,
-                y: UIScreen.main.bounds.height / 2,
+                x: rootVC.view.bounds.midX,
+                y: rootVC.view.bounds.midY,
                 width: 0,
                 height: 0
             )
@@ -126,30 +126,31 @@ struct SavedStarterRow: View {
                         .font(AppTheme.Typography.caption)
                 }
                 .buttonStyle(.bordered)
-                .tint(.red)
+                .tint(AppTheme.error)
             }
         }
         .padding(.vertical, AppTheme.Spacing.xs)
     }
 
     private var categoryColor: Color {
+        // Mirrors CardView.categoryColor in GameView.swift — keep in sync.
         switch starter.category {
         case .wouldYouRather: return GameTheme.conversationStarters.accentColor
-        case .hotTakes: return .red
-        case .hypotheticals: return .orange
+        case .hotTakes: return AppTheme.error
+        case .hypotheticals: return AppTheme.warning
         case .storyTime: return GameTheme.conversationStarters.accentColor
-        case .thisOrThat: return .green
-        case .deepDive: return .indigo
+        case .thisOrThat: return AppTheme.success
+        case .deepDive: return GameTheme.conversationStarters.accentColor
         }
     }
 
     private var vibeColor: Color {
         switch starter.vibeLevel {
         case 1: return GameTheme.conversationStarters.accentColor
-        case 2: return .green
-        case 3: return .yellow
-        case 4: return .orange
-        case 5: return .red
+        case 2: return AppTheme.success
+        case 3: return AppTheme.medalGold
+        case 4: return AppTheme.warning
+        case 5: return AppTheme.error
         default: return GameTheme.conversationStarters.accentColor
         }
     }

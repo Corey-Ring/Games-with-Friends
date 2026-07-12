@@ -8,6 +8,7 @@ import SwiftUI
 struct BorderBlitzGameView: View {
     @Bindable var viewModel: BorderBlitzViewModel
     private let theme = GameTheme.borderBlitz
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -27,8 +28,12 @@ struct BorderBlitzGameView: View {
 
     private var playingView: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
-            // Timer
+            // Round indicator + timer
             HStack {
+                Text("Round \(viewModel.currentRoundNumber) of \(viewModel.maxRounds)")
+                    .font(AppTheme.Typography.secondary.weight(.semibold))
+                    .foregroundColor(.secondary)
+                    .accessibilityLabel("Round \(viewModel.currentRoundNumber) of \(viewModel.maxRounds)")
                 Spacer()
                 timerView
             }
@@ -49,12 +54,12 @@ struct BorderBlitzGameView: View {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text("Score: \(viewModel.totalScore)")
                         .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(AppTheme.deepCharcoal)
+                        .foregroundColor(.primary)
                         .accessibilityLabel("Score: \(viewModel.totalScore) points")
                     if viewModel.currentStreak > 1 {
                         Text("Streak: \(viewModel.currentStreak) 🔥")
                             .font(AppTheme.Typography.body)
-                            .foregroundColor(.orange)
+                            .foregroundColor(AppTheme.warning)
                             .accessibilityLabel("Current streak: \(viewModel.currentStreak)")
                     }
                 }
@@ -111,11 +116,11 @@ struct BorderBlitzGameView: View {
 
     private var timeColor: Color {
         if viewModel.timeRemaining <= 10 {
-            return .red
+            return AppTheme.error
         } else if viewModel.timeRemaining <= 20 {
-            return .orange
+            return AppTheme.warning
         } else {
-            return .green
+            return AppTheme.success
         }
     }
 
@@ -125,7 +130,7 @@ struct BorderBlitzGameView: View {
                 // Result icon
                 Image(systemName: result.guessedCorrectly ? "checkmark.circle.fill" : "xmark.circle.fill")
                     .font(.system(size: 80))
-                    .foregroundColor(result.guessedCorrectly ? .green : .red)
+                    .foregroundColor(result.guessedCorrectly ? AppTheme.success : AppTheme.error)
 
                 // Country name
                 Text(result.countryName)
@@ -137,7 +142,7 @@ struct BorderBlitzGameView: View {
                         if result.isPerfect {
                             Text("PERFECT! 🎉")
                                 .font(AppTheme.Typography.sectionHeader)
-                                .foregroundColor(.orange)
+                                .foregroundColor(AppTheme.warning)
                         }
 
                         Text("+\(result.score) points")
@@ -152,7 +157,7 @@ struct BorderBlitzGameView: View {
                             }
                         }
                         .font(AppTheme.Typography.body)
-                        .foregroundColor(AppTheme.mediumGray)
+                        .foregroundColor(.secondary)
                     }
                     .gameCard()
                 }
@@ -182,11 +187,11 @@ struct BorderBlitzGameView: View {
         VStack(spacing: AppTheme.Spacing.lg) {
             Text("Game Complete!")
                 .font(AppTheme.Typography.hero)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(.primary)
 
             Text("Final Score")
                 .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(.secondary)
 
             Text("\(viewModel.totalScore)")
                 .font(.system(size: 60, weight: .bold, design: .rounded))
@@ -199,7 +204,7 @@ struct BorderBlitzGameView: View {
                 Text("Best Streak: \(viewModel.roundResults.map { $0.streak }.max() ?? 0)")
             }
             .font(AppTheme.Typography.cardTitle)
-            .foregroundColor(AppTheme.deepCharcoal)
+            .foregroundColor(.primary)
             .gameCard()
 
             PrimaryButton(title: "Back to Menu") {
@@ -223,7 +228,7 @@ struct BorderBlitzGameView: View {
                 .padding(AppTheme.Spacing.md)
             Spacer()
         }
-        .transition(.scale.combined(with: .opacity))
-        .animation(.spring(), value: viewModel.showFeedback)
+        .transition(reduceMotion ? .opacity : .scale.combined(with: .opacity))
+        .animation(reduceMotion ? nil : .spring(), value: viewModel.showFeedback)
     }
 }

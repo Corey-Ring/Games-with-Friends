@@ -26,18 +26,24 @@ enum BorderHopGeoData {
     /// Load and parse GeoJSON features, keyed by game-compatible country ID
     static func loadFeatures() -> [String: GeoCountryPolygon] {
         guard let url = Bundle.main.url(forResource: "ne_110m_admin_0_countries", withExtension: "geojson") else {
+            #if DEBUG
             print("[BorderHopGeoData] GeoJSON file not found in bundle")
+            #endif
             return [:]
         }
 
         guard let data = try? Data(contentsOf: url) else {
+            #if DEBUG
             print("[BorderHopGeoData] Failed to read GeoJSON data")
+            #endif
             return [:]
         }
 
         guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let features = json["features"] as? [[String: Any]] else {
+            #if DEBUG
             print("[BorderHopGeoData] Failed to parse GeoJSON structure")
+            #endif
             return [:]
         }
 

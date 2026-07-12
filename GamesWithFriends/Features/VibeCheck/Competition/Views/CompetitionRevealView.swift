@@ -4,6 +4,8 @@ struct CompetitionRevealView: View {
     var viewModel: CompetitionVibeCheckViewModel
     @State private var showResults = false
     @State private var revealedPositions = false
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
@@ -40,17 +42,25 @@ struct CompetitionRevealView: View {
             .ignoresSafeArea()
         }
         .onAppear {
-            // Animate the reveal
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
-                    revealedPositions = true
-                }
+            if reduceMotion {
+                // Reduce Motion: reveal everything immediately (opacity end state), keep haptic
+                revealedPositions = true
+                showResults = true
                 let generator = UINotificationFeedbackGenerator()
                 generator.notificationOccurred(.success)
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    showResults = true
+            } else {
+                // Animate the reveal
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
+                        revealedPositions = true
+                    }
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.notificationOccurred(.success)
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        showResults = true
+                    }
                 }
             }
         }
@@ -95,7 +105,7 @@ struct CompetitionRevealView: View {
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
+                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -158,7 +168,7 @@ struct CompetitionRevealView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
+                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -197,12 +207,16 @@ struct CompetitionRevealSliderView: View {
     let targetPosition: Double
     let results: [CompetitionRoundResult]
 
+    @Environment(\.colorScheme) private var colorScheme
+
     private let sliderHeight: CGFloat = 300
     private let trackWidth: CGFloat = 60
 
-    // Player colors for differentiation
+    // Player colors for differentiation — theme accents, one per player
     private let playerColors: [Color] = [
-        .blue, .purple, .pink, .cyan, .indigo, .mint, .teal, .brown, .gray
+        AppTheme.skyBlue, AppTheme.electricIndigo, AppTheme.softMauve,
+        AppTheme.tealGreen, AppTheme.coralRed, AppTheme.forestGreen,
+        AppTheme.warmGold, AppTheme.compassRose, AppTheme.mediumGray
     ]
 
     var body: some View {
@@ -217,7 +231,7 @@ struct CompetitionRevealSliderView: View {
                 ZStack(alignment: .top) {
                     // Background track
                     RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(AppTheme.warmLinen)
+                        .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen)
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
 
@@ -225,13 +239,14 @@ struct CompetitionRevealSliderView: View {
                     scoringZonesView(height: geometry.size.height)
 
                     // Target line (green)
-                    targetLine(height: geometry.size.height)
+                    targetLine(height: geometry.size.height, width: geometry.size.width)
 
                     // All guess lines
                     ForEach(Array(results.enumerated()), id: \.element.id) { index, result in
                         guessLine(
                             result: result,
                             height: geometry.size.height,
+                            width: geometry.size.width,
                             color: playerColors[index % playerColors.count],
                             index: index
                         )
@@ -275,7 +290,7 @@ struct CompetitionRevealSliderView: View {
         }
     }
 
-    private func targetLine(height: CGFloat) -> some View {
+    private func targetLine(height: CGFloat, width: CGFloat) -> some View {
         let y = targetPosition * height
 
         return HStack(spacing: AppTheme.Spacing.xs) {
@@ -297,10 +312,10 @@ struct CompetitionRevealSliderView: View {
                         .stroke(AppTheme.pureWhite, lineWidth: 2)
                 }
         }
-        .position(x: UIScreen.main.bounds.width / 2 - 16, y: y)
+        .position(x: width / 2, y: y)
     }
 
-    private func guessLine(result: CompetitionRoundResult, height: CGFloat, color: Color, index: Int) -> some View {
+    private func guessLine(result: CompetitionRoundResult, height: CGFloat, width: CGFloat, color: Color, index: Int) -> some View {
         let y = result.guessedPosition * height
         // Slight offset to prevent exact overlapping
         let xOffset = CGFloat(index % 2 == 0 ? -2 : 2)
@@ -325,7 +340,7 @@ struct CompetitionRevealSliderView: View {
                         .stroke(AppTheme.pureWhite, lineWidth: 1.5)
                 }
         }
-        .position(x: UIScreen.main.bounds.width / 2 - 16 + xOffset, y: y)
+        .position(x: width / 2 + xOffset, y: y)
     }
 }
 
@@ -335,6 +350,7 @@ struct CompetitionResultRow: View {
     let result: CompetitionRoundResult
     let isWorst: Bool
     let totalPlayers: Int
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
@@ -390,7 +406,7 @@ struct CompetitionResultRow: View {
             if isWorst && totalPlayers > 1 {
                 HStack(spacing: 6) {
                     Image(systemName: "face.smiling.inverse")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(AppTheme.warning)
                     Text(WorstGuesserTease.randomMessage())
                         .font(AppTheme.Typography.caption)
                         .foregroundStyle(.secondary)
@@ -408,7 +424,7 @@ struct CompetitionResultRow: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(AppTheme.warmLinen)
+                .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen)
         }
     }
 
@@ -440,7 +456,7 @@ struct CompetitionResultRow: View {
                     .foregroundStyle(.white)
             } else {
                 Circle()
-                    .fill(AppTheme.warmLinen)
+                    .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen)
                     .frame(width: 32, height: 32)
 
                 Text("\(result.rank)")

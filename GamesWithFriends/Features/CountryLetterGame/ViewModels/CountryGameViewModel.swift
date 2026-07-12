@@ -115,7 +115,7 @@ class CountryGameViewModel {
         feedbackMessage = "Nice! \(matchedCountry.name) added."
         feedbackType = .success
         currentGuess = ""
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        HapticManager.success()
 
         // Check if game is complete
         if remainingCount == 0 {

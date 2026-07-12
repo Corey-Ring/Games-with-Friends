@@ -53,7 +53,7 @@ struct RoundResultsView: View {
                     .font(.system(size: 60))
                     .foregroundStyle(AppTheme.error)
 
-                Text("Time's Up!")
+                Text(viewModel.roundState.gaveUp ? "Revealed!" : "Out of Clues!")
                     .font(AppTheme.Typography.hero)
                     .fontWeight(.bold)
             }
@@ -102,10 +102,29 @@ struct RoundResultsView: View {
 
             HStack {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-                    ScoreRow(label: "Base Score", value: "1,000")
-                    ScoreRow(label: "Clues Revealed (\(viewModel.roundState.cluesRevealed))", value: "-\(viewModel.roundState.cluesRevealed * 50)", isNegative: true)
-                    if viewModel.roundState.wrongGuessCount > 0 {
-                        ScoreRow(label: "Wrong Guesses (\(viewModel.roundState.wrongGuessCount))", value: "-\(viewModel.roundState.wrongGuessCount * viewModel.difficulty.wrongGuessPenalty)", isNegative: true)
+                    if viewModel.roundState.foundByPlayer != nil {
+                        // The line items must sum to the awarded score —
+                        // this breakdown is derived from the same state the VM scored with.
+                        let extraClues = max(0, viewModel.roundState.cluesRevealed - 1)
+                        let clueCost = extraClues * 50
+                        let wrongCost = viewModel.roundState.wrongGuessCount * viewModel.difficulty.wrongGuessPenalty
+                        let floorAdjustment = viewModel.roundState.currentScore - (1000 - clueCost - wrongCost)
+
+                        ScoreRow(label: "Base Score", value: "1,000")
+                        if extraClues > 0 {
+                            ScoreRow(label: "Extra Clues (\(extraClues)) — first is free", value: "-\(clueCost)", isNegative: true)
+                        }
+                        if viewModel.roundState.wrongGuessCount > 0 {
+                            ScoreRow(label: "Wrong Guesses (\(viewModel.roundState.wrongGuessCount))", value: "-\(wrongCost)", isNegative: true)
+                        }
+                        if floorAdjustment != 0 {
+                            ScoreRow(label: "Score can't go below 0", value: "+\(floorAdjustment)")
+                        }
+                    } else {
+                        ScoreRow(
+                            label: viewModel.roundState.gaveUp ? "Answer revealed — no points" : "No correct guess",
+                            value: "0"
+                        )
                     }
 
                     Divider()
@@ -222,7 +241,7 @@ struct ScoreRow: View {
             Text(value)
                 .font(AppTheme.Typography.secondary)
                 .monospacedDigit()
-                .foregroundStyle(isNegative ? .red : .primary)
+                .foregroundStyle(isNegative ? AppTheme.error : .primary)
         }
     }
 }

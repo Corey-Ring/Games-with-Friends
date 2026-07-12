@@ -53,7 +53,16 @@ struct BorderHopDifficultyView: View {
                         viewModel.startGame()
                     }
                     .padding(.horizontal, AppTheme.Spacing.md)
-                    .padding(.bottom, AppTheme.Spacing.lg)
+                    .padding(.bottom, viewModel.routeGenerationFailed ? AppTheme.Spacing.xs : AppTheme.Spacing.lg)
+
+                    if viewModel.routeGenerationFailed {
+                        Text("Couldn't build a route for this difficulty — tap Start Game to try again.")
+                            .font(AppTheme.Typography.caption)
+                            .foregroundStyle(AppTheme.error)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, AppTheme.Spacing.md)
+                            .padding(.bottom, AppTheme.Spacing.lg)
+                    }
                 }
                 .padding(.horizontal, AppTheme.Spacing.md)
             }

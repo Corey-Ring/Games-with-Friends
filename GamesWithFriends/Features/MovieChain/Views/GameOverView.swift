@@ -43,7 +43,7 @@ struct MovieChainGameOverView: View {
                 VStack(spacing: AppTheme.Spacing.sm) {
                     Text("Winner!")
                         .font(AppTheme.Typography.sectionHeader)
-                        .foregroundColor(AppTheme.mediumGray)
+                        .foregroundColor(.secondary)
 
                     HStack(spacing: AppTheme.Spacing.md) {
                         Circle()
@@ -52,13 +52,13 @@ struct MovieChainGameOverView: View {
 
                         Text(winner.name)
                             .font(AppTheme.Typography.hero)
-                            .foregroundColor(AppTheme.deepCharcoal)
+                            .foregroundColor(.primary)
                     }
                 }
             } else {
                 Text("Game Over!")
                     .font(AppTheme.Typography.hero)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .foregroundColor(.primary)
             }
         }
         .padding(.top, AppTheme.Spacing.lg)
@@ -70,7 +70,7 @@ struct MovieChainGameOverView: View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Final Standings")
                 .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(.primary)
 
             ForEach(Array(sortedPlayers.enumerated()), id: \.element.id) { index, player in
                 PlayerStandingRow(
@@ -107,7 +107,7 @@ struct MovieChainGameOverView: View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Game Statistics")
                 .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(.primary)
 
             LazyVGrid(columns: [
                 GridItem(.flexible()),
@@ -204,7 +204,7 @@ struct PlayerStandingRow: View {
 
             Text(player.name)
                 .font(AppTheme.Typography.cardTitle)
-                .foregroundColor(isWinner ? AppTheme.deepCharcoal : AppTheme.deepCharcoal)
+                .foregroundColor(.primary)
 
             Spacer()
 
@@ -216,7 +216,7 @@ struct PlayerStandingRow: View {
                         ForEach(0..<gameMode.defaultLives, id: \.self) { index in
                             Image(systemName: index < player.lives ? "heart.fill" : "heart")
                                 .font(AppTheme.Typography.tabLabel)
-                                .foregroundStyle(.red)
+                                .foregroundStyle(AppTheme.error)
                         }
                     }
                 case .timed:
@@ -231,7 +231,7 @@ struct PlayerStandingRow: View {
 
                 Text("\(player.linksContributed) contributed")
                     .font(AppTheme.Typography.caption)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .foregroundColor(.secondary)
             }
         }
         .padding(.vertical, AppTheme.Spacing.sm)
@@ -242,9 +242,9 @@ struct PlayerStandingRow: View {
 
     private var rankColor: Color {
         switch rank {
-        case 1: return .yellow
-        case 2: return .gray
-        case 3: return .brown
+        case 1: return AppTheme.medalGold
+        case 2: return AppTheme.medalSilver
+        case 3: return AppTheme.medalBronze
         default: return AppTheme.mediumGray
         }
     }
@@ -274,11 +274,11 @@ struct GameStatCard: View {
 
             Text(value)
                 .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(.primary)
 
             Text(title)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)

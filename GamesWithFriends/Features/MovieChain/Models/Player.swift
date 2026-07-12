@@ -26,14 +26,14 @@ struct MovieChainPlayer: Identifiable, Equatable {
 /// Default player colors
 extension MovieChainPlayer {
     static let defaultColors: [Color] = [
-        .red,
-        .blue,
-        .green,
-        .orange,
-        .purple,
-        .pink,
-        .cyan,
-        .yellow
+        AppTheme.coralRed,
+        AppTheme.skyBlue,
+        AppTheme.forestGreen,
+        AppTheme.warmGold,
+        AppTheme.electricIndigo,
+        AppTheme.softMauve,
+        AppTheme.tealGreen,
+        AppTheme.compassRose
     ]
 
     static func defaultName(for index: Int) -> String {

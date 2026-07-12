@@ -78,9 +78,15 @@ class GameViewModel {
             shownStarterIDs.insert(current.id)
         }
 
-        if hasNext {
-            currentIndex += 1
+        // Advance past the last card so currentStarter becomes nil and the
+        // "All Done" screen shows — capping at count would strand the deck.
+        guard currentIndex < filteredStarters.count else { return }
+        currentIndex += 1
+
+        if currentStarter != nil {
             resetTimer()
+        } else {
+            pauseTimer()
         }
     }
 
@@ -155,9 +161,12 @@ class GameViewModel {
 
     private func timerExpired() {
         pauseTimer()
-        // Haptic feedback
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.warning)
+        if settings.hapticEnabled {
+            HapticManager.warning()
+        }
+        if settings.soundEnabled {
+            audioPlayer?.play()
+        }
     }
 
     // Persistence

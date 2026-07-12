@@ -4,6 +4,8 @@ import SwiftUI
 struct ChainBreakView: View {
     @ObservedObject var viewModel: MovieChainViewModel
     let reason: ChainBreakReason
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var bounceTrigger = false
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.lg) {
@@ -18,18 +20,18 @@ struct ChainBreakView: View {
                 Image(systemName: "link.badge.plus")
                     .font(.system(size: 50))
                     .foregroundStyle(GameTheme.movieChain.accentColor)
-                    .symbolEffect(.bounce, value: true)
+                    .symbolEffect(.bounce, value: bounceTrigger)
             }
 
             // Message
             VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                 Text("Chain Broken!")
                     .font(AppTheme.Typography.hero)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .foregroundColor(.primary)
 
                 Text(reason.message)
                     .font(AppTheme.Typography.body)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .foregroundColor(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
@@ -42,16 +44,16 @@ struct ChainBreakView: View {
 
                 Text(viewModel.currentPlayer.name)
                     .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .foregroundColor(.primary)
 
                 if viewModel.gameMode.hasLives {
                     Text("lost a life")
-                        .foregroundColor(AppTheme.mediumGray)
+                        .foregroundColor(.secondary)
 
                     HStack(spacing: 2) {
                         ForEach(0..<viewModel.gameMode.defaultLives, id: \.self) { index in
                             Image(systemName: index < viewModel.currentPlayer.lives ? "heart.fill" : "heart")
-                                .foregroundStyle(.red)
+                                .foregroundStyle(AppTheme.error)
                                 .font(AppTheme.Typography.caption)
                         }
                     }
@@ -71,6 +73,12 @@ struct ChainBreakView: View {
                 .padding(.horizontal)
                 .padding(.bottom, AppTheme.Spacing.lg)
         }
+        .onAppear {
+            // Respect Reduce Motion — only bounce the icon when motion is allowed.
+            if !reduceMotion {
+                bounceTrigger.toggle()
+            }
+        }
     }
 
     // MARK: - Chain Stats Section
@@ -79,7 +87,7 @@ struct ChainBreakView: View {
         VStack(spacing: AppTheme.Spacing.md) {
             Text("Chain Length: \(viewModel.chain.count)")
                 .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(.primary)
 
             if viewModel.chain.count > 1 {
                 // Show the chain that was built
@@ -125,7 +133,9 @@ struct ChainBreakView: View {
                     viewModel.startNewChain()
                 }
 
-                if viewModel.gameMode == .endless {
+                // Timed and Endless have no elimination end-state, so they need
+                // an explicit exit — without it the standings screen is unreachable.
+                if viewModel.gameMode != .classic {
                     SecondaryButton(title: "End Game", icon: "flag.checkered") {
                         viewModel.endGame()
                     }
@@ -143,12 +153,13 @@ struct ChainBreakView: View {
 
 struct MiniChainLinkView: View {
     let link: ChainLink
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.xs) {
             ZStack {
                 Circle()
-                    .fill(link.isMovie ? GameTheme.movieChain.accentColor : AppTheme.deepCharcoal)
+                    .fill(link.isMovie ? GameTheme.movieChain.accentColor : actorCircleColor)
                     .frame(width: 36, height: 36)
 
                 Image(systemName: link.isMovie ? "film" : "person.fill")
@@ -158,10 +169,16 @@ struct MiniChainLinkView: View {
 
             Text(shortName)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(.secondary)
                 .lineLimit(1)
                 .frame(width: 60)
         }
+    }
+
+    // deepCharcoal reads as an invisible circle on the dark card surface;
+    // lift it to darkElevated in dark mode so the actor node stays legible.
+    private var actorCircleColor: Color {
+        colorScheme == .dark ? AppTheme.darkElevated : AppTheme.deepCharcoal
     }
 
     private var shortName: String {
@@ -188,11 +205,11 @@ struct MovieChainStatBox: View {
 
             Text(value)
                 .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(.primary)
 
             Text(title)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity)
     }

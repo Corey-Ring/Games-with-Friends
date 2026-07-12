@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GamePlayView: View {
     @Bindable var viewModel: CountryGameViewModel
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.lg) {
@@ -58,13 +59,13 @@ struct GamePlayView: View {
                                 .stroke(AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
                                 .background(
                                     RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                                        .fill(AppTheme.pureWhite)
+                                        .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
                                 )
                         )
                         .onSubmit {
                             viewModel.submitGuess()
                         }
-                        .autocapitalization(.words)
+                        .textInputAutocapitalization(.words)
                         .disableAutocorrection(true)
 
                     Button(action: {
@@ -144,8 +145,8 @@ struct GamePlayView: View {
 
     private var feedbackColor: Color {
         switch viewModel.feedbackType {
-        case .success: return .green
-        case .error: return .red
+        case .success: return AppTheme.success
+        case .error: return AppTheme.error
         case .info: return AppTheme.mediumGray
         }
     }
@@ -154,6 +155,7 @@ struct GamePlayView: View {
 struct StatCard: View {
     let title: String
     let value: String
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
@@ -163,7 +165,7 @@ struct StatCard: View {
 
             Text(value)
                 .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(colorScheme == .dark ? .white : AppTheme.deepCharcoal)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .gameCard()

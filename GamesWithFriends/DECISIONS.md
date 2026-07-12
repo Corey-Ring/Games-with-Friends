@@ -28,6 +28,32 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-07-12 — Launch-readiness pass: Vibe Check is Competition-only for 1.0 [decision]
+
+**What:** The Vibe Check mode picker is hidden; `VibeCheckRootView.selectedMode` defaults to `.competition` and `VibeCheckHomeView` renders only Competition setup. Classic-mode code (views, VM, state machine) is intact but unreachable.
+
+**Why:** Classic mode had a wrong-team reveal attribution bug (`finalizeRound()` appends to `rounds` before reveal, shifting `promptSetterTeam`), no dark-mode support, a single-team default that breaks the guessing premise, and the largest unremediated design-token debt in the app (per the 2026-03-22 audit). Competition mode is close to the quality bar; fixing Classic was the single biggest work item between here and launch.
+
+**Impact:** To revive Classic in 1.1: fix the reveal ordering bug, the team-count default (min 2), dark mode (`pureWhite` card fills), and the `[.purple,.blue]` gradient/token debt — then restore the mode picker section deleted from `VibeCheckHomeView` (git history has it). `ScoringZone.color` is now tokenized (success/tealGreen/medalGold/warning/error) and shared by both modes.
+
+---
+
+## 2026-07-12 — Launch-readiness pass: gameplay & config decisions [decision]
+
+**What:** One batch of pre-launch decisions, all landed together:
+1. **Border Blitz** is capped at 10 rounds per session (`maxRounds`), "I Said It!" no longer earns the perfect bonus (`endRound(correct:manual:)`), `endRound` guards re-entrancy (`gameState == .playing`), Start requests mic permission when `.notDetermined`, and the whole game sits on `GameBackground` (was unreadable in dark mode).
+2. **Casting Director**: the Era filter is now real — `ClueGenerator.pickRandomActor(era:)` samples up to 60 candidates and matches on the *median release year* of the actor's filmography (classic &lt;1990, modern 1990–2009, recent ≥2010), falling back to unfiltered rather than failing. The first clue is free (base 1,000 is achievable); the results breakdown is derived from the same state the VM scored with, so line items always sum to the round score.
+3. **Name 5** pass-and-play now derives per-player standings from `RoundResult.playerNumber` and crowns a winner (ties supported) — no schema change, standings are computed at display time.
+4. **Movie Chain**: Speed Round (`.timed`) gets the End Game button (was unreachable standings); the shared DB moved from Documents to **Application Support with `isExcludedFromBackup`** (557 MB no longer lands in iCloud backups; legacy Documents copies are migrated); actor search is ranked by `MAX(movie votes)` via the `movie_actors` join.
+5. **Config**: iPhone-only (`TARGETED_DEVICE_FAMILY = 1`), portrait-only, privacy strings cover both mic games.
+6. **Border Hop**: frontier taps now require adjacency to the *current* country (matching the destination branch) so recorded routes are always geographically valid; route-generation failure shows a message instead of a dead Start button, with `BorderHopRouteGenerationTests` as the regression net.
+
+**Why:** Full pre-launch review (2026-07-12) found ten first-session player-facing bugs plus App Store submission issues; these were the fixes that changed gameplay behavior or device posture and needed explicit decisions.
+
+**Impact:** No SwiftData schema changes anywhere in this pass. Saved Border Blitz-era scores don't exist (no persistence there). Expanding back to iPad/landscape later only requires reverting the two build settings — but re-test Vibe Check sliders and Movie Chain layout first.
+
+---
+
 ## 2026-06-11 — Finish the Line fun-upgrade pass: live scoring, reveal beat, synthesized audio [decision]
 
 **What:** Landed the approved game-feel slate for Finish the Line: (1) **Reveal Beat** — the source is now hidden while a card is live, fading in after 6s of being stuck as a lifeline hint; on correct/skip the blank fills with the answer (green/amber) for a ~0.9s beat before the next card. (2) **Live per-answer scoring** — difficulty now sets points per correct (easy 100 / medium 150 / hard 200) instead of an end-of-round score multiplier; `QuoteDifficulty.multiplier` still exists but is no longer used in scoring. (3) **Free skips** (streak reset is the only price) with the answer revealed on skip. (4) **On Fire** at streak 5: +2s per correct, capped at a 90s clock. (5) **Encore**: final 10s double points with per-second ticks. (6) **Pass-the-phone gauntlet**: session-only `scoreToBeat` (in-memory, not persisted). (7) **Mic trust**: matching only considers speech spoken after the current card appeared, and single-word answers of ≤4 letters must be among the last 3 words heard (stops ambient "it"/"go"/"back" from auto-scoring). (8) **Synthesized audio** via `FinishTheLineSoundPlayer` — tones rendered into `AVAudioPCMBuffer`s at runtime through `AVAudioEngine`; zero bundled assets, zero licensing. Also a full quote-library audit (~33 entries fixed/re-tiered/replaced; library is 201 quotes).

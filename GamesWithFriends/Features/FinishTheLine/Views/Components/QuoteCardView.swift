@@ -166,13 +166,18 @@ private struct QuoteBodyText: View {
     let accentColor: Color
     let fill: Fill?
 
+    /// Scales with Dynamic Type — this is the primary readable game content,
+    /// not a decorative display element.
+    @ScaledMetric(relativeTo: .title) private var quoteSize: CGFloat = 30
+
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 0) {
             styledText
-                .font(.system(size: 30, weight: .bold, design: .serif))
-                .foregroundColor(AppTheme.deepCharcoal)
+                .font(.system(size: quoteSize, weight: .bold, design: .serif))
+                .foregroundColor(.primary)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
+                .minimumScaleFactor(0.7)
         }
     }
 

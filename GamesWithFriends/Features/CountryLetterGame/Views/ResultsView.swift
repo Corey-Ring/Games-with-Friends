@@ -93,10 +93,10 @@ struct ResultsView: View {
                             ForEach(Array(viewModel.giveUpCountries.enumerated()), id: \.element.id) { index, country in
                                 HStack(spacing: AppTheme.Spacing.sm) {
                                     Image(systemName: "hand.raised")
-                                        .foregroundColor(.orange)
+                                        .foregroundColor(AppTheme.warning)
                                     Text(country.name)
                                         .font(AppTheme.Typography.cardTitle)
-                                        .foregroundColor(.orange)
+                                        .foregroundColor(AppTheme.warning)
                                     Spacer()
                                 }
                                 .gameCard()

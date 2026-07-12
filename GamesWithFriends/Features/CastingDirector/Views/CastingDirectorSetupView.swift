@@ -225,6 +225,10 @@ struct CastingDirectorSetupView: View {
                 }
                 .padding(.horizontal, AppTheme.Spacing.xs)
             }
+
+            Text(viewModel.era.subtitle)
+                .font(AppTheme.Typography.caption)
+                .foregroundStyle(.secondary)
         }
     }
 

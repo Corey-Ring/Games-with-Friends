@@ -135,7 +135,7 @@ struct GuessOverlayView: View {
                     HStack(spacing: AppTheme.Spacing.xs) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(AppTheme.Typography.tabLabel)
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(AppTheme.warning)
                         Text("Wrong guess: -\(viewModel.difficulty.wrongGuessPenalty) points")
                             .font(AppTheme.Typography.caption)
                             .foregroundStyle(.secondary)
@@ -143,7 +143,7 @@ struct GuessOverlayView: View {
                 }
                 .padding(AppTheme.Spacing.lg)
                 .background(.regularMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.large))
                 .padding(.horizontal)
                 .padding(.bottom, AppTheme.Spacing.lg)
             }
