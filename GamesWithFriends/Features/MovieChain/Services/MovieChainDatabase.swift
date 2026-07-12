@@ -77,11 +77,17 @@ final class MovieChainDatabase: ObservableObject {
             return
         }
 
-        // Check if we already have a decompressed database at the new location.
+        // Reuse a previously decompressed database only if it passes the
+        // integrity probe; a corrupt file here would otherwise be trusted
+        // forever and the bundled archive fallback would never run again.
         if FileManager.default.fileExists(atPath: dbPath.path) {
-            excludeFromBackup(at: dbPath)
-            openDatabase(at: dbPath.path)
-            return
+            if validateDatabaseFile(at: dbPath.path) {
+                excludeFromBackup(at: dbPath)
+                openDatabase(at: dbPath.path)
+                return
+            }
+            print("MovieChainDatabase: Existing database failed validation — re-extracting")
+            try? FileManager.default.removeItem(at: dbPath)
         }
 
         // Migrate a database left in the legacy Documents directory by an
@@ -90,10 +96,14 @@ final class MovieChainDatabase: ObservableObject {
            FileManager.default.fileExists(atPath: legacyPath.path) {
             do {
                 try FileManager.default.moveItem(at: legacyPath, to: dbPath)
-                print("MovieChainDatabase: Migrated database from Documents to Application Support")
-                excludeFromBackup(at: dbPath)
-                openDatabase(at: dbPath.path)
-                return
+                if validateDatabaseFile(at: dbPath.path) {
+                    print("MovieChainDatabase: Migrated database from Documents to Application Support")
+                    excludeFromBackup(at: dbPath)
+                    openDatabase(at: dbPath.path)
+                    return
+                }
+                print("MovieChainDatabase: Migrated legacy database failed validation — re-extracting")
+                try? FileManager.default.removeItem(at: dbPath)
             } catch {
                 // If the move fails, fall through to a fresh decompression so
                 // the game still works; the stale legacy copy is left in place.
@@ -163,10 +173,50 @@ final class MovieChainDatabase: ObservableObject {
 
         print("MovieChainDatabase: Decompressed to \(decompressedData.count / 1_000_000) MB")
 
-        // Write decompressed data
-        try decompressedData.write(to: destinationURL)
+        // Write to a temporary sibling and rename into place, so a kill or
+        // crash mid-write can never leave a half-written file at the final
+        // path (which would open "successfully" and break the game forever).
+        let tempURL = destinationURL.appendingPathExtension("tmp")
+        try? FileManager.default.removeItem(at: tempURL)
+        try decompressedData.write(to: tempURL)
+        try? FileManager.default.removeItem(at: destinationURL)
+        try FileManager.default.moveItem(at: tempURL, to: destinationURL)
 
         print("MovieChainDatabase: Database ready at \(destinationPath)")
+    }
+
+    /// Cheap integrity probe run before trusting any database file that is
+    /// already on disk. `sqlite3_open_v2` succeeds lazily even on truncated or
+    /// garbage files, so opening alone proves nothing. Checks:
+    /// 1. the file opens and its schema is readable (catches garbage),
+    /// 2. the on-disk size is at least what the header claims
+    ///    (`page_count × page_size` — catches truncation from an interrupted
+    ///    write; reads only the first pages, so it's O(1) on the 557MB file).
+    private func validateDatabaseFile(at path: String) -> Bool {
+        var probe: OpaquePointer?
+        guard sqlite3_open_v2(path, &probe, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else {
+            sqlite3_close(probe)
+            return false
+        }
+        defer { sqlite3_close(probe) }
+
+        func scalar(_ sql: String) -> Int64? {
+            var statement: OpaquePointer?
+            guard sqlite3_prepare_v2(probe, sql, -1, &statement, nil) == SQLITE_OK else { return nil }
+            defer { sqlite3_finalize(statement) }
+            guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
+            return sqlite3_column_int64(statement, 0)
+        }
+
+        guard let schemaCount = scalar("SELECT count(*) FROM sqlite_master"), schemaCount > 0,
+              let pageCount = scalar("PRAGMA page_count"),
+              let pageSize = scalar("PRAGMA page_size") else {
+            return false
+        }
+
+        let attributes = try? FileManager.default.attributesOfItem(atPath: path)
+        let actualSize = (attributes?[.size] as? NSNumber)?.int64Value ?? 0
+        return actualSize >= pageCount * pageSize
     }
 
     private func decompressGzip(data: Data) -> Data? {
@@ -499,6 +549,34 @@ final class MovieChainDatabase: ObservableObject {
     }
 
     /// Get all movies an actor appeared in
+    /// Release years of every movie the actor appears in — the minimal
+    /// projection used by Casting Director's era filter, so era probes don't
+    /// materialize (and sort) full Movie rows just to read one column.
+    func getMovieYears(forActorId actorId: String) -> [Int] {
+        guard isLoaded, let db = db else { return [] }
+
+        let sql = """
+            SELECT m.year
+            FROM movies m
+            JOIN movie_actors ma ON m.tconst = ma.tconst
+            WHERE ma.nconst = ? AND m.year IS NOT NULL
+            """
+
+        var statement: OpaquePointer?
+        var results: [Int] = []
+
+        if sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, actorId, -1, SQLITE_TRANSIENT)
+
+            while sqlite3_step(statement) == SQLITE_ROW {
+                results.append(Int(sqlite3_column_int(statement, 0)))
+            }
+        }
+
+        sqlite3_finalize(statement)
+        return results
+    }
+
     func getMoviesWithActor(actorId: String) -> [Movie] {
         guard isLoaded, let db = db else { return [] }
 

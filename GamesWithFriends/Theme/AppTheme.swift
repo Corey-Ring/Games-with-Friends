@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct AppTheme {
     // MARK: - Brand Colors
@@ -33,6 +34,36 @@ struct AppTheme {
     static let darkCard = Color(hex: "2C2C2E")
     static let darkElevated = Color(hex: "3A3A3C")
     static let darkMutedText = Color(hex: "AEAEB2")
+
+    // MARK: - Adaptive Surfaces (resolve automatically per color scheme)
+    // Prefer these over pureWhite/darkCard literals for any surface fill.
+    // Each resolves per trait collection via a UIColor dynamic provider, so
+    // `.fill(AppTheme.cardSurface)` stays correct in dark mode with no
+    // @Environment(\.colorScheme) read at the call site.
+
+    /// Card surface: pureWhite in light, darkCard in dark. Use for any card fill
+    /// that isn't already `.gameCard()`.
+    static let cardSurface = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(darkCard) : UIColor(pureWhite)
+    })
+
+    /// Inset/elevated surface: warmLinen in light, darkElevated in dark.
+    static let elevatedSurface = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(darkElevated) : UIColor(warmLinen)
+    })
+
+    /// Gradient/page base surface: pureWhite in light, darkBackground in dark.
+    /// Matches the role-tint gradient base in CompetitionPassDeviceView.
+    static let pageSurface = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(darkBackground) : UIColor(pureWhite)
+    })
+
+    /// Actor/node circle fill: deepCharcoal in light, darkElevated in dark
+    /// (deepCharcoal reads as an invisible circle on dark cards). Used by the
+    /// Movie Chain link/actor nodes.
+    static let actorNodeSurface = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(darkElevated) : UIColor(deepCharcoal)
+    })
 
     // MARK: - Typography (Dynamic Type enabled)
     struct Typography {

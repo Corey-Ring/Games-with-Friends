@@ -3,7 +3,6 @@ import SwiftUI
 struct GameView: View {
     var viewModel: GameViewModel
     @Environment(\.dismiss) var dismiss
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dragOffset: CGSize = .zero
     @State private var showingResetAlert = false
@@ -167,7 +166,11 @@ struct GameView: View {
             }
             .onAppear {
                 // Start the round timer for the first card — nothing else does.
-                viewModel.resetTimer()
+                // Only when a card is actually showing; an empty deck / All Done
+                // screen must not run a countdown that fires with no card.
+                if viewModel.currentStarter != nil {
+                    viewModel.resetTimer()
+                }
             }
         }
     }
@@ -206,7 +209,7 @@ struct GameView: View {
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
         .padding(.vertical, AppTheme.Spacing.xs)
-        .background((colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite).opacity(0.95))
+        .background(AppTheme.cardSurface.opacity(0.95))
         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(viewModel.isTimerRunning ? "\(Int(viewModel.timeRemaining)) seconds remaining" : "Timer paused")
@@ -276,7 +279,6 @@ struct CardView: View {
     let starter: ConversationStarter
     let isStarred: Bool
     let onStar: () -> Void
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 0) {
@@ -351,7 +353,7 @@ struct CardView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(minHeight: 320, maxHeight: 500)
-        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+        .background(AppTheme.cardSurface)
         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.large))
         .shadow(radius: 10)
         .padding(.horizontal, AppTheme.Spacing.xl)

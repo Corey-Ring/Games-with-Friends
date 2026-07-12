@@ -248,15 +248,33 @@ final class FinishTheLineViewModel {
     }
 
     private func pause() {
-        guard phase == .playing else { return }
-        stopTimer()
-        speechManager.stopListening()
+        switch phase {
+        case .playing:
+            stopTimer()
+            speechManager.stopListening()
+        case .countdown:
+            // Kill the countdown AND the GO-hold task — otherwise the hold
+            // fires while backgrounded, starting the round timer and the mic
+            // unseen (and resume() would then double-start listening).
+            countdownTimer?.invalidate()
+            countdownTimer = nil
+            goHoldTask?.cancel()
+        default:
+            break
+        }
     }
 
     private func resume() {
-        guard phase == .playing else { return }
-        startTimer()
-        speechManager.startListening()
+        switch phase {
+        case .playing:
+            startTimer()
+            speechManager.startListening()
+        case .countdown:
+            // Restart the 3-2-1 from the top — fairer than resuming mid-beat.
+            startCountdown()
+        default:
+            break
+        }
     }
 
     // MARK: - Countdown

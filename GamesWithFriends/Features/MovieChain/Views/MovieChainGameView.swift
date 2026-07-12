@@ -83,7 +83,7 @@ struct MovieChainGameView: View {
             }
         }
         .padding(AppTheme.Spacing.md)
-        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+        .background(AppTheme.cardSurface)
         .shadow(
             color: colorScheme == .dark ? Color.white.opacity(0.04) : AppTheme.Shadow.cardColor,
             radius: AppTheme.Shadow.cardRadius,
@@ -293,11 +293,10 @@ struct MovieChainGameView: View {
 struct ChainLinkView: View {
     let link: ChainLink
     let index: Int
-    @Environment(\.colorScheme) private var colorScheme
 
     // Same treatment as MiniChainLinkView: deepCharcoal is invisible on darkCard.
     private var actorCircleColor: Color {
-        colorScheme == .dark ? AppTheme.darkElevated : AppTheme.deepCharcoal
+        AppTheme.actorNodeSurface
     }
 
     var body: some View {

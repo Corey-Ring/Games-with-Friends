@@ -359,7 +359,7 @@ class Name5ViewModel {
     /// The player number(s) with the most successes — more than one means a tie.
     var winningPlayerNumbers: [Int] {
         let standings = playerStandings
-        guard let top = standings.first?.successes else { return [] }
+        guard let top = standings.first?.successes, top > 0 else { return [] }
         return standings.filter { $0.successes == top }.map(\.playerNumber)
     }
 

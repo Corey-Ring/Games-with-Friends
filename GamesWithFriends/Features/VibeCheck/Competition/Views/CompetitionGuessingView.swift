@@ -2,7 +2,6 @@ import SwiftUI
 
 struct CompetitionGuessingView: View {
     @Bindable var viewModel: CompetitionVibeCheckViewModel
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 12) {
@@ -79,7 +78,7 @@ struct CompetitionGuessingView: View {
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                .fill(AppTheme.cardSurface)
                 .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
         }
     }
@@ -99,7 +98,7 @@ struct CompetitionGuessingView: View {
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: 10)
-                .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen)
+                .fill(AppTheme.elevatedSurface)
         }
     }
 

@@ -222,6 +222,12 @@ struct ClueBoardView: View {
                 Text("Each extra clue costs 50 points")
                     .font(AppTheme.Typography.caption)
                     .foregroundStyle(.secondary)
+
+                if viewModel.eraFallbackNotice {
+                    Text("No \(viewModel.era.rawValue)-era actor available — showing any era")
+                        .font(AppTheme.Typography.caption)
+                        .foregroundStyle(AppTheme.warning)
+                }
             }
 
             Spacer()

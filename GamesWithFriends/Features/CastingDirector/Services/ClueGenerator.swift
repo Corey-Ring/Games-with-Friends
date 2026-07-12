@@ -43,10 +43,22 @@ final class ClueGenerator {
         Self.usedActorIdsThisSession.removeAll()
     }
 
+    /// Median filmography year per actor, cached for the app session — era
+    /// probes are a years-only query the first time and free afterward.
+    private static var medianYearCache: [String: Int] = [:]
+
+    /// True when the last pick had to ignore the requested era because no
+    /// matching actor was found. The ViewModel surfaces this to the player
+    /// instead of silently serving a wrong-era actor.
+    private(set) var lastPickIgnoredEra = false
+
     /// Pick a random actor from the qualified pool, avoiding recent repeats.
-    /// When an era is selected, sample candidates until one's career fits it
-    /// (falling back to any actor if the sample turns up no match).
+    /// When an era is selected, walk the shuffled pool until one's career fits
+    /// (falling back to any actor — with `lastPickIgnoredEra` set — only when
+    /// no candidate in the walk matches).
     func pickRandomActor(era: CastingDirectorEra = .allEras) -> Actor? {
+        lastPickIgnoredEra = false
+
         let pool = getQualifiedActors()
         let available = pool.filter { !Self.usedActorIdsThisSession.contains($0) }
 
@@ -54,14 +66,18 @@ final class ClueGenerator {
         let candidates = (available.isEmpty ? pool : available).shuffled()
 
         if era != .allEras {
-            for id in candidates.prefix(60) {
+            // 400 cached-median probes make an all-miss astronomically
+            // unlikely for any populated era, while bounding first-round cost
+            // if an era bucket is genuinely empty.
+            for id in candidates.prefix(400) {
                 if matchesEra(actorId: id, era: era), let actor = database.getActor(byId: id) {
                     Self.usedActorIdsThisSession.insert(id)
                     return actor
                 }
             }
-            // No era match in the sample — fall through to an unfiltered pick
-            // rather than returning nil and leaving a dead Start button.
+            // No era match found — fall back to any actor rather than a dead
+            // Start button, but tell the caller so the UI can say so.
+            lastPickIgnoredEra = true
         }
 
         guard let randomId = candidates.first else { return nil }
@@ -72,11 +88,7 @@ final class ClueGenerator {
     /// An actor "belongs" to an era when the median release year of their
     /// filmography falls inside it.
     private func matchesEra(actorId: String, era: CastingDirectorEra) -> Bool {
-        let years = database.getMoviesWithActor(actorId: actorId)
-            .compactMap { $0.year }
-            .sorted()
-        guard !years.isEmpty else { return false }
-        let median = years[years.count / 2]
+        guard let median = medianYear(for: actorId) else { return false }
 
         switch era {
         case .allEras: return true
@@ -84,6 +96,22 @@ final class ClueGenerator {
         case .modern: return (1990..<2010).contains(median)
         case .recent: return median >= 2010
         }
+    }
+
+    private func medianYear(for actorId: String) -> Int? {
+        if let cached = Self.medianYearCache[actorId] {
+            return cached == 0 ? nil : cached
+        }
+
+        let years = database.getMovieYears(forActorId: actorId).sorted()
+        guard !years.isEmpty else {
+            Self.medianYearCache[actorId] = 0 // sentinel: no dated films
+            return nil
+        }
+
+        let median = years[years.count / 2]
+        Self.medianYearCache[actorId] = median
+        return median
     }
 
     // MARK: - Clue Generation

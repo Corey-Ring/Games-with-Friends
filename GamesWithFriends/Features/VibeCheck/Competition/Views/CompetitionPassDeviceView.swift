@@ -4,7 +4,6 @@ struct CompetitionPassDeviceView: View {
     let playerName: String
     let role: PlayerRole
     let onReady: () -> Void
-    @Environment(\.colorScheme) private var colorScheme
 
     enum PlayerRole {
         case vibeSetter
@@ -123,7 +122,7 @@ struct CompetitionPassDeviceView: View {
         .padding()
         .background {
             LinearGradient(
-                colors: [role.color.opacity(0.1), colorScheme == .dark ? AppTheme.darkBackground : AppTheme.pureWhite],
+                colors: [role.color.opacity(0.1), AppTheme.pageSurface],
                 startPoint: .top,
                 endPoint: .bottom
             )

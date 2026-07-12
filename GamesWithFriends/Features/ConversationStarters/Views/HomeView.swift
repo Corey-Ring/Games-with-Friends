@@ -7,7 +7,6 @@ struct HomeView: View {
     @State private var showingSavedStarters = false
     @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) private var scenePhase
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ZStack {
@@ -67,7 +66,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                        .background(AppTheme.cardSurface)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -100,7 +99,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                        .background(AppTheme.cardSurface)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -129,7 +128,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                        .background(AppTheme.cardSurface)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 
@@ -158,7 +157,7 @@ struct HomeView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                        .background(AppTheme.cardSurface)
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         .shadow(radius: 5)
 

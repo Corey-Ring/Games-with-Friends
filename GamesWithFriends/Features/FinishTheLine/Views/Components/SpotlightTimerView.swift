@@ -22,13 +22,11 @@ struct SpotlightTimerView: View {
     }
 
     private var progress: Double {
-        // On Fire banks time above `totalDuration` (up to the round's max), so
-        // divide by the real ceiling — otherwise the ring pins at full for the
-        // entire 60–90s bonus stretch. Below the base duration the ring simply
-        // starts short of full, showing the headroom a hot streak can fill.
-        let denominator = max(totalDuration, FinishTheLineViewModel.maxRoundDuration)
-        guard denominator > 0 else { return 0 }
-        return max(0, min(1, timeRemaining / denominator))
+        // Divide by the round's own duration so a fresh round starts at a full
+        // ring. On Fire can bank time above `totalDuration`, so clamp to 1.0 to
+        // pin the ring at full instead of overflowing.
+        guard totalDuration > 0 else { return 0 }
+        return max(0, min(1, timeRemaining / totalDuration))
     }
 
     private var displayColor: Color {

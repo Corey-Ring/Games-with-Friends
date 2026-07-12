@@ -19,6 +19,9 @@ class CastingDirectorViewModel: ObservableObject {
     @Published var currentRound: Int = 1
     @Published var allClues: [Clue] = []
     @Published var isLoadingRound: Bool = false
+    /// True when no actor matched the selected era this round and the pick
+    /// fell back to any era — shown to the player instead of failing silently.
+    @Published var eraFallbackNotice: Bool = false
 
     // Search
     @Published var searchQuery: String = ""
@@ -153,6 +156,7 @@ class CastingDirectorViewModel: ObservableObject {
         searchResults = []
         showingGuessOverlay = false
         correctGuess = false
+        eraFallbackNotice = false
 
         // Show the playing/loading screen immediately
         gamePhase = .playing
@@ -170,12 +174,14 @@ class CastingDirectorViewModel: ObservableObject {
                 }
                 return
             }
+            let ignoredEra = self.clueGenerator.lastPickIgnoredEra
 
             let clues = self.clueGenerator.generateClues(for: actor, difficulty: difficulty)
 
             DispatchQueue.main.async {
                 self.roundState.targetActor = actor
                 self.allClues = clues
+                self.eraFallbackNotice = ignoredEra
                 self.isLoadingRound = false
                 self.revealNextClue()
                 self.startClueTimer()

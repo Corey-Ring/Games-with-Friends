@@ -17,7 +17,6 @@ struct QuoteCardView: View {
     let showSource: Bool
     let isOnFire: Bool
 
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -66,7 +65,7 @@ struct QuoteCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: AppTheme.Radius.large)
-                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                .fill(AppTheme.cardSurface)
         )
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.Radius.large)

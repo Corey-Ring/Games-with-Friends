@@ -4,7 +4,6 @@ struct CompetitionRevealView: View {
     var viewModel: CompetitionVibeCheckViewModel
     @State private var showResults = false
     @State private var revealedPositions = false
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -105,7 +104,7 @@ struct CompetitionRevealView: View {
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                .fill(AppTheme.cardSurface)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -168,7 +167,7 @@ struct CompetitionRevealView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                .fill(AppTheme.cardSurface)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -207,8 +206,6 @@ struct CompetitionRevealSliderView: View {
     let targetPosition: Double
     let results: [CompetitionRoundResult]
 
-    @Environment(\.colorScheme) private var colorScheme
-
     private let sliderHeight: CGFloat = 300
     private let trackWidth: CGFloat = 60
 
@@ -231,7 +228,7 @@ struct CompetitionRevealSliderView: View {
                 ZStack(alignment: .top) {
                     // Background track
                     RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen)
+                        .fill(AppTheme.elevatedSurface)
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
 
@@ -350,7 +347,6 @@ struct CompetitionResultRow: View {
     let result: CompetitionRoundResult
     let isWorst: Bool
     let totalPlayers: Int
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
@@ -424,7 +420,7 @@ struct CompetitionResultRow: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen)
+                .fill(AppTheme.elevatedSurface)
         }
     }
 
@@ -456,7 +452,7 @@ struct CompetitionResultRow: View {
                     .foregroundStyle(.white)
             } else {
                 Circle()
-                    .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen)
+                    .fill(AppTheme.elevatedSurface)
                     .frame(width: 32, height: 32)
 
                 Text("\(result.rank)")

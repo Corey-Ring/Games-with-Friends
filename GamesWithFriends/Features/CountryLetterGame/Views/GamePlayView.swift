@@ -2,7 +2,6 @@ import SwiftUI
 
 struct GamePlayView: View {
     @Bindable var viewModel: CountryGameViewModel
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.lg) {
@@ -59,7 +58,7 @@ struct GamePlayView: View {
                                 .stroke(AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
                                 .background(
                                     RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                                        .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                                        .fill(AppTheme.cardSurface)
                                 )
                         )
                         .onSubmit {

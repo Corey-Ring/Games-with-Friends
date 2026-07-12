@@ -153,7 +153,6 @@ struct ChainBreakView: View {
 
 struct MiniChainLinkView: View {
     let link: ChainLink
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.xs) {
@@ -178,7 +177,7 @@ struct MiniChainLinkView: View {
     // deepCharcoal reads as an invisible circle on the dark card surface;
     // lift it to darkElevated in dark mode so the actor node stays legible.
     private var actorCircleColor: Color {
-        colorScheme == .dark ? AppTheme.darkElevated : AppTheme.deepCharcoal
+        AppTheme.actorNodeSurface
     }
 
     private var shortName: String {

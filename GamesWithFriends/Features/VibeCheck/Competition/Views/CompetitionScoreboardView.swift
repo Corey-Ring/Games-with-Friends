@@ -2,7 +2,6 @@ import SwiftUI
 
 struct CompetitionScoreboardView: View {
     var viewModel: CompetitionVibeCheckViewModel
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.lg) {
@@ -62,7 +61,7 @@ struct CompetitionScoreboardView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                .fill(AppTheme.cardSurface)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }
@@ -116,7 +115,6 @@ struct CompetitionPlayerScoreRow: View {
     let player: CompetitionPlayer
     let targetScore: Int
     let isLeading: Bool
-    @Environment(\.colorScheme) private var colorScheme
 
     private var progress: Double {
         min(1.0, Double(player.score) / Double(targetScore))
@@ -153,7 +151,7 @@ struct CompetitionPlayerScoreRow: View {
                             .foregroundStyle(.white)
                     } else {
                         Circle()
-                            .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen)
+                            .fill(AppTheme.elevatedSurface)
                             .frame(width: 32, height: 32)
 
                         Text("\(rank)")
@@ -179,7 +177,7 @@ struct CompetitionPlayerScoreRow: View {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen)
+                        .fill(AppTheme.elevatedSurface)
                         .frame(height: 6)
 
                     RoundedRectangle(cornerRadius: 4)

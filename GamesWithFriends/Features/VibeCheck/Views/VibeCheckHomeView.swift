@@ -1,11 +1,9 @@
 import SwiftUI
 
 struct VibeCheckHomeView: View {
-    var viewModel: VibeCheckViewModel
-    @Binding var selectedMode: VibeCheckGameMode
+    var viewModel: CompetitionVibeCheckViewModel
     @State private var showHowToPlay = false
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ScrollView {
@@ -60,34 +58,34 @@ struct VibeCheckHomeView: View {
 
             HStack {
                 Button {
-                    if viewModel.competitionSettings.playerCount > 2 {
-                        viewModel.competitionSettings.playerCount -= 1
+                    if viewModel.settings.playerCount > 2 {
+                        viewModel.settings.playerCount -= 1
                     }
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.competitionSettings.playerCount > 2 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
+                        .foregroundStyle(viewModel.settings.playerCount > 2 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
-                .disabled(viewModel.competitionSettings.playerCount <= 2)
+                .disabled(viewModel.settings.playerCount <= 2)
 
                 Spacer()
 
-                Text("\(viewModel.competitionSettings.playerCount)")
+                Text("\(viewModel.settings.playerCount)")
                     .font(.system(size: 48, weight: .bold, design: .rounded))
                     .monospacedDigit()
 
                 Spacer()
 
                 Button {
-                    if viewModel.competitionSettings.playerCount < 10 {
-                        viewModel.competitionSettings.playerCount += 1
+                    if viewModel.settings.playerCount < 10 {
+                        viewModel.settings.playerCount += 1
                     }
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(AppTheme.Typography.sectionHeader)
-                        .foregroundStyle(viewModel.competitionSettings.playerCount < 10 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
+                        .foregroundStyle(viewModel.settings.playerCount < 10 ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
                 }
-                .disabled(viewModel.competitionSettings.playerCount >= 10)
+                .disabled(viewModel.settings.playerCount >= 10)
             }
             .padding(.horizontal)
 
@@ -108,7 +106,7 @@ struct VibeCheckHomeView: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(.primary)
                     .frame(width: 36, height: 36)
-                    .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                    .background(AppTheme.cardSurface)
                     .clipShape(Circle())
                     .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
             }
@@ -133,78 +131,8 @@ struct VibeCheckHomeView: View {
         .padding(.top, AppTheme.Spacing.xs)
     }
 
-    private var teamsAndPlayersSection: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
-            compactStepperCard(
-                label: "Teams", icon: "person.3.fill",
-                value: viewModel.settings.teamCount,
-                minValue: 1, maxValue: 4,
-                onDecrement: { if viewModel.settings.teamCount > 1 { viewModel.settings.teamCount -= 1 } },
-                onIncrement: { if viewModel.settings.teamCount < 4 { viewModel.settings.teamCount += 1 } }
-            )
-            compactStepperCard(
-                label: "Players Per Team", icon: "person.2.fill",
-                value: viewModel.settings.playersPerTeam,
-                minValue: 2, maxValue: 8,
-                onDecrement: { if viewModel.settings.playersPerTeam > 2 { viewModel.settings.playersPerTeam -= 1 } },
-                onIncrement: { if viewModel.settings.playersPerTeam < 8 { viewModel.settings.playersPerTeam += 1 } }
-            )
-        }
-    }
-
-    private func compactStepperCard(
-        label: String, icon: String,
-        value: Int, minValue: Int, maxValue: Int,
-        onDecrement: @escaping () -> Void,
-        onIncrement: @escaping () -> Void
-    ) -> some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
-            HStack(spacing: AppTheme.Spacing.xs) {
-                Image(systemName: icon)
-                    .font(AppTheme.Typography.secondary)
-                    .foregroundStyle(GameTheme.vibeCheck.accentColor)
-                Text(label)
-                    .font(AppTheme.Typography.secondary.weight(.semibold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.85)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            HStack {
-                Button(action: onDecrement) {
-                    Image(systemName: "minus.circle.fill")
-                        .font(.title3)
-                        .foregroundStyle(value > minValue ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
-                }
-                .disabled(value <= minValue)
-
-                Spacer()
-
-                Text("\(value)")
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-
-                Spacer()
-
-                Button(action: onIncrement) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title3)
-                        .foregroundStyle(value < maxValue ? GameTheme.vibeCheck.accentColor : AppTheme.mediumGray)
-                }
-                .disabled(value >= maxValue)
-            }
-        }
-        .padding(AppTheme.Spacing.md)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
-        }
-    }
-
     private var targetScoreSection: some View {
-        let currentScore = viewModel.competitionSettings.targetScore
+        let currentScore = viewModel.settings.targetScore
 
         return VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Label("Target Score", systemImage: "flag.checkered")
@@ -213,7 +141,7 @@ struct VibeCheckHomeView: View {
             HStack(spacing: AppTheme.Spacing.md) {
                 ForEach([300, 500, 750, 1000], id: \.self) { score in
                     Button {
-                        viewModel.competitionSettings.targetScore = score
+                        viewModel.settings.targetScore = score
                     } label: {
                         Text("\(score)")
                             .font(AppTheme.Typography.secondary.weight(.medium))
@@ -223,7 +151,7 @@ struct VibeCheckHomeView: View {
                                 RoundedRectangle(cornerRadius: AppTheme.Radius.small)
                                     .fill(currentScore == score
                                           ? GameTheme.vibeCheck.accentColor
-                                          : (colorScheme == .dark ? AppTheme.darkElevated : AppTheme.warmLinen))
+                                          : AppTheme.elevatedSurface)
                             }
                             .foregroundStyle(currentScore == score ? .white : .primary)
                     }
@@ -237,7 +165,7 @@ struct VibeCheckHomeView: View {
 
     private var continueButton: some View {
         Button {
-            viewModel.proceedToCompetitionPlayerSetup()
+            viewModel.proceedToPlayerSetup()
         } label: {
             HStack {
                 Image(systemName: "arrow.right.circle.fill")
@@ -254,159 +182,8 @@ struct VibeCheckHomeView: View {
     }
 }
 
-// MARK: - Game Mode Card
-
-struct VibeCheckGameModeCard: View {
-    let mode: VibeCheckGameMode
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: AppTheme.Spacing.md) {
-                Image(systemName: mode.iconName)
-                    .font(AppTheme.Typography.sectionHeader)
-                    .foregroundStyle(isSelected ? .white : GameTheme.vibeCheck.accentColor)
-                    .frame(width: 40)
-
-                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-                    Text(mode.name)
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundStyle(isSelected ? .white : .primary)
-
-                    Text(mode.description)
-                        .font(AppTheme.Typography.caption)
-                        .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
-                }
-
-                Spacer()
-
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.white)
-                }
-            }
-            .padding()
-            .background(isSelected ? GameTheme.vibeCheck.accentColor : Color.clear)
-            .background(AppTheme.pureWhite)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
-            .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Team Setup View
-
-struct TeamSetupView: View {
-    var viewModel: VibeCheckViewModel
-
-    var body: some View {
-        ScrollView {
-            VStack(spacing: AppTheme.Spacing.lg) {
-                // Header
-                Text("Set Up Teams")
-                    .font(AppTheme.Typography.screenTitle)
-
-                // Team cards
-                ForEach(Array(viewModel.teams.enumerated()), id: \.element.id) { teamIndex, team in
-                    TeamSetupCard(
-                        teamIndex: teamIndex,
-                        team: team,
-                        viewModel: viewModel
-                    )
-                }
-
-                // Start button
-                startButton
-                    .padding(.bottom, AppTheme.Spacing.lg)
-            }
-            .padding()
-        }
-        .scrollIndicators(.hidden)
-        .background {
-            LinearGradient(
-                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-        }
-    }
-
-    private var startButton: some View {
-        Button {
-            viewModel.startGame()
-        } label: {
-            HStack {
-                Image(systemName: "play.fill")
-                Text("START GAME")
-                    .fontWeight(.bold)
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background {
-                LinearGradient(
-                    colors: [.purple, .blue],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            }
-            .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-struct TeamSetupCard: View {
-    let teamIndex: Int
-    let team: VibeCheckTeam
-    var viewModel: VibeCheckViewModel
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            // Team name
-            HStack {
-                Image(systemName: "person.3.fill")
-                    .foregroundStyle(.purple)
-                TextField("Enter team name", text: Binding(
-                    get: { team.name },
-                    set: { viewModel.updateTeamName(at: teamIndex, name: $0) }
-                ))
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundStyle(.primary)
-            }
-
-            Divider()
-
-            // Player names
-            ForEach(Array(team.playerNames.enumerated()), id: \.offset) { playerIndex, playerName in
-                HStack {
-                    Image(systemName: "person.fill")
-                        .foregroundStyle(.secondary)
-                        .frame(width: 24)
-
-                    TextField("Player \(playerIndex + 1)", text: Binding(
-                        get: { playerName },
-                        set: { viewModel.updatePlayerName(teamIndex: teamIndex, playerIndex: playerIndex, name: $0) }
-                    ))
-                    .textFieldStyle(.roundedBorder)
-                }
-            }
-        }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
-        }
-    }
-}
+// Classic-mode setup UI (mode picker, team setup) was removed for 1.0 —
+// restore from git history when Classic returns. See DECISIONS.md.
 
 // MARK: - How To Play
 
@@ -520,5 +297,5 @@ struct HowToPlayView: View {
 }
 
 #Preview {
-    VibeCheckHomeView(viewModel: VibeCheckViewModel(), selectedMode: .constant(.classic))
+    VibeCheckHomeView(viewModel: CompetitionVibeCheckViewModel())
 }

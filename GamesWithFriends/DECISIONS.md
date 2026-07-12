@@ -30,7 +30,7 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ## 2026-07-12 — Launch-readiness pass: Vibe Check is Competition-only for 1.0 [decision]
 
-**What:** The Vibe Check mode picker is hidden; `VibeCheckRootView.selectedMode` defaults to `.competition` and `VibeCheckHomeView` renders only Competition setup. Classic-mode code (views, VM, state machine) is intact but unreachable.
+**What:** Vibe Check ships Competition-only. After post-fix code review flagged the original "default `selectedMode = .competition`" routing as fragile (the classic state machine stayed live behind it), `VibeCheckRootView` was rewritten to drive `CompetitionVibeCheckViewModel` directly — the classic `VibeCheckViewModel` is never instantiated, and the dead classic setup UI (mode picker, `TeamSetupView`, stepper cards) was deleted from `VibeCheckHomeView`. Classic gameplay views and the classic VM remain in the target but have no entry point.
 
 **Why:** Classic mode had a wrong-team reveal attribution bug (`finalizeRound()` appends to `rounds` before reveal, shifting `promptSetterTeam`), no dark-mode support, a single-team default that breaks the guessing premise, and the largest unremediated design-token debt in the app (per the 2026-03-22 audit). Competition mode is close to the quality bar; fixing Classic was the single biggest work item between here and launch.
 

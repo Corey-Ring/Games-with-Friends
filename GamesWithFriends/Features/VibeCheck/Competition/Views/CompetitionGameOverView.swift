@@ -3,7 +3,6 @@ import SwiftUI
 struct CompetitionGameOverView: View {
     var viewModel: CompetitionVibeCheckViewModel
     @State private var showConfetti = false
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -96,7 +95,7 @@ struct CompetitionGameOverView: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+                .fill(AppTheme.cardSurface)
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         }
     }

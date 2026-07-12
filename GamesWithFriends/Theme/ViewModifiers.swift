@@ -7,7 +7,7 @@ struct GameCardModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding(AppTheme.Spacing.md)
-            .background(colorScheme == .dark ? AppTheme.darkCard : AppTheme.pureWhite)
+            .background(AppTheme.cardSurface)
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
             .shadow(
                 color: colorScheme == .dark ? Color.white.opacity(0.04) : AppTheme.Shadow.cardColor,

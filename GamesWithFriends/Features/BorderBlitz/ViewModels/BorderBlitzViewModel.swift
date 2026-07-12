@@ -225,6 +225,9 @@ class BorderBlitzViewModel {
     }
 
     private func handleTimeOut() {
+        // A queued timer tick can lose the race against a correct guess that
+        // already ended the round; bail before showing "Time's up!" over it.
+        guard gameState == .playing else { return }
         endRound(correct: false)
         showFeedbackMessage("Time's up!", isCorrect: false)
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
