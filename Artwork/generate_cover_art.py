@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Games with Friends — cover art in the 'Cannery Folk' philosophy.
 
-Vintage tin-label maximalism: plum field in a marigold frame, an arched
-ribbon carrying the script title "Games for Friends", globe medallion,
-mirrored carnation garlands, and an arched variety line.
+Vintage tin-label maximalism: plum field in a marigold frame, the gold
+script title "Games for Friends" arching over a globe medallion, side
+ribbons, and mirrored carnation garlands.
 Built as SVG, rendered to PNG with cairosvg.
 """
 import math
@@ -179,53 +179,27 @@ add(f'<rect x="66" y="66" width="{W-132}" height="{H-132}" rx="14" fill="none" s
 for dx, dy in [(31, 31), (W-31, 31), (31, H-31), (W-31, H-31)]:
     daisy(dx, dy, 15, CREAM, MAGENTA)
 
-# ---------------------------------------------------------------- top ribbon
-RIB_C = (512.0, 1490.0)      # circle center far below; ribbon arcs over the top
-R_OUT, R_IN = 1385.0, 1307.0 # band radii -> band top y=105, bottom y=183 at center
+# ---------------------------------------------------------------- title
+# script title arching over the medallion, gold with an ink outline
+RIB_C = (512.0, 1490.0)      # arc circle center far below the canvas
 def arc_pt(r, adeg):
     return (RIB_C[0] + r * math.cos(math.radians(adeg)), RIB_C[1] + r * math.sin(math.radians(adeg)))
-A = 15.2                      # half-angle of band
-p1 = arc_pt(R_OUT, -90 - A); p2 = arc_pt(R_OUT, -90 + A)
-p3 = arc_pt(R_IN,  -90 + A); p4 = arc_pt(R_IN,  -90 - A)
-
-# folded tails (drawn first, behind band)
-def tail(px_o, px_i, side):
-    # px_o outer band corner, px_i inner band corner; side -1 left, +1 right
-    dx = 58 * side
-    midx = (px_o[0] + px_i[0]) / 2 + dx
-    topy = min(px_o[1], px_i[1]) + 26
-    boty = max(px_o[1], px_i[1]) + 40
-    notch = (midx - 30 * side, (topy + boty) / 2 + 2)
-    d = (f"M {px_o[0]:.1f} {px_o[1]+6:.1f} L {midx:.1f} {topy:.1f} "
-         f"L {notch[0]:.1f} {notch[1]:.1f} L {midx:.1f} {boty:.1f} "
-         f"L {px_i[0]:.1f} {px_i[1]+4:.1f} Z")
-    add(f'<path d="{d}" fill="{CREAM_DK}" stroke="{INK}" stroke-width="4.5" stroke-linejoin="round"/>')
-tail(p1, p4, -1)
-tail(p2, p3, +1)
-
-band = (f"M {p1[0]:.1f} {p1[1]:.1f} A {R_OUT} {R_OUT} 0 0 1 {p2[0]:.1f} {p2[1]:.1f} "
-        f"L {p3[0]:.1f} {p3[1]:.1f} A {R_IN} {R_IN} 0 0 0 {p4[0]:.1f} {p4[1]:.1f} Z")
-add(f'<path d="{band}" fill="{CREAM}" stroke="{INK}" stroke-width="5" stroke-linejoin="round"/>')
-# fold shadows at band ends
-for pc, pi, side in [(p1, p4, -1), (p2, p3, +1)]:
-    d = (f"M {pc[0]:.1f} {pc[1]:.1f} L {pi[0]:.1f} {pi[1]:.1f} "
-         f"L {pi[0] - 26*side:.1f} {pi[1] + 20:.1f} Z")
-    add(f'<path d="{d}" fill="{CREAM_DK}" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>')
-
-# script title on the banner, flowing along the band's arc
 TITLE = "Games for Friends"
-t_size = min(76.0, 620.0 / (PAC.getlength(TITLE) / 100.0))
-base_r = 1322.0
-ba = A + 8
+t_size = min(92.0, 740.0 / (PAC.getlength(TITLE) / 100.0))
+base_r = 1318.0              # baseline y = 172 at center
+ba = 24
 bp1 = arc_pt(base_r, -90 - ba); bp2 = arc_pt(base_r, -90 + ba)
-add(f'<defs><path id="bannerarc" d="M {bp1[0]:.1f} {bp1[1]:.1f} '
+add(f'<defs><path id="titlearc" d="M {bp1[0]:.1f} {bp1[1]:.1f} '
     f'A {base_r} {base_r} 0 0 1 {bp2[0]:.1f} {bp2[1]:.1f}"/></defs>')
-add(f'<text font-family="Pacifico" font-size="{t_size:.1f}" fill="{INK}">'
-    f'<textPath href="#bannerarc" startOffset="50%" text-anchor="middle">{TITLE}</textPath></text>')
+add(f'<text font-family="Pacifico" font-size="{t_size:.1f}" fill="{GOLD_HI}" '
+    f'stroke="{INK}" stroke-width="7" stroke-linejoin="round" paint-order="stroke">'
+    f'<textPath href="#titlearc" startOffset="50%" text-anchor="middle">{TITLE}</textPath></text>')
 
 # ---------------------------------------------------------------- medallion
+# drawn about (512, 428) then scaled up and settled toward the center
 MC = (512.0, 428.0)
 MR = 178.0
+add('<g transform="translate(512 474) scale(1.13) translate(-512 -428)">')
 add(f'<circle cx="{MC[0]}" cy="{MC[1]}" r="{MR+14}" fill="{GOLD}" stroke="{INK}" stroke-width="5"/>')
 add(f'<circle cx="{MC[0]}" cy="{MC[1]}" r="{MR-8}" fill="{BLUSH}" stroke="{INK}" stroke-width="4.5"/>')
 # ring dots
@@ -280,6 +254,7 @@ dot(MC[0]-146, MC[1]+34, 4, MAGENTA)
 dot(MC[0]+146, MC[1]+34, 4, MAGENTA)
 dot(MC[0]-96, MC[1]-116, 4, MAGENTA)
 dot(MC[0]+96, MC[1]-116, 4, MAGENTA)
+add('</g>')
 
 # ---------------------------------------------------------------- side ribbons
 def side_ribbon(cx, cy, w, h, rot, text):
@@ -299,8 +274,8 @@ def side_ribbon(cx, cy, w, h, rot, text):
     g.append("</g>")
     add("".join(g))
 
-side_ribbon(186, 386, 206, 46, -14, "POLE TO POLE")
-side_ribbon(838, 386, 206, 46, 14, "100% TRIVIA")
+side_ribbon(180, 400, 206, 46, -14, "POLE TO POLE")
+side_ribbon(844, 400, 206, 46, 14, "100% TRIVIA")
 
 # ---------------------------------------------------------------- garlands
 def garland(side):
@@ -329,8 +304,12 @@ def garland(side):
         add(f'<circle cx="{bx}" cy="{by}" r="{br}" fill="{RED}" stroke="{INK}" stroke-width="3"/>')
         add(f'<circle cx="{bx}" cy="{by}" r="{br*0.38}" fill="{BLUSH}"/>')
 
+add('<g transform="translate(162 912) scale(1.13) translate(-162 -912)">')
 garland(-1)
+add('</g>')
+add('<g transform="translate(862 912) scale(1.13) translate(-862 -912)">')
 garland(+1)
+add('</g>')
 
 # ---------------------------------------------------------------- charms on plum
 crescent(122, 240, 19, rot=24)
@@ -344,8 +323,6 @@ add(f'<g transform="translate(886 316)">'
     f'</g>')
 sparkle(926, 156, 9, GOLD_HI)
 star5(808, 246, 11, GOLD, rot=10)
-die(136, 478, 1.0, rot=-14)
-die(888, 478, 1.0, rot=12)
 star5(256, 548, 11, GOLD)
 star5(768, 548, 11, GOLD)
 sparkle(150, 662, 9, CREAM)
@@ -357,30 +334,14 @@ dot(938, 350, 4, BLUSH)
 star5(250, 888, 11, GOLD, rot=14)
 star5(774, 888, 11, GOLD, rot=-14)
 
-# ---------------------------------------------------------------- display line
-# bold variety line arched gently upward where the logotype used to sit
-arc_text("GEOGRAPHY GAMES", 512, -628, 1400, 54, GOLD_HI, font=BSB,
-         family="Big Shoulders", spacing=4, stroke=INK, sw=4.5, bottom=True)
-star5(512, 820, 11, GOLD, rot=18)
-add(f'<path d="M 436 822 Q 470 810 496 820" fill="none" stroke="{GOLD}" '
-    f'stroke-width="4" stroke-linecap="round"/>')
-add(f'<path d="M 588 822 Q 554 810 528 820" fill="none" stroke="{GOLD}" '
-    f'stroke-width="4" stroke-linecap="round"/>')
-star5(420, 888, 8, GOLD, rot=10)
-star5(604, 888, 8, GOLD, rot=-12)
-dot(512, 886, 4, BLUSH)
-
-# ---------------------------------------------------------------- bottom line
-byl = 946
-BSZ, LS = 25, 3
-t1 = "PLAY &amp; LEARN"
-w1 = WSB.getlength("PLAY & LEARN") * BSZ / 100 + LS * 11
-add(f'<text x="512" y="{byl}" font-family="Work Sans" font-weight="bold" font-size="{BSZ}" '
-    f'fill="{CREAM}" letter-spacing="{LS}" text-anchor="middle">{t1}</text>')
-star5(512 - w1 / 2 - 34, byl - 9, 9, GOLD)
-star5(512 + w1 / 2 + 34, byl - 9, 9, GOLD)
-boat(512 - w1 / 2 - 96, byl - 12, 0.92)
-sparkle(512 + w1 / 2 + 92, byl - 10, 10, GOLD_HI)
+# ---------------------------------------------------------------- bottom charms
+# the little boat sails the bottom of the label, flanked by stars
+boat(512, 928, 1.18)
+star5(424, 934, 9, GOLD, rot=10)
+star5(600, 934, 9, GOLD, rot=-12)
+sparkle(512, 856, 8, GOLD_HI)
+dot(452, 876, 4, BLUSH)
+dot(572, 876, 4, BLUSH)
 
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
        f'viewBox="0 0 {W} {H}">' + "".join(parts) + "</svg>")
