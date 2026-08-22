@@ -296,12 +296,17 @@ def center_cards():
     dot(-62, -78, 4, MAGENTA)
     add('</g>')
 
-MEEPLE = ("M0,-46 C12,-46 20,-37 20,-27 C20,-21 17,-15 12,-11 "
-          "C26,-6 36,4 40,14 C42,20 38,25 32,24 C25,23 19,18 12,16 "
-          "C14,26 20,34 26,42 C29,47 26,52 20,52 L6,52 C2,52 0,49 0,45 "
-          "C0,49 -2,52 -6,52 L-20,52 C-26,52 -29,47 -26,42 "
-          "C-20,34 -14,26 -12,16 C-19,18 -25,23 -32,24 C-38,25 -42,20 -40,14 "
-          "C-36,4 -26,-6 -12,-11 C-17,-15 -20,-21 -20,-27 C-20,-37 -12,-46 0,-46 Z")
+# classic board-game meeple silhouette: round head, wing arms angled
+# down-and-out, chunky base with a narrow notch between the legs
+MEEPLE = ("M0,-50 C12,-50 20,-42 20,-32 C20,-25 16,-19 10,-16 "
+          "C24,-15 38,-12 44,-6 C48,-1 45,6 38,5 C30,4 22,2 16,2 "
+          "C17,12 22,22 28,32 C31,38 32,43 31,46 C30,50 26,52 21,52 L9,52 "
+          "C5,52 3,49 3,45 C3,38 4,32 0,28 C-4,32 -3,38 -3,45 "
+          "C-3,49 -5,52 -9,52 L-21,52 C-26,52 -30,50 -31,46 "
+          "C-32,43 -31,38 -28,32 C-22,22 -17,12 -16,2 "
+          "C-22,2 -30,4 -38,5 C-45,6 -48,-1 -44,-6 "
+          "C-38,-12 -24,-15 -10,-16 C-16,-19 -20,-25 -20,-32 "
+          "C-20,-42 -12,-50 0,-50 Z")
 
 def meeple(x, y, rot, scale, fill, trim):
     """One folk meeple with a face and a personal touch, drawn like the
@@ -311,39 +316,33 @@ def meeple(x, y, rot, scale, fill, trim):
         f'stroke-linejoin="round"/>')
     # face: closed eyes + smile + blush
     add(f'<g stroke="{INK}" stroke-width="2.6" fill="none" stroke-linecap="round">'
-        f'<path d="M -11 -32 Q -7 -27 -3 -32"/>'
-        f'<path d="M 3 -32 Q 7 -27 11 -32"/>'
-        f'<path d="M -6 -23 Q 0 -18 6 -23"/></g>')
-    dot(-15, -25, 3.0, BLUSH)
-    dot(15, -25, 3.0, BLUSH)
+        f'<path d="M -11 -36 Q -7 -31 -3 -36"/>'
+        f'<path d="M 3 -36 Q 7 -31 11 -36"/>'
+        f'<path d="M -6 -27 Q 0 -22 6 -27"/></g>')
+    dot(-14, -29, 3.0, BLUSH)
+    dot(14, -29, 3.0, BLUSH)
     if trim == "scarf":
-        add(f'<path d="M -13 -14 L 13 -14 L 1 4 Z" fill="{GOLD}" stroke="{INK}" '
+        add(f'<path d="M -11 -14 L 11 -14 L 1 0 Z" fill="{GOLD}" stroke="{INK}" '
             f'stroke-width="2.6" stroke-linejoin="round"/>')
-    elif trim == "buttons":
-        dot(0, 4, 3.4, CREAM, sw=2.2)
-        dot(0, 18, 3.4, CREAM, sw=2.2)
     elif trim == "star":
         pts = []
         for i in range(10):
             rr = 9 if i % 2 == 0 else 3.8
             a = math.radians(-90 + i * 36)
-            pts.append((rr * math.cos(a), -2 + rr * math.sin(a)))
+            pts.append((rr * math.cos(a), 0 + rr * math.sin(a)))
         add(f'<polygon points="{P(pts)}" fill="{GOLD}" stroke="{INK}" '
             f'stroke-width="2.4" stroke-linejoin="round"/>')
-    elif trim == "dots":
-        dot(-7, -4, 2.8, CREAM)
-        dot(7, 0, 2.8, CREAM)
     add('</g>')
 
 def center_meeples():
     """A little crowd of meeples: game night, everyone's invited."""
     add(f'<g transform="translate({gx} {gy})">')
     # back row peeks over the front row
-    meeple(-33, -22, -5, 0.78, GREEN, "star")
-    meeple(33, -22, 5, 0.78, MAGENTA, "dots")
+    meeple(-35, -26, -5, 0.78, GREEN, "star")
+    meeple(35, -26, 5, 0.78, MAGENTA, None)
     # front row
-    meeple(-50, 28, -9, 1.0, BLUE, "scarf")
-    meeple(50, 28, 9, 1.0, RED, "buttons")
+    meeple(-54, 28, -9, 1.0, BLUE, "scarf")
+    meeple(54, 28, 9, 1.0, RED, None)
     # shared star overhead
     pts = []
     for i in range(10):
