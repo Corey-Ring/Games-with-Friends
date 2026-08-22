@@ -303,25 +303,63 @@ MEEPLE = ("M0,-46 C12,-46 20,-37 20,-27 C20,-21 17,-15 12,-11 "
           "C-20,34 -14,26 -12,16 C-19,18 -25,23 -32,24 C-38,25 -42,20 -40,14 "
           "C-36,4 -26,-6 -12,-11 C-17,-15 -20,-21 -20,-27 C-20,-37 -12,-46 0,-46 Z")
 
+def meeple(x, y, rot, scale, fill, trim):
+    """One folk meeple with a face and a personal touch, drawn like the
+    reference tins: closed happy eyes, rosy cheeks, ink outline."""
+    add(f'<g transform="translate({x} {y}) rotate({rot}) scale({scale})">')
+    add(f'<path d="{MEEPLE}" fill="{fill}" stroke="{INK}" stroke-width="4.2" '
+        f'stroke-linejoin="round"/>')
+    # face: closed eyes + smile + blush
+    add(f'<g stroke="{INK}" stroke-width="2.6" fill="none" stroke-linecap="round">'
+        f'<path d="M -11 -32 Q -7 -27 -3 -32"/>'
+        f'<path d="M 3 -32 Q 7 -27 11 -32"/>'
+        f'<path d="M -6 -23 Q 0 -18 6 -23"/></g>')
+    dot(-15, -25, 3.0, BLUSH)
+    dot(15, -25, 3.0, BLUSH)
+    if trim == "scarf":
+        add(f'<path d="M -13 -14 L 13 -14 L 1 4 Z" fill="{GOLD}" stroke="{INK}" '
+            f'stroke-width="2.6" stroke-linejoin="round"/>')
+    elif trim == "buttons":
+        dot(0, 4, 3.4, CREAM, sw=2.2)
+        dot(0, 18, 3.4, CREAM, sw=2.2)
+    elif trim == "star":
+        pts = []
+        for i in range(10):
+            rr = 9 if i % 2 == 0 else 3.8
+            a = math.radians(-90 + i * 36)
+            pts.append((rr * math.cos(a), -2 + rr * math.sin(a)))
+        add(f'<polygon points="{P(pts)}" fill="{GOLD}" stroke="{INK}" '
+            f'stroke-width="2.4" stroke-linejoin="round"/>')
+    elif trim == "dots":
+        dot(-7, -4, 2.8, CREAM)
+        dot(7, 0, 2.8, CREAM)
+    add('</g>')
+
 def center_meeples():
-    """Two meeples leaning together under a shared star: friends first."""
-    add(f'<g transform="translate({gx} {gy}) scale(1.3)">')
-    add(f'<g transform="translate(-44 22) rotate(-14) scale(0.92)">'
-        f'<path d="{MEEPLE}" fill="{BLUE}" stroke="{INK}" stroke-width="4.4" '
-        f'stroke-linejoin="round"/></g>')
-    add(f'<g transform="translate(44 22) rotate(14) scale(0.92)">'
-        f'<path d="{MEEPLE}" fill="{RED}" stroke="{INK}" stroke-width="4.4" '
-        f'stroke-linejoin="round"/></g>')
+    """A little crowd of meeples: game night, everyone's invited."""
+    add(f'<g transform="translate({gx} {gy})">')
+    # back row peeks over the front row
+    meeple(-33, -22, -5, 0.78, GREEN, "star")
+    meeple(33, -22, 5, 0.78, MAGENTA, "dots")
+    # front row
+    meeple(-50, 28, -9, 1.0, BLUE, "scarf")
+    meeple(50, 28, 9, 1.0, RED, "buttons")
+    # shared star overhead
     pts = []
     for i in range(10):
-        rr = 24 if i % 2 == 0 else 10
+        rr = 17 if i % 2 == 0 else 7
         a = math.radians(-90 + i * 36)
-        pts.append((rr * math.cos(a), -62 + rr * math.sin(a)))
+        pts.append((rr * math.cos(a), -92 + rr * math.sin(a)))
     add(f'<polygon points="{P(pts)}" fill="{GOLD}" stroke="{INK}" '
-        f'stroke-width="3.6" stroke-linejoin="round"/>')
-    sparkle(-82, -46, 8, GOLD_HI)
-    sparkle(82, -46, 8, GOLD_HI)
-    dot(0, 92, 4, MAGENTA)
+        f'stroke-width="3.2" stroke-linejoin="round"/>')
+    sparkle(-92, -58, 8, GOLD_HI)
+    sparkle(92, -58, 8, GOLD_HI)
+    # spray of stars below the medallion circle
+    star5(-56, 206, 10, GOLD, rot=-12)
+    star5(0, 222, 14, GOLD_HI, rot=8)
+    star5(56, 206, 10, GOLD, rot=12)
+    dot(-96, 190, 4, BLUSH)
+    dot(96, 190, 4, BLUSH)
     add('</g>')
 
 def center_tiles():
