@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Games with Friends — cover art in the 'Cannery Folk' philosophy.
 
-Vintage tin-label maximalism: plum field in a marigold frame, arched ribbon,
-globe medallion, mirrored carnation garlands, rolling script logotype.
+Vintage tin-label maximalism: plum field in a marigold frame, an arched
+ribbon carrying the script title "Games for Friends", globe medallion,
+mirrored carnation garlands, and an arched variety line.
 Built as SVG, rendered to PNG with cairosvg.
 """
 import math
@@ -33,6 +34,7 @@ INK       = "#22141C"
 FONT_DIR = "/root/.fonts"
 BSB = ImageFont.truetype(f"{FONT_DIR}/BigShoulders-Bold.ttf", 100)
 WSB = ImageFont.truetype(f"{FONT_DIR}/WorkSans-Bold.ttf", 100)
+PAC = ImageFont.truetype(f"{FONT_DIR}/Pacifico.ttf", 100)
 
 parts = []
 def add(s): parts.append(s)
@@ -42,20 +44,22 @@ def P(pts):
 
 # ---------------------------------------------------------------- helpers
 def arc_text(text, cx, cy, r, size, fill, font=BSB, family="Big Shoulders",
-             weight="bold", spacing=8.0, stroke=None, sw=0):
-    """Place text centered on top of a circle (cx,cy,r), letters rotated."""
+             weight="bold", spacing=8.0, stroke=None, sw=0, bottom=False):
+    """Place text centered on a circle (cx,cy,r): on top of it, or (with
+    bottom=True) along its underside so the line arches gently upward."""
     scale = size / 100.0
     widths = [font.getlength(ch) * scale for ch in text]
     adv = [w + spacing for w in widths]
     total = sum(adv) - spacing
-    # arc length -> angle; start so text is centered at top (-90 deg)
-    a = -90 - math.degrees(total / (2 * r))
+    sgn = -1 if bottom else 1
+    base = 90 if bottom else -90
+    a = base - sgn * math.degrees(total / (2 * r))
     out = []
     for ch, w in zip(text, widths):
-        a_mid = a + math.degrees((w / 2) / r)
+        a_mid = a + sgn * math.degrees((w / 2) / r)
         x = cx + r * math.cos(math.radians(a_mid))
         y = cy + r * math.sin(math.radians(a_mid))
-        rot = a_mid + 90
+        rot = a_mid + sgn * 90
         if ch != " ":
             st = f' stroke="{stroke}" stroke-width="{sw}" stroke-linejoin="round" paint-order="stroke"' if stroke else ""
             out.append(
@@ -63,7 +67,7 @@ def arc_text(text, cx, cy, r, size, fill, font=BSB, family="Big Shoulders",
                 f'font-weight="{weight}" font-size="{size}" fill="{fill}"{st} '
                 f'text-anchor="middle" '
                 f'transform="rotate({rot:.2f} {x:.2f} {y:.2f})">{ch}</text>')
-        a += math.degrees((w + spacing) / r)
+        a += sgn * math.degrees((w + spacing) / r)
     add("".join(out))
 
 def star5(cx, cy, r, fill=GOLD, rot=0.0, sw=3.2):
@@ -208,8 +212,16 @@ for pc, pi, side in [(p1, p4, -1), (p2, p3, +1)]:
          f"L {pi[0] - 26*side:.1f} {pi[1] + 20:.1f} Z")
     add(f'<path d="{d}" fill="{CREAM_DK}" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>')
 
-arc_text("GEOGRAPHY GAMES", RIB_C[0], RIB_C[1], (R_OUT + R_IN) / 2 - 19,
-         54, INK, font=BSB, family="Big Shoulders", spacing=9)
+# script title on the banner, flowing along the band's arc
+TITLE = "Games for Friends"
+t_size = min(76.0, 620.0 / (PAC.getlength(TITLE) / 100.0))
+base_r = 1322.0
+ba = A + 8
+bp1 = arc_pt(base_r, -90 - ba); bp2 = arc_pt(base_r, -90 + ba)
+add(f'<defs><path id="bannerarc" d="M {bp1[0]:.1f} {bp1[1]:.1f} '
+    f'A {base_r} {base_r} 0 0 1 {bp2[0]:.1f} {bp2[1]:.1f}"/></defs>')
+add(f'<text font-family="Pacifico" font-size="{t_size:.1f}" fill="{INK}">'
+    f'<textPath href="#bannerarc" startOffset="50%" text-anchor="middle">{TITLE}</textPath></text>')
 
 # ---------------------------------------------------------------- medallion
 MC = (512.0, 428.0)
@@ -287,8 +299,8 @@ def side_ribbon(cx, cy, w, h, rot, text):
     g.append("</g>")
     add("".join(g))
 
-side_ribbon(186, 386, 206, 46, -14, "PLAY &amp; LEARN")
-side_ribbon(838, 386, 206, 46, 14, "195 COUNTRIES")
+side_ribbon(186, 386, 206, 46, -14, "POLE TO POLE")
+side_ribbon(838, 386, 206, 46, 14, "100% TRIVIA")
 
 # ---------------------------------------------------------------- garlands
 def garland(side):
@@ -322,7 +334,7 @@ garland(+1)
 
 # ---------------------------------------------------------------- charms on plum
 crescent(122, 240, 19, rot=24)
-star5(162, 170, 12, GOLD)
+star5(216, 252, 11, GOLD, rot=-8)
 sparkle(96, 158, 9, GOLD_HI)
 # sun (top right, below ribbon tail)
 add(f'<g transform="translate(886 316)">'
@@ -345,30 +357,30 @@ dot(938, 350, 4, BLUSH)
 star5(250, 888, 11, GOLD, rot=14)
 star5(774, 888, 11, GOLD, rot=-14)
 
-# ---------------------------------------------------------------- logotype
-add(f'<text x="512" y="772" font-family="Pacifico" font-size="148" fill="{GOLD_HI}" '
-    f'stroke="{INK}" stroke-width="9" stroke-linejoin="round" paint-order="stroke" '
-    f'text-anchor="middle">Games</text>')
-add(f'<text x="512" y="886" font-family="Pacifico" font-size="64" fill="{CREAM}" '
-    f'stroke="{INK}" stroke-width="3.6" stroke-linejoin="round" paint-order="stroke" '
-    f'text-anchor="middle">with Friends</text>')
+# ---------------------------------------------------------------- display line
+# bold variety line arched gently upward where the logotype used to sit
+arc_text("GEOGRAPHY GAMES", 512, -628, 1400, 54, GOLD_HI, font=BSB,
+         family="Big Shoulders", spacing=4, stroke=INK, sw=4.5, bottom=True)
+star5(512, 820, 11, GOLD, rot=18)
+add(f'<path d="M 436 822 Q 470 810 496 820" fill="none" stroke="{GOLD}" '
+    f'stroke-width="4" stroke-linecap="round"/>')
+add(f'<path d="M 588 822 Q 554 810 528 820" fill="none" stroke="{GOLD}" '
+    f'stroke-width="4" stroke-linecap="round"/>')
+star5(420, 888, 8, GOLD, rot=10)
+star5(604, 888, 8, GOLD, rot=-12)
+dot(512, 886, 4, BLUSH)
 
 # ---------------------------------------------------------------- bottom line
 byl = 946
 BSZ, LS = 25, 3
-t1, t2 = "POLE TO POLE", "100% TRIVIA"
-w1 = WSB.getlength(t1) * BSZ / 100 + LS * (len(t1) - 1)
-w2 = WSB.getlength(t2) * BSZ / 100 + LS * (len(t2) - 1)
-gap = 34
-c1 = 512 - gap - w1 / 2
-c2 = 512 + gap + w2 / 2
-add(f'<text x="{c1:.1f}" y="{byl}" font-family="Work Sans" font-weight="bold" font-size="{BSZ}" '
+t1 = "PLAY &amp; LEARN"
+w1 = WSB.getlength("PLAY & LEARN") * BSZ / 100 + LS * 11
+add(f'<text x="512" y="{byl}" font-family="Work Sans" font-weight="bold" font-size="{BSZ}" '
     f'fill="{CREAM}" letter-spacing="{LS}" text-anchor="middle">{t1}</text>')
-add(f'<text x="{c2:.1f}" y="{byl}" font-family="Work Sans" font-weight="bold" font-size="{BSZ}" '
-    f'fill="{CREAM}" letter-spacing="{LS}" text-anchor="middle">{t2}</text>')
-star5(512, byl - 9, 9, GOLD)
-boat(c1 - w1 / 2 - 58, byl - 12, 0.92)
-sparkle(c2 + w2 / 2 + 46, byl - 10, 10, GOLD_HI)
+star5(512 - w1 / 2 - 34, byl - 9, 9, GOLD)
+star5(512 + w1 / 2 + 34, byl - 9, 9, GOLD)
+boat(512 - w1 / 2 - 96, byl - 12, 0.92)
+sparkle(512 + w1 / 2 + 92, byl - 10, 10, GOLD_HI)
 
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
        f'viewBox="0 0 {W} {H}">' + "".join(parts) + "</svg>")
