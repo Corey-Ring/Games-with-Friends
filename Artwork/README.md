@@ -17,11 +17,27 @@ medallion, and mirrored carnation garlands.
 The app icon lives at
 `GamesWithFriends/Assets.xcassets/AppIcon.appiconset/cover-art.png` (same image).
 
+## Medallion variants
+
+The generator takes an optional variant argument that swaps the medallion's
+center art while keeping everything else identical:
+
+| Variant | Center art |
+|---|---|
+| `globe` (default) | The folk globe — writes `cover-art.png` |
+| `cards` | A fanned hand of cards with a die |
+| `meeples` | Two meeples under a shared star |
+| `tiles` | Q & A letter tiles |
+| `question` | A question mark on a scalloped rosette |
+
+Non-globe variants render to `variants/cover-art-<name>.png`. To adopt one as
+the cover, copy it over `cover-art.png` and the app-icon copy named above.
+
 ## Regenerating
 
 ```bash
 pip install cairosvg pillow
-python3 Artwork/generate_cover_art.py
+python3 Artwork/generate_cover_art.py [globe|cards|meeples|tiles|question]
 ```
 
 The script expects these fonts installed (all SIL Open Font License, free from

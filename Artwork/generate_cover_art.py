@@ -8,6 +8,7 @@ Built as SVG, rendered to PNG with cairosvg.
 """
 import math
 import os
+import sys
 import cairosvg
 from PIL import ImageFont
 
@@ -35,6 +36,9 @@ FONT_DIR = "/root/.fonts"
 BSB = ImageFont.truetype(f"{FONT_DIR}/BigShoulders-Bold.ttf", 100)
 WSB = ImageFont.truetype(f"{FONT_DIR}/WorkSans-Bold.ttf", 100)
 PAC = ImageFont.truetype(f"{FONT_DIR}/Pacifico.ttf", 100)
+
+# medallion center variant: globe (default) | cards | meeples | tiles | question
+VARIANT = sys.argv[1] if len(sys.argv) > 1 else "globe"
 
 parts = []
 def add(s): parts.append(s)
@@ -207,43 +211,165 @@ for i in range(28):
     a = math.radians(i * 360 / 28)
     dot(MC[0] + (MR + 3) * math.cos(a), MC[1] + (MR + 3) * math.sin(a), 2.6, PLUM)
 
-# globe
+# ---- medallion center art: pick with `python3 generate_cover_art.py <variant>`
 GR = 108.0
-add(f'<circle cx="{MC[0]}" cy="{MC[1]}" r="{GR}" fill="{BLUE}" stroke="{INK}" stroke-width="5"/>')
-# graticule
-add(f'<g stroke="{CREAM}" stroke-width="2.6" fill="none" opacity="0.9">'
-    f'<ellipse cx="{MC[0]}" cy="{MC[1]}" rx="{GR*0.55}" ry="{GR}"/>'
-    f'<line x1="{MC[0]}" y1="{MC[1]-GR}" x2="{MC[0]}" y2="{MC[1]+GR}"/>'
-    f'<line x1="{MC[0]-GR}" y1="{MC[1]}" x2="{MC[0]+GR}" y2="{MC[1]}"/>'
-    f'<path d="M {MC[0]-GR*0.87} {MC[1]-GR*0.5} Q {MC[0]} {MC[1]-GR*0.72} {MC[0]+GR*0.87} {MC[1]-GR*0.5}"/>'
-    f'<path d="M {MC[0]-GR*0.87} {MC[1]+GR*0.5} Q {MC[0]} {MC[1]+GR*0.72} {MC[0]+GR*0.87} {MC[1]+GR*0.5}"/>'
-    f'</g>')
-# continents (stylized folk blobs), clipped to globe
-add(f'<clipPath id="globeclip"><circle cx="{MC[0]}" cy="{MC[1]}" r="{GR-2}"/></clipPath>')
 gx, gy = MC
-cont = []
-# americas
-cont.append(f'<path d="M {gx-92} {gy-52} Q {gx-56} {gy-74} {gx-34} {gy-56} '
-            f'Q {gx-22} {gy-44} {gx-38} {gy-30} Q {gx-28} {gy-18} {gx-40} {gy-2} '
-            f'Q {gx-34} {gy+18} {gx-48} {gy+46} Q {gx-58} {gy+70} {gx-66} {gy+44} '
-            f'Q {gx-62} {gy+16} {gx-78} {gy-2} Q {gx-98} {gy-22} {gx-92} {gy-52} Z" '
-            f'fill="{GREEN}" stroke="{INK}" stroke-width="3.4" stroke-linejoin="round"/>')
-# africa / eurasia
-cont.append(f'<path d="M {gx+4} {gy-70} Q {gx+40} {gy-84} {gx+72} {gy-64} '
-            f'Q {gx+96} {gy-46} {gx+84} {gy-28} Q {gx+64} {gy-16} {gx+52} {gy-24} '
-            f'Q {gx+40} {gy-10} {gx+48} {gy+10} Q {gx+52} {gy+40} {gx+30} {gy+58} '
-            f'Q {gx+12} {gy+68} {gx+8} {gy+40} Q {gx+2} {gy+16} {gx+12} {gy-6} '
-            f'Q {gx-4} {gy-24} {gx-10} {gy-44} Q {gx-8} {gy-64} {gx+4} {gy-70} Z" '
-            f'fill="{GREEN}" stroke="{INK}" stroke-width="3.4" stroke-linejoin="round"/>')
-# australia
-cont.append(f'<path d="M {gx+58} {gy+64} Q {gx+76} {gy+56} {gx+88} {gy+68} '
-            f'Q {gx+92} {gy+84} {gx+74} {gy+88} Q {gx+56} {gy+90} {gx+54} {gy+76} '
-            f'Q {gx+54} {gy+68} {gx+58} {gy+64} Z" '
-            f'fill="{GREEN}" stroke="{INK}" stroke-width="3.2" stroke-linejoin="round"/>')
-add(f'<g clip-path="url(#globeclip)"><g transform="translate(-8,-14)">{cont[2]}</g>{cont[0]}{cont[1]}</g>')
-# ocean sparkles
-sparkle(gx - 52, gy + 74, 7, CREAM, sw=2.2)
-dot(gx + 76, gy + 34, 3.4, CREAM)
+
+def center_globe():
+    add(f'<circle cx="{gx}" cy="{gy}" r="{GR}" fill="{BLUE}" stroke="{INK}" stroke-width="5"/>')
+    # graticule
+    add(f'<g stroke="{CREAM}" stroke-width="2.6" fill="none" opacity="0.9">'
+        f'<ellipse cx="{gx}" cy="{gy}" rx="{GR*0.55}" ry="{GR}"/>'
+        f'<line x1="{gx}" y1="{gy-GR}" x2="{gx}" y2="{gy+GR}"/>'
+        f'<line x1="{gx-GR}" y1="{gy}" x2="{gx+GR}" y2="{gy}"/>'
+        f'<path d="M {gx-GR*0.87} {gy-GR*0.5} Q {gx} {gy-GR*0.72} {gx+GR*0.87} {gy-GR*0.5}"/>'
+        f'<path d="M {gx-GR*0.87} {gy+GR*0.5} Q {gx} {gy+GR*0.72} {gx+GR*0.87} {gy+GR*0.5}"/>'
+        f'</g>')
+    # continents (stylized folk blobs), clipped to globe
+    add(f'<clipPath id="globeclip"><circle cx="{gx}" cy="{gy}" r="{GR-2}"/></clipPath>')
+    cont = []
+    # americas
+    cont.append(f'<path d="M {gx-92} {gy-52} Q {gx-56} {gy-74} {gx-34} {gy-56} '
+                f'Q {gx-22} {gy-44} {gx-38} {gy-30} Q {gx-28} {gy-18} {gx-40} {gy-2} '
+                f'Q {gx-34} {gy+18} {gx-48} {gy+46} Q {gx-58} {gy+70} {gx-66} {gy+44} '
+                f'Q {gx-62} {gy+16} {gx-78} {gy-2} Q {gx-98} {gy-22} {gx-92} {gy-52} Z" '
+                f'fill="{GREEN}" stroke="{INK}" stroke-width="3.4" stroke-linejoin="round"/>')
+    # africa / eurasia
+    cont.append(f'<path d="M {gx+4} {gy-70} Q {gx+40} {gy-84} {gx+72} {gy-64} '
+                f'Q {gx+96} {gy-46} {gx+84} {gy-28} Q {gx+64} {gy-16} {gx+52} {gy-24} '
+                f'Q {gx+40} {gy-10} {gx+48} {gy+10} Q {gx+52} {gy+40} {gx+30} {gy+58} '
+                f'Q {gx+12} {gy+68} {gx+8} {gy+40} Q {gx+2} {gy+16} {gx+12} {gy-6} '
+                f'Q {gx-4} {gy-24} {gx-10} {gy-44} Q {gx-8} {gy-64} {gx+4} {gy-70} Z" '
+                f'fill="{GREEN}" stroke="{INK}" stroke-width="3.4" stroke-linejoin="round"/>')
+    # australia
+    cont.append(f'<path d="M {gx+58} {gy+64} Q {gx+76} {gy+56} {gx+88} {gy+68} '
+                f'Q {gx+92} {gy+84} {gx+74} {gy+88} Q {gx+56} {gy+90} {gx+54} {gy+76} '
+                f'Q {gx+54} {gy+68} {gx+58} {gy+64} Z" '
+                f'fill="{GREEN}" stroke="{INK}" stroke-width="3.2" stroke-linejoin="round"/>')
+    add(f'<g clip-path="url(#globeclip)"><g transform="translate(-8,-14)">{cont[2]}</g>{cont[0]}{cont[1]}</g>')
+    # ocean sparkles
+    sparkle(gx - 52, gy + 74, 7, CREAM, sw=2.2)
+    dot(gx + 76, gy + 34, 3.4, CREAM)
+
+def playing_card(x, y, rot, symbol, sym_fill):
+    """One folk playing card, 76x106, centered at local origin."""
+    g = [f'<g transform="translate({x} {y}) rotate({rot})">']
+    g.append(f'<rect x="-38" y="-53" width="76" height="106" rx="9" fill="{CREAM}" '
+             f'stroke="{INK}" stroke-width="4.2"/>')
+    g.append(f'<rect x="-30" y="-45" width="60" height="90" rx="6" fill="none" '
+             f'stroke="{sym_fill}" stroke-width="2.2" opacity="0.55"/>')
+    if symbol == "heart":
+        g.append(f'<path d="M 0 16 C -22 0 -22 -18 -10 -18 C -4 -18 0 -13 0 -8 '
+                 f'C 0 -13 4 -18 10 -18 C 22 -18 22 0 0 16 Z" '
+                 f'fill="{sym_fill}" stroke="{INK}" stroke-width="3.2" stroke-linejoin="round"/>')
+    elif symbol == "star":
+        pts = []
+        for i in range(10):
+            rr = 19 if i % 2 == 0 else 8
+            a = math.radians(-90 + i * 36)
+            pts.append((rr * math.cos(a), rr * math.sin(a)))
+        g.append(f'<polygon points="{P(pts)}" fill="{sym_fill}" stroke="{INK}" '
+                 f'stroke-width="3.2" stroke-linejoin="round"/>')
+    elif symbol == "diamond":
+        g.append(f'<path d="M 0 -19 Q 8 -8 15 0 Q 8 8 0 19 Q -8 8 -15 0 Q -8 -8 0 -19 Z" '
+                 f'fill="{sym_fill}" stroke="{INK}" stroke-width="3.2" stroke-linejoin="round"/>')
+    g.append("</g>")
+    add("".join(g))
+
+def center_cards():
+    """A fanned hand of cards with a die: game night in one glance."""
+    add(f'<g transform="translate({gx} {gy}) scale(1.28)">')
+    # fan pivots below center so the cards spread like a held hand
+    add('<g transform="translate(0 6)">')
+    add('<g transform="rotate(-26) translate(0 -44)">'); playing_card(0, 0, 0, "diamond", BLUE); add('</g>')
+    add('<g transform="rotate(26) translate(0 -44)">');  playing_card(0, 0, 0, "star", GOLD); add('</g>')
+    add('<g transform="rotate(0) translate(0 -50)">');   playing_card(0, 0, 0, "heart", RED); add('</g>')
+    add('</g>')
+    # die tucked at the lower right of the hand
+    add(f'<g transform="translate(52 68) rotate(14)">')
+    add(f'<rect x="-24" y="-24" width="48" height="48" rx="10" fill="{MAGENTA}" '
+        f'stroke="{INK}" stroke-width="4.2"/>')
+    for px, py in [(-10, -10), (10, 10), (10, -10), (-10, 10), (0, 0)]:
+        dot(px, py, 4.4, CREAM)
+    add('</g>')
+    sparkle(-78, 58, 8, GOLD_HI)
+    dot(-62, -78, 4, MAGENTA)
+    add('</g>')
+
+MEEPLE = ("M0,-46 C12,-46 20,-37 20,-27 C20,-21 17,-15 12,-11 "
+          "C26,-6 36,4 40,14 C42,20 38,25 32,24 C25,23 19,18 12,16 "
+          "C14,26 20,34 26,42 C29,47 26,52 20,52 L6,52 C2,52 0,49 0,45 "
+          "C0,49 -2,52 -6,52 L-20,52 C-26,52 -29,47 -26,42 "
+          "C-20,34 -14,26 -12,16 C-19,18 -25,23 -32,24 C-38,25 -42,20 -40,14 "
+          "C-36,4 -26,-6 -12,-11 C-17,-15 -20,-21 -20,-27 C-20,-37 -12,-46 0,-46 Z")
+
+def center_meeples():
+    """Two meeples leaning together under a shared star: friends first."""
+    add(f'<g transform="translate({gx} {gy}) scale(1.3)">')
+    add(f'<g transform="translate(-44 22) rotate(-14) scale(0.92)">'
+        f'<path d="{MEEPLE}" fill="{BLUE}" stroke="{INK}" stroke-width="4.4" '
+        f'stroke-linejoin="round"/></g>')
+    add(f'<g transform="translate(44 22) rotate(14) scale(0.92)">'
+        f'<path d="{MEEPLE}" fill="{RED}" stroke="{INK}" stroke-width="4.4" '
+        f'stroke-linejoin="round"/></g>')
+    pts = []
+    for i in range(10):
+        rr = 24 if i % 2 == 0 else 10
+        a = math.radians(-90 + i * 36)
+        pts.append((rr * math.cos(a), -62 + rr * math.sin(a)))
+    add(f'<polygon points="{P(pts)}" fill="{GOLD}" stroke="{INK}" '
+        f'stroke-width="3.6" stroke-linejoin="round"/>')
+    sparkle(-82, -46, 8, GOLD_HI)
+    sparkle(82, -46, 8, GOLD_HI)
+    dot(0, 92, 4, MAGENTA)
+    add('</g>')
+
+def center_tiles():
+    """Question-and-answer letter tiles: trivia of every flavor."""
+    add(f'<g transform="translate({gx} {gy}) scale(1.18)">')
+    for x, y, rot, ch, accent in [(-40, -30, -10, "Q", MAGENTA), (38, 32, 8, "A", BLUE)]:
+        add(f'<g transform="translate({x} {y}) rotate({rot})">')
+        add(f'<rect x="-37" y="-37" width="74" height="74" rx="10" fill="{CREAM}" '
+            f'stroke="{INK}" stroke-width="4.4"/>')
+        add(f'<rect x="-29" y="-29" width="58" height="58" rx="6" fill="none" '
+            f'stroke="{accent}" stroke-width="2.2" opacity="0.55"/>')
+        add(f'<text x="0" y="17" font-family="Big Shoulders" font-weight="bold" '
+            f'font-size="52" fill="{INK}" text-anchor="middle">{ch}</text>')
+        add('</g>')
+    star5(52, -52, 13, GOLD, rot=12)
+    sparkle(-66, 58, 8, GOLD_HI)
+    dot(-74, -74, 4, MAGENTA)
+    dot(80, -14, 4, MAGENTA)
+    add('</g>')
+
+def center_question():
+    """A bold question mark on a scalloped rosette: every game starts with one."""
+    add(f'<g transform="translate({gx} {gy})">')
+    # scalloped seal
+    n, r_in = 14, 92
+    d = []
+    for i in range(n):
+        a0 = 2 * math.pi * i / n - math.pi / 2
+        a1 = 2 * math.pi * (i + 1) / n - math.pi / 2
+        x0, y0 = r_in * math.cos(a0), r_in * math.sin(a0)
+        x1, y1 = r_in * math.cos(a1), r_in * math.sin(a1)
+        am = (a0 + a1) / 2
+        xm, ym = r_in * 1.16 * math.cos(am), r_in * 1.16 * math.sin(am)
+        d.append(f"{'M' if i == 0 else 'L'} {x0:.1f} {y0:.1f} Q {xm:.1f} {ym:.1f} {x1:.1f} {y1:.1f}")
+    add(f'<path d="{" ".join(d)} Z" fill="{MAGENTA}" stroke="{INK}" '
+        f'stroke-width="4.4" stroke-linejoin="round"/>')
+    add(f'<circle r="74" fill="{BLUE}" stroke="{INK}" stroke-width="4"/>')
+    add(f'<text x="0" y="34" font-family="Big Shoulders" font-weight="bold" '
+        f'font-size="120" fill="{CREAM}" stroke="{INK}" stroke-width="5" '
+        f'stroke-linejoin="round" paint-order="stroke" text-anchor="middle">?</text>')
+    sparkle(-58, -50, 9, GOLD_HI)
+    sparkle(60, 44, 8, CREAM)
+    add('</g>')
+
+CENTERS = {"globe": center_globe, "cards": center_cards,
+           "meeples": center_meeples, "tiles": center_tiles,
+           "question": center_question}
+CENTERS[VARIANT]()
 
 # charms inside medallion (blush zone)
 sparkle(MC[0]-142, MC[1]-38, 11)
@@ -344,8 +470,13 @@ svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
        f'viewBox="0 0 {W} {H}">' + "".join(parts) + "</svg>")
 
 out_dir = os.path.dirname(os.path.abspath(__file__))
-with open(f"{out_dir}/cover-art.svg", "w") as f:
+if VARIANT == "globe":
+    base = f"{out_dir}/cover-art"
+else:
+    os.makedirs(f"{out_dir}/variants", exist_ok=True)
+    base = f"{out_dir}/variants/cover-art-{VARIANT}"
+with open(f"{base}.svg", "w") as f:
     f.write(svg)
-cairosvg.svg2png(bytestring=svg.encode(), write_to=f"{out_dir}/cover-art.png",
+cairosvg.svg2png(bytestring=svg.encode(), write_to=f"{base}.png",
                  output_width=1024, output_height=1024)
-print("rendered", f"{out_dir}/cover-art.png")
+print("rendered", f"{base}.png")
