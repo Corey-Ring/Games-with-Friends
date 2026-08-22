@@ -2,8 +2,8 @@
 """Games with Friends — cover art in the 'Cannery Folk' philosophy.
 
 Vintage tin-label maximalism: plum field in a marigold frame, the gold
-script title "Games for Friends" arching over a globe medallion, side
-ribbons, and mirrored carnation garlands.
+script title "Games for Friends" arching over a globe medallion, and
+mirrored carnation garlands.
 Built as SVG, rendered to PNG with cairosvg.
 """
 import math
@@ -274,8 +274,6 @@ def side_ribbon(cx, cy, w, h, rot, text):
     g.append("</g>")
     add("".join(g))
 
-side_ribbon(180, 400, 206, 46, -14, "POLE TO POLE")
-side_ribbon(844, 400, 206, 46, 14, "100% TRIVIA")
 
 # ---------------------------------------------------------------- garlands
 def garland(side):
@@ -312,7 +310,6 @@ garland(+1)
 add('</g>')
 
 # ---------------------------------------------------------------- charms on plum
-crescent(122, 240, 19, rot=24)
 star5(216, 252, 11, GOLD, rot=-8)
 sparkle(96, 158, 9, GOLD_HI)
 # sun (top right, below ribbon tail)

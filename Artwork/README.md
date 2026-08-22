@@ -3,7 +3,7 @@
 Cover art for **Games with Friends**, in a vintage tin-label / candy-box aesthetic
 (think Fishwife tinned seafood and Maeve chocolate packaging): a deep plum field in a
 marigold frame, the gold script title "Games for Friends" arching over a globe
-medallion, side ribbons, and mirrored carnation garlands.
+medallion, and mirrored carnation garlands.
 
 ## Files
 
