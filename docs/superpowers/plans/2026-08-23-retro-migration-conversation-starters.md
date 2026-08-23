@@ -40,7 +40,7 @@ Game accent everywhere else: `AppTheme.Retro.bubblegum` (§3.2; one game accent 
 - Modify: `Theme/GameTheme.swift:14` (accent only)
 - Modify: `GamesWithFriends.xcodeproj/project.pbxproj` (4 places, IDs suffix `10` after phase-2's `0F`)
 
-- [ ] **Step 1: Create the style file**
+- [x] **Step 1: Create the style file**
 
 ```swift
 import SwiftUI
@@ -83,7 +83,7 @@ enum ConversationStartersStyle {
 }
 ```
 
-- [ ] **Step 2: Remap the GameTheme accent**
+- [x] **Step 2: Remap the GameTheme accent**
 
 In `Theme/GameTheme.swift` line 14, change only the accent:
 
@@ -91,11 +91,11 @@ In `Theme/GameTheme.swift` line 14, change only the accent:
     static let conversationStarters = GameTheme(accentColor: AppTheme.Retro.bubblegum, name: "Conversation Starters", iconName: "bubble.left.and.bubble.right.fill")
 ```
 
-- [ ] **Step 3: Register the new file in pbxproj** — same 4 places as phase 2, new IDs `TH0000010000000000000010` / `TH0000020000000000000010`, but in the **ConversationStarters Views group** (find the group children containing `SavedStartersView.swift` and add after it; PBXBuildFile/PBXFileReference sections next to the phase-2 `0F` entries; Sources phase after the `0F` line).
+- [x] **Step 3: Register the new file in pbxproj** — same 4 places as phase 2, new IDs `TH0000010000000000000010` / `TH0000020000000000000010`, but in the **ConversationStarters Views group** (find the group children containing `SavedStartersView.swift` and add after it; PBXBuildFile/PBXFileReference sections next to the phase-2 `0F` entries; Sources phase after the `0F` line).
 
-- [ ] **Step 4: Build** (standard build command). Expected: `** BUILD SUCCEEDED **`.
+- [x] **Step 4: Build** (standard build command). Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 5: Commit** — `feat(cs): candy style maps + GameTheme accent remap (phase-3 pull-forward)`.
+- [x] **Step 5: Commit** — `feat(cs): candy style maps + GameTheme accent remap (phase-3 pull-forward)`.
 
 ---
 
@@ -163,7 +163,7 @@ Button(action: { if viewModel.settings.playerCount > 2 { viewModel.settings.play
 - **Start button:** `RetroPrimaryButton(title: "Start Game", icon: "play.fill", accent: ConversationStartersStyle.accent) { viewModel.updateFilteredStarters(); showingGame = true }`.
 - **Toolbar:** keep both buttons and labels; star icon `.foregroundColor(AppTheme.Retro.mustard)`, gear `.foregroundColor(AppTheme.Retro.ink)`.
 
-- [ ] **Step 1: Apply the changes above** · **Step 2: Build** · **Step 3: Screenshot on simulator, compare against §5/§8** · **Step 4: Commit** `feat(cs): retro setup screen`.
+- [x] **Step 1: Apply the changes above** · **Step 2: Build** · **Step 3: Screenshot on simulator, compare against §5/§8** · **Step 4: Commit** `feat(cs): retro setup screen`.
 
 ---
 
@@ -225,7 +225,7 @@ Button(action: { withNavAnimation { viewModel.previousStarter() } }) {
   - empty: spot plate (66pt `.speechBubbles`), "No Starters Available" in `heading(20)` on a cream panel, body text `panelText`, `RetroPrimaryButton(title: "Back to Settings", accent: accent) { dismiss() }` (fixed width via `.padding(.horizontal, AppTheme.Spacing.xl)`).
   - all done: same recipe with grass accent — heading panel `.retroPanel(AppTheme.Retro.grass)` with **cream** display text (§8 display-only is fine at 20pt Lilita), `RetroPrimaryButton(title: "Start Over", accent: AppTheme.Retro.grass) { viewModel.resetDeck() }`.
 
-- [ ] **Step 1: Apply** · **Step 2: Build** · **Step 3: Screenshot** · **Step 4: Commit** `feat(cs): retro in-game screen`.
+- [x] **Step 1: Apply** · **Step 2: Build** · **Step 3: Screenshot** · **Step 4: Commit** `feat(cs): retro in-game screen`.
 
 ---
 
@@ -236,24 +236,24 @@ Button(action: { withNavAnimation { viewModel.previousStarter() } }) {
 - **SettingsView:** keep the `Form`; migrate its chrome: `.scrollContentBackground(.hidden)` + `.background(AppTheme.Retro.ground.ignoresSafeArea())` (no motifs behind a dense form — §7 interactive clearance); `.listRowBackground(AppTheme.Retro.panel)`; section headers/footers `.foregroundColor(AppTheme.Retro.cocoa)`; replace both `.foregroundColor(.blue)` checkmarks and the blue/purple icon tints with `ConversationStartersStyle.accent` / `AppTheme.Retro.ink`; toggles `.tint(ConversationStartersStyle.accent)`; "Set Custom Timer" keeps `.borderedProminent` but `.tint(ConversationStartersStyle.accent)` with `.foregroundColor(AppTheme.Retro.ink)`.
 - **SavedStartersView:** `List` stays; `.scrollContentBackground(.hidden)` + ground background; each row `.listRowBackground(Color.clear)` + `.listRowSeparator(.hidden)` with row content in `.retroCard()`; category chip + vibe dots use `ConversationStartersStyle` (delete both local color funcs); Share/Remove become lozenge buttons (Share: accent fill/ink text; Remove: tomato fill/ink text) with the same actions; empty state gets the spot-plate + panel-heading recipe (star icon → `.starFace`? No — stay on-game: `.speechBubbles` plate with a mustard star overlay is overkill; use the plain recipe with "No Saved Starters").
 
-- [ ] **Step 1: Apply both** · **Step 2: Build** · **Step 3: Screenshots (settings, saved-empty, saved-with-items)** · **Step 4: Commit** `feat(cs): retro settings + saved sheets`.
+- [x] **Step 1: Apply both** · **Step 2: Build** · **Step 3: Screenshots (settings, saved-empty, saved-with-items)** · **Step 4: Commit** `feat(cs): retro settings + saved sheets`.
 
 ---
 
 ### Task 5: On-simulator gameplay verification
 
-- [ ] **Step 1:** Install on BOTH booted simulators by UDID, launch.
-- [ ] **Step 2:** Walk the invariants list (top of this plan) by scripted taps/swipes: stepper min-clamp, slider, pill toggles, Start, card swipe left/right ×3, prev-disabled on first, star a card, open Saved (star present), share sheet opens+dismiss, Settings timer enable → countdown lozenge appears, <10s turns tomato, background/foreground pause (scene phase), advance past last card → All Done → Start Over resets.
-- [ ] **Step 3:** Screenshot each screen (setup, card, card-with-timer, all-done, saved, settings); fix visual defects found; re-run affected checks.
-- [ ] **Step 4:** `git diff --stat` — confirm ONLY the five view-layer files + GameTheme + pbxproj + docs changed. Commit fixes.
+- [x] **Step 1:** Install on BOTH booted simulators by UDID, launch.
+- [x] **Step 2:** Walk the invariants list (top of this plan) by scripted taps/swipes: stepper min-clamp, slider, pill toggles, Start, card swipe left/right ×3, prev-disabled on first, star a card, open Saved (star present), share sheet opens+dismiss, Settings timer enable → countdown lozenge appears, <10s turns tomato, background/foreground pause (scene phase), advance past last card → All Done → Start Over resets.
+- [x] **Step 3:** Screenshot each screen (setup, card, card-with-timer, all-done, saved, settings); fix visual defects found; re-run affected checks.
+- [x] **Step 4:** `git diff --stat` — confirm ONLY the five view-layer files + GameTheme + pbxproj + docs changed. Commit fixes.
 
 ---
 
 ### Task 6: Playbook + decision log
 
-- [ ] **Step 1:** Write `GamesWithFriends/RETRO_MIGRATION_PLAYBOOK.md` — the per-game recipe distilled from this pilot: (1) create `<Game>Style.swift` with candy remaps for the game's semantic colors (+§8 text rule); (2) remap the game's `GameTheme` accent; (3) per screen: ground+exclusions, spot-plate header, `.retroCard()` sections, `RetroPrimaryButton`/`RetroCategoryPill`, lozenge chips/timers, outlined-circle nav buttons, spot-plate empty/celebration states; (4) keep-list (view models, gestures, timers, a11y labels, Form/List mechanics); (5) verification checklist template; (6) pbxproj registration steps; (7) which colors take ink vs cream text (§8 table).
-- [ ] **Step 2:** Append DECISIONS.md entry (phase-4 pilot landed; GameTheme pull-forward rationale; vibe/category candy ramps; gradient-background retirement).
-- [ ] **Step 3:** Final full test suite run (all existing tests must stay green — no logic changed). Commit `docs: retro migration playbook + CS pilot decision log`.
+- [x] **Step 1:** Write `GamesWithFriends/RETRO_MIGRATION_PLAYBOOK.md` — the per-game recipe distilled from this pilot: (1) create `<Game>Style.swift` with candy remaps for the game's semantic colors (+§8 text rule); (2) remap the game's `GameTheme` accent; (3) per screen: ground+exclusions, spot-plate header, `.retroCard()` sections, `RetroPrimaryButton`/`RetroCategoryPill`, lozenge chips/timers, outlined-circle nav buttons, spot-plate empty/celebration states; (4) keep-list (view models, gestures, timers, a11y labels, Form/List mechanics); (5) verification checklist template; (6) pbxproj registration steps; (7) which colors take ink vs cream text (§8 table).
+- [x] **Step 2:** Append DECISIONS.md entry (phase-4 pilot landed; GameTheme pull-forward rationale; vibe/category candy ramps; gradient-background retirement).
+- [x] **Step 3:** Final full test suite run (all existing tests must stay green — no logic changed). Commit `docs: retro migration playbook + CS pilot decision log`.
 
 ---
 

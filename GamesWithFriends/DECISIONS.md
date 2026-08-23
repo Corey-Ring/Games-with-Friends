@@ -28,6 +28,18 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-08-23 — Retro phase 4 pilot: Conversation Starters migrated [migration]
+
+**What:** All four Conversation Starters screens (setup, in-game, settings sheet, saved sheet) re-skinned to Retro Maximalist. New `ConversationStartersStyle` centralizes the candy remaps (vibe ramp: Ice poolBlue → Casual grass → Fun tangerine → Deep plum → Daring tomato; categories each get a distinct candy color, plum chips take cream text per §8). `GameTheme.conversationStarters` accent pulled forward to Bubblegum (phase-3 item; safe — hub reads the Retro accent map). The per-game recipe is documented in `RETRO_MIGRATION_PLAYBOOK.md` for the remaining eight games.
+
+**Gameplay untouched:** view models, models, data, gestures, timers, haptics unchanged (verified via `git diff --stat` + on-simulator invariant walk: stepper clamp, pill filters, card swipe/prev-next, star→saved, share, timer enable/countdown).
+
+**Deviations:** vibe-tinted background gradient retired (§2 bans gradients; vibe still reads from the card's dot meter); naked SF-symbol empty/done heroes replaced with spot-plate + panel recipe (§9).
+
+**Fixed in passing:** (1) custom-label buttons in List rows need `.buttonStyle(.plain)` or a row tap fires every button (Share also fired Remove); (2) pre-existing silent failure — the saved-list share sheet presented from the root VC while the Saved sheet was up; now presents from the top-most presented VC.
+
+---
+
 ## 2026-08-22 — Retro phase 2: hub re-skin landed [migration]
 
 **What:** `GameHubView` is the first migrated shipped screen: motif ground, Shrikhand "GAMES" lockup, candy shelf cards with alternating ±0.6° tilt and press physics. New primitives: `AppTheme.Retro.accent(forGameID:)` (candy accents per §3.2) and `RetroSpotIllustrations.swift` (`RetroSpotKind` mapped from game ids + nine `Canvas`-drawn spots — six ported from the Option C artboard SVGs, three new: berry heart, cornflower suitcase, plum clapperboard). Verified on-simulator light + scrolled + navigation tap; system-dark renders consistently light because the app pins `.preferredColorScheme(.light)` (protected app-level config, deliberately untouched).
