@@ -93,3 +93,25 @@ extension AppTheme.Retro {
         static let pillLabel = heading(14, relativeTo: .subheadline)
     }
 }
+
+// MARK: - Per-game candy accents (§3.2). GameTheme still carries the old
+// muted values until phase 3; migrated screens read accents from here.
+extension AppTheme.Retro {
+    /// Candy accent for a game id per ART_DIRECTION §3.2. Returns nil for
+    /// unknown ids so callers pick their own fallback. Mustard is never a
+    /// game accent — it is the ground.
+    static func accent(forGameID id: String) -> Color? {
+        switch id {
+        case "conversation-starters": return bubblegum
+        case "country-letter-game": return grass
+        case "name-5-game": return lilac
+        case "border-blitz": return poolBlue
+        case "movie-chain": return tomato
+        case "casting-director": return tangerine
+        case "vibecheck": return berry
+        case "border-hop": return cornflower
+        case "finish-the-line": return plum
+        default: return nil
+        }
+    }
+}

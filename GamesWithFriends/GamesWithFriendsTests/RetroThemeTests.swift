@@ -89,4 +89,35 @@ final class RetroThemeTests: XCTestCase {
         XCTAssertLessThan(sparse.count, full.count)
         XCTAssertGreaterThan(sparse.count, 0)
     }
+
+    // MARK: - Phase 2: hub accent map (ART_DIRECTION §3.2)
+
+    func testHubAccentMapMatchesArtDirection() {
+        let expected: [String: String] = [
+            "conversation-starters": "F387B8",
+            "country-letter-game": "57A34F",
+            "name-5-game": "A08BE0",
+            "border-blitz": "5BC0DF",
+            "movie-chain": "E8442E",
+            "casting-director": "F07C24",
+            "vibecheck": "C64B7E",
+            "border-hop": "6C9BD2",
+            "finish-the-line": "8E4585"
+        ]
+        for (id, hex) in expected {
+            guard let accent = AppTheme.Retro.accent(forGameID: id) else {
+                XCTFail("No candy accent for \(id)")
+                continue
+            }
+            assertSameColor(accent, hex: hex)
+        }
+        XCTAssertNil(AppTheme.Retro.accent(forGameID: "unknown-game"))
+    }
+
+    func testEveryRegisteredGameHasACandyAccent() {
+        for game in GameRegistry.allGames() {
+            XCTAssertNotNil(AppTheme.Retro.accent(forGameID: game.id),
+                            "\(game.id) has no candy accent — mustard is the ground, never a fallback")
+        }
+    }
 }
