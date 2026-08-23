@@ -120,4 +120,22 @@ final class RetroThemeTests: XCTestCase {
                             "\(game.id) has no candy accent — mustard is the ground, never a fallback")
         }
     }
+
+    // MARK: - Phase 2: spot illustrations (ART_DIRECTION §6)
+
+    func testEveryRegisteredGameHasADistinctSpotIllustration() {
+        let games = GameRegistry.allGames()
+        var kinds = Set<RetroSpotKind>()
+        for game in games {
+            guard let kind = RetroSpotKind(gameID: game.id) else {
+                XCTFail("No spot illustration for \(game.id)")
+                continue
+            }
+            kinds.insert(kind)
+        }
+        XCTAssertEqual(kinds.count, games.count, "each game owns its own spot illustration")
+        XCTAssertNil(RetroSpotKind(gameID: "unknown-game"))
+        XCTAssertEqual(RetroSpotKind.allCases.count, games.count,
+                       "no orphaned illustration kinds")
+    }
 }

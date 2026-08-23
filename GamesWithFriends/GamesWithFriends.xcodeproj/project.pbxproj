@@ -154,6 +154,7 @@
 		TH000001000000000000000C /* RetroComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000C /* RetroComponents.swift */; };
 		TH000001000000000000000D /* MotifField.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000D /* MotifField.swift */; };
 		TH000001000000000000000E /* MotifGroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000E /* MotifGroundView.swift */; };
+		TH000001000000000000000F /* RetroSpotIllustrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000F /* RetroSpotIllustrations.swift */; };
 		TF0000010000000000000001 /* Shrikhand-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000001 /* Shrikhand-Regular.ttf */; };
 		TF0000010000000000000002 /* LilitaOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000002 /* LilitaOne-Regular.ttf */; };
 		TT0000010000000000000001 /* RetroThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TT0000020000000000000001 /* RetroThemeTests.swift */; };
@@ -339,6 +340,7 @@
 		TH000002000000000000000C /* RetroComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroComponents.swift; sourceTree = "<group>"; };
 		TH000002000000000000000D /* MotifField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotifField.swift; sourceTree = "<group>"; };
 		TH000002000000000000000E /* MotifGroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotifGroundView.swift; sourceTree = "<group>"; };
+		TH000002000000000000000F /* RetroSpotIllustrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroSpotIllustrations.swift; sourceTree = "<group>"; };
 		TF0000020000000000000001 /* Shrikhand-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Shrikhand-Regular.ttf"; sourceTree = "<group>"; };
 		TF0000020000000000000002 /* LilitaOne-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LilitaOne-Regular.ttf"; sourceTree = "<group>"; };
 		TT0000020000000000000001 /* RetroThemeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RetroThemeTests.swift; path = ../../GamesWithFriendsTests/RetroThemeTests.swift; sourceTree = "<group>"; };
@@ -1046,6 +1048,7 @@
 				TH000002000000000000000A /* RetroTheme.swift */,
 				TH000002000000000000000B /* RetroModifiers.swift */,
 				TH000002000000000000000C /* RetroComponents.swift */,
+				TH000002000000000000000F /* RetroSpotIllustrations.swift */,
 				TH000002000000000000000D /* MotifField.swift */,
 				TH000002000000000000000E /* MotifGroundView.swift */,
 				TF0000030000000000000001 /* Fonts */,
@@ -1361,6 +1364,7 @@
 				TH000001000000000000000C /* RetroComponents.swift in Sources */,
 				TH000001000000000000000D /* MotifField.swift in Sources */,
 				TH000001000000000000000E /* MotifGroundView.swift in Sources */,
+				TH000001000000000000000F /* RetroSpotIllustrations.swift in Sources */,
 				TH0000010000000000000003 /* BackgroundStyles.swift in Sources */,
 				TH0000010000000000000004 /* Color+Hex.swift in Sources */,
 				TH0000010000000000000005 /* GameTheme.swift in Sources */,
