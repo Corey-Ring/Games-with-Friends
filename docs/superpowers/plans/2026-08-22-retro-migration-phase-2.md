@@ -25,7 +25,7 @@
 - Modify: `GamesWithFriends/Theme/RetroTheme.swift` (append at end of file)
 - Test: `GamesWithFriends/GamesWithFriendsTests/RetroThemeTests.swift` (append inside the class)
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append inside `final class RetroThemeTests` (the `assertSameColor(_:hex:)` helper already exists at the top of the class):
 
@@ -62,7 +62,7 @@ Append inside `final class RetroThemeTests` (the `assertSameColor(_:hex:)` helpe
     }
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 ```bash
 cd GamesWithFriends && xcodebuild -project GamesWithFriends.xcodeproj -scheme GamesWithFriends -destination 'platform=iOS Simulator,name=iPhone 17' test 2>&1 | grep -E "error:|Test Suite|Test Case .*(passed|failed)|\*\* TEST"
@@ -70,7 +70,7 @@ cd GamesWithFriends && xcodebuild -project GamesWithFriends.xcodeproj -scheme Ga
 
 Expected: compile error — `type 'AppTheme.Retro' has no member 'accent'`.
 
-- [ ] **Step 3: Implement the accent map**
+- [x] **Step 3: Implement the accent map**
 
 Append at the end of `GamesWithFriends/Theme/RetroTheme.swift`:
 
@@ -98,11 +98,11 @@ extension AppTheme.Retro {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Same command as Step 2. Expected: all `RetroThemeTests` pass (10 existing + 2 new).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add GamesWithFriends/Theme/RetroTheme.swift GamesWithFriends/GamesWithFriendsTests/RetroThemeTests.swift
@@ -118,7 +118,7 @@ git commit -m "feat: per-game candy accent map for retro hub (ART_DIRECTION §3.
 - Modify: `GamesWithFriends/GamesWithFriends.xcodeproj/project.pbxproj` (4 places)
 - Test: `GamesWithFriends/GamesWithFriendsTests/RetroThemeTests.swift` (append inside the class)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append inside `RetroThemeTests`:
 
@@ -142,11 +142,11 @@ Append inside `RetroThemeTests`:
     }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Same test command as Task 1 Step 2. Expected: compile error — `cannot find 'RetroSpotKind' in scope`.
 
-- [ ] **Step 3: Create `RetroSpotIllustrations.swift`**
+- [x] **Step 3: Create `RetroSpotIllustrations.swift`**
 
 Create `GamesWithFriends/Theme/RetroSpotIllustrations.swift` with exactly:
 
@@ -507,7 +507,7 @@ enum RetroSpotPainter {
 }
 ```
 
-- [ ] **Step 4: Register the file in project.pbxproj (4 places)**
+- [x] **Step 4: Register the file in project.pbxproj (4 places)**
 
 Edit `GamesWithFriends/GamesWithFriends.xcodeproj/project.pbxproj`, following the phase-1 `TH…` pattern (suffix `F`):
 
@@ -528,11 +528,11 @@ Edit `GamesWithFriends/GamesWithFriends.xcodeproj/project.pbxproj`, following th
 				TH000001000000000000000F /* RetroSpotIllustrations.swift in Sources */,
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Same test command as Task 1 Step 2. Expected: all tests pass, including `testEveryRegisteredGameHasADistinctSpotIllustration`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add GamesWithFriends/Theme/RetroSpotIllustrations.swift GamesWithFriends/GamesWithFriendsTests/RetroThemeTests.swift GamesWithFriends/GamesWithFriends.xcodeproj/project.pbxproj
@@ -546,7 +546,7 @@ git commit -m "feat: nine retro spot illustrations (six ported from Option C, th
 **Files:**
 - Modify: `GamesWithFriends/Features/GameHub/GameHubView.swift` (full rewrite)
 
-- [ ] **Step 1: Rewrite `GameHubView.swift`**
+- [x] **Step 1: Rewrite `GameHubView.swift`**
 
 Replace the entire file content with:
 
@@ -706,7 +706,7 @@ struct RetroHubGameCard: View {
 }
 ```
 
-- [ ] **Step 2: Build**
+- [x] **Step 2: Build**
 
 ```bash
 cd GamesWithFriends && xcodebuild -project GamesWithFriends.xcodeproj -scheme GamesWithFriends -destination 'platform=iOS Simulator,name=iPhone 17' build 2>&1 | grep -E "error:|warning:|\*\* BUILD" | head -20
@@ -714,7 +714,7 @@ cd GamesWithFriends && xcodebuild -project GamesWithFriends.xcodeproj -scheme Ga
 
 Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 3: Run the full test suite**
+- [x] **Step 3: Run the full test suite**
 
 ```bash
 cd GamesWithFriends && xcodebuild -project GamesWithFriends.xcodeproj -scheme GamesWithFriends -destination 'platform=iOS Simulator,name=iPhone 17' test 2>&1 | grep -E "error:|Test Suite|Test Case .*(passed|failed)|\*\* TEST"
@@ -722,7 +722,7 @@ cd GamesWithFriends && xcodebuild -project GamesWithFriends.xcodeproj -scheme Ga
 
 Expected: all tests pass (24 total: 21 from phase 1 + 3 new).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add GamesWithFriends/Features/GameHub/GameHubView.swift
@@ -735,7 +735,7 @@ git commit -m "feat: migrate GameHubView to retro maximalist (phase 2)"
 
 The hub is the app's root view, so no env-var harness is needed — build, install, launch, screenshot.
 
-- [ ] **Step 1: Install and launch on iPhone 17**
+- [x] **Step 1: Install and launch on iPhone 17**
 
 ```bash
 cd GamesWithFriends && xcodebuild -project GamesWithFriends.xcodeproj -scheme GamesWithFriends -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath build build 2>&1 | tail -2
@@ -749,11 +749,11 @@ xcrun simctl io booted screenshot <scratchpad>/hub-light.png
 
 (Adjust paths if run from repo root; boot the simulator first with `xcrun simctl boot "iPhone 17"` if not booted.)
 
-- [ ] **Step 2: Inspect `hub-light.png` against the Option C artboard**
+- [x] **Step 2: Inspect `hub-light.png` against the Option C artboard**
 
 Check: mustard motif ground with motifs only in gutters/top strip; pink GAMES lockup with tomato offset + hard shadow, tilted; "with friends" lozenge; nine cards in artboard accent order (bubblegum, grass, lilac, poolBlue, tomato, tangerine, berry, cornflower, plum); each card = title lozenge + description panel + illustration plate; alternating tilt; ink outlines everywhere; no soft shadows. Fix and re-run if anything is off.
 
-- [ ] **Step 3: Dark mode check**
+- [x] **Step 3: Dark mode check**
 
 ```bash
 xcrun simctl ui booted appearance dark
@@ -765,7 +765,7 @@ xcrun simctl ui booted appearance light
 
 **Note:** `GamesWithFriendsApp.swift` currently forces `.preferredColorScheme(.light)`. If dark verification is blocked by that, leave the app-level setting alone (AGENTS.md §8 protected file — do not change without approval) and instead verify dark tokens via the "Retro Showcase" preview reasoning: `ground`/`panel`/`panelText` adaptivity was already validated in phase 1. Record whichever path was taken.
 
-- [ ] **Step 4: Commit any visual fixes**
+- [x] **Step 4: Commit any visual fixes**
 
 ```bash
 git add -A
@@ -782,7 +782,7 @@ git commit -m "fix: hub visual polish after simulator verification"
 - Modify: `GamesWithFriends/DECISIONS.md` (append entry)
 - Modify: `docs/superpowers/plans/2026-08-22-retro-migration-phase-2.md` (check off boxes)
 
-- [ ] **Step 1: Append a DECISIONS.md entry**
+- [x] **Step 1: Append a DECISIONS.md entry**
 
 Append (matching the existing entry format in the file):
 
@@ -796,11 +796,11 @@ Append (matching the existing entry format in the file):
 **Gotcha:** hub cards read accents from `AppTheme.Retro.accent(forGameID:)`, NOT `game.accentColor` — do not "simplify" back to GameTheme until phase 3 remaps it.
 ```
 
-- [ ] **Step 2: Check off all plan checkboxes, run the full suite one final time**
+- [x] **Step 2: Check off all plan checkboxes, run the full suite one final time**
 
 Same test command as Task 3 Step 3. Expected: all pass.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add GamesWithFriends/DECISIONS.md docs/superpowers/plans/2026-08-22-retro-migration-phase-2.md

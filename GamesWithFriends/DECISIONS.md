@@ -28,6 +28,18 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-08-22 — Retro phase 2: hub re-skin landed [migration]
+
+**What:** `GameHubView` is the first migrated shipped screen: motif ground, Shrikhand "GAMES" lockup, candy shelf cards with alternating ±0.6° tilt and press physics. New primitives: `AppTheme.Retro.accent(forGameID:)` (candy accents per §3.2) and `RetroSpotIllustrations.swift` (`RetroSpotKind` mapped from game ids + nine `Canvas`-drawn spots — six ported from the Option C artboard SVGs, three new: berry heart, cornflower suitcase, plum clapperboard). Verified on-simulator light + scrolled + navigation tap; system-dark renders consistently light because the app pins `.preferredColorScheme(.light)` (protected app-level config, deliberately untouched).
+
+**Why:** ART_DIRECTION.md §10 phase 2; the Option C artboard is the spec.
+
+**Deliberate deviations from the artboard:** (1) "Party games for your table" tagline omitted — §11 calls it placeholder copy. (2) Card descriptions sit in cream mini-panels rather than naked on accents — §8 requires the cream device on 6 of 9 accents; uniform treatment keeps the shelf consistent and makes contrast failures structurally impossible. (3) Logo stays 40 pt (artboard 44 px) for Dynamic Type headroom.
+
+**Impact / gotchas:** Hub cards read accents from `AppTheme.Retro.accent(forGameID:)`, NOT `game.accentColor` — do not "simplify" back to `GameTheme` until phase 3 remaps it. Motif exclusion rects cover the header zone and card column; the layout generator adds its own 12 pt clearance, so pass the actual content rects (sparkles are up to 18 pt and will poke out from behind corners otherwise). Future games need a `RetroSpotKind` case + mapping (test enforces distinctness); unmapped ids fall back to the SF Symbol on a tangerine plate.
+
+---
+
 ## 2026-08-22 — Retro phase 1: foundations landed [migration]
 
 **What:** `AppTheme.Retro` tokens, bundled Shrikhand/Lilita One (runtime CTFontManager registration — project uses GENERATE_INFOPLIST_FILE, so no UIAppFonts plist), `.retroPanel/.retroCard/.retroLozenge`, `RetroRaisedButtonStyle` (shadow collapse + travel press physics), `MotifFieldLayout` (pure, seeded, tested) + `MotifGroundView`. No shipped screen changed; visual surface is `RetroShowcaseView` (Xcode Previews only), verified on-simulator against the Option C artboard.
