@@ -83,14 +83,21 @@ struct SavedStartersView: View {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first,
            let rootVC = window.rootViewController {
-            activityVC.popoverPresentationController?.sourceView = rootVC.view
+            // This view is itself a presented sheet — presenting from the
+            // root VC fails silently ("already presenting"). Walk to the
+            // top-most presented controller instead.
+            var presenter = rootVC
+            while let presented = presenter.presentedViewController {
+                presenter = presented
+            }
+            activityVC.popoverPresentationController?.sourceView = presenter.view
             activityVC.popoverPresentationController?.sourceRect = CGRect(
-                x: rootVC.view.bounds.midX,
-                y: rootVC.view.bounds.midY,
+                x: presenter.view.bounds.midX,
+                y: presenter.view.bounds.midY,
                 width: 0,
                 height: 0
             )
-            rootVC.present(activityVC, animated: true)
+            presenter.present(activityVC, animated: true)
         }
     }
 }
@@ -132,6 +139,9 @@ struct SavedStarterRow: View {
                 .foregroundColor(AppTheme.Retro.panelText)
 
             HStack {
+                // .plain keeps each button individually tappable inside the
+                // List row — the default style forwards a row tap to EVERY
+                // button (tapping Share would also fire Remove).
                 Button(action: onShare) {
                     Label("Share", systemImage: "square.and.arrow.up")
                         .font(AppTheme.Retro.Typography.pillLabel)
@@ -141,6 +151,7 @@ struct SavedStarterRow: View {
                         .background(Capsule().fill(ConversationStartersStyle.accent))
                         .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
                 }
+                .buttonStyle(.plain)
 
                 Spacer()
 
@@ -153,6 +164,7 @@ struct SavedStarterRow: View {
                         .background(Capsule().fill(AppTheme.Retro.tomato))
                         .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
                 }
+                .buttonStyle(.plain)
             }
         }
     }
