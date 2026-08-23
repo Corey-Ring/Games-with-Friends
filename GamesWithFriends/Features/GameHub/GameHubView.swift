@@ -1,37 +1,44 @@
 import SwiftUI
 
+// Phase-2 migrated screen (ART_DIRECTION §10.2): motif ground, Shrikhand
+// lockup, candy shelf cards. The Option C artboard is the spec; deviations
+// are logged in DECISIONS.md (tagline omitted, descriptions panelled).
 struct GameHubView: View {
     let games = GameRegistry.allGames()
 
     var body: some View {
         NavigationStack {
             ZStack {
-                WarmLinenBackground()
+                GeometryReader { geo in
+                    // Motifs live in the gutters and top strip; the exclusion
+                    // keeps them ≥12pt clear of the interactive card column (§7).
+                    MotifGroundView(exclusions: [CGRect(x: 36, y: 110,
+                                                        width: geo.size.width - 72,
+                                                        height: geo.size.height - 110)])
+                }
+                .ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 0) {
-                        // Header
-                        Text("Games")
-                            .font(AppTheme.Typography.hero)
-                            .foregroundColor(AppTheme.deepCharcoal)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, AppTheme.Spacing.xxl)
-                            .padding(.horizontal, AppTheme.Spacing.md)
+                        RetroHubHeader()
+                            .padding(.top, AppTheme.Spacing.lg)
                             .padding(.bottom, AppTheme.Spacing.lg)
 
-                        // Game cards
-                        VStack(spacing: AppTheme.Spacing.md) {
+                        // 20pt gap and gutters from the artboard; the extra
+                        // room also clears the 5pt hard shadows.
+                        VStack(spacing: 20) {
                             ForEach(Array(games.enumerated()), id: \.element.id) { index, game in
                                 NavigationLink(destination: game.makeRootView()) {
-                                    HubGameCard(game: game)
+                                    RetroHubGameCard(game: game)
                                 }
+                                .buttonStyle(RetroRaisedButtonStyle())
+                                .rotationEffect(.degrees(index.isMultiple(of: 2) ? -0.6 : 0.6))
                                 .accessibilityLabel("\(game.name). \(game.description)")
                                 .accessibilityHint("Double tap to play")
-                                .pressable()
                                 .staggeredAppear(index: index)
                             }
                         }
-                        .padding(.horizontal, AppTheme.Spacing.md)
+                        .padding(.horizontal, 20)
                         .padding(.bottom, AppTheme.Spacing.xl)
                     }
                 }
@@ -42,38 +49,101 @@ struct GameHubView: View {
     }
 }
 
-struct HubGameCard: View {
+// MARK: - Header lockup (Rule 4: chunky framed lettering)
+
+private struct RetroHubHeader: View {
+    var body: some View {
+        VStack(spacing: 10) {
+            Text("GAMES")
+                .font(AppTheme.Retro.Typography.logo)
+                .foregroundColor(.white)
+                .shadow(color: AppTheme.Retro.tomato, radius: 0, x: 3, y: 3)
+                .padding(.horizontal, AppTheme.Spacing.lg)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .retroPanel(AppTheme.Retro.bubblegum)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                        .fill(AppTheme.Retro.ink)
+                        .offset(x: AppTheme.Retro.shadowOffset,
+                                y: AppTheme.Retro.shadowOffset)
+                )
+                .rotationEffect(.degrees(-1.5))
+
+            // Tomato on cream ≈ 3.2:1 — passes as large text (20px heavy face).
+            Text("with friends")
+                .font(AppTheme.Retro.Typography.heading(15, relativeTo: .subheadline))
+                .foregroundColor(AppTheme.Retro.tomato)
+                .retroLozenge()
+                .rotationEffect(.degrees(1))
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Games with Friends")
+    }
+}
+
+// MARK: - Candy shelf card (§5 card anatomy)
+
+struct RetroHubGameCard: View {
     let game: AnyGameDefinition
 
-    var body: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
-            // Left side: text content
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-                Text(game.name)
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(AppTheme.deepCharcoal)
-                    .lineLimit(1)
+    private var accent: Color {
+        AppTheme.Retro.accent(forGameID: game.id) ?? AppTheme.Retro.tangerine
+    }
 
+    var body: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 6) {
+                // Title lozenge — ink-on-cream, always safe (§8).
+                Text(game.name)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .foregroundColor(AppTheme.Retro.panelText)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 2)
+                    .background(Capsule().fill(AppTheme.Retro.panel))
+                    .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
+
+                // Description mini-panel — §8: body copy never sits naked on
+                // a saturated accent.
                 Text(game.description)
                     .font(AppTheme.Typography.caption)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .foregroundColor(AppTheme.Retro.panelText)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.vertical, AppTheme.Spacing.xs)
+                    .background(
+                        RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                            .fill(AppTheme.Retro.panel)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                            .stroke(AppTheme.Retro.ink, lineWidth: 2)
+                    )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Right side: icon in accent circle
+            // 66pt cream circle plate with the game's spot illustration.
             ZStack {
-                Circle()
-                    .fill(game.accentColor.opacity(0.12))
-                    .frame(width: 56, height: 56)
-
-                Image(systemName: game.iconName)
-                    .font(AppTheme.Typography.sectionHeader)
-                    .foregroundColor(game.accentColor)
+                Circle().fill(AppTheme.Retro.panel)
+                Circle().stroke(AppTheme.Retro.ink,
+                                lineWidth: AppTheme.Retro.strokeWidth)
+                if let kind = RetroSpotKind(gameID: game.id) {
+                    RetroSpotIllustration(kind: kind)
+                        .frame(width: 52, height: 52)
+                } else {
+                    Image(systemName: game.iconName)
+                        .font(AppTheme.Typography.sectionHeader)
+                        .foregroundColor(accent)
+                }
             }
+            .frame(width: 66, height: 66)
         }
-        .gameCard()
+        .padding(.vertical, 12)
+        .padding(.horizontal, 14)
+        .frame(maxWidth: .infinity, minHeight: 92, alignment: .leading)
+        .retroPanel(accent)
     }
 }
 
