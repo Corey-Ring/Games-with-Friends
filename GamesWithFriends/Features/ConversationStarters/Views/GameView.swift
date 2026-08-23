@@ -317,13 +317,14 @@ struct CardView: View {
 
             Spacer()
 
-            // Question text
+            // Question text — the card's hero. Lilita One display (§4) so the
+            // content pops as loud as the chrome around it.
             Text(starter.text)
-                .font(AppTheme.Typography.sectionHeader)
-                .fontWeight(.semibold)
+                .font(AppTheme.Retro.Typography.heading(26, relativeTo: .title))
                 .multilineTextAlignment(.center)
                 .foregroundColor(AppTheme.Retro.panelText)
-                .padding(.horizontal, AppTheme.Spacing.xl)
+                .lineSpacing(4)
+                .padding(.horizontal, AppTheme.Spacing.lg)
 
             Spacer()
 
