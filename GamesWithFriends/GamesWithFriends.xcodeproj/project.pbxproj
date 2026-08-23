@@ -98,6 +98,7 @@
 		F10000010000000000000021 /* CountriesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000021 /* CountriesData.swift */; };
 		F10000010000000000000022 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000022 /* Country.swift */; };
 		F10000010000000000000023 /* CountryGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000023 /* CountryGameViewModel.swift */; };
+		F100000100000000000000C6 /* CountryLetterStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C6 /* CountryLetterStyle.swift */; };
 		F10000010000000000000024 /* CountryLetterGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000024 /* CountryLetterGameView.swift */; };
 		F10000010000000000000025 /* GamePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000025 /* GamePlayView.swift */; };
 		F10000010000000000000026 /* LetterSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000026 /* LetterSelectionView.swift */; };
@@ -285,6 +286,7 @@
 		F20000010000000000000022 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
 		F20000010000000000000023 /* CountryGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryGameViewModel.swift; sourceTree = "<group>"; };
 		F20000010000000000000024 /* CountryLetterGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryLetterGameView.swift; sourceTree = "<group>"; };
+		F200000100000000000000C6 /* CountryLetterStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryLetterStyle.swift; sourceTree = "<group>"; };
 		F20000010000000000000025 /* GamePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePlayView.swift; sourceTree = "<group>"; };
 		F20000010000000000000026 /* LetterSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterSelectionView.swift; sourceTree = "<group>"; };
 		F20000010000000000000027 /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
@@ -839,6 +841,7 @@
 				F20000010000000000000025 /* GamePlayView.swift */,
 				F20000010000000000000026 /* LetterSelectionView.swift */,
 				F20000010000000000000027 /* ResultsView.swift */,
+				F200000100000000000000C6 /* CountryLetterStyle.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1302,6 +1305,7 @@
 				F10000010000000000000025 /* GamePlayView.swift in Sources */,
 				F10000010000000000000026 /* LetterSelectionView.swift in Sources */,
 				F10000010000000000000027 /* ResultsView.swift in Sources */,
+				F100000100000000000000C6 /* CountryLetterStyle.swift in Sources */,
 				F10000010000000000000050 /* Name5Game.swift in Sources */,
 				F10000010000000000000051 /* Name5GameSession.swift in Sources */,
 				F10000010000000000000052 /* Name5Prompt.swift in Sources */,

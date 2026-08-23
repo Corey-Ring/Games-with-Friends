@@ -91,5 +91,19 @@ cross-feature consumers of that GameTheme entry first.
 ## 6. Wrap-up
 
 Append a DECISIONS.md entry (what migrated, deviations, gotchas), update the
-game's row in the phase-4 tracking table in the migration plan, commit per
-screen with `feat(<game>):` prefixes.
+game's row in the tracking table below, commit per screen with
+`feat(<game>):` prefixes.
+
+## 7. Phase-4 tracking
+
+| Game | Accent | Spot | Status |
+|---|---|---|---|
+| Conversation Starters | bubblegum | speechBubbles | ✅ 2026-08-23 (pilot) |
+| Country Letter Challenge | grass | globe | ✅ 2026-08-23 |
+| Name 5 | lilac | burstFive | — |
+| Border Blitz | poolBlue | borderMap | — |
+| Movie Chain | tomato | filmFrame | — (Fable-direct) |
+| Casting Director | tangerine | starFace | — (Fable-direct) |
+| VibeCheck | berry | heart | — |
+| Border Hop | cornflower | suitcase | — |
+| Finish the Line | plum | clapperboard | — |

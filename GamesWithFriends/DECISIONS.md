@@ -28,6 +28,14 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-08-23 — Retro phase 4: Country Letter Challenge migrated [migration]
+
+**What:** All three Country Letter screens (letter select, gameplay, results) migrated to the retro look via an Opus agent following `RETRO_MIGRATION_PLAYBOOK.md`; new `CountryLetterStyle.swift` remaps the retired semantic palette (success→grass, error→tomato, neutral/missed→cornflower, give-up→tangerine) and adds the shared `CountryStatusBadge` ink-outlined status disc. `GameTheme.countryLetter` accent → grass.
+
+**Why:** First playbook-driven agent migration — validates the delegation split. Ink (not cream) text on grass panels: measured cream-on-grass is ~2.8:1, below the large-text floor; `RetroComponents` doc comment already prescribes ink on grass. Semantic colors ride on badges so labels stay ink-on-cream body copy.
+
+**Gotchas / flagged, not fixed:** `CountryLetterGame.swift`'s `GameDefinition` still declares `AppTheme.forestGreen` (cosmetic — hub reads the Retro accent map; clean up in phase 3). Pre-existing logic quirks left untouched: `showHint()` inflates `hintCount` on no-op hints; `submitGuess()` schedules `finishGame()` via un-cancelled `asyncAfter`. `AppTheme.Retro.cocoa` as secondary text is illegible on darkPanel in dark mode (also affects CS pilot's HomeView) — phase-5 item; new code uses `panelText.opacity(0.7)` instead. Verified on-simulator: letter grid + disabled W/X, correct/error/hint feedback, Done→results, Play Again reset. 38 tests green.
+
 ## 2026-08-23 — Retro phase 4 pilot: Conversation Starters migrated [migration]
 
 **What:** All four Conversation Starters screens (setup, in-game, settings sheet, saved sheet) re-skinned to Retro Maximalist. New `ConversationStartersStyle` centralizes the candy remaps (vibe ramp: Ice poolBlue → Casual grass → Fun tangerine → Deep plum → Daring tomato; categories each get a distinct candy color, plum chips take cream text per §8). `GameTheme.conversationStarters` accent pulled forward to Bubblegum (phase-3 item; safe — hub reads the Retro accent map). The per-game recipe is documented in `RETRO_MIGRATION_PLAYBOOK.md` for the remaining eight games.
