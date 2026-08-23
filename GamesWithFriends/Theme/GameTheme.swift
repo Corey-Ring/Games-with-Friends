@@ -12,7 +12,7 @@ struct GameTheme {
 
     // MARK: - Pre-built Themes
     // Retro-migrated (phase 4): candy accent per ART_DIRECTION §3.2.
-    // Remaining games keep their muted accents until their migration lands.
+    // Border Hop was the last muted accent; all nine now read from the palette.
     static let conversationStarters = GameTheme(accentColor: AppTheme.Retro.bubblegum, name: "Conversation Starters", iconName: "bubble.left.and.bubble.right.fill")
     static let countryLetter = GameTheme(accentColor: AppTheme.Retro.grass, name: "Country Letter Challenge", iconName: "globe.americas.fill")
     static let name5 = GameTheme(accentColor: AppTheme.Retro.lilac, name: "Name 5", iconName: "hand.raised.fingers.spread.fill")
@@ -20,6 +20,6 @@ struct GameTheme {
     static let movieChain = GameTheme(accentColor: AppTheme.Retro.tomato, name: "Movie Chain", iconName: "film.stack")
     static let castingDirector = GameTheme(accentColor: AppTheme.Retro.tangerine, name: "Casting Director", iconName: "person.crop.rectangle.stack")
     static let vibeCheck = GameTheme(accentColor: AppTheme.Retro.berry, name: "Vibe Check", iconName: "antenna.radiowaves.left.and.right")
-    static let borderHop = GameTheme(accentColor: AppTheme.compassRose, name: "Border Hop", iconName: "globe.europe.africa.fill")
+    static let borderHop = GameTheme(accentColor: AppTheme.Retro.cornflower, name: "Border Hop", iconName: "globe.europe.africa.fill")
     static let finishTheLine = GameTheme(accentColor: AppTheme.Retro.plum, name: "Finish the Line", iconName: "quote.bubble.fill")
 }

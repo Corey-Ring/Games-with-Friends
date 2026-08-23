@@ -3,23 +3,36 @@ import SwiftUI
 struct BorderHopDifficultyView: View {
     var viewModel: BorderHopViewModel
     @Environment(\.dismiss) private var dismiss
-    private let theme = GameTheme.borderHop
 
     var body: some View {
         ZStack {
-            GameBackground(gameTheme: theme)
+            GeometryReader { geo in
+                // The setup column (how-it-works card, difficulty rows, CTA)
+                // runs inset 24pt; motifs keep to the nav strip and the outer
+                // gutters, ≥12pt clear of every control (§7 — the generator
+                // adds the clearance).
+                MotifGroundView(seed: 0xB0B5_0E01,
+                                exclusions: [CGRect(x: 24, y: 56,
+                                                    width: geo.size.width - 48,
+                                                    height: geo.size.height - 56)])
+            }
+            .ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: AppTheme.Spacing.lg) {
-                    // Title
+                    // Header: suitcase spot plate + framed Lilita title. The
+                    // naked hero type on the linen field is a retirement (§9).
                     VStack(spacing: AppTheme.Spacing.sm) {
-                        Text("Border Hop")
-                            .font(AppTheme.Typography.hero)
-                            .foregroundColor(AppTheme.deepCharcoal)
+                        BorderHopSpotPlate()
+
+                        BorderHopTitlePanel(text: "Border Hop")
 
                         Text("Cross the world one land border at a time")
                             .font(AppTheme.Typography.body)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .foregroundColor(AppTheme.Retro.panelText)
+                            .multilineTextAlignment(.center)
+                            .retroLozenge()
+                            .rotationEffect(.degrees(0.8))
                     }
                     .padding(.top, AppTheme.Spacing.lg)
 
@@ -31,35 +44,40 @@ struct BorderHopDifficultyView: View {
                     // Difficulty selection
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                         Text("Select Difficulty")
-                            .font(AppTheme.Typography.cardTitle)
-                            .foregroundColor(AppTheme.deepCharcoal)
+                            .font(AppTheme.Retro.Typography.cardTitle)
+                            .foregroundColor(AppTheme.Retro.panelText)
+                            .retroLozenge()
 
                         ForEach(Array(BorderHopDifficulty.allCases.enumerated()), id: \.element.id) { index, difficulty in
                             BorderHopDifficultyButton(
                                 difficulty: difficulty,
                                 isSelected: viewModel.selectedDifficulty == difficulty,
-                                accentColor: theme.accentColor
+                                accentColor: BorderHopStyle.accent
                             ) {
                                 viewModel.selectDifficulty(difficulty)
                             }
                             .staggeredAppear(index: index)
                         }
                     }
-                    .gameCard()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, AppTheme.Spacing.md)
 
                     // Start button
-                    PrimaryButton(title: "Start Game", icon: "play.fill") {
+                    RetroPrimaryButton(title: "Start Game", icon: "play.fill",
+                                       accent: BorderHopStyle.accent) {
                         viewModel.startGame()
                     }
                     .padding(.horizontal, AppTheme.Spacing.md)
                     .padding(.bottom, viewModel.routeGenerationFailed ? AppTheme.Spacing.xs : AppTheme.Spacing.lg)
 
                     if viewModel.routeGenerationFailed {
+                        // §8: the failure line lives in a cream lozenge rather
+                        // than floating tomato-on-mustard.
                         Text("Couldn't build a route for this difficulty — tap Start Game to try again.")
                             .font(AppTheme.Typography.caption)
-                            .foregroundStyle(AppTheme.error)
+                            .foregroundStyle(BorderHopStyle.wrongColor)
                             .multilineTextAlignment(.center)
+                            .retroLozenge()
                             .padding(.horizontal, AppTheme.Spacing.md)
                             .padding(.bottom, AppTheme.Spacing.lg)
                     }
@@ -76,39 +94,34 @@ struct BorderHopDifficultyView: View {
             howItWorksRow(
                 step: 1,
                 icon: "mappin.and.ellipse",
-                iconColor: theme.accentColor,
+                iconColor: BorderHopStyle.accent,
                 text: "You're dropped in a country with a faraway destination"
             )
             howItWorksRow(
                 step: 2,
                 icon: "hand.tap.fill",
-                iconColor: theme.accentColor,
+                iconColor: BorderHopStyle.accent,
                 text: "Tap a neighbor to hop — answer one quick geography question to cross"
             )
             howItWorksRow(
                 step: 3,
                 icon: "flag.checkered",
-                iconColor: AppTheme.medalGold,
+                iconColor: BorderHopStyle.goalColor,
                 text: "Reach the destination in as few hops as you can"
             )
         }
-        .gameCard()
+        .retroCard()
     }
 
     private func howItWorksRow(step: Int, icon: String, iconColor: Color, text: String) -> some View {
         HStack(alignment: .center, spacing: AppTheme.Spacing.md) {
-            ZStack {
-                Circle()
-                    .fill(iconColor.opacity(0.12))
-                    .frame(width: 44, height: 44)
-                Image(systemName: icon)
-                    .font(.system(size: 20))
-                    .foregroundColor(iconColor)
-            }
+            // Flat candy plate with an ink rule and an ink glyph — the old
+            // 12%-opacity tint circle is a retirement (§9).
+            BorderHopGlyphPlate(systemImage: icon, fill: iconColor)
 
             Text(text)
                 .font(AppTheme.Typography.secondary)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(AppTheme.Retro.panelText)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -119,7 +132,7 @@ struct BorderHopDifficultyView: View {
 struct BorderHopDifficultyButton: View {
     let difficulty: BorderHopDifficulty
     let isSelected: Bool
-    var accentColor: Color = AppTheme.compassRose
+    var accentColor: Color = BorderHopStyle.accent
     let action: () -> Void
 
     var body: some View {
@@ -128,42 +141,51 @@ struct BorderHopDifficultyButton: View {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     HStack(spacing: AppTheme.Spacing.sm) {
                         Text(difficulty.subtitle)
-                            .font(AppTheme.Typography.cardTitle)
-                            .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
+                            .font(AppTheme.Retro.Typography.cardTitle)
+                            .foregroundColor(rowTextColor)
 
+                        // Semantic ramp chip: allowed inside the row because the
+                        // row itself is the game accent or plain cream (§3 recipe).
                         Text(difficulty.displayName)
-                            .font(AppTheme.Typography.pillLabel)
-                            .foregroundColor(isSelected ? .white.opacity(0.9) : difficulty.badgeColor)
+                            .font(AppTheme.Retro.Typography.pillLabel)
+                            .foregroundColor(BorderHopStyle.chipTextColor(on: badgeColor))
                             .padding(.horizontal, AppTheme.Spacing.sm)
                             .padding(.vertical, 2)
-                            .background(
-                                Capsule()
-                                    .fill(isSelected ? Color.white.opacity(0.2) : difficulty.badgeColor.opacity(0.15))
-                            )
+                            .background(Capsule().fill(badgeColor))
+                            .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
                     }
 
                     Text(difficulty.description)
                         .font(AppTheme.Typography.caption)
-                        .foregroundColor(isSelected ? .white.opacity(0.9) : AppTheme.mediumGray)
+                        .foregroundColor(rowTextColor)
 
                     Text("Route: \(difficulty.minHops)+ borders")
                         .font(AppTheme.Typography.caption)
-                        .foregroundColor(isSelected ? .white.opacity(0.7) : AppTheme.mediumGray.opacity(0.7))
+                        .foregroundColor(rowTextColor.opacity(0.75))
                 }
 
                 Spacer()
 
                 if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.white)
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 17, weight: .black))
+                        .foregroundColor(rowTextColor)
                 }
             }
             .padding(AppTheme.Spacing.md)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .fill(isSelected ? accentColor : accentColor.opacity(0.08))
-            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .retroPanel(isSelected ? accentColor : AppTheme.Retro.panel)
         }
-        .pressable()
+        .buttonStyle(RetroRaisedButtonStyle())
+    }
+
+    /// §8: ink on cornflower passes; the unselected row is plain ink-on-cream,
+    /// so the copy is safe either way.
+    private var rowTextColor: Color {
+        isSelected ? BorderHopStyle.chipTextColor(on: accentColor) : AppTheme.Retro.panelText
+    }
+
+    private var badgeColor: Color {
+        BorderHopStyle.difficultyColor(difficulty)
     }
 }

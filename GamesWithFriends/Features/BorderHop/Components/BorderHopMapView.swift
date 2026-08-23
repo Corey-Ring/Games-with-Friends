@@ -45,7 +45,6 @@ struct BorderHopMapView: View {
     @State private var isUserAdjusted = false
     @State private var isWorldView = false
 
-    private let theme = GameTheme.borderHop
     private let maxZoom: CGFloat = 16
 
     var body: some View {
@@ -53,8 +52,9 @@ struct BorderHopMapView: View {
             let viewSize = geo.size
 
             ZStack {
-                // Ocean background
-                (colorScheme == .dark ? Color(hex: "1C1C1E") : Color(hex: "E8E4DF"))
+                // Ocean background — cream "paper" sea by day, the night ground
+                // after dark (ART_DIRECTION §3.1/§3.3).
+                (colorScheme == .dark ? BorderHopStyle.Map.oceanDark : BorderHopStyle.Map.oceanLight)
                     .ignoresSafeArea()
 
                 if let renderer {
@@ -260,8 +260,8 @@ struct BorderHopMapView: View {
                     var mapContext = context
                     mapContext.scaleBy(x: scale, y: scale)
                     let landColor = colorScheme == .dark
-                        ? Color.white.opacity(0.22)
-                        : Color(hex: "B8B4AF")
+                        ? BorderHopStyle.Map.miniLandDark
+                        : BorderHopStyle.Map.miniLandLight
                     mapContext.fill(Path(renderer.combinedLandPath), with: .color(landColor))
 
                     // Camera viewport
@@ -273,28 +273,29 @@ struct BorderHopMapView: View {
                         height: visible.height * scale
                     ).intersection(CGRect(origin: .zero, size: size))
                     if !viewport.isNull, viewport.width < size.width - 2 {
-                        context.stroke(Path(roundedRect: viewport, cornerRadius: 2), with: .color(theme.accentColor), lineWidth: 1)
+                        context.stroke(Path(roundedRect: viewport, cornerRadius: 2), with: .color(BorderHopStyle.Map.miniViewport), lineWidth: 1)
                     }
 
                     // Destination dot
                     if let dest = renderer.projectedCountries[viewModel.destinationCountryId] {
                         let p = CGPoint(x: dest.centroid.x * scale, y: dest.centroid.y * scale)
-                        context.fill(Circle().path(in: CGRect(x: p.x - 2.5, y: p.y - 2.5, width: 5, height: 5)), with: .color(AppTheme.medalGold))
+                        context.fill(Circle().path(in: CGRect(x: p.x - 2.5, y: p.y - 2.5, width: 5, height: 5)), with: .color(BorderHopStyle.Map.miniDestination))
                     }
 
-                    // Player dot
+                    // Player dot — ink ring, cornflower pip (white rings retired, §9)
                     if let current = renderer.projectedCountries[viewModel.currentCountryId] {
                         let p = CGPoint(x: current.centroid.x * scale, y: current.centroid.y * scale)
-                        context.fill(Circle().path(in: CGRect(x: p.x - 3.5, y: p.y - 3.5, width: 7, height: 7)), with: .color(.white))
-                        context.fill(Circle().path(in: CGRect(x: p.x - 2.5, y: p.y - 2.5, width: 5, height: 5)), with: .color(theme.accentColor))
+                        context.fill(Circle().path(in: CGRect(x: p.x - 3.5, y: p.y - 3.5, width: 7, height: 7)), with: .color(BorderHopStyle.Map.miniPlayerRing))
+                        context.fill(Circle().path(in: CGRect(x: p.x - 2.5, y: p.y - 2.5, width: 5, height: 5)), with: .color(BorderHopStyle.Map.miniPlayerPip))
                     }
                 }
                 .frame(width: width, height: height)
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.small))
+                // §9: the material plate becomes cream with a hard ink frame.
+                .background(AppTheme.Retro.panel)
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner))
                 .overlay(
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.small)
-                        .stroke(Color.white.opacity(0.25), lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                        .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
                 )
                 .onTapGesture {
                     HapticManager.light()
@@ -314,12 +315,14 @@ struct BorderHopMapView: View {
             HapticManager.light()
             focusNeighborhood(viewModel.currentCountryId, viewSize: viewSize, animated: true)
         } label: {
+            // §9: material + hairline white rule → flat accent plate, ink rule,
+            // ink glyph (§8 — ink passes on cornflower).
             Image(systemName: "location.fill")
-                .font(.system(size: 18))
-                .foregroundColor(theme.accentColor)
+                .font(.system(size: 18, weight: .bold))
+                .foregroundColor(BorderHopStyle.chipTextColor(on: BorderHopStyle.accent))
                 .frame(width: 44, height: 44)
-                .background(.ultraThinMaterial, in: Circle())
-                .overlay(Circle().stroke(Color.white.opacity(0.25), lineWidth: 0.5))
+                .background(BorderHopStyle.accent, in: Circle())
+                .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth))
         }
         .accessibilityLabel("Recenter on current country")
     }
@@ -338,8 +341,6 @@ private struct AnimatedMapContent: View, Animatable {
     let colorScheme: ColorScheme
     let onTapCountry: (String) -> Void
 
-    private let theme = GameTheme.borderHop
-
     var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>, CGFloat> {
         get { AnimatablePair(AnimatablePair(camera.center.x, camera.center.y), camera.zoom) }
         set {
@@ -355,7 +356,7 @@ private struct AnimatedMapContent: View, Animatable {
             }
 
             ForEach(edgeTargets) { target in
-                EdgeIndicatorPill(target: target, accentColor: theme.accentColor) {
+                EdgeIndicatorPill(target: target, accentColor: BorderHopStyle.accent) {
                     onTapCountry(target.id)
                 }
                 .position(target.position)
@@ -385,8 +386,8 @@ private struct AnimatedMapContent: View, Animatable {
         }
 
         // 1. Decorative (non-game) countries — subtle land masses
-        let decorativeFill = isDark ? Color(hex: "2C2C2E").opacity(0.3) : Color(hex: "D5D0C8")
-        let decorativeStroke = isDark ? Color.white.opacity(0.05) : Color(hex: "B8B4AF").opacity(0.4)
+        let decorativeFill = isDark ? BorderHopStyle.Map.decorativeFillDark : BorderHopStyle.Map.decorativeFillLight
+        let decorativeStroke = isDark ? BorderHopStyle.Map.decorativeStrokeDark : BorderHopStyle.Map.decorativeStrokeLight
         for (_, projected) in renderer.decorativeCountries {
             drawWrapped(projected) { ctx, path in
                 ctx.fill(path, with: .color(decorativeFill))
@@ -412,39 +413,35 @@ private struct AnimatedMapContent: View, Animatable {
         drawMarkers(context: context, size: size)
     }
 
+    /// Recolor only — every `/ zoom` line-width expression is the original.
+    /// The two soft glow filters (frontier accent, destination gold) are gone
+    /// (§9: no blurred glows); the solid ink outline carries the emphasis and
+    /// the destination fills flat instead of at 30% alpha.
     private func drawCountryShape(context: GraphicsContext, path: Path, state: CountryState, isDark: Bool) {
-        let accent = theme.accentColor
         let zoom = camera.zoom
 
         switch state {
         case .fogged:
-            let fillColor = isDark ? Color(hex: "3A3A3C").opacity(0.6) : Color(hex: "C8C3BB")
+            let fillColor = isDark ? BorderHopStyle.Map.foggedFillDark : BorderHopStyle.Map.foggedFillLight
             context.fill(path, with: .color(fillColor))
-            context.stroke(path, with: .color(isDark ? Color.white.opacity(0.08) : Color(hex: "9E9A94").opacity(0.5)), lineWidth: 0.5 / zoom)
+            context.stroke(path, with: .color(isDark ? BorderHopStyle.Map.foggedStrokeDark : BorderHopStyle.Map.foggedStrokeLight), lineWidth: 0.5 / zoom)
 
         case .frontier:
-            context.fill(path, with: .color(accent.opacity(isDark ? 0.30 : 0.24)))
-            var glowContext = context
-            glowContext.addFilter(.shadow(color: accent.opacity(0.5), radius: 6 / zoom))
-            glowContext.stroke(path, with: .color(accent), lineWidth: 2 / zoom)
+            context.fill(path, with: .color(isDark ? BorderHopStyle.Map.frontierFillDark : BorderHopStyle.Map.frontierFillLight))
+            context.stroke(path, with: .color(isDark ? BorderHopStyle.Map.frontierStrokeDark : BorderHopStyle.Map.frontierStrokeLight), lineWidth: 2 / zoom)
 
         case .visited:
-            let fillColor = isDark
-                ? AppTheme.darkMutedText.opacity(0.15)
-                : AppTheme.mediumGray.opacity(0.20)
+            let fillColor = isDark ? BorderHopStyle.Map.visitedFillDark : BorderHopStyle.Map.visitedFillLight
             context.fill(path, with: .color(fillColor))
-            context.stroke(path, with: .color(accent.opacity(0.4)), style: StrokeStyle(lineWidth: 1 / zoom, dash: [4 / zoom, 3 / zoom]))
+            context.stroke(path, with: .color(isDark ? BorderHopStyle.Map.visitedStrokeDark : BorderHopStyle.Map.visitedStrokeLight), style: StrokeStyle(lineWidth: 1 / zoom, dash: [4 / zoom, 3 / zoom]))
 
         case .current:
-            context.fill(path, with: .color(isDark ? accent.opacity(0.9) : accent))
-            context.stroke(path, with: .color(.white), lineWidth: 2 / zoom)
+            context.fill(path, with: .color(BorderHopStyle.Map.currentFill))
+            context.stroke(path, with: .color(BorderHopStyle.Map.currentStroke), lineWidth: 2 / zoom)
 
         case .destination:
-            let gold = AppTheme.medalGold
-            var glowContext = context
-            glowContext.addFilter(.shadow(color: gold.opacity(0.6), radius: 8 / zoom))
-            glowContext.stroke(path, with: .color(gold), lineWidth: 2.5 / zoom)
-            context.fill(path, with: .color(gold.opacity(isDark ? 0.35 : 0.30)))
+            context.fill(path, with: .color(BorderHopStyle.Map.destination))
+            context.stroke(path, with: .color(BorderHopStyle.Map.destinationStroke), lineWidth: 2.5 / zoom)
         }
     }
 
@@ -470,13 +467,15 @@ private struct AnimatedMapContent: View, Animatable {
 
         context.stroke(
             trailPath,
-            with: .color(theme.accentColor.opacity(0.55)),
+            with: .color(BorderHopStyle.Map.trail),
             style: StrokeStyle(lineWidth: 2, dash: [6, 4])
         )
     }
 
-    /// Labels drawn at constant screen size with a soft halo, collision-avoided.
+    /// Labels drawn at constant screen size with a solid halo, collision-avoided.
     /// Priority: current > destination > frontier > visited (visited only when zoomed in).
+    /// Candidate ordering, measurement and collision math are unchanged; only
+    /// the colors moved to `BorderHopStyle.Map`.
     private func drawLabels(context: GraphicsContext, size: CGSize, isDark: Bool) {
         struct LabelCandidate {
             let text: String
@@ -485,8 +484,8 @@ private struct AnimatedMapContent: View, Animatable {
             let bold: Bool
         }
 
-        let frontierColor = isDark ? Color.white : AppTheme.deepCharcoal
-        let destinationColor = isDark ? AppTheme.medalGold : Color(hex: "9A7B00")
+        let primaryColor = isDark ? BorderHopStyle.Map.labelPrimaryDark : BorderHopStyle.Map.labelPrimaryLight
+        let destinationColor = isDark ? BorderHopStyle.Map.labelDestinationDark : BorderHopStyle.Map.labelDestinationLight
         var candidates: [LabelCandidate] = []
 
         func name(_ id: String) -> String {
@@ -498,7 +497,7 @@ private struct AnimatedMapContent: View, Animatable {
             candidates.append(LabelCandidate(
                 text: name(viewModel.currentCountryId),
                 position: screenPosition(of: projected, size: size),
-                color: .white, bold: true
+                color: primaryColor, bold: true
             ))
         }
 
@@ -522,7 +521,7 @@ private struct AnimatedMapContent: View, Animatable {
             candidates.append(LabelCandidate(
                 text: name(id),
                 position: screenPosition(of: projected, size: size),
-                color: frontierColor, bold: true
+                color: primaryColor, bold: true
             ))
         }
 
@@ -537,7 +536,8 @@ private struct AnimatedMapContent: View, Animatable {
                 candidates.append(LabelCandidate(
                     text: name(id),
                     position: screenPosition(of: projected, size: size),
-                    color: isDark ? AppTheme.darkMutedText : AppTheme.mediumGray, bold: false
+                    color: isDark ? BorderHopStyle.Map.labelSecondaryDark : BorderHopStyle.Map.labelSecondaryLight,
+                    bold: false
                 ))
             }
         }
@@ -563,10 +563,14 @@ private struct AnimatedMapContent: View, Animatable {
             guard !placedRects.contains(where: { $0.intersects(labelRect) }) else { continue }
             placedRects.append(labelRect)
 
+            // The one shadow filter that survives on this screen: a *solid*
+            // cream (day) / ink (night) halo at radius 1, kept purely for
+            // legibility of country names over the land fills. It is a
+            // one-color silhouette, not a soft drop shadow — see DECISIONS.
             var haloContext = context
             haloContext.addFilter(.shadow(
-                color: isDark ? Color.black.opacity(0.8) : Color.white.opacity(0.9),
-                radius: 1.5
+                color: isDark ? BorderHopStyle.Map.labelHaloDark : BorderHopStyle.Map.labelHaloLight,
+                radius: 1
             ))
             haloContext.draw(resolved, at: CGPoint(x: labelRect.minX + 2, y: labelRect.minY + 2), anchor: .topLeading)
         }
@@ -579,11 +583,13 @@ private struct AnimatedMapContent: View, Animatable {
         if let current = renderer.projectedCountries[viewModel.currentCountryId] {
             let point = screenPosition(of: current, size: size)
             if onScreen.contains(point) {
+                // Ink ring / cream plate / cornflower pip — the spot-plate
+                // anatomy at 14pt. The soft drop shadow is retired (§9); the
+                // rect and its insets are unchanged.
                 let markerRect = CGRect(x: point.x - 7, y: point.y - 20, width: 14, height: 14)
-                var shadowContext = context
-                shadowContext.addFilter(.shadow(color: .black.opacity(0.35), radius: 2, y: 1))
-                shadowContext.fill(Circle().path(in: markerRect), with: .color(.white))
-                context.fill(Circle().path(in: markerRect.insetBy(dx: 3.5, dy: 3.5)), with: .color(theme.accentColor))
+                context.fill(Circle().path(in: markerRect), with: .color(BorderHopStyle.Map.markerRing))
+                context.fill(Circle().path(in: markerRect.insetBy(dx: 1.5, dy: 1.5)), with: .color(BorderHopStyle.Map.markerPlate))
+                context.fill(Circle().path(in: markerRect.insetBy(dx: 3.5, dy: 3.5)), with: .color(BorderHopStyle.Map.markerPip))
             }
         }
 
@@ -592,14 +598,14 @@ private struct AnimatedMapContent: View, Animatable {
            let dest = renderer.projectedCountries[viewModel.destinationCountryId] {
             let point = screenPosition(of: dest, size: size)
             if onScreen.contains(point) {
+                // Ink glyph over the flat mustard destination (§8); the soft
+                // drop shadow is retired (§9).
                 let resolved = context.resolve(
                     Text(Image(systemName: "flag.checkered"))
                         .font(.system(size: 18))
-                        .foregroundColor(AppTheme.medalGold)
+                        .foregroundColor(BorderHopStyle.Map.destinationGlyph)
                 )
-                var shadowContext = context
-                shadowContext.addFilter(.shadow(color: .black.opacity(0.4), radius: 1.5))
-                shadowContext.draw(resolved, at: CGPoint(x: point.x, y: point.y - 16))
+                context.draw(resolved, at: CGPoint(x: point.x, y: point.y - 16))
             }
         }
     }
@@ -686,26 +692,27 @@ private struct EdgeIndicatorPill: View {
                 if target.isDestination {
                     Image(systemName: "flag.checkered")
                         .font(.caption2)
-                        .foregroundColor(AppTheme.medalGold)
                 }
                 Text(target.name)
-                    .font(AppTheme.Typography.pillLabel)
+                    .font(AppTheme.Retro.Typography.pillLabel)
                     .lineLimit(1)
                 Image(systemName: "arrowtriangle.right.fill")
                     .font(.system(size: 8))
                     .rotationEffect(target.angle)
-                    .foregroundColor(target.isDestination ? AppTheme.medalGold : accentColor)
             }
+            // §9: the material capsule and its hairline accent rule become a
+            // flat candy pill — mustard for the goal, cornflower for a
+            // neighbor — with the uniform ink outline and ink glyphs (§8).
+            .foregroundColor(BorderHopStyle.chipTextColor(on: pillFill))
             .padding(.horizontal, AppTheme.Spacing.sm)
             .padding(.vertical, 6)
-            .background(.ultraThinMaterial, in: Capsule())
-            .overlay(
-                Capsule().stroke(
-                    target.isDestination ? AppTheme.medalGold : accentColor,
-                    lineWidth: 1.5
-                )
-            )
+            .background(pillFill, in: Capsule())
+            .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
         }
-        .pressable()
+        .buttonStyle(RetroRaisedButtonStyle(cornerRadius: 999))
+    }
+
+    private var pillFill: Color {
+        target.isDestination ? BorderHopStyle.goalColor : accentColor
     }
 }

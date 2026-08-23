@@ -2,8 +2,6 @@ import SwiftUI
 
 struct BorderHopGameView: View {
     var viewModel: BorderHopViewModel
-    private let theme = GameTheme.borderHop
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("borderHopHasSeenCoach") private var hasSeenCoach = false
 
@@ -13,7 +11,7 @@ struct BorderHopGameView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            // Layer 0: Map
+            // Layer 0: Map (no motif ground behind the live map — §7)
             BorderHopMapView(viewModel: viewModel)
                 .ignoresSafeArea()
 
@@ -35,7 +33,7 @@ struct BorderHopGameView: View {
 
             // Quiz overlay
             if viewModel.isQuizActive, let question = viewModel.currentQuizQuestion {
-                AppTheme.overlay
+                BorderHopStyle.scrim
                     .ignoresSafeArea()
                     .onTapGesture { } // prevent tap-through
 
@@ -71,15 +69,13 @@ struct BorderHopGameView: View {
 
     private var topHUD: some View {
         HStack(spacing: AppTheme.Spacing.md) {
-            // Close button
+            // Close button — functional SF glyph on an ink-outlined plate (§6)
             Button {
                 viewModel.quitGame()
             } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.title3)
-                    .foregroundColor(.white.opacity(0.8))
-                    .frame(width: 44, height: 44)
+                BorderHopGlyphPlate(systemImage: "xmark", diameter: 44, glyphSize: 18)
             }
+            .buttonStyle(RetroRaisedButtonStyle(cornerRadius: 999))
 
             Spacer()
 
@@ -87,21 +83,19 @@ struct BorderHopGameView: View {
             if viewModel.currentStreak > 1 {
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: "flame.fill")
-                        .foregroundColor(AppTheme.warning)
                     Text(verbatim: "\(viewModel.currentStreak)")
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(AppTheme.warning)
+                        .font(AppTheme.Retro.Typography.cardTitle)
                         .monospacedDigit()
                 }
-                .padding(.horizontal, AppTheme.Spacing.sm)
-                .padding(.vertical, AppTheme.Spacing.xs)
-                .background(Capsule().fill(AppTheme.warning.opacity(0.15)))
+                // Tangerine takes ink (§8) — the 15%-alpha capsule is retired.
+                .foregroundColor(BorderHopStyle.chipTextColor(on: BorderHopStyle.reviewColor))
+                .retroLozenge(BorderHopStyle.reviewColor)
             }
 
             // Stopwatch — informational pace stat; time doesn't affect the score
             StopwatchView(
                 elapsed: viewModel.elapsedTime,
-                color: .white
+                color: AppTheme.Retro.panelText
             )
 
             Spacer()
@@ -109,16 +103,13 @@ struct BorderHopGameView: View {
             // Hop counter
             HStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: "figure.walk")
-                    .foregroundColor(.white)
                 Text(verbatim: "\(viewModel.hopCount)")
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(.white)
+                    .font(AppTheme.Retro.Typography.cardTitle)
                     .monospacedDigit()
                     .contentTransition(.numericText())
             }
-            .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xs)
-            .background(Capsule().fill(.ultraThinMaterial))
+            .foregroundColor(AppTheme.Retro.panelText)
+            .retroLozenge()
         }
     }
 
@@ -127,11 +118,11 @@ struct BorderHopGameView: View {
     private var destinationBar: some View {
         HStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: "flag.checkered")
-                .foregroundColor(AppTheme.medalGold)
+                .foregroundColor(AppTheme.Retro.panelText)
 
             Text(viewModel.destinationCountry?.name ?? "")
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundColor(.white)
+                .font(AppTheme.Retro.Typography.cardTitle)
+                .foregroundColor(AppTheme.Retro.panelText)
                 .lineLimit(1)
 
             Spacer()
@@ -139,28 +130,45 @@ struct BorderHopGameView: View {
             bordersRemainingBadge
         }
         .padding(AppTheme.Spacing.md)
-        .background(.ultraThinMaterial)
+        // §9: the material bar becomes a cream panel with a hard ink top rule.
+        .background(AppTheme.Retro.panel)
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(AppTheme.Retro.ink)
+                .frame(height: AppTheme.Retro.strokeHeavy)
+        }
         .ignoresSafeArea(.container, edges: .bottom)
     }
 
-    /// "Am I winning?" — live distance to the goal, colored by whether the last hop helped
+    /// "Am I winning?" — live distance to the goal, colored by whether the last hop helped.
+    /// §8: grass/tomato can't be small *text* on cream, so the colored state is a
+    /// candy-filled chip with ink glyphs; the neutral state stays plain panelText.
     private var bordersRemainingBadge: some View {
         let delta = viewModel.bordersRemainingDelta
-        let deltaColor: Color = delta < 0 ? AppTheme.success : (delta > 0 ? AppTheme.error : .white.opacity(0.8))
+        let isColored = viewModel.hopCount > 0 && delta != 0
+        let chipFill: Color = delta < 0 ? BorderHopStyle.correctColor : BorderHopStyle.wrongColor
 
         return HStack(spacing: AppTheme.Spacing.xs) {
-            if viewModel.hopCount > 0 && delta != 0 {
+            if isColored {
                 Image(systemName: delta < 0 ? "arrow.down.right" : "arrow.up.right")
                     .font(.caption.weight(.bold))
-                    .foregroundColor(deltaColor)
+                    .foregroundColor(AppTheme.Retro.ink)
             }
             Text(viewModel.bordersRemaining == 1
                  ? "1 border away"
                  : "\(viewModel.bordersRemaining) borders away")
                 .font(AppTheme.Typography.detail)
-                .foregroundColor(deltaColor)
+                .foregroundColor(isColored ? AppTheme.Retro.ink : AppTheme.Retro.panelText)
                 .monospacedDigit()
                 .contentTransition(.numericText())
+        }
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.xs)
+        .background(Capsule().fill(isColored ? chipFill : Color.clear))
+        .overlay {
+            if isColored {
+                Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2)
+            }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.bordersRemaining)
     }
@@ -172,36 +180,38 @@ struct BorderHopGameView: View {
             HStack(spacing: AppTheme.Spacing.md) {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text("Backtrack to \(viewModel.graph.country(for: targetId)?.name ?? "")?")
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(.white)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Retro.panelText)
                     Text("Adds a hop to your route")
                         .font(AppTheme.Typography.caption)
-                        .foregroundColor(AppTheme.warning)
+                        .foregroundColor(AppTheme.Retro.panelText)
                 }
 
                 Spacer()
 
-                Button("Cancel") {
+                Button {
                     viewModel.cancelBacktrack()
+                } label: {
+                    Text("Cancel")
+                        .font(AppTheme.Retro.Typography.pillLabel)
+                        .foregroundColor(AppTheme.Retro.panelText)
+                        .padding(.vertical, AppTheme.Spacing.xs)
+                        .retroLozenge()
                 }
-                .font(AppTheme.Typography.pillLabel)
-                .foregroundColor(.white.opacity(0.7))
-                .padding(.horizontal, AppTheme.Spacing.md)
-                .padding(.vertical, AppTheme.Spacing.sm)
-                .background(Capsule().fill(.white.opacity(0.15)))
+                .buttonStyle(RetroRaisedButtonStyle(cornerRadius: 999))
 
-                Button("Confirm") {
+                Button {
                     viewModel.confirmBacktrack()
+                } label: {
+                    Text("Confirm")
+                        .font(AppTheme.Retro.Typography.pillLabel)
+                        .foregroundColor(BorderHopStyle.chipTextColor(on: BorderHopStyle.accent))
+                        .padding(.vertical, AppTheme.Spacing.xs)
+                        .retroLozenge(BorderHopStyle.accent)
                 }
-                .font(AppTheme.Typography.pillLabel)
-                .foregroundColor(.white)
-                .padding(.horizontal, AppTheme.Spacing.md)
-                .padding(.vertical, AppTheme.Spacing.sm)
-                .background(Capsule().fill(theme.accentColor))
+                .buttonStyle(RetroRaisedButtonStyle(cornerRadius: 999))
             }
-            .padding(AppTheme.Spacing.md)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
+            .retroCard()
             .padding(.horizontal, AppTheme.Spacing.md)
             .padding(.top, 60) // Below HUD
 
@@ -216,68 +226,58 @@ struct BorderHopGameView: View {
     /// Shown once, on the first round ever — answers "what am I looking at?"
     private var coachOverlay: some View {
         ZStack {
-            AppTheme.overlay
+            BorderHopStyle.scrim
                 .ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
                 Text("How to play")
-                    .font(AppTheme.Typography.sectionHeader)
-                    .foregroundColor(coachTextColor)
+                    .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                    .foregroundColor(AppTheme.Retro.panelText)
 
                 coachRow(
-                    icon: "mappin.circle.fill",
-                    iconColor: theme.accentColor,
+                    icon: "mappin.and.ellipse",
+                    iconColor: BorderHopStyle.accent,
                     title: "You are here",
-                    detail: "The bright country with the pin is you."
+                    detail: "The country filled in blue with the pin is you."
                 )
 
                 coachRow(
                     icon: "hand.tap.fill",
-                    iconColor: theme.accentColor,
-                    title: "Tap a glowing neighbor to hop",
+                    iconColor: BorderHopStyle.accent,
+                    title: "Tap a highlighted neighbor to hop",
                     detail: "Answer one quick question to cross each border."
                 )
 
                 coachRow(
                     icon: "flag.checkered",
-                    iconColor: AppTheme.medalGold,
+                    iconColor: BorderHopStyle.goalColor,
                     title: "Reach the gold country",
                     detail: "Fewest hops wins. The bar below counts the borders left."
                 )
 
-                PrimaryButton(title: "Got it", icon: "checkmark") {
+                RetroPrimaryButton(title: "Got it", icon: "checkmark",
+                                   accent: BorderHopStyle.accent) {
                     HapticManager.light()
                     hasSeenCoach = true
                 }
             }
-            .padding(AppTheme.Spacing.lg)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.large)
-                    .fill(colorScheme == .dark ? AppTheme.darkElevated : AppTheme.pureWhite)
-            )
+            .retroCard()
             .padding(.horizontal, AppTheme.Spacing.lg)
         }
         .transition(.opacity)
     }
 
-    private var coachTextColor: Color {
-        colorScheme == .dark ? .white : AppTheme.deepCharcoal
-    }
-
     private func coachRow(icon: String, iconColor: Color, title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
-            Image(systemName: icon)
-                .font(.system(size: 24))
-                .foregroundColor(iconColor)
-                .frame(width: 32)
+            BorderHopGlyphPlate(systemImage: icon, fill: iconColor, diameter: 40, glyphSize: 18)
 
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(title)
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(coachTextColor)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText)
                 Text(detail)
                     .font(AppTheme.Typography.secondary)
-                    .foregroundColor(colorScheme == .dark ? AppTheme.darkMutedText : AppTheme.mediumGray)
+                    .foregroundColor(BorderHopStyle.mutedText)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
@@ -287,23 +287,22 @@ struct BorderHopGameView: View {
 
     private var victoryOverlay: some View {
         ZStack {
-            AppTheme.overlay
+            BorderHopStyle.scrim
                 .ignoresSafeArea()
 
             VStack(spacing: AppTheme.Spacing.lg) {
-                Image(systemName: "flag.checkered.circle.fill")
-                    .font(.system(size: 80))
-                    .foregroundColor(AppTheme.medalGold)
-                    .symbolEffect(.bounce, value: reduceMotion ? false : viewModel.hasArrived)
+                // §9: the naked SF hero (and its bounce) is replaced by the
+                // game's spot plate.
+                BorderHopSpotPlate(diameter: 120)
 
-                Text("Route Complete!")
-                    .font(AppTheme.Typography.hero)
-                    .foregroundColor(.white)
+                BorderHopTitlePanel(text: "Route Complete!", size: 26, tilt: -1)
 
                 if let result = viewModel.roundResult {
                     Text("Score: \(result.totalScoreInt)")
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
-                        .foregroundColor(theme.accentColor)
+                        .font(AppTheme.Retro.Typography.heading(30, relativeTo: .title))
+                        .foregroundColor(AppTheme.Retro.panelText)
+                        .monospacedDigit()
+                        .retroLozenge()
                 }
             }
         }

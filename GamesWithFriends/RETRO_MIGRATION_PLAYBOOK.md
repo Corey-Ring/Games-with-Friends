@@ -105,5 +105,5 @@ game's row in the tracking table below, commit per screen with
 | Movie Chain | tomato | filmFrame | ✅ 2026-08-23 (Fable-direct) |
 | Casting Director | tangerine | starFace | ✅ 2026-08-23 (Fable-direct) |
 | VibeCheck | berry | heart | ✅ 2026-08-23 |
-| Border Hop | cornflower | suitcase | — |
+| Border Hop | cornflower | suitcase | ✅ 2026-08-23 |
 | Finish the Line | plum | clapperboard | ✅ 2026-08-23 |

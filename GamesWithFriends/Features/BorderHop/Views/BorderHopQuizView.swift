@@ -14,7 +14,6 @@ struct BorderHopQuizView: View {
     let countryName: String
     let graph: CountryGraph
 
-    private let theme = GameTheme.borderHop
     private let choiceLabels = ["A", "B", "C", "D"]
 
     @State private var shakingChoice: String? = nil
@@ -54,10 +53,18 @@ struct BorderHopQuizView: View {
 
                 Color.clear.frame(height: AppTheme.Spacing.lg)
             }
+            // §9: the material sheet becomes a cream panel with an ink frame.
+            // The negative bottom padding keeps the sheet's lower corners
+            // square where it meets the screen edge — unchanged.
             .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.large)
-                    .fill(.ultraThinMaterial)
-                    .padding(.bottom, -AppTheme.Radius.large)
+                RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                    .fill(AppTheme.Retro.panel)
+                    .padding(.bottom, -AppTheme.Retro.Radius.card)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                    .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                    .padding(.bottom, -AppTheme.Retro.Radius.card)
             )
             .clipped()
             .padding(.horizontal, AppTheme.Spacing.sm)
@@ -71,8 +78,8 @@ struct BorderHopQuizView: View {
     private var header: some View {
         VStack(spacing: AppTheme.Spacing.xs) {
             Text(stem)
-                .font(AppTheme.Typography.subsectionHeader)
-                .foregroundColor(.white)
+                .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .minimumScaleFactor(0.8)
@@ -81,7 +88,7 @@ struct BorderHopQuizView: View {
             if !resolved {
                 Text("Answer to cross the border")
                     .font(AppTheme.Typography.caption)
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(BorderHopStyle.mutedText)
             }
 
             strikeRow
@@ -106,13 +113,15 @@ struct BorderHopQuizView: View {
     private var strikeRow: some View {
         HStack(spacing: 6) {
             ForEach(0..<3, id: \.self) { index in
+                // Playbook §4 gotcha 6: unfilled dots are low-alpha ink with a
+                // real ink rule, never an empty ring.
                 Circle()
-                    .fill(index < strikeCount ? AppTheme.error : .clear)
+                    .fill(index < strikeCount ? BorderHopStyle.wrongColor : AppTheme.Retro.panelText.opacity(0.15))
                     .frame(width: 10, height: 10)
                     .overlay(
                         Circle()
                             .stroke(
-                                index < strikeCount ? AppTheme.error : Color.white.opacity(0.35),
+                                index < strikeCount ? AppTheme.Retro.ink : AppTheme.Retro.panelText.opacity(0.6),
                                 lineWidth: 1.5
                             )
                     )
@@ -139,7 +148,9 @@ struct BorderHopQuizView: View {
 
     /// Short text rows — used for facts, exports, and capitals
     private func textChoicesStack(choices: [String], isCapital: Bool = false) -> some View {
-        VStack(spacing: 6) {
+        // Spacing opens from 6 to 8 so the rows' hard ink shadows (5pt) clear
+        // the row below (§5).
+        VStack(spacing: AppTheme.Spacing.sm) {
             ForEach(Array(choices.enumerated()), id: \.element) { index, choice in
                 textAnswerButton(for: choice, index: index, isCapital: isCapital)
                     .opacity(choicesRevealed.contains(index) ? 1 : 0)
@@ -152,7 +163,9 @@ struct BorderHopQuizView: View {
     }
 
     private var flagChoicesGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible(), spacing: 6), GridItem(.flexible(), spacing: 6)], spacing: 6) {
+        LazyVGrid(columns: [GridItem(.flexible(), spacing: AppTheme.Spacing.sm),
+                            GridItem(.flexible(), spacing: AppTheme.Spacing.sm)],
+                  spacing: AppTheme.Spacing.sm) {
             ForEach(Array((question.countryChoices ?? []).enumerated()), id: \.element) { index, countryId in
                 flagAnswerButton(for: countryId)
                     .opacity(choicesRevealed.contains(index) ? 1 : 0)
@@ -189,7 +202,7 @@ struct BorderHopQuizView: View {
         } label: {
             HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.sm) {
                 Text(label)
-                    .font(AppTheme.Typography.pillLabel)
+                    .font(AppTheme.Retro.Typography.pillLabel)
                     .foregroundColor(prefixColor(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal))
                     .frame(width: 18, alignment: .leading)
 
@@ -201,6 +214,7 @@ struct BorderHopQuizView: View {
             }
             .buttonChrome(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal, isRevealedAnswer: revealed && isCorrectChoice)
         }
+        .buttonStyle(RetroRaisedButtonStyle(cornerRadius: AppTheme.Retro.Radius.inner))
         .disabled(isEliminated || resolved)
         .scaleEffect(isCorrectReveal ? 1.02 : 1.0)
         .offset(x: isShaking ? shakeOffset : 0)
@@ -234,6 +248,7 @@ struct BorderHopQuizView: View {
             .frame(maxWidth: .infinity, minHeight: 72)
             .buttonChrome(isEliminated: isEliminated, isCorrectReveal: isCorrectReveal, isRevealedAnswer: revealed && isCorrectChoice)
         }
+        .buttonStyle(RetroRaisedButtonStyle(cornerRadius: AppTheme.Retro.Radius.inner))
         .disabled(isEliminated || resolved)
         .scaleEffect(isCorrectReveal ? 1.03 : 1.0)
         .offset(x: isShaking ? shakeOffset : 0)
@@ -247,23 +262,24 @@ struct BorderHopQuizView: View {
     @ViewBuilder
     private var takeawayFooter: some View {
         if let takeaway {
+            let stampColor = revealed ? BorderHopStyle.reviewColor : BorderHopStyle.correctColor
+
             HStack(spacing: AppTheme.Spacing.sm) {
                 Image(systemName: revealed ? "lightbulb.fill" : "checkmark.seal.fill")
-                    .foregroundColor(revealed ? AppTheme.warning : AppTheme.success)
+                    .foregroundColor(BorderHopStyle.chipTextColor(on: stampColor))
 
                 Text(takeaway.text)
                     .font(AppTheme.Typography.secondary)
-                    .foregroundColor(.white)
+                    // §8: ink on grass ≈ 5.5:1 and ink on tangerine passes —
+                    // the flat stamp replaces the 18%-alpha wash.
+                    .foregroundColor(BorderHopStyle.chipTextColor(on: stampColor))
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
 
                 Spacer(minLength: 0)
             }
             .padding(AppTheme.Spacing.md)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .fill((revealed ? AppTheme.warning : AppTheme.success).opacity(0.18))
-            )
+            .retroPanel(stampColor, cornerRadius: AppTheme.Retro.Radius.inner)
             .padding(.horizontal, AppTheme.Spacing.sm)
             .padding(.top, AppTheme.Spacing.xs)
             .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -312,10 +328,10 @@ struct BorderHopQuizView: View {
     private func triggerCelebration() {
         guard !reduceMotion else { return }
         let palette: [Color] = [
-            AppTheme.success,
-            AppTheme.medalGold,
-            theme.accentColor,
-            .white
+            BorderHopStyle.correctColor,
+            BorderHopStyle.goalColor,
+            BorderHopStyle.accent,
+            AppTheme.Retro.cream
         ]
         var particles: [CelebrationParticle] = []
         for i in 0..<20 {
@@ -358,10 +374,13 @@ struct BorderHopQuizView: View {
 
     // MARK: - Styling Helpers
 
+    /// The A/B/C/D prefix rides whatever fill its row has: ink on the grass /
+    /// tomato states, `panelText` on the plain cream row. Grass is never used
+    /// as *text* on cream — small grass-on-cream is ~2.7:1 (§8).
     private func prefixColor(isEliminated: Bool, isCorrectReveal: Bool) -> Color {
-        if isCorrectReveal { return AppTheme.success }
-        if isEliminated { return AppTheme.mediumGray }
-        return AppTheme.compassRose
+        if isCorrectReveal { return AppTheme.Retro.ink }
+        if isEliminated { return AppTheme.Retro.ink.opacity(0.7) }
+        return AppTheme.Retro.panelText
     }
 }
 
@@ -373,36 +392,31 @@ private struct ButtonChromeModifier: ViewModifier {
     /// Correct answer surfaced after 3 strikes — teaching styling, not celebration
     let isRevealedAnswer: Bool
 
+    /// Flat candy fills with a uniform ink rule (§2 rules 1–2). The alpha
+    /// washes and the accent-tinted hairline border are retirements (§9); the
+    /// hard shadow comes from `RetroRaisedButtonStyle` at the call site, so
+    /// this stays a plain panel (playbook §4 gotcha 3).
     func body(content: Content) -> some View {
         content
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .background(background)
             .foregroundColor(foreground)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .stroke(border, lineWidth: isCorrectReveal ? 1.5 : 1)
-            )
+            .retroPanel(fill, cornerRadius: AppTheme.Retro.Radius.inner)
     }
 
-    private var background: some ShapeStyle {
-        if isRevealedAnswer { return AnyShapeStyle(AppTheme.warning.opacity(0.15)) }
-        if isCorrectReveal { return AnyShapeStyle(AppTheme.success.opacity(0.12)) }
-        if isEliminated { return AnyShapeStyle(AppTheme.error.opacity(0.08)) }
-        return AnyShapeStyle(Color.white)
+    /// Correct → grass, wrong/eliminated → tomato, the answer surfaced after
+    /// three strikes → tangerine (a second look, not a celebration), otherwise
+    /// the plain cream row.
+    private var fill: Color {
+        if isRevealedAnswer { return BorderHopStyle.reviewColor }
+        if isCorrectReveal { return BorderHopStyle.correctColor }
+        if isEliminated { return BorderHopStyle.wrongColor }
+        return AppTheme.Retro.panel
     }
 
+    /// §8: ink on every candy fill above; the cream row follows the scheme.
     private var foreground: Color {
-        if isEliminated { return AppTheme.mediumGray }
-        return AppTheme.deepCharcoal
-    }
-
-    private var border: some ShapeStyle {
-        if isRevealedAnswer { return AnyShapeStyle(AppTheme.warning) }
-        if isCorrectReveal { return AnyShapeStyle(AppTheme.success) }
-        if isEliminated { return AnyShapeStyle(AppTheme.mediumGray.opacity(0.2)) }
-        return AnyShapeStyle(AppTheme.compassRose.opacity(0.4))
+        BorderHopStyle.panelAwareTextColor(on: fill)
     }
 }
 
@@ -455,7 +469,7 @@ private struct CelebrationRipple: View {
             let maxDim = max(geo.size.width, geo.size.height)
             let diameter = 20 + progress * (maxDim - 20)
             Circle()
-                .stroke(AppTheme.success.opacity(0.6 * (1 - progress)), lineWidth: 3)
+                .stroke(BorderHopStyle.correctColor.opacity(0.6 * (1 - progress)), lineWidth: 3)
                 .frame(width: diameter, height: diameter)
                 .position(x: geo.size.width / 2, y: geo.size.height / 2)
                 .onAppear {
