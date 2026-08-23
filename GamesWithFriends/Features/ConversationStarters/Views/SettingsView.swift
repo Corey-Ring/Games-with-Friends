@@ -20,9 +20,12 @@ struct SettingsView: View {
                         }
                 } header: {
                     Text("Timer")
+                        .foregroundColor(AppTheme.Retro.cocoa)
                 } footer: {
                     Text("Add a time limit to each conversation starter")
+                        .foregroundColor(AppTheme.Retro.cocoa)
                 }
+                .listRowBackground(AppTheme.Retro.panel)
 
                 if viewModel.settings.timerEnabled {
                     Section("Timer Duration") {
@@ -37,7 +40,8 @@ struct SettingsView: View {
                                     Spacer()
                                     if abs(viewModel.settings.timerDuration - preset.duration) < 1 {
                                         Image(systemName: "checkmark")
-                                            .foregroundColor(.blue)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(AppTheme.Retro.ink)
                                     }
                                 }
                             }
@@ -50,7 +54,8 @@ struct SettingsView: View {
                                 Spacer()
                                 if !TimerPreset.allCases.dropLast().contains(where: { abs(viewModel.settings.timerDuration - $0.duration) < 1 }) {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(AppTheme.Retro.ink)
                                 }
                             }
 
@@ -82,14 +87,17 @@ struct SettingsView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .buttonStyle(.borderedProminent)
+                            .foregroundColor(AppTheme.Retro.ink)
+                            .fontWeight(.semibold)
                         }
                     }
+                    .listRowBackground(AppTheme.Retro.panel)
                 }
 
                 Section {
                     HStack {
                         Image(systemName: "speaker.wave.2.fill")
-                            .foregroundColor(.blue)
+                            .foregroundColor(AppTheme.Retro.ink)
                         Text("Sound alerts when timer expires")
                         Spacer()
                         Toggle("", isOn: $viewModel.settings.soundEnabled)
@@ -98,7 +106,7 @@ struct SettingsView: View {
 
                     HStack {
                         Image(systemName: "iphone.radiowaves.left.and.right")
-                            .foregroundColor(.purple)
+                            .foregroundColor(AppTheme.Retro.ink)
                         Text("Haptic feedback")
                         Spacer()
                         Toggle("", isOn: $viewModel.settings.hapticEnabled)
@@ -106,19 +114,25 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Notifications")
+                        .foregroundColor(AppTheme.Retro.cocoa)
                 }
+                .listRowBackground(AppTheme.Retro.panel)
 
                 Section {
                     HStack {
                         Text("Current Timer")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppTheme.Retro.cocoa)
                         Spacer()
                         Text(timeString(from: viewModel.settings.timerDuration))
                             .fontWeight(.semibold)
                             .monospacedDigit()
                     }
                 }
+                .listRowBackground(AppTheme.Retro.panel)
             }
+            .scrollContentBackground(.hidden)
+            .background(AppTheme.Retro.ground.ignoresSafeArea())
+            .tint(ConversationStartersStyle.accent)
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

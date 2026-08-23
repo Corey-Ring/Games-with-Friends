@@ -7,6 +7,8 @@ struct SavedStartersView: View {
     var body: some View {
         NavigationStack {
             ZStack {
+                AppTheme.Retro.ground.ignoresSafeArea()
+
                 if viewModel.savedStarters.isEmpty {
                     emptyStateView
                 } else {
@@ -21,10 +23,16 @@ struct SavedStartersView: View {
                                     shareStarter(starter)
                                 }
                             )
+                            .retroCard()
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                         }
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                 }
             }
+            .tint(AppTheme.Retro.ink)
             .navigationTitle("Saved Starters")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -38,18 +46,29 @@ struct SavedStartersView: View {
     }
 
     private var emptyStateView: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "star.slash")
-                .font(.system(size: 60))
-                .foregroundColor(.secondary)
+        VStack(spacing: AppTheme.Spacing.lg) {
+            ZStack {
+                Circle().fill(AppTheme.Retro.panel)
+                Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                Image(systemName: "star.slash")
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundColor(AppTheme.Retro.ink.opacity(0.4))
+            }
+            .frame(width: 80, height: 80)
 
             Text("No Saved Starters")
-                .font(AppTheme.Typography.sectionHeader)
+                .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title2))
+                .foregroundColor(AppTheme.Retro.ink)
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .retroPanel(ConversationStartersStyle.accent)
+                .rotationEffect(.degrees(-1))
 
             Text("Tap the star icon on any conversation starter to save it here")
                 .font(AppTheme.Typography.secondary)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppTheme.Retro.panelText)
                 .multilineTextAlignment(.center)
+                .retroLozenge()
                 .padding(.horizontal)
         }
     }
@@ -88,21 +107,21 @@ struct SavedStarterRow: View {
                     Image(systemName: starter.category.icon)
                         .font(AppTheme.Typography.caption)
                     Text(starter.category.rawValue)
-                        .font(AppTheme.Typography.caption)
-                        .fontWeight(.medium)
+                        .font(AppTheme.Retro.Typography.pillLabel)
                 }
-                .padding(.horizontal, AppTheme.Spacing.sm)
+                .foregroundColor(ConversationStartersStyle.chipTextColor(on: categoryColor))
+                .padding(.horizontal, AppTheme.Spacing.sm + 2)
                 .padding(.vertical, AppTheme.Spacing.xs)
-                .background(categoryColor.opacity(0.2))
-                .foregroundColor(categoryColor)
-                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
+                .background(Capsule().fill(categoryColor))
+                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
 
                 Spacer()
 
                 HStack(spacing: 5) {
                     ForEach(1...5, id: \.self) { level in
                         Circle()
-                            .fill(level <= starter.vibeLevel ? vibeColor : AppTheme.mediumGray.opacity(0.3))
+                            .fill(level <= starter.vibeLevel ? vibeColor : AppTheme.Retro.ink.opacity(0.15))
+                            .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1))
                             .frame(width: 8, height: 8)
                     }
                 }
@@ -110,48 +129,39 @@ struct SavedStarterRow: View {
 
             Text(starter.text)
                 .font(AppTheme.Typography.body)
-                .foregroundColor(.primary)
+                .foregroundColor(AppTheme.Retro.panelText)
 
             HStack {
                 Button(action: onShare) {
                     Label("Share", systemImage: "square.and.arrow.up")
-                        .font(AppTheme.Typography.caption)
+                        .font(AppTheme.Retro.Typography.pillLabel)
+                        .foregroundColor(AppTheme.Retro.ink)
+                        .padding(.horizontal, AppTheme.Spacing.sm + 2)
+                        .padding(.vertical, AppTheme.Spacing.xs)
+                        .background(Capsule().fill(ConversationStartersStyle.accent))
+                        .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
                 }
-                .buttonStyle(.bordered)
 
                 Spacer()
 
                 Button(action: onRemove) {
                     Label("Remove", systemImage: "trash")
-                        .font(AppTheme.Typography.caption)
+                        .font(AppTheme.Retro.Typography.pillLabel)
+                        .foregroundColor(AppTheme.Retro.ink)
+                        .padding(.horizontal, AppTheme.Spacing.sm + 2)
+                        .padding(.vertical, AppTheme.Spacing.xs)
+                        .background(Capsule().fill(AppTheme.Retro.tomato))
+                        .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
                 }
-                .buttonStyle(.bordered)
-                .tint(AppTheme.error)
             }
         }
-        .padding(.vertical, AppTheme.Spacing.xs)
     }
 
     private var categoryColor: Color {
-        // Mirrors CardView.categoryColor in GameView.swift — keep in sync.
-        switch starter.category {
-        case .wouldYouRather: return GameTheme.conversationStarters.accentColor
-        case .hotTakes: return AppTheme.error
-        case .hypotheticals: return AppTheme.warning
-        case .storyTime: return GameTheme.conversationStarters.accentColor
-        case .thisOrThat: return AppTheme.success
-        case .deepDive: return GameTheme.conversationStarters.accentColor
-        }
+        ConversationStartersStyle.categoryColor(starter.category)
     }
 
     private var vibeColor: Color {
-        switch starter.vibeLevel {
-        case 1: return GameTheme.conversationStarters.accentColor
-        case 2: return AppTheme.success
-        case 3: return AppTheme.medalGold
-        case 4: return AppTheme.warning
-        case 5: return AppTheme.error
-        default: return GameTheme.conversationStarters.accentColor
-        }
+        ConversationStartersStyle.vibeColor(starter.vibeLevel)
     }
 }
