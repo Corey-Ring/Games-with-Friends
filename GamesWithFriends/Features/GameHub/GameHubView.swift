@@ -105,12 +105,12 @@ struct RetroHubGameCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 // Title lozenge — ink-on-cream, always safe (§8).
                 Text(game.name)
-                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title3))
                     .foregroundColor(AppTheme.Retro.panelText)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                     .padding(.horizontal, 12)
-                    .padding(.vertical, 2)
+                    .padding(.vertical, 4)
                     .background(Capsule().fill(AppTheme.Retro.panel))
                     .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
 
