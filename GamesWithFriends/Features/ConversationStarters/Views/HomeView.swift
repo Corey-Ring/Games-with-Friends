@@ -10,35 +10,56 @@ struct HomeView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [GameTheme.conversationStarters.accentColor.opacity(0.15), GameTheme.conversationStarters.accentColor.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            GeometryReader { geo in
+                // Content column is wide; motifs keep to the edges and top
+                // strip, ≥12pt clear of the interactive cards (§7).
+                MotifGroundView(exclusions: [CGRect(x: 8, y: 60,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 60)])
+            }
             .ignoresSafeArea()
 
             ScrollView {
                     VStack(spacing: 30) {
-                        // Header
-                        VStack(spacing: 10) {
-                            Image(systemName: "bubble.left.and.bubble.right.fill")
-                                .font(.system(size: 60))
-                                .foregroundColor(GameTheme.conversationStarters.accentColor)
+                        // Header: spot plate + framed Lilita title (Rule 4 —
+                        // game names exceed the ~8-char Shrikhand cap).
+                        VStack(spacing: AppTheme.Spacing.sm) {
+                            ZStack {
+                                Circle().fill(AppTheme.Retro.panel)
+                                Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                                RetroSpotIllustration(kind: .speechBubbles)
+                                    .frame(width: 64, height: 64)
+                            }
+                            .frame(width: 84, height: 84)
 
                             Text("Conversation Starters")
-                                .font(AppTheme.Typography.hero)
+                                .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                                .foregroundColor(AppTheme.Retro.ink)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, AppTheme.Spacing.md)
+                                .padding(.vertical, AppTheme.Spacing.xs)
+                                .retroPanel(ConversationStartersStyle.accent)
+                                .background(
+                                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                                        .fill(AppTheme.Retro.ink)
+                                        .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
+                                )
+                                .rotationEffect(.degrees(-1))
 
                             Text("Break the ice and spark great conversations")
                                 .font(AppTheme.Typography.secondary)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(AppTheme.Retro.panelText)
                                 .multilineTextAlignment(.center)
+                                .retroLozenge()
+                                .rotationEffect(.degrees(0.8))
                         }
-                        .padding(.top, 40)
+                        .padding(.top, AppTheme.Spacing.lg)
 
                         // Player Count
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Number of Players", systemImage: "person.3.fill")
-                                .font(AppTheme.Typography.cardTitle)
+                                .font(AppTheme.Retro.Typography.cardTitle)
+                                .foregroundColor(AppTheme.Retro.panelText)
 
                             HStack {
                                 Button(action: {
@@ -46,41 +67,48 @@ struct HomeView: View {
                                         viewModel.settings.playerCount -= 1
                                     }
                                 }) {
-                                    Image(systemName: "minus.circle.fill")
-                                        .font(AppTheme.Typography.sectionHeader)
+                                    Image(systemName: "minus")
+                                        .font(AppTheme.Typography.cardTitle.weight(.black))
+                                        .foregroundColor(AppTheme.Retro.ink)
+                                        .frame(width: 44, height: 44)
+                                        .background(Circle().fill(ConversationStartersStyle.accent))
+                                        .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth))
                                 }
                                 .disabled(viewModel.settings.playerCount <= 2)
+                                .opacity(viewModel.settings.playerCount <= 2 ? 0.35 : 1)
 
                                 Text("\(viewModel.settings.playerCount)")
                                     .font(AppTheme.Typography.screenTitle)
+                                    .foregroundColor(AppTheme.Retro.panelText)
                                     .frame(minWidth: 50)
 
                                 Button(action: {
                                     viewModel.settings.playerCount += 1
                                 }) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(AppTheme.Typography.sectionHeader)
+                                    Image(systemName: "plus")
+                                        .font(AppTheme.Typography.cardTitle.weight(.black))
+                                        .foregroundColor(AppTheme.Retro.ink)
+                                        .frame(width: 44, height: 44)
+                                        .background(Circle().fill(ConversationStartersStyle.accent))
+                                        .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth))
                                 }
                             }
-                            .foregroundColor(GameTheme.conversationStarters.accentColor)
                         }
-                        .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.cardSurface)
-                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-                        .shadow(radius: 5)
+                        .retroCard()
 
                         // Vibe Level
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Vibe Level", systemImage: "waveform")
-                                .font(AppTheme.Typography.cardTitle)
+                                .font(AppTheme.Retro.Typography.cardTitle)
+                                .foregroundColor(AppTheme.Retro.panelText)
 
                             VStack(alignment: .leading, spacing: 5) {
                                 Slider(value: Binding(
                                     get: { Double(viewModel.settings.vibeLevel) },
                                     set: { viewModel.settings.vibeLevel = Int($0) }
                                 ), in: 1...5, step: 1)
-                                .accentColor(vibeColor(for: viewModel.settings.vibeLevel))
+                                .tint(ConversationStartersStyle.vibeColor(viewModel.settings.vibeLevel))
 
                                 HStack {
                                     ForEach(1...5, id: \.self) { level in
@@ -89,31 +117,29 @@ struct HomeView: View {
                                             .frame(maxWidth: .infinity)
                                     }
                                 }
-                                .foregroundColor(.secondary)
+                                .foregroundColor(AppTheme.Retro.cocoa)
                             }
 
                             Text(vibeLevelDescription(for: viewModel.settings.vibeLevel))
                                 .font(AppTheme.Typography.secondary)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(AppTheme.Retro.cocoa)
                                 .padding(.top, AppTheme.Spacing.xs)
                         }
-                        .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.cardSurface)
-                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-                        .shadow(radius: 5)
+                        .retroCard()
 
                         // Category Filter
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Categories", systemImage: "tag.fill")
-                                .font(AppTheme.Typography.cardTitle)
+                                .font(AppTheme.Retro.Typography.cardTitle)
+                                .foregroundColor(AppTheme.Retro.panelText)
 
                             FlowLayout(spacing: 10) {
                                 ForEach(Category.allCases, id: \.self) { category in
-                                    CategoryPill(
+                                    RetroCategoryPill(
                                         title: category.rawValue,
                                         icon: category.icon,
-                                        color: GameTheme.conversationStarters.accentColor,
+                                        color: ConversationStartersStyle.accent,
                                         isSelected: viewModel.settings.selectedCategories.contains(category),
                                         action: {
                                             if viewModel.settings.selectedCategories.contains(category) {
@@ -126,23 +152,21 @@ struct HomeView: View {
                                 }
                             }
                         }
-                        .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.cardSurface)
-                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-                        .shadow(radius: 5)
+                        .retroCard()
 
                         // Theme Filter
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Themes", systemImage: "sparkles")
-                                .font(AppTheme.Typography.cardTitle)
+                                .font(AppTheme.Retro.Typography.cardTitle)
+                                .foregroundColor(AppTheme.Retro.panelText)
 
                             FlowLayout(spacing: 10) {
                                 ForEach(Theme.allCases, id: \.self) { theme in
-                                    CategoryPill(
+                                    RetroCategoryPill(
                                         title: theme.rawValue,
                                         icon: theme.icon,
-                                        color: GameTheme.conversationStarters.accentColor,
+                                        color: ConversationStartersStyle.accent,
                                         isSelected: viewModel.settings.selectedThemes.contains(theme),
                                         action: {
                                             if viewModel.settings.selectedThemes.contains(theme) {
@@ -155,36 +179,15 @@ struct HomeView: View {
                                 }
                             }
                         }
-                        .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.cardSurface)
-                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-                        .shadow(radius: 5)
+                        .retroCard()
 
                         // Start Button
-                        Button(action: {
+                        RetroPrimaryButton(title: "Start Game", icon: "play.fill",
+                                           accent: ConversationStartersStyle.accent) {
                             viewModel.updateFilteredStarters()
                             showingGame = true
-                        }) {
-                            HStack {
-                                Image(systemName: "play.fill")
-                                Text("Start Game")
-                                    .fontWeight(.semibold)
-                            }
-                            .font(AppTheme.Typography.sectionHeader)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(
-                                LinearGradient(
-                                    colors: [GameTheme.conversationStarters.accentColor, GameTheme.conversationStarters.darkAccent],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
                         }
-                        .shadow(radius: 5)
                         .padding(.bottom, AppTheme.Spacing.lg)
                     }
                     .padding(.horizontal)
@@ -197,11 +200,12 @@ struct HomeView: View {
                     HStack {
                         Button(action: { showingSavedStarters = true }) {
                             Image(systemName: "star.fill")
-                                .foregroundColor(.yellow)
+                                .foregroundColor(AppTheme.Retro.ink)
                         }
                         .accessibilityLabel("Saved starters")
                         Button(action: { showingSettings = true }) {
                             Image(systemName: "gear")
+                                .foregroundColor(AppTheme.Retro.ink)
                         }
                         .accessibilityLabel("Settings")
                     }
@@ -221,17 +225,6 @@ struct HomeView: View {
                     viewModel.pauseTimer()
                 }
             }
-    }
-
-    private func vibeColor(for level: Int) -> Color {
-        switch level {
-        case 1: return GameTheme.conversationStarters.accentColor
-        case 2: return AppTheme.success
-        case 3: return AppTheme.medalGold
-        case 4: return AppTheme.warning
-        case 5: return AppTheme.error
-        default: return GameTheme.conversationStarters.accentColor
-        }
     }
 
     private func vibeLevelName(for level: Int) -> String {
