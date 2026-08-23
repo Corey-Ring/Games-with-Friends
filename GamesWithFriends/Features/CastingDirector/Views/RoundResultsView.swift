@@ -6,11 +6,14 @@ struct RoundResultsView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [GameTheme.castingDirector.accentColor.opacity(0.2), GameTheme.castingDirector.accentColor.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            GeometryReader { geo in
+                // Interstitial screen — content column owns the middle,
+                // motifs keep to the gutters (§7).
+                MotifGroundView(seed: 0xCA57_0D02,
+                                exclusions: [CGRect(x: 8, y: 60,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 60)])
+            }
             .ignoresSafeArea()
 
             ScrollView {
@@ -32,6 +35,7 @@ struct RoundResultsView: View {
                 }
                 .padding()
             }
+            .scrollIndicators(.hidden)
         }
         .navigationBarBackButtonHidden()
     }
@@ -40,33 +44,43 @@ struct RoundResultsView: View {
 
     private var resultHeader: some View {
         VStack(spacing: 12) {
-            if viewModel.roundState.foundByPlayer != nil {
-                Image(systemName: "checkmark.seal.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(AppTheme.success)
+            let didFind = viewModel.roundState.foundByPlayer != nil
 
-                Text("Correct!")
-                    .font(AppTheme.Typography.hero)
-                    .fontWeight(.bold)
-            } else {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(AppTheme.error)
-
-                Text(viewModel.roundState.gaveUp ? "Revealed!" : "Out of Clues!")
-                    .font(AppTheme.Typography.hero)
-                    .fontWeight(.bold)
+            // Status disc on a spot plate — never a naked SF hero (§9).
+            ZStack {
+                Circle().fill(didFind ? CastingDirectorStyle.successColor : CastingDirectorStyle.errorColor)
+                Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                Image(systemName: didFind ? "checkmark" : "xmark")
+                    .font(.system(size: 34, weight: .black))
+                    .foregroundColor(AppTheme.Retro.ink)
             }
+            .frame(width: 84, height: 84)
+
+            Text(didFind ? "Correct!" : (viewModel.roundState.gaveUp ? "Revealed!" : "Out of Clues!"))
+                .font(AppTheme.Retro.Typography.heading(24, relativeTo: .title))
+                .foregroundColor(AppTheme.Retro.ink)
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .retroPanel(didFind ? CastingDirectorStyle.successColor : CastingDirectorStyle.accent)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                        .fill(AppTheme.Retro.ink)
+                        .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
+                )
+                .rotationEffect(.degrees(-1))
 
             if viewModel.gameMode == .passAndPlay, let player = viewModel.roundState.foundByPlayer {
                 HStack(spacing: 6) {
                     Circle()
                         .fill(player.color)
+                        .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
                         .frame(width: 12, height: 12)
                     Text("\(player.name) got it!")
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundStyle(.secondary)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Retro.panelText)
                 }
+                .retroLozenge()
+                .rotationEffect(.degrees(0.8))
             }
         }
         .padding(.top)
@@ -79,18 +93,16 @@ struct RoundResultsView: View {
             if let actor = viewModel.roundState.targetActor {
                 Text("The actor was...")
                     .font(AppTheme.Typography.secondary)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
 
                 Text(actor.name)
-                    .font(AppTheme.Typography.screenTitle)
-                    .fontWeight(.bold)
-                    .foregroundStyle(GameTheme.castingDirector.accentColor)
+                    .font(AppTheme.Retro.Typography.heading(26, relativeTo: .title))
+                    .foregroundColor(AppTheme.Retro.panelText)
+                    .multilineTextAlignment(.center)
             }
         }
-        .padding()
         .frame(maxWidth: .infinity)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
+        .retroCard()
     }
 
     // MARK: - Score Breakdown
@@ -98,7 +110,8 @@ struct RoundResultsView: View {
     private var scoreBreakdown: some View {
         VStack(spacing: 12) {
             Text("Score")
-                .font(AppTheme.Typography.cardTitle)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             HStack {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
@@ -127,23 +140,24 @@ struct RoundResultsView: View {
                         )
                     }
 
-                    Divider()
+                    Rectangle()
+                        .fill(AppTheme.Retro.ink.opacity(0.25))
+                        .frame(height: 1.5)
 
                     HStack {
                         Text("Round Score")
-                            .fontWeight(.bold)
+                            .foregroundColor(AppTheme.Retro.panelText)
                         Spacer()
                         Text("\(viewModel.roundState.currentScore)")
-                            .fontWeight(.bold)
-                            .foregroundStyle(GameTheme.castingDirector.accentColor)
+                            .foregroundColor(AppTheme.Retro.panelText)
+                            .monospacedDigit()
                     }
-                    .font(AppTheme.Typography.subsectionHeader)
+                    .font(AppTheme.Retro.Typography.heading(17))
                 }
             }
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
+        .frame(maxWidth: .infinity)
+        .retroCard()
     }
 
     // MARK: - Clue Summary
@@ -151,7 +165,8 @@ struct RoundResultsView: View {
     private var clueSummary: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("All Clues")
-                .font(AppTheme.Typography.cardTitle)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             VStack(spacing: 6) {
                 ForEach(viewModel.roundState.revealedClues) { clue in
@@ -159,18 +174,19 @@ struct RoundResultsView: View {
                         Text("\(clue.orderNumber)")
                             .font(AppTheme.Typography.tabLabel)
                             .fontWeight(.bold)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(CastingDirectorStyle.chipTextColor(on: CastingDirectorStyle.tierColor(clue.tier)))
                             .frame(width: 20, height: 20)
-                            .background(tierColor(clue.tier))
-                            .clipShape(Circle())
+                            .background(Circle().fill(CastingDirectorStyle.tierColor(clue.tier)))
+                            .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
 
                         Image(systemName: clue.type.icon)
                             .font(AppTheme.Typography.caption)
-                            .foregroundStyle(tierColor(clue.tier))
+                            .foregroundStyle(AppTheme.Retro.panelText.opacity(0.7))
                             .frame(width: 16)
 
                         Text(clue.text)
                             .font(AppTheme.Typography.secondary)
+                            .foregroundColor(AppTheme.Retro.panelText)
                             .lineLimit(2)
 
                         Spacer()
@@ -179,49 +195,28 @@ struct RoundResultsView: View {
                 }
             }
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .retroCard()
     }
 
     // MARK: - Action Buttons
 
     private var actionButtons: some View {
         VStack(spacing: 12) {
-            Button {
+            RetroPrimaryButton(
+                title: viewModel.currentRound >= viewModel.numberOfRounds ? "See Final Results" : "Next Round",
+                icon: "arrow.right",
+                accent: CastingDirectorStyle.accent
+            ) {
                 viewModel.nextRound()
-            } label: {
-                HStack {
-                    Image(systemName: "arrow.right.circle.fill")
-                    Text(viewModel.currentRound >= viewModel.numberOfRounds ? "See Final Results" : "Next Round")
-                }
-                .font(AppTheme.Typography.subsectionHeader)
-                .fontWeight(.semibold)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(GameTheme.castingDirector.accentColor)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
             }
 
-            Button {
+            RetroPrimaryButton(title: "Back to Setup", icon: "gearshape",
+                               accent: AppTheme.Retro.panel) {
                 viewModel.returnToSetup()
-            } label: {
-                Text("Back to Setup")
-                    .font(AppTheme.Typography.secondary)
-                    .foregroundStyle(.secondary)
             }
         }
         .padding(.top)
-    }
-
-    private func tierColor(_ tier: ClueTier) -> Color {
-        switch tier {
-        case .vague: return AppTheme.skyBlue
-        case .narrowing: return AppTheme.forestGreen
-        case .strongSignal: return AppTheme.warmGold
-        case .giveaway: return AppTheme.coralRed
-        }
     }
 }
 
@@ -236,12 +231,12 @@ struct ScoreRow: View {
         HStack {
             Text(label)
                 .font(AppTheme.Typography.secondary)
-                .foregroundStyle(.secondary)
+                .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
             Spacer()
             Text(value)
                 .font(AppTheme.Typography.secondary)
                 .monospacedDigit()
-                .foregroundStyle(isNegative ? AppTheme.error : .primary)
+                .foregroundColor(isNegative ? CastingDirectorStyle.errorColor : AppTheme.Retro.panelText)
         }
     }
 }

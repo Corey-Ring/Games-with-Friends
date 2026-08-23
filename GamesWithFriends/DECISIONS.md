@@ -28,6 +28,14 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-08-23 — Retro phase 4: Border Blitz, VibeCheck, Finish the Line, Casting Director migrated [migration]
+
+**What:** Four games in one pass — Border Blitz (poolBlue, Opus agent), VibeCheck base + Competition (berry, Opus agent, 15 screens + shared `VibeCheckHeader`/badges), Finish the Line (plum, Opus agent), Casting Director (tangerine, Fable-direct, clue-tier ramp cornflower→grass→mustard→tomato). 8/9 games done; only Border Hop remains (deliberately skipped per Corey).
+
+**Why / notable calls:** Plum games route every plum fill through `chipTextColor` → cream (§8). Speech-game screens (Border Blitz gameplay, FTL gameplay) use plain ground — no motifs behind live waveforms; waveforms/silhouettes recolored only, math untouched. VibeCheck scoring zones went opaque (were stacked opacities ≈ gradient, §2). Casting Director clue chips: cream tiles, tier rides the order badge + latest-clue stroke; bottom bar rebuilt compact after fixedSize overflow found on-simulator.
+
+**Gotchas / flagged, not fixed:** VibeCheck base-mode screens (PromptEntry/PassDevice/TeamGuessing/Reveal/Scoreboard/GameOver) are UNREACHABLE in 1.0 — both root views drive the Competition VM; migrated anyway for the 1.1 Classic revival but only Competition was screenshot-verified. VibeCheck has zero accessibility modifiers anywhere (incl. the spectrum slider — no adjustable action); phase-5 item. Border Blitz `hard` (35s, no letters) vs `expert` (25s, letters) ordering oddity; `BorderBlitzGame.swift` root background swapped to retro ground (2-line out-of-scope fix, flagged by agent). `simctl privacy grant microphone` kills the running app — reinstall/relaunch after granting.
+
 ## 2026-08-23 — Retro phase 4: Name 5 + Movie Chain migrated [migration]
 
 **What:** Name 5 (Opus agent, four screens, `Name5Style.swift` + `Name5StatusBadge`/`Name5DifficultyChip`) and Movie Chain (Fable-direct, five screens, `MovieChainStyle.swift` + shared `ChainNodeDisc`). Accents: lilac and tomato. GameTheme entries remapped. 5/9 games done.
