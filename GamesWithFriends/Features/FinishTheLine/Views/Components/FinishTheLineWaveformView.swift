@@ -6,8 +6,11 @@
 import SwiftUI
 
 /// Audio-level waveform rendered beneath the quote card. Mirrors the shape of
-/// Border Blitz's waveform but with slightly fatter bars and a spotlight glow
-/// to match Finish the Line's stage aesthetic.
+/// Border Blitz's waveform but with slightly fatter bars.
+///
+/// Retro treatment is color only: flat accent fills with an ink outline
+/// (Rule 1) replace the gradient bars and the soft glow (Rule 2 / §9). The
+/// bar count, envelope, amplitude math and spring animation are unchanged.
 struct FinishTheLineWaveformView: View {
     let audioLevel: Float
     let isListening: Bool
@@ -25,19 +28,16 @@ struct FinishTheLineWaveformView: View {
                 let height = minHeight + (maxHeight - minHeight) * effectiveLevel
 
                 RoundedRectangle(cornerRadius: 3)
-                    .fill(
-                        LinearGradient(
-                            colors: [accentColor, accentColor.opacity(0.55)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
+                    .fill(isListening ? accentColor : AppTheme.Retro.panel)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 3)
+                            .stroke(AppTheme.Retro.ink, lineWidth: 1.5)
                     )
-                    .frame(width: 6, height: height)
+                    .frame(width: 8, height: height)
                     .animation(.spring(response: 0.18, dampingFraction: 0.7), value: audioLevel)
             }
         }
         .frame(height: maxHeight)
-        .shadow(color: accentColor.opacity(isListening ? 0.35 : 0), radius: 10, x: 0, y: 0)
         .accessibilityElement()
         .accessibilityLabel(isListening ? "Microphone active" : "Microphone inactive")
     }

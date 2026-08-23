@@ -9,15 +9,21 @@ struct FinishTheLineResultsView: View {
     @Bindable var viewModel: FinishTheLineViewModel
     @Environment(\.dismiss) private var dismiss
 
-    private let theme = GameTheme.finishTheLine
-
     private var isNewBest: Bool {
         viewModel.score > 0 && viewModel.score >= viewModel.personalBest
     }
 
     var body: some View {
         ZStack {
-            GameBackground(gameTheme: theme)
+            GeometryReader { geo in
+                // Scrolling result column runs the full width; motifs keep to
+                // the nav strip and the outer gutters (§7).
+                MotifGroundView(seed: 0xFA11_0E03,
+                                exclusions: [CGRect(x: 8, y: 56,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 56)])
+            }
+            .ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: AppTheme.Spacing.lg) {
@@ -33,8 +39,8 @@ struct FinishTheLineResultsView: View {
                     if !viewModel.correctQuotes.isEmpty {
                         playedSection(
                             title: "Nailed it",
-                            systemImage: "checkmark.seal.fill",
-                            tint: AppTheme.success,
+                            systemImage: "checkmark",
+                            tint: FinishTheLineStyle.correctColor,
                             quotes: viewModel.correctQuotes
                         )
                         .staggeredAppear(index: 3)
@@ -44,7 +50,7 @@ struct FinishTheLineResultsView: View {
                         playedSection(
                             title: "Skipped",
                             systemImage: "forward.fill",
-                            tint: AppTheme.warning,
+                            tint: FinishTheLineStyle.skippedColor,
                             quotes: viewModel.skippedQuotes
                         )
                         .staggeredAppear(index: 4)
@@ -71,31 +77,24 @@ struct FinishTheLineResultsView: View {
                     Text("NEW PERSONAL BEST")
                         .tracking(2)
                 }
-                .font(AppTheme.Typography.footnote.weight(.bold))
-                .foregroundColor(.white)
-                .padding(.horizontal, AppTheme.Spacing.md)
-                .padding(.vertical, AppTheme.Spacing.xs)
-                .background(
-                    Capsule().fill(
-                        LinearGradient(
-                            colors: [AppTheme.medalGold, AppTheme.warmGold],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                )
+                .font(AppTheme.Retro.Typography.pillLabel)
+                // Mustard metal, ink label (§8 — ink passes on mustard); the
+                // gold gradient is retired (§9).
+                .foregroundColor(FinishTheLineStyle.chipTextColor(on: FinishTheLineStyle.bestColor))
+                .retroLozenge(FinishTheLineStyle.bestColor)
                 .transition(.scale.combined(with: .opacity))
             }
 
-            Text(headline)
-                .font(AppTheme.Typography.hero)
-                .foregroundColor(AppTheme.deepCharcoal)
-                .multilineTextAlignment(.center)
+            FinishTheLineSpotPlate()
+
+            FinishTheLineTitlePanel(text: headline)
 
             Text(subhead)
                 .font(AppTheme.Typography.body)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.panelText)
                 .multilineTextAlignment(.center)
+                .retroLozenge()
+                .rotationEffect(.degrees(0.8))
         }
         .padding(.top, AppTheme.Spacing.sm)
     }
@@ -127,24 +126,27 @@ struct FinishTheLineResultsView: View {
     private var scoreCard: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Text("FINAL SCORE")
-                .font(AppTheme.Typography.caption.weight(.bold))
+                .font(AppTheme.Retro.Typography.pillLabel)
                 .tracking(2)
-                .foregroundColor(theme.accentColor)
+                .foregroundColor(AppTheme.Retro.cocoa)
 
+            // Big Lilita numeral, ink on cream — the count is reading matter,
+            // so it stays on the panel rather than a saturated fill (§8).
             AnimatedScoreText(
                 targetScore: viewModel.score,
-                color: theme.accentColor,
-                font: .system(size: 72, weight: .heavy, design: .rounded)
+                color: AppTheme.Retro.panelText,
+                font: AppTheme.Retro.Typography.heading(72, relativeTo: .largeTitle)
             )
             .accessibilityLabel("Final score: \(viewModel.score) points")
 
             Text(multiplierLabel)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.cocoa)
+                .multilineTextAlignment(.center)
         }
         .padding(.vertical, AppTheme.Spacing.md)
         .frame(maxWidth: .infinity)
-        .gameCard()
+        .retroCard()
     }
 
     private var multiplierLabel: String {
@@ -157,22 +159,22 @@ struct FinishTheLineResultsView: View {
     private var statsGrid: some View {
         HStack(spacing: AppTheme.Spacing.sm) {
             StatTile(
-                icon: "checkmark.circle.fill",
-                iconColor: AppTheme.success,
+                icon: "checkmark",
+                iconColor: FinishTheLineStyle.correctColor,
                 value: "\(viewModel.correctQuotes.count)",
                 label: "Correct"
             )
 
             StatTile(
                 icon: "flame.fill",
-                iconColor: AppTheme.brandOrange,
+                iconColor: FinishTheLineStyle.streakOnFireColor,
                 value: "\(viewModel.bestStreak)",
                 label: "Best streak"
             )
 
             StatTile(
                 icon: "forward.fill",
-                iconColor: AppTheme.warning,
+                iconColor: FinishTheLineStyle.skippedColor,
                 value: "\(viewModel.skippedQuotes.count)",
                 label: "Skipped"
             )
@@ -189,15 +191,13 @@ struct FinishTheLineResultsView: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             HStack(spacing: AppTheme.Spacing.xs) {
-                Image(systemName: systemImage)
-                    .font(.caption)
-                    .foregroundColor(tint)
+                FinishTheLineStatusDisc(systemImage: systemImage, color: tint, diameter: 24)
                 Text(title)
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText)
                 Text("• \(quotes.count)")
                     .font(AppTheme.Typography.detail)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .foregroundColor(AppTheme.Retro.cocoa)
             }
 
             VStack(spacing: AppTheme.Spacing.xs) {
@@ -206,24 +206,27 @@ struct FinishTheLineResultsView: View {
                 }
             }
         }
-        .gameCard()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .retroCard()
     }
 
     private func playedRow(quote: Quote, accent: Color) -> some View {
         HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
-            RoundedRectangle(cornerRadius: 3)
-                .fill(accent.opacity(0.6))
-                .frame(width: 3)
+            // Outlined rule instead of a 60%-opacity tint bar (Rule 1).
+            Capsule()
+                .fill(accent)
+                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
+                .frame(width: 5)
 
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text("\u{201C}\(quote.fullLine)\u{201D}")
                     .font(AppTheme.Typography.body.weight(.medium))
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .foregroundColor(AppTheme.Retro.panelText)
                     .fixedSize(horizontal: false, vertical: true)
 
                 Text(quote.source)
                     .font(AppTheme.Typography.caption.italic())
-                    .foregroundColor(AppTheme.mediumGray)
+                    .foregroundColor(AppTheme.Retro.cocoa)
             }
             Spacer(minLength: 0)
         }
@@ -234,19 +237,30 @@ struct FinishTheLineResultsView: View {
 
     private var actionButtons: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
-            PrimaryButton(title: "Play Again", icon: "arrow.clockwise") {
+            RetroPrimaryButton(
+                title: "Play Again",
+                icon: "arrow.clockwise",
+                accent: FinishTheLineStyle.accent,
+                textColor: FinishTheLineStyle.chipTextColor(on: FinishTheLineStyle.accent)
+            ) {
                 viewModel.playAgain()
             }
 
-            SecondaryButton(title: "Pass the Phone", icon: "person.2.fill") {
+            RetroPrimaryButton(
+                title: "Pass the Phone",
+                icon: "person.2.fill",
+                accent: AppTheme.Retro.panel,
+                textColor: AppTheme.Retro.panelText
+            ) {
                 viewModel.passPhone()
             }
 
             if viewModel.score > 0 {
                 Text(verbatim: "Pass the phone and \(viewModel.score) becomes the score to beat.")
                     .font(AppTheme.Typography.caption)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .foregroundColor(AppTheme.Retro.panelText)
                     .multilineTextAlignment(.center)
+                    .retroLozenge()
             }
         }
     }
@@ -262,23 +276,21 @@ private struct StatTile: View {
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.xs) {
-            Image(systemName: icon)
-                .font(.system(size: 20, weight: .bold))
-                .foregroundColor(iconColor)
+            FinishTheLineStatusDisc(systemImage: icon, color: iconColor)
 
             Text(value)
-                .font(.system(size: 26, weight: .heavy, design: .rounded))
-                .foregroundColor(AppTheme.deepCharcoal)
+                .font(AppTheme.Retro.Typography.heading(26, relativeTo: .title2))
+                .foregroundColor(AppTheme.Retro.panelText)
                 .monospacedDigit()
 
             Text(label)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.cocoa)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, AppTheme.Spacing.md)
-        .gameCard()
+        .padding(.vertical, AppTheme.Spacing.sm)
+        .retroCard()
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(label): \(value)")
     }

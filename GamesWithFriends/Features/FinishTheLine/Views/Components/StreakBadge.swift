@@ -7,7 +7,12 @@ import SwiftUI
 
 /// Streak indicator that pops into view once the player has a streak of 2+.
 /// Scales briefly when the streak increments. At 5+ the streak is On Fire:
-/// the badge saturates, glows, and every correct answer buys time back.
+/// the badge steps from mustard to tangerine and every correct answer buys
+/// time back.
+///
+/// Retro treatment: an ink-outlined candy chip with a hard offset shadow.
+/// Both fills take ink labels (§8 — ink passes on mustard and tangerine), so
+/// the number never needs its own lozenge. Show/hide and bump logic unchanged.
 struct StreakBadge: View {
     let streak: Int
     var isOnFire: Bool = false
@@ -19,38 +24,27 @@ struct StreakBadge: View {
         HStack(spacing: AppTheme.Spacing.xs) {
             Image(systemName: "flame.fill")
                 .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(flameStyle)
 
             Text("\(streak)")
-                .font(.system(size: 16, weight: .heavy, design: .rounded))
-                .foregroundColor(isOnFire ? .white : AppTheme.brandOrange)
+                .font(AppTheme.Retro.Typography.heading(16, relativeTo: .headline))
                 .monospacedDigit()
                 .contentTransition(.numericText())
 
             if isOnFire {
                 Text("ON FIRE")
-                    .font(AppTheme.Typography.pillLabel)
+                    .font(AppTheme.Retro.Typography.pillLabel)
                     .tracking(1.2)
-                    .foregroundColor(.white)
                     .transition(.scale.combined(with: .opacity))
             }
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.vertical, AppTheme.Spacing.xs)
+        .foregroundColor(FinishTheLineStyle.chipTextColor(on: chipFill))
+        .retroLozenge(chipFill)
         .background(
-            Capsule().fill(backgroundStyle)
-        )
-        .overlay(
             Capsule()
-                .stroke(AppTheme.brandOrange.opacity(isOnFire ? 0 : 0.35), lineWidth: 1)
+                .fill(AppTheme.Retro.ink)
+                .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
         )
         .scaleEffect(bumpScale)
-        .shadow(
-            color: AppTheme.brandOrange.opacity(isOnFire ? 0.5 : 0.25),
-            radius: isOnFire ? 10 : 6,
-            x: 0,
-            y: 2
-        )
         .animation(.spring(response: 0.35, dampingFraction: 0.7), value: isOnFire)
         .onChange(of: streak) { _, _ in
             guard !reduceMotion else { return }
@@ -64,29 +58,9 @@ struct StreakBadge: View {
         .accessibilityLabel(isOnFire ? "On fire! Streak of \(streak). Correct answers add time." : "Streak of \(streak)")
     }
 
-    private var flameStyle: AnyShapeStyle {
-        if isOnFire {
-            return AnyShapeStyle(Color.white)
-        }
-        return AnyShapeStyle(
-            LinearGradient(
-                colors: [AppTheme.warning, AppTheme.brandOrange],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
-    }
-
-    private var backgroundStyle: AnyShapeStyle {
-        if isOnFire {
-            return AnyShapeStyle(
-                LinearGradient(
-                    colors: [AppTheme.warning, AppTheme.brandOrange],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        }
-        return AnyShapeStyle(AppTheme.brandOrange.opacity(0.12))
+    /// Mustard while warming up, tangerine once On Fire — the same "hot
+    /// streak" family, stepped rather than glowed (soft glows retired, §9).
+    private var chipFill: Color {
+        isOnFire ? FinishTheLineStyle.streakOnFireColor : FinishTheLineStyle.streakColor
     }
 }

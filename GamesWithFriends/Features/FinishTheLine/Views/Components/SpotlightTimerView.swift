@@ -6,9 +6,14 @@
 import SwiftUI
 
 /// Round timer that transitions through color states as time runs out.
-/// - Normal (>30s): accent color
-/// - Caution (11-30s): warning orange
-/// - Danger (<=10s): error red, with a gentle pulse
+/// - Normal (>30s): accent color (plum)
+/// - Caution (11-30s): tangerine
+/// - Danger (<=10s): tomato, with a gentle pulse
+///
+/// Retro treatment only: the dial rides a cream plate with an ink rule and the
+/// numerals read ink-on-cream until the urgent stop. The `progress` math, the
+/// trim/rotation animation, the pulse trigger and the three thresholds are
+/// unchanged.
 struct SpotlightTimerView: View {
     let timeRemaining: TimeInterval
     let totalDuration: TimeInterval
@@ -29,24 +34,42 @@ struct SpotlightTimerView: View {
         return max(0, min(1, timeRemaining / totalDuration))
     }
 
+    /// Arc color for the current stop — same thresholds as before, candy hues.
     private var displayColor: Color {
         if timeRemaining <= 10 {
-            return AppTheme.error
+            return FinishTheLineStyle.timerUrgentArc
         } else if timeRemaining <= 30 {
-            return AppTheme.warning
+            return FinishTheLineStyle.timerCautionArc
         } else {
             return accentColor
         }
     }
 
+    /// Numerals stay ink-on-cream until the urgent stop turns them tomato
+    /// (§3 recipe) — same trigger, no new condition.
+    private var numeralColor: Color {
+        timeRemaining <= 10 ? FinishTheLineStyle.timerUrgentArc : FinishTheLineStyle.timerCalmText
+    }
+
     var body: some View {
         HStack(spacing: AppTheme.Spacing.sm) {
             ZStack {
+                // Cream dial plate with an ink rule.
                 Circle()
-                    .stroke(displayColor.opacity(0.18), lineWidth: 3)
+                    .fill(AppTheme.Retro.panel)
+                    .frame(width: 36, height: 36)
+                Circle()
+                    .stroke(AppTheme.Retro.ink, lineWidth: 2)
+                    .frame(width: 36, height: 36)
+
+                // Unfilled track: ink at 15% (§4 gotcha 6).
+                Circle()
+                    .inset(by: 3)
+                    .stroke(AppTheme.Retro.ink.opacity(0.15), lineWidth: 3)
                     .frame(width: 36, height: 36)
 
                 Circle()
+                    .inset(by: 3)
                     .trim(from: 0, to: progress)
                     .stroke(
                         displayColor,
@@ -57,8 +80,8 @@ struct SpotlightTimerView: View {
                     .animation(.linear(duration: 0.1), value: progress)
 
                 Image(systemName: "timer")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(displayColor)
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(numeralColor)
             }
             .scaleEffect(pulse && timeRemaining <= 10 && !reduceMotion ? 1.08 : 1.0)
             .animation(
@@ -67,21 +90,20 @@ struct SpotlightTimerView: View {
             )
 
             Text(String(format: "%02d", seconds))
-                .font(.system(size: 28, weight: .heavy, design: .rounded))
-                .foregroundColor(displayColor)
+                .font(AppTheme.Retro.Typography.heading(28, relativeTo: .title))
+                .foregroundColor(numeralColor)
                 .monospacedDigit()
                 .contentTransition(.numericText())
                 .animation(.easeOut(duration: 0.2), value: seconds)
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.sm)
         .padding(.vertical, AppTheme.Spacing.xs)
+        .background(Capsule().fill(AppTheme.Retro.panel))
+        .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth))
         .background(
             Capsule()
-                .fill(displayColor.opacity(0.1))
-        )
-        .overlay(
-            Capsule()
-                .stroke(displayColor.opacity(0.25), lineWidth: 1)
+                .fill(AppTheme.Retro.ink)
+                .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
         )
         .onAppear {
             pulse = true
