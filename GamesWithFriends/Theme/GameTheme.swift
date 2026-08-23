@@ -11,7 +11,9 @@ struct GameTheme {
     var darkAccent: Color { accentColor.opacity(0.85) }
 
     // MARK: - Pre-built Themes
-    static let conversationStarters = GameTheme(accentColor: AppTheme.softMauve, name: "Conversation Starters", iconName: "bubble.left.and.bubble.right.fill")
+    // Retro-migrated (phase-4 pilot): candy accent per ART_DIRECTION §3.2.
+    // Remaining games keep their muted accents until their migration lands.
+    static let conversationStarters = GameTheme(accentColor: AppTheme.Retro.bubblegum, name: "Conversation Starters", iconName: "bubble.left.and.bubble.right.fill")
     static let countryLetter = GameTheme(accentColor: AppTheme.forestGreen, name: "Country Letter Challenge", iconName: "globe.americas.fill")
     static let name5 = GameTheme(accentColor: AppTheme.electricIndigo, name: "Name 5", iconName: "hand.raised.fingers.spread.fill")
     static let borderBlitz = GameTheme(accentColor: AppTheme.tealGreen, name: "Border Blitz", iconName: "map.fill")

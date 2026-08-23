@@ -92,6 +92,7 @@
 		F10000010000000000000016 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000016 /* GameView.swift */; };
 		F10000010000000000000017 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000017 /* HomeView.swift */; };
 		F10000010000000000000018 /* SavedStartersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000018 /* SavedStartersView.swift */; };
+		F100000100000000000000C5 /* ConversationStartersStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C5 /* ConversationStartersStyle.swift */; };
 		F10000010000000000000019 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000019 /* SettingsView.swift */; };
 		F10000010000000000000020 /* CountryLetterGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000020 /* CountryLetterGame.swift */; };
 		F10000010000000000000021 /* CountriesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000021 /* CountriesData.swift */; };
@@ -277,6 +278,7 @@
 		F20000010000000000000016 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		F20000010000000000000017 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		F20000010000000000000018 /* SavedStartersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStartersView.swift; sourceTree = "<group>"; };
+		F200000100000000000000C5 /* ConversationStartersStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationStartersStyle.swift; sourceTree = "<group>"; };
 		F20000010000000000000019 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F20000010000000000000020 /* CountryLetterGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryLetterGame.swift; sourceTree = "<group>"; };
 		F20000010000000000000021 /* CountriesData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountriesData.swift; sourceTree = "<group>"; };
@@ -789,6 +791,7 @@
 				F20000010000000000000017 /* HomeView.swift */,
 				F20000010000000000000018 /* SavedStartersView.swift */,
 				F20000010000000000000019 /* SettingsView.swift */,
+				F200000100000000000000C5 /* ConversationStartersStyle.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1289,6 +1292,7 @@
 				F10000010000000000000016 /* GameView.swift in Sources */,
 				F10000010000000000000017 /* HomeView.swift in Sources */,
 				F10000010000000000000018 /* SavedStartersView.swift in Sources */,
+				F100000100000000000000C5 /* ConversationStartersStyle.swift in Sources */,
 				F10000010000000000000019 /* SettingsView.swift in Sources */,
 				F10000010000000000000020 /* CountryLetterGame.swift in Sources */,
 				F10000010000000000000021 /* CountriesData.swift in Sources */,
