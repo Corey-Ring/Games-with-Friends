@@ -58,31 +58,27 @@ struct GameHubView: View {
 
 private struct RetroHubHeader: View {
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 2) {
             Text("GAMES")
                 .font(AppTheme.Retro.Typography.logo)
-                .foregroundColor(.white)
-                .shadow(color: AppTheme.Retro.tomato, radius: 0, x: 3, y: 3)
-                .padding(.horizontal, AppTheme.Spacing.lg)
-                .padding(.vertical, AppTheme.Spacing.xs)
-                .retroPanel(AppTheme.Retro.bubblegum)
-                .background(
-                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
-                        .fill(AppTheme.Retro.ink)
-                        .offset(x: AppTheme.Retro.shadowOffset,
-                                y: AppTheme.Retro.shadowOffset)
-                )
-                .rotationEffect(.degrees(-1.5))
-
-            // Tomato on cream ≈ 3.2:1 — passes as large text (20px heavy face).
-            Text("with friends")
-                .font(AppTheme.Retro.Typography.heading(15, relativeTo: .subheadline))
-                .foregroundColor(AppTheme.Retro.tomato)
-                .retroLozenge()
-                .rotationEffect(.degrees(1))
+                .shadow(color: AppTheme.Retro.bubblegum, radius: 0, x: 3, y: 3)
+            Text("for friends")
+                .font(AppTheme.Retro.Typography.display(18, relativeTo: .title3))
+                .shadow(color: AppTheme.Retro.bubblegum, radius: 0, x: 2, y: 2)
         }
+        .foregroundColor(.white)
+        .padding(.horizontal, AppTheme.Spacing.lg)
+        .padding(.vertical, AppTheme.Spacing.sm)
+        .retroPanel(AppTheme.Retro.tomato)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                .fill(AppTheme.Retro.ink)
+                .offset(x: AppTheme.Retro.shadowOffset,
+                        y: AppTheme.Retro.shadowOffset)
+        )
+        .rotationEffect(.degrees(-1.5))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Games with Friends")
+        .accessibilityLabel("Games for friends")
     }
 }
 
