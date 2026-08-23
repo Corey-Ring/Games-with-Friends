@@ -62,8 +62,15 @@ final class RetroThemeTests: XCTestCase {
         let size = CGSize(width: 390, height: 844)
         let motifs = MotifFieldLayout.generate(seed: 7, size: size)
         for m in motifs {
-            XCTAssertTrue(m.position.x >= 0 && m.position.x <= size.width)
-            XCTAssertTrue(m.position.y >= 0 && m.position.y <= size.height)
+            // The whole drawing must fit on screen, not just the center:
+            // renderers reach up to maxExtentRatio × size from the center
+            // (sparkle spikes, squiggle arms), so edge motifs get sliced
+            // by the device bezel otherwise.
+            let margin = m.size * MotifFieldLayout.maxExtentRatio
+            XCTAssertTrue(m.position.x >= margin && m.position.x <= size.width - margin,
+                          "motif at \(m.position) (size \(m.size)) would be clipped horizontally")
+            XCTAssertTrue(m.position.y >= margin && m.position.y <= size.height - margin,
+                          "motif at \(m.position) (size \(m.size)) would be clipped vertically")
             XCTAssertTrue((4...18).contains(m.size), "motif sizes are 4–18pt per §7")
         }
         // ~1 per 90×90 cell: 5 cols × 10 rows = 50 cells at density 1

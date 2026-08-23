@@ -36,6 +36,10 @@ enum MotifFieldLayout {
     static let clearance: CGFloat = 12
     static let sizeRange: ClosedRange<CGFloat> = 4...18
     static let paletteSlots = 4
+    /// Renderers draw up to this fraction of `size` from the motif center
+    /// (sparkle spikes 0.7, squiggle arms 0.8), so centers stay this far
+    /// inside the field to keep whole motifs on screen.
+    static let maxExtentRatio: CGFloat = 0.8
 
     static func generate(seed: UInt64,
                          size: CGSize,
@@ -53,15 +57,21 @@ enum MotifFieldLayout {
                 // Draw every random even for skipped cells so density changes
                 // don't reshuffle the surviving motifs' appearance.
                 let roll = CGFloat.random(in: 0..<1, using: &rng)
-                let x = min(size.width, CGFloat(col) * cellSide + CGFloat.random(in: 0...cellSide, using: &rng))
-                let y = min(size.height, CGFloat(row) * cellSide + CGFloat.random(in: 0...cellSide, using: &rng))
+                let rawX = CGFloat(col) * cellSide + CGFloat.random(in: 0...cellSide, using: &rng)
+                let rawY = CGFloat(row) * cellSide + CGFloat.random(in: 0...cellSide, using: &rng)
                 let kind = Motif.Kind.allCases.randomElement(using: &rng) ?? .dot
                 let motifSize = CGFloat.random(in: sizeRange, using: &rng)
                 let colorIndex = Int.random(in: 0..<paletteSlots, using: &rng)
                 let rotation = Double.random(in: -20...20, using: &rng)
 
                 if roll >= density { continue }
-                let point = CGPoint(x: x, y: y)
+                // Inset by the motif's drawn extent so the whole shape stays
+                // on screen — edge sparkles were getting sliced by the bezel.
+                let margin = motifSize * maxExtentRatio
+                let point = CGPoint(
+                    x: min(max(rawX, margin), max(margin, size.width - margin)),
+                    y: min(max(rawY, margin), max(margin, size.height - margin))
+                )
                 if padded.contains(where: { $0.contains(point) }) { continue }
                 motifs.append(Motif(kind: kind, position: point, size: motifSize,
                                     colorIndex: colorIndex, rotationDegrees: rotation))
