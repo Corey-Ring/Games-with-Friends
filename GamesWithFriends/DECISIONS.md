@@ -28,6 +28,14 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-08-23 — Retro phase 4: Name 5 + Movie Chain migrated [migration]
+
+**What:** Name 5 (Opus agent, four screens, `Name5Style.swift` + `Name5StatusBadge`/`Name5DifficultyChip`) and Movie Chain (Fable-direct, five screens, `MovieChainStyle.swift` + shared `ChainNodeDisc`). Accents: lilac and tomato. GameTheme entries remapped. 5/9 games done.
+
+**Why / deviations:** Name 5 keeps its circular timer dial (re-tinted grass→tangerine→tomato on the view model's existing stops, math untouched) on a cream plate; difficulty ramp rides on stars inside cream lozenges rather than pill fills (§8). Movie Chain's chain rhythm is carried by node color (movie=tomato, actor=cornflower ink-outlined discs); the keyboard/search screen uses plain ground with hard ink rules instead of motifs + soft edge shadows; calm timer text is ink (grass-on-cream ~2.7:1), turning tangerine/tomato at the existing thresholds; medals are mustard/cornflower/cocoa with §8-correct glyph colors.
+
+**Gotchas / flagged, not fixed:** Movie Chain actor search rows show raw IMDb ids as the subtitle (pre-existing data presentation). Name 5: dead `dismiss` binding in Name5GameView, unread `isRunning` param in TimerView, `Name5ViewModel.timerColor` returns retired palette colors from the VM layer (layering smell; remap lives in the style file) — all pre-existing, untouched. Concurrent pbxproj edits by two agents coordinated by distinct ID suffixes (C7/C8).
+
 ## 2026-08-23 — Retro phase 4: Country Letter Challenge migrated [migration]
 
 **What:** All three Country Letter screens (letter select, gameplay, results) migrated to the retro look via an Opus agent following `RETRO_MIGRATION_PLAYBOOK.md`; new `CountryLetterStyle.swift` remaps the retired semantic palette (success→grass, error→tomato, neutral/missed→cornflower, give-up→tangerine) and adds the shared `CountryStatusBadge` ink-outlined status disc. `GameTheme.countryLetter` accent → grass.

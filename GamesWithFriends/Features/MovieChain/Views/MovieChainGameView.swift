@@ -5,7 +5,6 @@ struct MovieChainGameView: View {
     @ObservedObject var viewModel: MovieChainViewModel
     @FocusState private var isSearchFocused: Bool
     @State private var showingDatabaseInfo = false
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,17 +35,18 @@ struct MovieChainGameView: View {
                     viewModel.returnToSetup()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(AppTheme.mediumGray)
+                        .foregroundStyle(AppTheme.Retro.panelText.opacity(0.6))
                 }
                 .accessibilityLabel("Exit game")
 
                 Circle()
                     .fill(viewModel.currentPlayer.color)
+                    .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
                     .frame(width: 16, height: 16)
 
                 Text(viewModel.currentPlayer.name)
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(.primary)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText)
                     .lineLimit(1)
 
                 Spacer()
@@ -55,8 +55,8 @@ struct MovieChainGameView: View {
                     Button("Give Up") {
                         viewModel.giveUp()
                     }
-                    .font(AppTheme.Typography.caption)
-                    .foregroundStyle(GameTheme.movieChain.accentColor)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .foregroundStyle(MovieChainStyle.accent)
                 }
 
                 // Timer or lives display
@@ -83,13 +83,14 @@ struct MovieChainGameView: View {
             }
         }
         .padding(AppTheme.Spacing.md)
-        .background(AppTheme.cardSurface)
-        .shadow(
-            color: colorScheme == .dark ? Color.white.opacity(0.04) : AppTheme.Shadow.cardColor,
-            radius: AppTheme.Shadow.cardRadius,
-            x: AppTheme.Shadow.cardX,
-            y: AppTheme.Shadow.cardY
-        )
+        // Cream strip with a hard ink rule under it (§2 rule 2 — no soft
+        // shadows), separating the chrome from the chain scroll.
+        .background(AppTheme.Retro.panel)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(AppTheme.Retro.ink)
+                .frame(height: AppTheme.Retro.strokeWidth)
+        }
     }
 
     private var timerDisplay: some View {
@@ -102,26 +103,26 @@ struct MovieChainGameView: View {
         .foregroundStyle(timerColor)
         .padding(.horizontal, AppTheme.Spacing.md)
         .padding(.vertical, AppTheme.Spacing.xs)
-        .background(timerColor.opacity(0.2))
-        .clipShape(Capsule())
+        .background(Capsule().fill(AppTheme.Retro.panel))
+        .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(viewModel.timeRemaining) seconds remaining")
     }
 
     private var timerColor: Color {
         if viewModel.timeRemaining <= 5 {
-            return AppTheme.error
+            return MovieChainStyle.timerUrgent
         } else if viewModel.timeRemaining <= 10 {
-            return AppTheme.warning
+            return MovieChainStyle.timerWarning
         }
-        return AppTheme.success
+        return MovieChainStyle.timerCalm
     }
 
     private var livesDisplay: some View {
         HStack(spacing: AppTheme.Spacing.xs) {
             ForEach(0..<viewModel.gameMode.defaultLives, id: \.self) { index in
                 Image(systemName: index < viewModel.currentPlayer.lives ? "heart.fill" : "heart")
-                    .foregroundStyle(AppTheme.error)
+                    .foregroundStyle(MovieChainStyle.lives)
             }
         }
     }
@@ -181,8 +182,8 @@ struct MovieChainGameView: View {
             // Prompt (hidden during initial pick — InitialPickView already shows it)
             if !viewModel.isInitialPick {
                 Text(viewModel.currentPrompt)
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(.primary)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
@@ -190,13 +191,15 @@ struct MovieChainGameView: View {
             // Search field
             HStack {
                 Image(systemName: "magnifyingglass")
-                    .foregroundStyle(AppTheme.mediumGray)
+                    .fontWeight(.bold)
+                    .foregroundStyle(AppTheme.Retro.panelText.opacity(0.6))
 
                 TextField(
                     viewModel.isInitialPick ? "Search for an actor or movie..." : viewModel.turnType.searchPlaceholder,
                     text: $viewModel.searchQuery
                 )
                     .textFieldStyle(.plain)
+                    .foregroundColor(AppTheme.Retro.panelText)
                     .focused($isSearchFocused)
                     .autocorrectionDisabled()
 
@@ -205,19 +208,17 @@ struct MovieChainGameView: View {
                         viewModel.clearSearch()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(AppTheme.mediumGray)
+                            .foregroundStyle(AppTheme.Retro.panelText.opacity(0.6))
                     }
                 }
 
                 if viewModel.isSearching {
-                    GameSpinner(color: GameTheme.movieChain.accentColor)
+                    GameSpinner(color: MovieChainStyle.accent)
                         .scaleEffect(0.6)
                 }
             }
             .padding(AppTheme.Spacing.md)
-            .background(AppTheme.pureWhite)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-            .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
+            .retroPanel(AppTheme.Retro.panel, cornerRadius: AppTheme.Retro.Radius.inner)
             .padding(.horizontal)
 
             // Search results
@@ -240,13 +241,20 @@ struct MovieChainGameView: View {
                             : "Not finding a movie?")
                 }
                 .font(AppTheme.Typography.caption)
-                .foregroundStyle(AppTheme.mediumGray)
+                .foregroundStyle(AppTheme.Retro.panelText.opacity(0.7))
             }
             .padding(.top, AppTheme.Spacing.xs)
         }
+        .padding(.top, AppTheme.Spacing.md)
         .padding(.bottom, AppTheme.Spacing.md)
-        .background(AppTheme.warmLinen)
-        .shadow(color: AppTheme.Shadow.topEdgeColor, radius: AppTheme.Shadow.topEdgeRadius, x: 0, y: AppTheme.Shadow.topEdgeY)
+        // Mustard tray behind the input — an ink rule on its top edge in
+        // place of the retired soft top shadow (§2 rule 2).
+        .background(AppTheme.Retro.ground)
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(AppTheme.Retro.ink)
+                .frame(height: AppTheme.Retro.strokeWidth)
+        }
         .alert("Database Limitation", isPresented: $showingDatabaseInfo) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -266,23 +274,24 @@ struct MovieChainGameView: View {
                 }
             }
             .padding(.horizontal)
+            .padding(.top, AppTheme.Retro.shadowOffset)
         }
         .frame(maxHeight: isSearchFocused ? 250 : 200)
     }
 
     private var noResultsView: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
-            Image(systemName: "magnifyingglass")
-                .font(AppTheme.Typography.screenTitle)
-                .foregroundStyle(AppTheme.mediumGray)
+            ChainNodeDisc(systemImage: "magnifyingglass",
+                          color: AppTheme.Retro.panel,
+                          diameter: 44)
 
             Text("No results found")
                 .font(AppTheme.Typography.body)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.panelText)
 
             Text("Try a different spelling")
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray.opacity(0.7))
+                .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
         }
         .padding(AppTheme.Spacing.md)
     }
@@ -294,44 +303,33 @@ struct ChainLinkView: View {
     let link: ChainLink
     let index: Int
 
-    // Same treatment as MiniChainLinkView: deepCharcoal is invisible on darkCard.
-    private var actorCircleColor: Color {
-        AppTheme.actorNodeSurface
-    }
-
     var body: some View {
         HStack(spacing: AppTheme.Spacing.md) {
-            // Icon
-            ZStack {
-                Circle()
-                    .fill(link.isMovie ? GameTheme.movieChain.accentColor : actorCircleColor)
-                    .frame(width: 44, height: 44)
-
-                Image(systemName: link.isMovie ? "film" : "person.fill")
-                    .foregroundStyle(.white)
-            }
+            ChainNodeDisc(
+                systemImage: link.isMovie ? "film" : "person.fill",
+                color: link.isMovie ? MovieChainStyle.movieNode : MovieChainStyle.actorNode
+            )
 
             // Content
             VStack(alignment: .leading, spacing: 2) {
                 Text(link.isMovie ? "MOVIE" : "ACTOR")
-                    .font(AppTheme.Typography.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.6))
 
                 Text(link.displayName)
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(.primary)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText)
 
                 if case .movie(let movie) = link, let year = movie.year {
                     Text(verbatim: "\(year)")
                         .font(AppTheme.Typography.caption)
-                        .foregroundColor(AppTheme.mediumGray)
+                        .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
                 }
             }
 
             Spacer()
         }
-        .gameCard()
+        .retroCard()
     }
 }
 
@@ -342,8 +340,8 @@ struct ChainConnector: View {
         VStack(spacing: 2) {
             ForEach(0..<3) { _ in
                 Circle()
-                    .fill(AppTheme.mediumGray.opacity(0.5))
-                    .frame(width: 4, height: 4)
+                    .fill(AppTheme.Retro.ink)
+                    .frame(width: 5, height: 5)
             }
         }
         .frame(height: 24)
@@ -356,43 +354,33 @@ struct InitialPickView: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             HStack(spacing: AppTheme.Spacing.md) {
-                // Movie icon
-                ZStack {
-                    Circle()
-                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5]))
-                        .foregroundStyle(GameTheme.movieChain.accentColor)
-                        .frame(width: 44, height: 44)
-
-                    Image(systemName: "film")
-                        .foregroundStyle(GameTheme.movieChain.accentColor)
-                }
+                ChainNodeDisc(systemImage: "film",
+                              color: MovieChainStyle.movieNode,
+                              dashed: true)
 
                 Text("or")
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
 
-                // Actor icon
-                ZStack {
-                    Circle()
-                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5]))
-                        .foregroundStyle(.primary)
-                        .frame(width: 44, height: 44)
-
-                    Image(systemName: "person.fill")
-                        .foregroundStyle(.primary)
-                }
+                ChainNodeDisc(systemImage: "person.fill",
+                              color: MovieChainStyle.actorNode,
+                              dashed: true)
             }
 
             Text("Pick an Actor or Movie to begin!")
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundColor(AppTheme.mediumGray)
+                .font(AppTheme.Retro.Typography.cardTitle)
+                .foregroundColor(AppTheme.Retro.panelText)
         }
         .frame(maxWidth: .infinity)
-        .gameCard()
+        .padding(AppTheme.Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                .fill(AppTheme.Retro.panel)
+        )
         .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8]))
-                .foregroundStyle(AppTheme.mediumGray.opacity(0.5))
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                .strokeBorder(AppTheme.Retro.ink,
+                              style: StrokeStyle(lineWidth: AppTheme.Retro.strokeWidth, dash: [8]))
         )
     }
 }
@@ -404,34 +392,32 @@ struct PendingLinkView: View {
 
     var body: some View {
         HStack(spacing: AppTheme.Spacing.md) {
-            ZStack {
-                Circle()
-                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5]))
-                    .foregroundStyle(AppTheme.mediumGray)
-                    .frame(width: 44, height: 44)
-
-                Image(systemName: "questionmark")
-                    .foregroundStyle(AppTheme.mediumGray)
-            }
+            ChainNodeDisc(systemImage: "questionmark",
+                          color: AppTheme.Retro.panel,
+                          dashed: true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(turnType == .movie ? "MOVIE" : "ACTOR")
-                    .font(AppTheme.Typography.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.6))
 
                 Text("Your turn...")
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
             }
 
             Spacer()
         }
-        .gameCard()
+        .frame(maxWidth: .infinity)
+        .padding(AppTheme.Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                .fill(AppTheme.Retro.panel)
+        )
         .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8]))
-                .foregroundStyle(AppTheme.mediumGray.opacity(0.5))
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                .strokeBorder(AppTheme.Retro.ink,
+                              style: StrokeStyle(lineWidth: AppTheme.Retro.strokeWidth, dash: [8]))
         )
     }
 }
@@ -447,31 +433,32 @@ struct PlayerStatusBadge: View {
         HStack(spacing: AppTheme.Spacing.xs) {
             Circle()
                 .fill(player.color)
+                .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1))
                 .frame(width: 12, height: 12)
 
             Text(player.name)
-                .font(AppTheme.Typography.caption)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(AppTheme.Retro.panelText)
                 .lineLimit(1)
 
             if gameMode.hasLives {
                 Text("\(player.lives)")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(AppTheme.error)
+                    .foregroundStyle(MovieChainStyle.lives)
             } else if gameMode.hasScoring {
                 Text("\(player.score)")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(GameTheme.movieChain.accentColor)
+                    .foregroundStyle(AppTheme.Retro.panelText)
             }
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
         .padding(.vertical, AppTheme.Spacing.xs)
-        .background(isCurrentPlayer ? player.color.opacity(0.3) : AppTheme.pureWhite.opacity(0.8))
-        .clipShape(Capsule())
+        .background(Capsule().fill(isCurrentPlayer ? player.color.opacity(0.35) : AppTheme.Retro.panel))
         .overlay(
             Capsule()
-                .stroke(isCurrentPlayer ? player.color : Color.clear, lineWidth: 2)
+                .stroke(AppTheme.Retro.ink,
+                        lineWidth: isCurrentPlayer ? AppTheme.Retro.strokeWidth : 1)
         )
-        .shadow(color: AppTheme.Shadow.cardColor, radius: 2, x: 0, y: 1)
         .opacity(player.isEliminated ? 0.5 : 1.0)
     }
 }
@@ -481,35 +468,26 @@ struct PlayerStatusBadge: View {
 struct SearchResultRow: View {
     let result: SearchResult
     let action: () -> Void
-    @Environment(\.colorScheme) private var colorScheme
-
-    private var actorTint: Color {
-        colorScheme == .dark ? AppTheme.darkMutedText : AppTheme.deepCharcoal
-    }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: AppTheme.Spacing.md) {
-                // Icon
-                ZStack {
-                    Circle()
-                        .fill(isMovie ? GameTheme.movieChain.accentColor.opacity(0.2) : actorTint.opacity(0.2))
-                        .frame(width: 40, height: 40)
-
-                    Image(systemName: isMovie ? "film" : "person.fill")
-                        .foregroundStyle(isMovie ? GameTheme.movieChain.accentColor : actorTint)
-                }
+                ChainNodeDisc(
+                    systemImage: isMovie ? "film" : "person.fill",
+                    color: isMovie ? MovieChainStyle.movieNode : MovieChainStyle.actorNode,
+                    diameter: 40
+                )
 
                 // Content
                 VStack(alignment: .leading, spacing: 2) {
                     Text(result.displayName)
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(.primary)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Retro.panelText)
 
                     if let subtitle = result.subtitle, !subtitle.isEmpty {
                         Text(subtitle)
                             .font(AppTheme.Typography.caption)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
                             .lineLimit(1)
                     }
                 }
@@ -518,16 +496,14 @@ struct SearchResultRow: View {
 
                 Image(systemName: "chevron.right")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(AppTheme.mediumGray)
+                    .fontWeight(.bold)
+                    .foregroundStyle(AppTheme.Retro.panelText.opacity(0.6))
             }
             .padding(.vertical, AppTheme.Spacing.sm)
             .padding(.horizontal, AppTheme.Spacing.md)
-            .background(AppTheme.pureWhite)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
-            .shadow(color: AppTheme.Shadow.cardColor, radius: 2, x: 0, y: 1)
+            .retroPanel(AppTheme.Retro.panel, cornerRadius: AppTheme.Retro.Radius.inner)
         }
-        .buttonStyle(.plain)
-        .pressable()
+        .buttonStyle(RetroRaisedButtonStyle(cornerRadius: AppTheme.Retro.Radius.inner))
     }
 
     private var isMovie: Bool {

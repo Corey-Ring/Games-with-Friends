@@ -7,39 +7,51 @@ struct MovieChainSetupView: View {
     @State private var showingPlayerNames = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: AppTheme.Spacing.lg) {
-                // Header
-                headerSection
-
-                // Database status
-                if viewModel.isDatabaseDecompressing {
-                    decompressionProgressSection
-                } else if !viewModel.isDatabaseReady {
-                    databaseErrorSection
-                }
-
-                // Game Mode Selection
-                gameModeSection
-
-                // Player Count
-                playerCountSection
-
-                // Timer Duration (for timed mode)
-                if viewModel.gameMode.hasTimer {
-                    timerSection
-                }
-
-                // Player Names
-                playerNamesSection
-
-                // Start Button
-                startButton
-                    .padding(.bottom, AppTheme.Spacing.lg)
+        ZStack {
+            GeometryReader { geo in
+                // The card column owns most of the screen; motifs keep to the
+                // gutters and the nav strip (§7 — generator adds clearance).
+                MotifGroundView(seed: 0xF11_A0501,
+                                exclusions: [CGRect(x: 8, y: 60,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 60)])
             }
-            .padding(AppTheme.Spacing.md)
+            .ignoresSafeArea()
+
+            ScrollView {
+                VStack(spacing: AppTheme.Spacing.lg) {
+                    // Header
+                    headerSection
+
+                    // Database status
+                    if viewModel.isDatabaseDecompressing {
+                        decompressionProgressSection
+                    } else if !viewModel.isDatabaseReady {
+                        databaseErrorSection
+                    }
+
+                    // Game Mode Selection
+                    gameModeSection
+
+                    // Player Count
+                    playerCountSection
+
+                    // Timer Duration (for timed mode)
+                    if viewModel.gameMode.hasTimer {
+                        timerSection
+                    }
+
+                    // Player Names
+                    playerNamesSection
+
+                    // Start Button
+                    startButton
+                        .padding(.bottom, AppTheme.Spacing.lg)
+                }
+                .padding(AppTheme.Spacing.md)
+            }
+            .scrollIndicators(.hidden)
         }
-        .scrollIndicators(.hidden)
         .navigationTitle("Movie Chain")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: playerCount) { _, newValue in
@@ -54,13 +66,32 @@ struct MovieChainSetupView: View {
 
     private var headerSection: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
-            Image(systemName: "film.stack")
-                .font(.system(size: 60))
-                .foregroundStyle(GameTheme.movieChain.accentColor)
+            ZStack {
+                Circle().fill(AppTheme.Retro.panel)
+                Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                RetroSpotIllustration(kind: .filmFrame)
+                    .frame(width: 64, height: 64)
+            }
+            .frame(width: 84, height: 84)
+
+            Text("Movie Chain")
+                .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                .foregroundColor(AppTheme.Retro.ink)
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .retroPanel(MovieChainStyle.accent)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                        .fill(AppTheme.Retro.ink)
+                        .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
+                )
+                .rotationEffect(.degrees(-1))
 
             Text("Connect movies through actors!")
-                .font(AppTheme.Typography.body)
-                .foregroundColor(AppTheme.mediumGray)
+                .font(AppTheme.Typography.secondary)
+                .foregroundColor(AppTheme.Retro.panelText)
+                .retroLozenge()
+                .rotationEffect(.degrees(0.8))
         }
         .padding(.top)
     }
@@ -69,63 +100,63 @@ struct MovieChainSetupView: View {
 
     private var decompressionProgressSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            GameSpinner(color: GameTheme.movieChain.accentColor)
+            GameSpinner(color: MovieChainStyle.accent)
 
             Text("Preparing Movie Database...")
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .font(AppTheme.Retro.Typography.cardTitle)
+                .foregroundColor(AppTheme.Retro.panelText)
 
             ProgressView(value: viewModel.decompressionProgress)
                 .progressViewStyle(.linear)
-                .tint(GameTheme.movieChain.accentColor)
+                .tint(MovieChainStyle.accent)
                 .frame(maxWidth: 200)
 
             Text("\(Int(viewModel.decompressionProgress * 100))%")
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
 
             Text("This only happens once on first launch.")
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
                 .multilineTextAlignment(.center)
         }
-        .gameCard()
+        .frame(maxWidth: .infinity)
+        .retroCard()
     }
 
     // MARK: - Database Error Section
 
     private var databaseErrorSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(AppTheme.Typography.hero)
-                .foregroundStyle(.yellow)
+            ChainNodeDisc(systemImage: "exclamationmark.triangle.fill",
+                          color: AppTheme.Retro.tangerine,
+                          diameter: 56)
 
             Text("Database Not Loaded")
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .font(AppTheme.Retro.Typography.cardTitle)
+                .foregroundColor(AppTheme.Retro.panelText)
 
             if let error = viewModel.databaseError {
                 Text(error)
                     .font(AppTheme.Typography.caption)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
                     .multilineTextAlignment(.center)
             }
 
             Text("The movie database needs to be added to the app bundle.")
                 .font(AppTheme.Typography.body)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.panelText)
                 .multilineTextAlignment(.center)
         }
-        .gameCard()
+        .frame(maxWidth: .infinity)
+        .retroCard()
     }
 
     // MARK: - Game Mode Section
 
     private var gameModeSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            Text("Game Mode")
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+            sectionLabel("Game Mode")
 
             ForEach(MovieChainGameMode.allCases) { mode in
                 GameModeCard(
@@ -144,59 +175,60 @@ struct MovieChainSetupView: View {
 
     private var playerCountSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            Text("Players")
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+            sectionLabel("Players")
 
             HStack {
                 Text("\(playerCount) Players")
-                    .font(AppTheme.Typography.sectionHeader)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText)
 
                 Spacer()
 
                 HStack(spacing: AppTheme.Spacing.md) {
-                    Button {
+                    stepperButton(systemName: "minus", enabled: playerCount > 2) {
                         if playerCount > 2 {
                             HapticManager.light()
                             playerCount -= 1
                         }
-                    } label: {
-                        Image(systemName: "minus.circle.fill")
-                            .font(AppTheme.Typography.screenTitle)
-                            .foregroundStyle(playerCount > 2 ? GameTheme.movieChain.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount <= 2)
 
-                    Button {
+                    stepperButton(systemName: "plus", enabled: playerCount < 8) {
                         if playerCount < 8 {
                             HapticManager.light()
                             playerCount += 1
                         }
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(AppTheme.Typography.screenTitle)
-                            .foregroundStyle(playerCount < 8 ? GameTheme.movieChain.accentColor : AppTheme.mediumGray)
                     }
                     .disabled(playerCount >= 8)
                 }
             }
-            .gameCard()
+            .retroCard()
         }
+    }
+
+    private func stepperButton(systemName: String, enabled: Bool,
+                               action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 17, weight: .bold))
+                .foregroundColor(AppTheme.Retro.ink)
+                .frame(width: 44, height: 44)
+                .background(Circle().fill(enabled ? MovieChainStyle.accent : AppTheme.Retro.panel))
+                .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth))
+        }
+        .opacity(enabled ? 1 : 0.35)
     }
 
     // MARK: - Timer Section
 
     private var timerSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            Text("Timer")
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(AppTheme.deepCharcoal)
+            sectionLabel("Timer")
 
             HStack {
                 Text("\(viewModel.timerDuration) seconds per turn")
                     .font(AppTheme.Typography.body)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .foregroundColor(AppTheme.Retro.panelText)
 
                 Spacer()
 
@@ -206,9 +238,9 @@ struct MovieChainSetupView: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .tint(GameTheme.movieChain.accentColor)
+                .tint(AppTheme.Retro.ink)
             }
-            .gameCard()
+            .retroCard()
         }
     }
 
@@ -217,9 +249,7 @@ struct MovieChainSetupView: View {
     private var playerNamesSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             HStack {
-                Text("Player Names")
-                    .font(AppTheme.Typography.sectionHeader)
-                    .foregroundColor(AppTheme.deepCharcoal)
+                sectionLabel("Player Names")
 
                 Spacer()
 
@@ -229,7 +259,8 @@ struct MovieChainSetupView: View {
                     }
                 } label: {
                     Image(systemName: showingPlayerNames ? "chevron.up" : "chevron.down")
-                        .foregroundStyle(AppTheme.mediumGray)
+                        .fontWeight(.bold)
+                        .foregroundStyle(AppTheme.Retro.ink)
                 }
             }
 
@@ -239,25 +270,39 @@ struct MovieChainSetupView: View {
                         HStack {
                             Circle()
                                 .fill(player.color)
+                                .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
                                 .frame(width: 24, height: 24)
 
                             TextField("Player \(index + 1)", text: Binding(
                                 get: { player.name },
                                 set: { viewModel.updatePlayerName(at: index, to: $0) }
                             ))
-                            .textFieldStyle(.roundedBorder)
+                            .textFieldStyle(.plain)
+                            .font(AppTheme.Typography.body)
+                            .foregroundColor(AppTheme.Retro.panelText)
+                            .padding(AppTheme.Spacing.sm)
+                            .retroPanel(AppTheme.Retro.panel,
+                                        cornerRadius: AppTheme.Retro.Radius.inner)
                         }
                     }
                 }
-                .gameCard()
+                .retroCard()
             }
         }
+    }
+
+    private func sectionLabel(_ title: String) -> some View {
+        Text(title)
+            .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+            .foregroundColor(AppTheme.Retro.panelText)
+            .retroLozenge()
     }
 
     // MARK: - Start Button
 
     private var startButton: some View {
-        PrimaryButton(title: "Start Game", icon: "play.fill") {
+        RetroPrimaryButton(title: "Start Game", icon: "play.fill",
+                           accent: MovieChainStyle.accent) {
             viewModel.startGame()
         }
         .disabled(!viewModel.isDatabaseReady)
@@ -278,33 +323,34 @@ struct GameModeCard: View {
             HStack(spacing: AppTheme.Spacing.md) {
                 Image(systemName: mode.iconName)
                     .font(AppTheme.Typography.sectionHeader)
-                    .foregroundStyle(isSelected ? .white : GameTheme.movieChain.accentColor)
+                    .foregroundStyle(isSelected ? AppTheme.Retro.ink : AppTheme.Retro.panelText)
                     .frame(width: 40)
 
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text(mode.name)
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundStyle(isSelected ? .white : AppTheme.deepCharcoal)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundStyle(isSelected ? AppTheme.Retro.ink : AppTheme.Retro.panelText)
 
                     Text(mode.description)
                         .font(AppTheme.Typography.caption)
-                        .foregroundStyle(isSelected ? .white.opacity(0.8) : AppTheme.mediumGray)
+                        .foregroundStyle(isSelected ? AppTheme.Retro.ink.opacity(0.8)
+                                                    : AppTheme.Retro.panelText.opacity(0.7))
                 }
 
                 Spacer()
 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.white)
+                        .fontWeight(.bold)
+                        .foregroundStyle(AppTheme.Retro.ink)
                 }
             }
             .padding(AppTheme.Spacing.md)
-            .background(isSelected ? GameTheme.movieChain.accentColor : AppTheme.pureWhite)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
-            .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, x: AppTheme.Shadow.cardX, y: AppTheme.Shadow.cardY)
+            // Selected mode fills with the accent; unselected stays a cream
+            // panel — same selection language as RetroCategoryPill (§5).
+            .retroPanel(isSelected ? MovieChainStyle.accent : AppTheme.Retro.panel)
         }
-        .buttonStyle(.plain)
-        .pressable()
+        .buttonStyle(RetroRaisedButtonStyle())
     }
 }
 
