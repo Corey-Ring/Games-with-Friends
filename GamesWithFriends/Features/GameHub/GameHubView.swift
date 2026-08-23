@@ -10,11 +10,16 @@ struct GameHubView: View {
         NavigationStack {
             ZStack {
                 GeometryReader { geo in
-                    // Motifs live in the gutters and top strip; the exclusion
-                    // keeps them ≥12pt clear of the interactive card column (§7).
-                    MotifGroundView(exclusions: [CGRect(x: 36, y: 110,
-                                                        width: geo.size.width - 72,
-                                                        height: geo.size.height - 110)])
+                    // Motifs live in the gutters and top corners. Exclusions
+                    // cover the header lockup and the card column; the layout
+                    // generator adds its own 12pt clearance (§7), which keeps
+                    // even 18pt sparkles from poking out behind card corners.
+                    MotifGroundView(exclusions: [
+                        CGRect(x: 60, y: 40, width: geo.size.width - 120, height: 160),
+                        CGRect(x: 28, y: 150,
+                               width: geo.size.width - 56,
+                               height: geo.size.height - 150)
+                    ])
                 }
                 .ignoresSafeArea()
 
@@ -24,8 +29,8 @@ struct GameHubView: View {
                             .padding(.top, AppTheme.Spacing.lg)
                             .padding(.bottom, AppTheme.Spacing.lg)
 
-                        // 20pt gap and gutters from the artboard; the extra
-                        // room also clears the 5pt hard shadows.
+                        // 20pt gap from the artboard; 28pt gutters give edge
+                        // motifs room to breathe clear of the cards.
                         VStack(spacing: 20) {
                             ForEach(Array(games.enumerated()), id: \.element.id) { index, game in
                                 NavigationLink(destination: game.makeRootView()) {
@@ -38,7 +43,7 @@ struct GameHubView: View {
                                 .staggeredAppear(index: index)
                             }
                         }
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 28)
                         .padding(.bottom, AppTheme.Spacing.xl)
                     }
                 }

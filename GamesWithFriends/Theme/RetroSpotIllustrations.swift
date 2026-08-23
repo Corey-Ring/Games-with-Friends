@@ -292,7 +292,8 @@ enum RetroSpotPainter {
         let body = Path(roundedRect: CGRect(x: 10, y: 22, width: 44, height: 30),
                         cornerRadius: 6)
         paint(&c, body, fill: AppTheme.Retro.cornflower)
-        let sticker = Path(ellipseIn: CGRect(x: 42, y: 27, width: 9, height: 9))
+        // Luggage sticker sits low on the case so it doesn't read as a lens.
+        let sticker = Path(ellipseIn: CGRect(x: 43, y: 39, width: 9, height: 9))
         paint(&c, sticker, fill: AppTheme.Retro.cream, lineWidth: 2)
         face(&c, leftEye: CGPoint(x: 23, y: 36), rightEye: CGPoint(x: 33, y: 36))
         var hop = Path()
