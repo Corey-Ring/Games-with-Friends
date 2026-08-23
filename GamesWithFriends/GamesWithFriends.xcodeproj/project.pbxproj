@@ -26,6 +26,7 @@
 		4A883C5F2F04BC5A0046272B /* MovieChainGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C562F04BC5A0046272B /* MovieChainGameView.swift */; };
 		4A883C602F04BC5A0046272B /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C4A2F04BC5A0046272B /* GameState.swift */; };
 		4A883C612F04BC5A0046272B /* ChainBreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C542F04BC5A0046272B /* ChainBreakView.swift */; };
+		F100000100000000000000C8 /* MovieChainStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C8 /* MovieChainStyle.swift */; };
 		4A883C622F04BC5A0046272B /* MovieChainRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C572F04BC5A0046272B /* MovieChainRootView.swift */; };
 		4A883C632F04BC5A0046272B /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C4B2F04BC5A0046272B /* Player.swift */; };
 		4A883C642F04BC5A0046272B /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C552F04BC5A0046272B /* GameOverView.swift */; };
@@ -113,6 +114,7 @@
 		F10000010000000000000057 /* Name5PlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000057 /* Name5PlayView.swift */; };
 		F10000010000000000000058 /* Name5ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000058 /* Name5ResultsView.swift */; };
 		F10000010000000000000059 /* Name5SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000059 /* Name5SetupView.swift */; };
+		F100000100000000000000C7 /* Name5Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C7 /* Name5Style.swift */; };
 		F10000010000000000000060 /* BorderBlitzGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000060 /* BorderBlitzGame.swift */; };
 		F10000010000000000000061 /* BorderBlitzCountry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000061 /* BorderBlitzCountry.swift */; };
 		F10000010000000000000062 /* BorderBlitzDifficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000062 /* BorderBlitzDifficulty.swift */; };
@@ -217,6 +219,7 @@
 		4A883C502F04BC5A0046272B /* MovieChainDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainDatabase.swift; sourceTree = "<group>"; };
 		4A883C522F04BC5A0046272B /* MovieChainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainViewModel.swift; sourceTree = "<group>"; };
 		4A883C542F04BC5A0046272B /* ChainBreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainBreakView.swift; sourceTree = "<group>"; };
+		F200000100000000000000C8 /* MovieChainStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainStyle.swift; sourceTree = "<group>"; };
 		4A883C552F04BC5A0046272B /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
 		4A883C562F04BC5A0046272B /* MovieChainGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainGameView.swift; sourceTree = "<group>"; };
 		4A883C572F04BC5A0046272B /* MovieChainRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainRootView.swift; sourceTree = "<group>"; };
@@ -300,6 +303,7 @@
 		F20000010000000000000057 /* Name5PlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5PlayView.swift; sourceTree = "<group>"; };
 		F20000010000000000000058 /* Name5ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5ResultsView.swift; sourceTree = "<group>"; };
 		F20000010000000000000059 /* Name5SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5SetupView.swift; sourceTree = "<group>"; };
+		F200000100000000000000C7 /* Name5Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5Style.swift; sourceTree = "<group>"; };
 		F20000010000000000000060 /* BorderBlitzGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzGame.swift; sourceTree = "<group>"; };
 		F20000010000000000000061 /* BorderBlitzCountry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzCountry.swift; sourceTree = "<group>"; };
 		F20000010000000000000062 /* BorderBlitzDifficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzDifficulty.swift; sourceTree = "<group>"; };
@@ -495,6 +499,7 @@
 			isa = PBXGroup;
 			children = (
 				4A883C542F04BC5A0046272B /* ChainBreakView.swift */,
+				F200000100000000000000C8 /* MovieChainStyle.swift */,
 				4A883C552F04BC5A0046272B /* GameOverView.swift */,
 				4A883C562F04BC5A0046272B /* MovieChainGameView.swift */,
 				4A883C572F04BC5A0046272B /* MovieChainRootView.swift */,
@@ -891,6 +896,7 @@
 				F20000010000000000000057 /* Name5PlayView.swift */,
 				F20000010000000000000058 /* Name5ResultsView.swift */,
 				F20000010000000000000059 /* Name5SetupView.swift */,
+				F200000100000000000000C7 /* Name5Style.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1277,6 +1283,7 @@
 				4A883C5F2F04BC5A0046272B /* MovieChainGameView.swift in Sources */,
 				4A883C602F04BC5A0046272B /* GameState.swift in Sources */,
 				4A883C612F04BC5A0046272B /* ChainBreakView.swift in Sources */,
+				F100000100000000000000C8 /* MovieChainStyle.swift in Sources */,
 				4A883C622F04BC5A0046272B /* MovieChainRootView.swift in Sources */,
 				4A883C632F04BC5A0046272B /* Player.swift in Sources */,
 				4A883C642F04BC5A0046272B /* GameOverView.swift in Sources */,
@@ -1316,6 +1323,7 @@
 				F10000010000000000000057 /* Name5PlayView.swift in Sources */,
 				F10000010000000000000058 /* Name5ResultsView.swift in Sources */,
 				F10000010000000000000059 /* Name5SetupView.swift in Sources */,
+				F100000100000000000000C7 /* Name5Style.swift in Sources */,
 				F10000010000000000000060 /* BorderBlitzGame.swift in Sources */,
 				F10000010000000000000061 /* BorderBlitzCountry.swift in Sources */,
 				F10000010000000000000062 /* BorderBlitzDifficulty.swift in Sources */,

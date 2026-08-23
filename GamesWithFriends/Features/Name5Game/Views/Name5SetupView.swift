@@ -5,33 +5,58 @@ struct Name5SetupView: View {
 
     var body: some View {
         ZStack {
-            WarmLinenBackground()
-            
+            GeometryReader { geo in
+                // The whole scrolling column is interactive (context cards,
+                // toggles, pills, steppers), so motifs keep to the nav strip
+                // and the outer edges (§7 — the generator adds the clearance).
+                MotifGroundView(seed: 0x4A5E_0F05,
+                                exclusions: [CGRect(x: 8, y: 56,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 56)])
+            }
+            .ignoresSafeArea()
+
             ScrollView {
                 VStack(spacing: AppTheme.Spacing.lg) {
-                    // Header
-                    VStack(spacing: AppTheme.Spacing.xs) {
-                        Image(systemName: "hand.raised.fingers.spread.fill")
-                            .font(.system(size: 60))
-                            .foregroundStyle(GameTheme.name5.accentColor)
+                    // Header: spot plate + framed Lilita title (Rule 4 — the
+                    // game name never sits naked on the ground, and Shrikhand
+                    // is reserved for the app lockup, §4).
+                    VStack(spacing: AppTheme.Spacing.sm) {
+                        ZStack {
+                            Circle().fill(AppTheme.Retro.panel)
+                            Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                            RetroSpotIllustration(kind: .burstFive)
+                                .frame(width: 64, height: 64)
+                        }
+                        .frame(width: 84, height: 84)
 
                         Text("Name Five")
-                            .font(AppTheme.Typography.hero)
-                            .fontWeight(.bold)
-                            .foregroundColor(GameTheme.name5.accentColor)
-
-                        Text("Race against the clock to name 5 things!")
-                            .font(AppTheme.Typography.body)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                            .foregroundColor(AppTheme.Retro.ink)
                             .multilineTextAlignment(.center)
+                            .padding(.horizontal, AppTheme.Spacing.md)
+                            .padding(.vertical, AppTheme.Spacing.xs)
+                            .retroPanel(Name5Style.accent)
+                            .background(
+                                RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                                    .fill(AppTheme.Retro.ink)
+                                    .offset(x: AppTheme.Retro.shadowOffset,
+                                            y: AppTheme.Retro.shadowOffset)
+                            )
+                            .rotationEffect(.degrees(-1))
+
+                        Text("Race against the clock to name 5 things")
+                            .font(AppTheme.Typography.secondary)
+                            .foregroundColor(AppTheme.Retro.panelText)
+                            .multilineTextAlignment(.center)
+                            .retroLozenge()
+                            .rotationEffect(.degrees(0.8))
                     }
                     .padding(.top, AppTheme.Spacing.lg)
 
                     // Social Context Selection
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-                        Text("Playing with...")
-                            .font(AppTheme.Typography.cardTitle)
-                            .foregroundColor(AppTheme.mediumGray)
+                        sectionLabel("Playing with...")
 
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppTheme.Spacing.md) {
                             ForEach(SocialContext.allCases, id: \.self) { context in
@@ -48,9 +73,7 @@ struct Name5SetupView: View {
                     // Age Group Selection (show only for family or all ages)
                     if viewModel.socialContext == .family {
                         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-                            Text("Age Group")
-                                .font(AppTheme.Typography.cardTitle)
-                                .foregroundColor(AppTheme.mediumGray)
+                            sectionLabel("Age Group")
 
                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppTheme.Spacing.md) {
                                 ForEach(AgeGroup.allCases, id: \.self) { age in
@@ -67,9 +90,7 @@ struct Name5SetupView: View {
 
                     // Difficulty Selection
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-                        Text("Difficulty")
-                            .font(AppTheme.Typography.cardTitle)
-                            .foregroundColor(AppTheme.mediumGray)
+                        sectionLabel("Difficulty")
 
                         HStack(spacing: AppTheme.Spacing.md) {
                             DifficultyToggle(
@@ -99,64 +120,59 @@ struct Name5SetupView: View {
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                         HStack {
                             Text("Timer")
-                                .font(AppTheme.Typography.cardTitle)
-                                .foregroundColor(AppTheme.mediumGray)
+                                .font(AppTheme.Retro.Typography.cardTitle)
+                                .foregroundColor(AppTheme.Retro.panelText)
 
                             Spacer()
 
+                            // Keep the system control, tint it (§3 recipe).
                             Toggle("", isOn: $viewModel.timerEnabled)
                                 .labelsHidden()
+                                .tint(Name5Style.accent)
                         }
 
                         if viewModel.timerEnabled {
-                            VStack(spacing: AppTheme.Spacing.md) {
+                            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                                 HStack(spacing: AppTheme.Spacing.sm) {
                                     ForEach([15, 30, 45, 60], id: \.self) { duration in
-                                        Button {
+                                        RetroCategoryPill(
+                                            title: "\(duration)s",
+                                            color: Name5Style.accent,
+                                            isSelected: viewModel.timerDuration == duration
+                                        ) {
                                             viewModel.updateConfiguration(duration: duration)
-                                        } label: {
-                                            Text("\(duration)s")
-                                                .font(AppTheme.Typography.body)
-                                                .fontWeight(.semibold)
-                                                .foregroundColor(viewModel.timerDuration == duration ? .white : AppTheme.deepCharcoal)
-                                                .frame(maxWidth: .infinity)
-                                                .padding(.vertical, AppTheme.Spacing.sm)
-                                                .background(
-                                                    Capsule()
-                                                        .fill(viewModel.timerDuration == duration ? GameTheme.name5.accentColor : AppTheme.mediumGray.opacity(0.12))
-                                                )
                                         }
-                                        .buttonStyle(.plain)
                                     }
                                 }
-                                .padding(AppTheme.Spacing.sm)
-                                .background(
-                                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                                        .fill(AppTheme.deepCharcoal.opacity(0.06))
-                                )
 
                                 Text(timerDescription(for: viewModel.timerDuration))
                                     .font(AppTheme.Typography.caption)
-                                    .foregroundColor(AppTheme.mediumGray)
+                                    .foregroundColor(AppTheme.Retro.cocoa)
                             }
-                            .gameCard()
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .retroCard()
 
                     // Category Selection
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                         Text("Categories")
-                            .font(AppTheme.Typography.cardTitle)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .font(AppTheme.Retro.Typography.cardTitle)
+                            .foregroundColor(AppTheme.Retro.panelText)
 
                         Text("Select which categories to include")
                             .font(AppTheme.Typography.caption)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .foregroundColor(AppTheme.Retro.cocoa)
 
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                        // Selection pills wear the single screen accent (§3
+                        // recipe); semantic variety lives on the chips inside
+                        // the prompt cards.
+                        FlowLayout(spacing: 10) {
                             ForEach(PromptCategory.allCases, id: \.self) { category in
-                                CategorySelectionCard(
-                                    category: category,
+                                RetroCategoryPill(
+                                    title: category.rawValue,
+                                    icon: category.icon,
+                                    color: Name5Style.accent,
                                     isSelected: viewModel.selectedCategories.contains(category)
                                 ) {
                                     viewModel.toggleCategory(category)
@@ -164,32 +180,32 @@ struct Name5SetupView: View {
                             }
                         }
                     }
-                    .gameCard()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .retroCard()
 
                     // Player Count
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
                         Text("Number of Players")
-                            .font(AppTheme.Typography.cardTitle)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .font(AppTheme.Retro.Typography.cardTitle)
+                            .foregroundColor(AppTheme.Retro.panelText)
 
                         HStack {
                             Text("\(viewModel.playerCount) \(viewModel.playerCount == 1 ? "Player" : "Players")")
-                                .font(AppTheme.Typography.subsectionHeader)
-                                .fontWeight(.semibold)
-                                .foregroundColor(AppTheme.deepCharcoal)
+                                .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title3))
+                                .foregroundColor(AppTheme.Retro.panelText)
 
                             Spacer()
 
+                            // 44pt accent circles with bold ink glyphs (§3).
                             HStack(spacing: AppTheme.Spacing.md) {
                                 Button {
                                     if viewModel.playerCount > 1 {
                                         viewModel.updateConfiguration(players: viewModel.playerCount - 1)
                                     }
                                 } label: {
-                                    Image(systemName: "minus.circle.fill")
-                                        .font(AppTheme.Typography.screenTitle)
-                                        .foregroundStyle(viewModel.playerCount > 1 ? GameTheme.name5.accentColor : AppTheme.mediumGray)
+                                    stepperGlyph("minus", enabled: viewModel.playerCount > 1)
                                 }
+                                .buttonStyle(.plain)
                                 .disabled(viewModel.playerCount <= 1)
 
                                 Button {
@@ -197,35 +213,33 @@ struct Name5SetupView: View {
                                         viewModel.updateConfiguration(players: viewModel.playerCount + 1)
                                     }
                                 } label: {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(AppTheme.Typography.screenTitle)
-                                        .foregroundStyle(viewModel.playerCount < 20 ? GameTheme.name5.accentColor : AppTheme.mediumGray)
+                                    stepperGlyph("plus", enabled: viewModel.playerCount < 20)
                                 }
+                                .buttonStyle(.plain)
                                 .disabled(viewModel.playerCount >= 20)
                             }
                         }
-                        .gameCard()
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .retroCard()
 
                     // Available Prompts Info
                     if !viewModel.availablePrompts.isEmpty {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(AppTheme.success)
+                        HStack(spacing: AppTheme.Spacing.sm) {
+                            Name5StatusBadge(systemImage: "checkmark",
+                                             color: Name5Style.successColor,
+                                             diameter: 20)
                             Text("\(viewModel.availablePrompts.count) prompts available")
-                                .font(AppTheme.Typography.body)
-                                .foregroundColor(AppTheme.mediumGray)
-                            Spacer()
+                                .font(AppTheme.Typography.secondary)
+                                .foregroundColor(AppTheme.Retro.panelText)
                         }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                                .fill(AppTheme.success.opacity(0.1))
-                        )
+                        .padding(.vertical, AppTheme.Spacing.xs)
+                        .retroLozenge()
                     }
 
                     // Start Button
-                    PrimaryButton(title: "Quick Play", icon: "play.fill") {
+                    RetroPrimaryButton(title: "Quick Play", icon: "play.fill",
+                                       accent: Name5Style.accent) {
                         viewModel.startGame()
                     }
                     .disabled(!viewModel.canStart)
@@ -236,6 +250,26 @@ struct Name5SetupView: View {
             }
             .scrollIndicators(.hidden)
         }
+    }
+
+    /// Section labels sit on the ground, so they ride a cream lozenge rather
+    /// than floating naked over the motif field (§9).
+    private func sectionLabel(_ title: String) -> some View {
+        Text(title)
+            .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+            .foregroundColor(AppTheme.Retro.panelText)
+            .retroLozenge()
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func stepperGlyph(_ systemImage: String, enabled: Bool) -> some View {
+        Image(systemName: systemImage)
+            .font(AppTheme.Typography.cardTitle.weight(.black))
+            .foregroundColor(AppTheme.Retro.ink)
+            .frame(width: 44, height: 44)
+            .background(Circle().fill(enabled ? Name5Style.accent : AppTheme.Retro.panel))
+            .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth))
+            .opacity(enabled ? 1 : 0.4)
     }
 
     private func timerDescription(for duration: Int) -> String {
@@ -257,57 +291,29 @@ struct DifficultyToggle: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            VStack(spacing: AppTheme.Spacing.xs) {
+                // The ramp color rides on stars inside a cream lozenge, so it
+                // stays legible whether the tile is lilac or cream (§8).
                 HStack(spacing: 2) {
-                    ForEach(0..<starCount, id: \.self) { _ in
+                    ForEach(0..<Name5Style.difficultyStars(difficulty), id: \.self) { _ in
                         Image(systemName: "star.fill")
                             .font(AppTheme.Typography.tabLabel)
-                            .foregroundColor(isSelected ? .white : starColor)
+                            .foregroundColor(Name5Style.difficultyColor(difficulty))
                     }
                 }
+                .padding(.vertical, 2)
+                .retroLozenge()
 
                 Text(difficulty.rawValue)
-                    .font(AppTheme.Typography.body)
-                    .fontWeight(.semibold)
-                    .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
+                    .font(AppTheme.Retro.Typography.heading(17))
+                    .foregroundColor(AppTheme.Retro.ink)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, AppTheme.Spacing.md)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .fill(isSelected ? selectedFill : AppTheme.pureWhite)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
-            )
-            .shadow(color: isSelected ? AppTheme.Shadow.cardColor : Color.clear, radius: AppTheme.Shadow.cardRadius, y: AppTheme.Shadow.cardY)
+            .retroPanel(isSelected ? Name5Style.accent : AppTheme.Retro.panel,
+                        cornerRadius: AppTheme.Retro.Radius.inner)
         }
-        .buttonStyle(.plain)
-    }
-
-    private var starCount: Int {
-        switch difficulty {
-        case .easy: return 1
-        case .medium: return 2
-        case .hard: return 3
-        }
-    }
-
-    private var starColor: Color {
-        switch difficulty {
-        case .easy: return .green
-        case .medium: return .orange
-        case .hard: return .red
-        }
-    }
-
-    private var selectedFill: Color {
-        switch difficulty {
-        case .easy: return .green
-        case .medium: return .orange
-        case .hard: return .red
-        }
+        .buttonStyle(RetroRaisedButtonStyle(cornerRadius: AppTheme.Retro.Radius.inner))
     }
 }
 
@@ -319,73 +325,32 @@ struct ContextCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: AppTheme.Spacing.md) {
+            VStack(spacing: AppTheme.Spacing.sm) {
                 Image(systemName: context.icon)
-                    .font(AppTheme.Typography.hero)
-                    .foregroundColor(isSelected ? .white : GameTheme.name5.accentColor)
+                    .font(AppTheme.Typography.screenTitle)
+                    .foregroundColor(AppTheme.Retro.ink)
 
                 VStack(spacing: AppTheme.Spacing.xs) {
                     Text(context.rawValue)
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
+                        .font(AppTheme.Retro.Typography.heading(17))
+                        .foregroundColor(AppTheme.Retro.ink)
 
+                    // §8: the description is body copy, so it rides a cream
+                    // lozenge instead of sitting on the lilac fill.
                     Text(context.description)
                         .font(AppTheme.Typography.caption)
-                        .foregroundColor(isSelected ? .white.opacity(0.9) : AppTheme.mediumGray)
+                        .foregroundColor(AppTheme.Retro.panelText)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
+                        .padding(.vertical, 2)
+                        .retroLozenge()
                 }
             }
-            .padding()
+            .padding(AppTheme.Spacing.sm)
             .frame(maxWidth: .infinity, minHeight: 140)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                    .fill(isSelected ? GameTheme.name5.accentColor : AppTheme.pureWhite)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
-            )
-            .shadow(color: AppTheme.Shadow.cardColor, radius: AppTheme.Shadow.cardRadius, y: AppTheme.Shadow.cardY)
+            .retroPanel(isSelected ? Name5Style.accent : AppTheme.Retro.panel)
         }
-        .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Category Selection Card
-struct CategorySelectionCard: View {
-    let category: PromptCategory
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: AppTheme.Spacing.sm) {
-                Image(systemName: category.icon)
-                    .font(AppTheme.Typography.subsectionHeader)
-                    .foregroundColor(isSelected ? .white : GameTheme.name5.accentColor)
-                
-                Text(category.rawValue)
-                    .font(AppTheme.Typography.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.8)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, AppTheme.Spacing.sm)
-            .padding(.horizontal, AppTheme.Spacing.sm)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(isSelected ? GameTheme.name5.accentColor : AppTheme.pureWhite)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
+        .buttonStyle(RetroRaisedButtonStyle())
     }
 }
 
@@ -397,34 +362,27 @@ struct AgeGroupCard: View {
 
     var body: some View {
         Button(action: action) {
-            HStack {
+            HStack(spacing: AppTheme.Spacing.sm) {
                 Image(systemName: ageGroup.icon)
-                    .font(AppTheme.Typography.sectionHeader)
-                    .foregroundColor(isSelected ? .white : GameTheme.name5.accentColor)
+                    .font(AppTheme.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.ink)
 
                 Text(ageGroup.rawValue)
-                    .font(AppTheme.Typography.body)
-                    .fontWeight(.semibold)
-                    .foregroundColor(isSelected ? .white : AppTheme.deepCharcoal)
+                    .font(AppTheme.Retro.Typography.heading(16, relativeTo: .subheadline))
+                    .foregroundColor(AppTheme.Retro.ink)
 
                 Spacer()
 
                 if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.white)
+                    Image(systemName: "checkmark")
+                        .font(AppTheme.Typography.caption.weight(.black))
+                        .foregroundColor(AppTheme.Retro.ink)
                 }
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .fill(isSelected ? GameTheme.name5.accentColor : AppTheme.pureWhite)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .stroke(isSelected ? Color.clear : AppTheme.mediumGray.opacity(0.2), lineWidth: 1)
-            )
-            .shadow(color: isSelected ? AppTheme.Shadow.cardColor : Color.clear, radius: AppTheme.Shadow.cardRadius, y: AppTheme.Shadow.cardY)
+            .padding(AppTheme.Spacing.sm + 2)
+            .retroPanel(isSelected ? Name5Style.accent : AppTheme.Retro.panel,
+                        cornerRadius: AppTheme.Retro.Radius.inner)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(RetroRaisedButtonStyle(cornerRadius: AppTheme.Retro.Radius.inner))
     }
 }

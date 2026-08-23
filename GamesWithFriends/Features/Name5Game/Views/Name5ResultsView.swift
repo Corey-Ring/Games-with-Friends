@@ -5,8 +5,16 @@ struct Name5ResultsView: View {
 
     var body: some View {
         ZStack {
-            GameBackground(gameTheme: .name5)
-            
+            GeometryReader { geo in
+                // Scrolling result column runs the full width; motifs keep to
+                // the nav strip and the outer edges (§7).
+                MotifGroundView(seed: 0x4A5E_0F07,
+                                exclusions: [CGRect(x: 8, y: 56,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 56)])
+            }
+            .ignoresSafeArea()
+
             ScrollView {
                 VStack(spacing: AppTheme.Spacing.lg) {
                     // Success/Failure Animation
@@ -44,24 +52,39 @@ struct ResultHeader: View {
     let success: Bool
 
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.md) {
+        VStack(spacing: AppTheme.Spacing.sm) {
+            // §9: no naked SF hero — the round verdict gets the game's spot
+            // plate and a framed Lilita banner.
             ZStack {
-                Circle()
-                    .fill(success ? AppTheme.success.opacity(0.2) : AppTheme.warning.opacity(0.2))
-                    .frame(width: 100, height: 100)
-
-                Image(systemName: success ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundColor(success ? AppTheme.success : AppTheme.warning)
+                Circle().fill(AppTheme.Retro.panel)
+                Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                RetroSpotIllustration(kind: .burstFive)
+                    .frame(width: 64, height: 64)
+                    .opacity(success ? 1 : 0.6)
             }
+            .frame(width: 84, height: 84)
 
+            // Celebration accent is grass (cream display text ≥17pt is OK
+            // there, §8); the near-miss banner uses tangerine, where ink is
+            // the passing color.
             Text(success ? "Nice Work!" : "So Close!")
-                .font(AppTheme.Typography.hero)
-                .fontWeight(.bold)
+                .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                .foregroundColor(success ? AppTheme.Retro.cream : AppTheme.Retro.ink)
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .retroPanel(success ? Name5Style.successColor : Name5Style.missColor)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                        .fill(AppTheme.Retro.ink)
+                        .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
+                )
+                .rotationEffect(.degrees(-1))
 
             Text(success ? "You got all 5!" : "Better luck next time")
                 .font(AppTheme.Typography.body)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.panelText)
+                .retroLozenge()
+                .rotationEffect(.degrees(0.8))
         }
     }
 }
@@ -75,10 +98,11 @@ struct CompletedPromptCard: View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             HStack {
                 Text(prompt.text)
-                    .font(AppTheme.Typography.cardTitle)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText)
                 Spacer()
-                Image(systemName: result?.success == true ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .foregroundColor(result?.success == true ? .green : .orange)
+                Name5StatusBadge(systemImage: result?.success == true ? "checkmark" : "xmark",
+                                 color: result?.success == true ? Name5Style.successColor : Name5Style.missColor)
             }
 
             if let time = result?.timeUsed {
@@ -89,7 +113,7 @@ struct CompletedPromptCard: View {
                         .font(AppTheme.Typography.caption)
                     Spacer()
                 }
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.cocoa)
             }
 
             HStack(spacing: AppTheme.Spacing.md) {
@@ -97,41 +121,21 @@ struct CompletedPromptCard: View {
                     Image(systemName: prompt.category.icon)
                         .font(AppTheme.Typography.tabLabel)
                     Text(prompt.category.rawValue)
-                        .font(AppTheme.Typography.caption)
+                        .font(AppTheme.Retro.Typography.pillLabel)
                 }
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(Name5Style.chipTextColor(on: Name5Style.accent))
+                .padding(.horizontal, AppTheme.Spacing.sm + 2)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .background(Capsule().fill(Name5Style.accent))
+                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
 
-                HStack(spacing: 2) {
-                    ForEach(0..<difficultyStars(prompt.difficulty), id: \.self) { _ in
-                        Image(systemName: "star.fill")
-                            .font(AppTheme.Typography.tabLabel)
-                            .foregroundColor(difficultyColor(prompt.difficulty))
-                    }
-                    Text(prompt.difficulty.rawValue)
-                        .font(AppTheme.Typography.caption)
-                        .foregroundColor(difficultyColor(prompt.difficulty))
-                }
+                Name5DifficultyChip(difficulty: prompt.difficulty)
 
                 Spacer()
             }
         }
-        .gameCard()
-    }
-
-    private func difficultyStars(_ difficulty: Difficulty) -> Int {
-        switch difficulty {
-        case .easy: return 1
-        case .medium: return 2
-        case .hard: return 3
-        }
-    }
-
-    private func difficultyColor(_ difficulty: Difficulty) -> Color {
-        switch difficulty {
-        case .easy: return .green
-        case .medium: return .orange
-        case .hard: return .red
-        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .retroCard()
     }
 }
 
@@ -141,29 +145,27 @@ struct FollowUpQuestionCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            HStack {
+            // §9: the 10%-tint panel + hairline accent stroke are retired —
+            // the accent now rides on an ink-outlined chip and the copy stays
+            // ink-on-cream (§8).
+            HStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: "bubble.left.and.bubble.right.fill")
-                    .foregroundColor(GameTheme.name5.accentColor)
-                Text("Conversation Starter")
                     .font(AppTheme.Typography.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(GameTheme.name5.accentColor)
+                Text("Conversation Starter")
+                    .font(AppTheme.Retro.Typography.pillLabel)
             }
+            .foregroundColor(Name5Style.chipTextColor(on: Name5Style.accent))
+            .padding(.horizontal, AppTheme.Spacing.sm + 2)
+            .padding(.vertical, AppTheme.Spacing.xs)
+            .background(Capsule().fill(Name5Style.accent))
+            .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
 
             Text(question)
                 .font(AppTheme.Typography.body)
-                .foregroundColor(AppTheme.deepCharcoal)
+                .foregroundColor(AppTheme.Retro.panelText)
         }
-        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(GameTheme.name5.accentColor.opacity(0.1))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .stroke(GameTheme.name5.accentColor.opacity(0.3), lineWidth: 1)
-        )
+        .retroCard()
     }
 }
 
@@ -174,10 +176,11 @@ struct StatsCard: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             Text("Session Stats")
-                .font(AppTheme.Typography.sectionHeader)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.sm) {
                 StatItem(
                     icon: "target",
                     label: "Rounds",
@@ -185,7 +188,7 @@ struct StatsCard: View {
                 )
 
                 StatItem(
-                    icon: "checkmark.circle.fill",
+                    icon: "checkmark",
                     label: "Success",
                     value: "\(stats.roundsWon)"
                 )
@@ -204,15 +207,16 @@ struct StatsCard: View {
             }
 
             if stats.roundsPlayed > 0 {
+                // Keep the system control, tint it with the game accent (§3).
                 ProgressView(value: stats.successRate)
-                    .tint(GameTheme.name5.accentColor)
+                    .tint(Name5Style.accent)
 
                 Text("\(Int(stats.successRate * 100))% success rate")
                     .font(AppTheme.Typography.caption)
-                    .foregroundColor(AppTheme.mediumGray)
+                    .foregroundColor(AppTheme.Retro.cocoa)
             }
         }
-        .gameCard()
+        .retroCard()
     }
 }
 
@@ -223,19 +227,19 @@ struct StatItem: View {
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
-            Image(systemName: icon)
-                .font(AppTheme.Typography.subsectionHeader)
-                .foregroundColor(GameTheme.name5.accentColor)
+            Name5StatusBadge(systemImage: icon, color: Name5Style.accent, diameter: 28)
 
             Text(value)
-                .font(AppTheme.Typography.sectionHeader)
-                .fontWeight(.bold)
+                .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title2))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             Text(label)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.cocoa)
         }
+        .padding(.vertical, AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
+        .retroPanel(AppTheme.Retro.panel, cornerRadius: AppTheme.Retro.Radius.inner)
     }
 }
 
@@ -246,33 +250,23 @@ struct ContinueButtons: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             // Random button
-            PrimaryButton(title: "Random Prompt", icon: "shuffle") {
+            RetroPrimaryButton(title: "Random Prompt", icon: "shuffle",
+                               accent: Name5Style.accent) {
                 viewModel.continueToNextRound()
             }
 
-            // Same Category button
+            // Same Category button — tangerine is the utility action beside
+            // the lilac primary (§3.2's one-accent rule keeps lilac alone).
             if let category = viewModel.currentPrompt?.category {
-                Button(action: {
+                RetroPrimaryButton(title: "More \(category.rawValue)", icon: category.icon,
+                                   accent: AppTheme.Retro.tangerine) {
                     viewModel.playAgainSameCategory()
-                }) {
-                    HStack {
-                        Image(systemName: category.icon)
-                        Text("More \(category.rawValue)")
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, AppTheme.Spacing.md)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(GameTheme.name5.accentColor)
-                    )
                 }
-                .pressable()
             }
 
             // End Game button
-            SecondaryButton(title: "End Game", icon: "stop.fill") {
+            RetroPrimaryButton(title: "End Game", icon: "stop.fill",
+                               accent: AppTheme.Retro.panel) {
                 viewModel.endGame()
             }
         }
