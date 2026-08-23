@@ -47,4 +47,46 @@ final class RetroThemeTests: XCTestCase {
         XCTAssertEqual(AppTheme.Retro.shadowPressedOffset, 2)
         XCTAssertEqual(AppTheme.Retro.pressTravel, 3)
     }
+
+    func testMotifFieldIsDeterministicPerSeed() {
+        let size = CGSize(width: 390, height: 844)
+        let a = MotifFieldLayout.generate(seed: 42, size: size)
+        let b = MotifFieldLayout.generate(seed: 42, size: size)
+        let c = MotifFieldLayout.generate(seed: 43, size: size)
+        XCTAssertEqual(a, b)
+        XCTAssertNotEqual(a, c)
+        XCTAssertFalse(a.isEmpty)
+    }
+
+    func testMotifFieldStaysInBoundsAndInSpec() {
+        let size = CGSize(width: 390, height: 844)
+        let motifs = MotifFieldLayout.generate(seed: 7, size: size)
+        for m in motifs {
+            XCTAssertTrue(m.position.x >= 0 && m.position.x <= size.width)
+            XCTAssertTrue(m.position.y >= 0 && m.position.y <= size.height)
+            XCTAssertTrue((4...18).contains(m.size), "motif sizes are 4–18pt per §7")
+        }
+        // ~1 per 90×90 cell: 5 cols × 10 rows = 50 cells at density 1
+        XCTAssertEqual(motifs.count, 50)
+    }
+
+    func testMotifFieldRespectsExclusionsWithClearance() {
+        let size = CGSize(width: 390, height: 844)
+        let exclusion = CGRect(x: 50, y: 100, width: 290, height: 200)
+        let motifs = MotifFieldLayout.generate(seed: 7, size: size, avoiding: [exclusion])
+        let padded = exclusion.insetBy(dx: -12, dy: -12)
+        XCTAssertFalse(motifs.isEmpty)
+        for m in motifs {
+            XCTAssertFalse(padded.contains(m.position),
+                           "motif at \(m.position) is inside an exclusion zone (+12pt clearance)")
+        }
+    }
+
+    func testMotifFieldDensityScalesCount() {
+        let size = CGSize(width: 390, height: 844)
+        let full = MotifFieldLayout.generate(seed: 7, size: size, density: 1.0)
+        let sparse = MotifFieldLayout.generate(seed: 7, size: size, density: 0.6)
+        XCTAssertLessThan(sparse.count, full.count)
+        XCTAssertGreaterThan(sparse.count, 0)
+    }
 }
