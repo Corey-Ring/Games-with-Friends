@@ -8,15 +8,19 @@ import SwiftUI
 struct BorderBlitzCountrySilhouetteView: View {
     let country: BorderBlitzCountry
 
-    private let theme = GameTheme.borderBlitz
-
     var body: some View {
+        // Recolor only (§2 rules 1 and 2): flat candy fill instead of an alpha
+        // wash, and a uniform ink coastline instead of a faded accent hairline.
+        // `BorderBlitzCountryShape` — its path parsing, clustering and scaling
+        // math — is deliberately untouched.
         let shape = BorderBlitzCountryShape(svgPath: country.svgPath)
         shape
-            .fill(theme.accentColor.opacity(0.85))
+            .fill(BorderBlitzStyle.mapFill)
             .overlay(
                 shape
-                    .stroke(theme.accentColor.opacity(0.6), lineWidth: 1.5)
+                    .stroke(BorderBlitzStyle.mapOutline,
+                            style: StrokeStyle(lineWidth: AppTheme.Retro.strokeWidth,
+                                               lineJoin: .round))
             )
     }
 }

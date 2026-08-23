@@ -24,7 +24,11 @@ struct BorderBlitzRootView: View {
 
     var body: some View {
         ZStack {
-            GameBackground(gameTheme: GameTheme.borderBlitz)
+            // Plain retro ground at the root — the playing screen is a live
+            // speech visualiser, so no motif field there (playbook §3); the
+            // menu and the two end states layer their own motifs on top.
+            AppTheme.Retro.ground
+                .ignoresSafeArea()
 
             if viewModel.gameStarted {
                 BorderBlitzGameView(viewModel: viewModel)
@@ -32,6 +36,8 @@ struct BorderBlitzRootView: View {
                 BorderBlitzMenuView(viewModel: viewModel)
             }
         }
+        // §6: functional nav glyphs (the hub's back chevron) render ink.
+        .tint(AppTheme.Retro.ink)
         .navigationBarBackButtonHidden(viewModel.gameStarted)
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {

@@ -63,6 +63,7 @@
 		86E6F4294F19721EB6D70A7B /* ActorFactsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DCB539E3F859283CFC33B3 /* ActorFactsTests.swift */; };
 		90C0FDFEC1E5C4FFA3F3A2FB /* BorderHopQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4208B509F5857580092065AC /* BorderHopQuizView.swift */; };
 		92A37E92A10920D753D31418 /* ClueChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33BF84BA1F17D93F51186B46 /* ClueChipView.swift */; };
+		F100000100000000000000CC /* CastingDirectorStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CC /* CastingDirectorStyle.swift */; };
 		97CE7CE18AEDA00A510093A9 /* MapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFC83BF0058967C0FC4CF8F /* MapRenderer.swift */; };
 		A1B2C3D4E5F6071829304151 /* BorderHopGeoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6071829304150 /* BorderHopGeoData.swift */; };
 		A1B2C3D4E5F6071829304153 /* ne_110m_admin_0_countries.geojson in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6071829304152 /* ne_110m_admin_0_countries.geojson */; };
@@ -128,6 +129,7 @@
 		F10000010000000000000070 /* BorderBlitzGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000070 /* BorderBlitzGameView.swift */; };
 		F10000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift */; };
 		F10000010000000000000072 /* BorderBlitzWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000072 /* BorderBlitzWaveformView.swift */; };
+		F100000100000000000000C9 /* BorderBlitzStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C9 /* BorderBlitzStyle.swift */; };
 		F10000010000000000000080 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000080 /* Assets.xcassets */; };
 		F1AA00010000000000000080 /* BorderBlitzCountryPathData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AA00010000000000000080 /* BorderBlitzCountryPathData.swift */; };
 		F1AA00010000000000000081 /* BorderBlitzCountryMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AA00010000000000000081 /* BorderBlitzCountryMetadata.swift */; };
@@ -151,6 +153,7 @@
 		FTL0000010000000000000016 /* SpotlightTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000016 /* SpotlightTimerView.swift */; };
 		FTL0000010000000000000017 /* StreakBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000017 /* StreakBadge.swift */; };
 		FTL0000010000000000000018 /* FinishTheLineWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000018 /* FinishTheLineWaveformView.swift */; };
+		F100000100000000000000CB /* FinishTheLineStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CB /* FinishTheLineStyle.swift */; };
 		TH0000010000000000000001 /* AnimatedScoreText.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000001 /* AnimatedScoreText.swift */; };
 		TH0000010000000000000002 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000002 /* AppTheme.swift */; };
 		TH000001000000000000000A /* RetroTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000A /* RetroTheme.swift */; };
@@ -179,6 +182,7 @@
 		VC0000010000000000000014 /* VibeCheckGameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000014 /* VibeCheckGameOverView.swift */; };
 		VC0000010000000000000015 /* PassDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000015 /* PassDeviceView.swift */; };
 		VC0000010000000000000016 /* VibeCheckRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000016 /* VibeCheckRootView.swift */; };
+		F100000100000000000000CA /* VibeCheckStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CA /* VibeCheckStyle.swift */; };
 		VC0000010000000000000017 /* VibeCheckGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000017 /* VibeCheckGame.swift */; };
 		VC0000010000000000000018 /* PromptEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000018 /* PromptEntryView.swift */; };
 		VC0000010000000000000019 /* TeamGuessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000019 /* TeamGuessingView.swift */; };
@@ -205,6 +209,7 @@
 		25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopViewModel.swift; sourceTree = "<group>"; };
 		30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopResultsView.swift; sourceTree = "<group>"; };
 		33BF84BA1F17D93F51186B46 /* ClueChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClueChipView.swift; sourceTree = "<group>"; };
+		F200000100000000000000CC /* CastingDirectorStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorStyle.swift; sourceTree = "<group>"; };
 		36ECEBF2AC09E319B228A592 /* FranchiseDetector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FranchiseDetector.swift; path = Features/CastingDirector/Services/ClueGeneration/FranchiseDetector.swift; sourceTree = "<group>"; };
 		37A0CA6A0BBCE05A9A678569 /* BorderHopRoundResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopRoundResult.swift; sourceTree = "<group>"; };
 		3AF032457008CACCB62515BA /* CastingDirectorSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorSetupView.swift; sourceTree = "<group>"; };
@@ -317,6 +322,7 @@
 		F20000010000000000000070 /* BorderBlitzGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzGameView.swift; sourceTree = "<group>"; };
 		F20000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzSpeechRecognitionManager.swift; sourceTree = "<group>"; };
 		F20000010000000000000072 /* BorderBlitzWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzWaveformView.swift; sourceTree = "<group>"; };
+		F200000100000000000000C9 /* BorderBlitzStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzStyle.swift; sourceTree = "<group>"; };
 		F20000010000000000000080 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F2AA00010000000000000080 /* BorderBlitzCountryPathData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzCountryPathData.swift; sourceTree = "<group>"; };
 		F2AA00010000000000000081 /* BorderBlitzCountryMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzCountryMetadata.swift; sourceTree = "<group>"; };
@@ -341,6 +347,7 @@
 		FTL0000020000000000000016 /* SpotlightTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightTimerView.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000017 /* StreakBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakBadge.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000018 /* FinishTheLineWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineWaveformView.swift; sourceTree = "<group>"; };
+		F200000100000000000000CB /* FinishTheLineStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineStyle.swift; sourceTree = "<group>"; };
 		TH0000020000000000000001 /* AnimatedScoreText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedScoreText.swift; sourceTree = "<group>"; };
 		TH0000020000000000000002 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		TH000002000000000000000A /* RetroTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroTheme.swift; sourceTree = "<group>"; };
@@ -369,6 +376,7 @@
 		VC0000020000000000000014 /* VibeCheckGameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckGameOverView.swift; sourceTree = "<group>"; };
 		VC0000020000000000000015 /* PassDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassDeviceView.swift; sourceTree = "<group>"; };
 		VC0000020000000000000016 /* VibeCheckRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckRootView.swift; sourceTree = "<group>"; };
+		F200000100000000000000CA /* VibeCheckStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckStyle.swift; sourceTree = "<group>"; };
 		VC0000020000000000000017 /* VibeCheckGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckGame.swift; sourceTree = "<group>"; };
 		VC0000020000000000000018 /* PromptEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptEntryView.swift; sourceTree = "<group>"; };
 		VC0000020000000000000019 /* TeamGuessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamGuessingView.swift; sourceTree = "<group>"; };
@@ -453,6 +461,7 @@
 				3AF032457008CACCB62515BA /* CastingDirectorSetupView.swift */,
 				5DE79220ABF60EDD425B86DF /* ClueBoardView.swift */,
 				33BF84BA1F17D93F51186B46 /* ClueChipView.swift */,
+				F200000100000000000000CC /* CastingDirectorStyle.swift */,
 				22E24AF47ECEE9765542BD20 /* GuessOverlayView.swift */,
 				C83740FBD51D88D6DE3842BD /* RoundResultsView.swift */,
 				771CD3B545EF4CF697598FAD /* CastingDirectorGameOverView.swift */,
@@ -951,6 +960,7 @@
 				F20000010000000000000069 /* BorderBlitzMenuView.swift */,
 				F20000010000000000000070 /* BorderBlitzGameView.swift */,
 				F20000010000000000000072 /* BorderBlitzWaveformView.swift */,
+				F200000100000000000000C9 /* BorderBlitzStyle.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1029,6 +1039,7 @@
 				FTL0000020000000000000012 /* FinishTheLineCountdownView.swift */,
 				FTL0000020000000000000013 /* FinishTheLineGameView.swift */,
 				FTL0000020000000000000014 /* FinishTheLineResultsView.swift */,
+				F200000100000000000000CB /* FinishTheLineStyle.swift */,
 				FTL0000030000000000000007 /* Components */,
 			);
 			path = Views;
@@ -1126,6 +1137,7 @@
 				VC0000020000000000000014 /* VibeCheckGameOverView.swift */,
 				VC0000020000000000000015 /* PassDeviceView.swift */,
 				VC0000020000000000000016 /* VibeCheckRootView.swift */,
+				F200000100000000000000CA /* VibeCheckStyle.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1341,6 +1353,7 @@
 				EC6DF7F939F1429F53979E41 /* CastingDirectorSetupView.swift in Sources */,
 				06FC50D097F5DC0D0B5EE7EC /* ClueBoardView.swift in Sources */,
 				92A37E92A10920D753D31418 /* ClueChipView.swift in Sources */,
+				F100000100000000000000CC /* CastingDirectorStyle.swift in Sources */,
 				0013CC9E2603BF0F03A2CA62 /* GuessOverlayView.swift in Sources */,
 				6FE6F6AAC29D1617EDF874D3 /* RoundResultsView.swift in Sources */,
 				825F7A053E36D71162F92F71 /* CastingDirectorGameOverView.swift in Sources */,
@@ -1360,6 +1373,7 @@
 				F10000010000000000000070 /* BorderBlitzGameView.swift in Sources */,
 				F10000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift in Sources */,
 				F10000010000000000000072 /* BorderBlitzWaveformView.swift in Sources */,
+				F100000100000000000000C9 /* BorderBlitzStyle.swift in Sources */,
 				VC0000010000000000000001 /* VibeCheckModels.swift in Sources */,
 				VC0000010000000000000002 /* VibeCheckCategoryData.swift in Sources */,
 				VC0000010000000000000003 /* VibeCheckViewModel.swift in Sources */,
@@ -1372,6 +1386,7 @@
 				VC0000010000000000000014 /* VibeCheckGameOverView.swift in Sources */,
 				VC0000010000000000000015 /* PassDeviceView.swift in Sources */,
 				VC0000010000000000000016 /* VibeCheckRootView.swift in Sources */,
+				F100000100000000000000CA /* VibeCheckStyle.swift in Sources */,
 				VC0000010000000000000017 /* VibeCheckGame.swift in Sources */,
 				TH0000010000000000000001 /* AnimatedScoreText.swift in Sources */,
 				TH0000010000000000000002 /* AppTheme.swift in Sources */,
@@ -1407,6 +1422,7 @@
 				FTL0000010000000000000016 /* SpotlightTimerView.swift in Sources */,
 				FTL0000010000000000000017 /* StreakBadge.swift in Sources */,
 				FTL0000010000000000000018 /* FinishTheLineWaveformView.swift in Sources */,
+				F100000100000000000000CB /* FinishTheLineStyle.swift in Sources */,
 				647A9A2B787B189313CE4D46 /* ClueTuning.swift in Sources */,
 				06D5EA4A9B2DDC4145745EC1 /* FranchiseDetector.swift in Sources */,
 				78E8E3AA4AAEF0A29A351075 /* ActorFacts.swift in Sources */,

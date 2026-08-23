@@ -7,7 +7,6 @@ import SwiftUI
 
 struct BorderBlitzLetterTilesView: View {
     let tiles: [BorderBlitzLetterTile]
-    private let theme = GameTheme.borderBlitz
 
     var body: some View {
         GeometryReader { geometry in
@@ -25,7 +24,7 @@ struct BorderBlitzLetterTilesView: View {
                         ForEach(line) { tile in
                             BorderBlitzLetterTileView(
                                 tile: tile,
-                                accentColor: theme.accentColor,
+                                accentColor: BorderBlitzStyle.accent,
                                 tileWidth: tileWidth,
                                 tileHeight: tileHeight
                             )
@@ -68,30 +67,40 @@ struct BorderBlitzLetterTilesView: View {
     }
 }
 
+/// Tile chrome only: flat candy fill, uniform ink rule, Lilita letterform
+/// (§2 rules 1/2/4). Sizing math, reveal state and layout are untouched — the
+/// two `.frame(width:height:)` calls still take the values the parent computes.
 struct BorderBlitzLetterTileView: View {
     let tile: BorderBlitzLetterTile
-    var accentColor: Color = AppTheme.tealGreen
+    var accentColor: Color = BorderBlitzStyle.accent
     var tileWidth: CGFloat = 35
     var tileHeight: CGFloat = 45
 
+    private var cornerRadius: CGFloat { 10 }
+
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
-                .fill(tile.shouldDisplay ? accentColor.opacity(0.15) : AppTheme.mediumGray.opacity(0.12))
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(tile.shouldDisplay ? accentColor : BorderBlitzStyle.tileHiddenFill)
                 .frame(width: tileWidth, height: tileHeight)
 
-            RoundedRectangle(cornerRadius: AppTheme.Radius.small)
-                .stroke(AppTheme.deepCharcoal.opacity(0.15), lineWidth: 1)
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(AppTheme.Retro.ink, lineWidth: 2)
                 .frame(width: tileWidth, height: tileHeight)
 
             if tile.shouldDisplay {
+                // §8: ink on poolBlue passes.
                 Text(String(tile.character).uppercased())
-                    .font(.system(size: min(tileWidth * 0.55, 20), weight: .bold))
-                    .foregroundColor(AppTheme.deepCharcoal)
+                    .font(AppTheme.Retro.Typography.heading(min(tileWidth * 0.55, 20),
+                                                            relativeTo: .title3))
+                    .foregroundColor(BorderBlitzStyle.chipTextColor(on: accentColor))
             } else {
+                // Unfilled placeholder is low-alpha ink, never gray
+                // (§4 gotcha 6 / §9 — the pastel grays are retired).
                 Text("_")
-                    .font(.system(size: min(tileWidth * 0.55, 20), weight: .bold))
-                    .foregroundColor(AppTheme.mediumGray)
+                    .font(AppTheme.Retro.Typography.heading(min(tileWidth * 0.55, 20),
+                                                            relativeTo: .title3))
+                    .foregroundColor(BorderBlitzStyle.tilePlaceholder)
             }
         }
     }

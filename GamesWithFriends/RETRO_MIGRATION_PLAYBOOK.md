@@ -101,9 +101,9 @@ game's row in the tracking table below, commit per screen with
 | Conversation Starters | bubblegum | speechBubbles | ✅ 2026-08-23 (pilot) |
 | Country Letter Challenge | grass | globe | ✅ 2026-08-23 |
 | Name 5 | lilac | burstFive | ✅ 2026-08-23 |
-| Border Blitz | poolBlue | borderMap | — |
+| Border Blitz | poolBlue | borderMap | ✅ 2026-08-23 |
 | Movie Chain | tomato | filmFrame | ✅ 2026-08-23 (Fable-direct) |
-| Casting Director | tangerine | starFace | — (Fable-direct) |
-| VibeCheck | berry | heart | — |
+| Casting Director | tangerine | starFace | ✅ 2026-08-23 (Fable-direct) |
+| VibeCheck | berry | heart | ✅ 2026-08-23 |
 | Border Hop | cornflower | suitcase | — |
-| Finish the Line | plum | clapperboard | — |
+| Finish the Line | plum | clapperboard | ✅ 2026-08-23 |
