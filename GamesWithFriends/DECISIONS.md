@@ -28,6 +28,16 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-08-22 — Retro phase 1: foundations landed [migration]
+
+**What:** `AppTheme.Retro` tokens, bundled Shrikhand/Lilita One (runtime CTFontManager registration — project uses GENERATE_INFOPLIST_FILE, so no UIAppFonts plist), `.retroPanel/.retroCard/.retroLozenge`, `RetroRaisedButtonStyle` (shadow collapse + travel press physics), `MotifFieldLayout` (pure, seeded, tested) + `MotifGroundView`. No shipped screen changed; visual surface is `RetroShowcaseView` (Xcode Previews only), verified on-simulator against the Option C artboard.
+
+**Why:** ART_DIRECTION.md §10 phase 1. Runtime font registration chosen over Info.plist keys for determinism with the generated plist.
+
+**Impact:** Phase 2 (hub) builds only on these primitives — do not hand-roll outlines/shadows in views. `RetroFonts.registerAll()` is called from the app init and is idempotent; tests call it directly. Motif grounds take `exclusions` rects for interactive areas. Note the tests folder is `GamesWithFriends/GamesWithFriendsTests/` (nested), not a repo-root sibling.
+
+---
+
 ## 2026-08-22 — Adopt Retro Maximalist art direction [decision] [migration]
 
 **What:** The app is re-skinning from "warm minimalism" to a retro-maximalist candy-packaging aesthetic, formalized in `ART_DIRECTION.md`. Direction was picked from three mocked intensities on the [Retro Aesthetic Explorer canvas](https://claude.ai/code/artifact/3971b3d8-bb93-4d2e-8d79-bbba81408593) (Option C won); source photos + take/ignore notes live in `docs/design/inspiration/`.

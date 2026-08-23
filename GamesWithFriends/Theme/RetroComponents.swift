@@ -62,8 +62,19 @@ struct RetroCategoryPill: View {
 }
 
 // MARK: - Showcase (visual verification surface for phase 1; not shipped in
-// any navigation — reachable only via Xcode Previews)
+// any navigation — reachable via Xcode Previews)
+struct RetroShowcaseView: View {
+    var body: some View {
+        showcaseBody
+    }
+}
+
 #Preview("Retro Showcase") {
+    RetroShowcaseView()
+}
+
+private extension RetroShowcaseView {
+    var showcaseBody: some View {
     ZStack {
         MotifGroundView(exclusions: [CGRect(x: 16, y: 80, width: 358, height: 620)])
         ScrollView {
@@ -102,5 +113,6 @@ struct RetroCategoryPill: View {
             }
             .padding(AppTheme.Spacing.md)
         }
+    }
     }
 }
