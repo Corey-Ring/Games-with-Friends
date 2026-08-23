@@ -4,38 +4,42 @@ struct CompetitionGuessingView: View {
     @Bindable var viewModel: CompetitionVibeCheckViewModel
 
     var body: some View {
-        VStack(spacing: 12) {
-            // Header
-            headerSection
-
-            // The prompt to evaluate
-            promptCard
-
-            // Spectrum slider for guessing
-            if let round = viewModel.currentRound {
-                SpectrumSliderView(
-                    spectrum: round.spectrum,
-                    position: $viewModel.currentGuessPosition,
-                    isInteractive: true
-                )
+        ZStack {
+            GeometryReader { geo in
+                // The slider owns the middle of the screen and must stay
+                // clear of motifs (§7 — no motifs on interactive controls).
+                MotifGroundView(seed: 0x71BE_0C05,
+                                exclusions: [CGRect(x: 8, y: 8,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 16)])
             }
-
-            // Instructions
-            instructionsCard
-
-            // Lock in button
-            lockInButton
-        }
-        .padding(.horizontal)
-        .padding(.top, AppTheme.Spacing.sm)
-        .padding(.bottom)
-        .background {
-            LinearGradient(
-                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
             .ignoresSafeArea()
+
+            VStack(spacing: 12) {
+                // Header
+                headerSection
+
+                // The prompt to evaluate
+                promptCard
+
+                // Spectrum slider for guessing
+                if let round = viewModel.currentRound {
+                    SpectrumSliderView(
+                        spectrum: round.spectrum,
+                        position: $viewModel.currentGuessPosition,
+                        isInteractive: true
+                    )
+                }
+
+                // Instructions
+                instructionsCard
+
+                // Lock in button
+                lockInButton
+            }
+            .padding(.horizontal)
+            .padding(.top, AppTheme.Spacing.sm)
+            .padding(.bottom)
         }
     }
 
@@ -45,8 +49,9 @@ struct CompetitionGuessingView: View {
         HStack {
             if let round = viewModel.currentRound {
                 Text("Round \(round.roundNumber)")
-                    .font(AppTheme.Typography.secondary)
-                    .foregroundStyle(.secondary)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .foregroundColor(AppTheme.Retro.panelText)
+                    .retroLozenge()
             }
 
             Spacer()
@@ -56,8 +61,9 @@ struct CompetitionGuessingView: View {
                     Image(systemName: "hand.tap.fill")
                     Text(player.name)
                 }
-                .font(AppTheme.Typography.secondary.weight(.semibold))
-                .foregroundStyle(GameTheme.vibeCheck.accentColor)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(VibeCheckStyle.chipTextColor(on: VibeCheckStyle.guesserRole))
+                .retroLozenge(VibeCheckStyle.guesserRole)
             }
         }
     }
@@ -66,64 +72,37 @@ struct CompetitionGuessingView: View {
         VStack(spacing: AppTheme.Spacing.xs) {
             if let round = viewModel.currentRound {
                 Text("\"\(round.prompt)\"")
-                    .font(AppTheme.Typography.body.weight(.semibold))
+                    .font(AppTheme.Retro.Typography.heading(19, relativeTo: .title3))
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.primary)
+                    .foregroundColor(AppTheme.Retro.panelText)
                     .lineLimit(2)
                     .minimumScaleFactor(0.8)
             }
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.vertical, AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(AppTheme.cardSurface)
-                .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
-        }
+        .retroCard()
     }
 
     private var instructionsCard: some View {
-        HStack(spacing: 6) {
-            Image(systemName: "eye.slash.fill")
-                .foregroundStyle(GameTheme.vibeCheck.accentColor)
-                .font(AppTheme.Typography.secondary)
+        HStack(spacing: AppTheme.Spacing.sm) {
+            VibeCheckStatusBadge(systemImage: "eye.slash.fill",
+                                 color: VibeCheckStyle.accent,
+                                 diameter: 20)
 
             Text("Make your guess! Don't let others see your answer.")
                 .font(AppTheme.Typography.caption)
-                .foregroundStyle(.secondary)
+                .foregroundColor(AppTheme.Retro.panelText)
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.xs)
         .frame(maxWidth: .infinity)
-        .background {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(AppTheme.elevatedSurface)
-        }
+        .retroLozenge()
     }
 
     private var lockInButton: some View {
-        Button {
+        RetroPrimaryButton(title: "Lock In Guess", icon: "lock.fill",
+                           accent: VibeCheckStyle.accent) {
             viewModel.submitGuess()
-        } label: {
-            HStack {
-                Image(systemName: "lock.fill")
-                Text("LOCK IN GUESS")
-                    .fontWeight(.bold)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, AppTheme.Spacing.md)
-            .background {
-                LinearGradient(
-                    colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            }
-            .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
         }
-        .buttonStyle(.plain)
     }
 }
 

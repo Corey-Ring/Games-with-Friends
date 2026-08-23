@@ -6,38 +6,41 @@ struct RevealView: View {
     @State private var revealedPositions = false
 
     var body: some View {
-        VStack(spacing: 20) {
-            // Header
-            headerSection
+        ZStack {
+            GeometryReader { geo in
+                MotifGroundView(seed: 0x71BE_0C06,
+                                exclusions: [CGRect(x: 8, y: 8,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 16)])
+            }
+            .ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: AppTheme.Spacing.lg) {
-                    // The prompt
-                    promptCard
+            VStack(spacing: 20) {
+                // Header
+                headerSection
 
-                    // Spectrum with both positions revealed
-                    if let round = viewModel.currentRound {
-                        revealSection(round: round)
-                    }
+                ScrollView {
+                    VStack(spacing: AppTheme.Spacing.lg) {
+                        // The prompt
+                        promptCard
 
-                    // Results for each team
-                    if showResults {
-                        resultsSection
+                        // Spectrum with both positions revealed
+                        if let round = viewModel.currentRound {
+                            revealSection(round: round)
+                        }
+
+                        // Results for each team
+                        if showResults {
+                            resultsSection
+                        }
                     }
                 }
-            }
+                .scrollIndicators(.hidden)
 
-            // Continue button
-            continueButton
-        }
-        .padding()
-        .background {
-            LinearGradient(
-                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+                // Continue button
+                continueButton
+            }
+            .padding()
         }
         .onAppear {
             // Animate the reveal
@@ -62,42 +65,50 @@ struct RevealView: View {
         VStack(spacing: AppTheme.Spacing.xs) {
             if let round = viewModel.currentRound {
                 Text("Round \(round.roundNumber)")
-                    .font(AppTheme.Typography.secondary)
-                    .foregroundStyle(.secondary)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .foregroundColor(AppTheme.Retro.panelText)
+                    .retroLozenge()
             }
 
-            Text("RESULTS")
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundStyle(.purple)
+            // Framed Lilita title on the game accent (Rule 4).
+            Text("Results")
+                .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                .foregroundColor(VibeCheckStyle.chipTextColor(on: VibeCheckStyle.accent))
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .retroPanel(VibeCheckStyle.accent)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                        .fill(AppTheme.Retro.ink)
+                        .offset(x: AppTheme.Retro.shadowOffset,
+                                y: AppTheme.Retro.shadowOffset)
+                )
+                .rotationEffect(.degrees(-1))
         }
     }
 
     private var promptCard: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Text("THE PROMPT")
-                .font(AppTheme.Typography.pillLabel)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(AppTheme.Retro.cocoa)
                 .tracking(2)
 
             if let round = viewModel.currentRound {
                 Text("\"\(round.prompt)\"")
-                    .font(AppTheme.Typography.subsectionHeader.weight(.semibold))
+                    .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title3))
+                    .foregroundColor(AppTheme.Retro.panelText)
                     .multilineTextAlignment(.center)
             }
 
             if let setter = viewModel.promptSetterTeam {
                 Text("Set by \(setter.name)")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(AppTheme.Retro.cocoa)
             }
         }
-        .padding()
         .frame(maxWidth: .infinity)
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
-        }
+        .retroCard()
     }
 
     @ViewBuilder
@@ -118,33 +129,32 @@ struct RevealView: View {
 
                 // Legend
                 HStack(spacing: AppTheme.Spacing.lg) {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(AppTheme.success)
-                            .frame(width: 12, height: 12)
-                        Text("Target")
-                            .font(AppTheme.Typography.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(AppTheme.warning)
-                            .frame(width: 12, height: 12)
-                        Text("Your Guess")
-                            .font(AppTheme.Typography.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                    legendSwatch(color: VibeCheckStyle.targetMarker, label: "Target")
+                    legendSwatch(color: VibeCheckStyle.guessMarker, label: "Your Guess")
                 }
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .retroLozenge()
             }
+        }
+    }
+
+    private func legendSwatch(color: Color, label: String) -> some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(color)
+                .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
+                .frame(width: 12, height: 12)
+            Text(label)
+                .font(AppTheme.Typography.caption)
+                .foregroundColor(AppTheme.Retro.panelText)
         }
     }
 
     private var resultsSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             Text("SCORING")
-                .font(AppTheme.Typography.pillLabel)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(AppTheme.Retro.cocoa)
                 .tracking(2)
 
             ForEach(viewModel.getRoundResults()) { result in
@@ -155,36 +165,16 @@ struct RevealView: View {
                     ))
             }
         }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
-        }
+        .frame(maxWidth: .infinity)
+        .retroCard()
     }
 
     private var continueButton: some View {
-        Button {
+        RetroPrimaryButton(title: viewModel.isGameOver ? "See Final Results" : "Continue",
+                           icon: viewModel.isGameOver ? "trophy.fill" : "arrow.right",
+                           accent: VibeCheckStyle.accent) {
             viewModel.proceedFromReveal()
-        } label: {
-            HStack {
-                Image(systemName: viewModel.isGameOver ? "trophy.fill" : "arrow.right.circle.fill")
-                Text(viewModel.isGameOver ? "SEE FINAL RESULTS" : "CONTINUE")
-                    .fontWeight(.bold)
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background {
-                LinearGradient(
-                    colors: [.purple, .blue],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            }
-            .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
-        .buttonStyle(.plain)
         .opacity(showResults ? 1 : 0.5)
         .disabled(!showResults)
     }
@@ -200,37 +190,29 @@ struct TeamResultRow: View {
             // Team name
             VStack(alignment: .leading, spacing: 2) {
                 Text(result.teamName)
-                    .font(AppTheme.Typography.cardTitle)
+                    .font(AppTheme.Retro.Typography.cardTitle)
+                    .foregroundColor(AppTheme.Retro.panelText)
 
                 Text(distanceText)
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
             }
 
             Spacer()
 
-            // Points badge
-            HStack(spacing: 6) {
-                Circle()
-                    .fill(result.zone.color)
-                    .frame(width: 16, height: 16)
-
-                Text("+\(result.pointsEarned)")
-                    .font(AppTheme.Typography.subsectionHeader.weight(.bold))
-                    .foregroundStyle(result.zone.color)
-            }
-            .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xs)
-            .background {
-                Capsule()
-                    .fill(result.zone.color.opacity(0.15))
-            }
+            // Points badge — flat zone fill, ink outline, ink numeral (§8).
+            VibeCheckPointsChip(zone: result.zone, points: result.pointsEarned)
         }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(AppTheme.warmLinen)
-        }
+        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .fill(AppTheme.Retro.ground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
+        )
     }
 
     private var distanceText: String {

@@ -5,32 +5,32 @@ struct VibeCheckGameOverView: View {
     @State private var showConfetti = false
 
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.lg) {
-            // Header with winner
-            winnerSection
-
-            // Final standings
-            standingsSection
-
-            Spacer()
-
-            // Play again button
-            playAgainButton
-        }
-        .padding()
-        .background {
-            ZStack {
-                LinearGradient(
-                    colors: [GameTheme.vibeCheck.accentColor.opacity(0.15), GameTheme.vibeCheck.accentColor.opacity(0.05)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-
-                if showConfetti {
-                    ConfettiView()
-                }
+        ZStack {
+            GeometryReader { geo in
+                MotifGroundView(seed: 0x71BE_0C0A,
+                                exclusions: [CGRect(x: 8, y: 8,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 16)])
             }
+            .ignoresSafeArea()
+
+            if showConfetti {
+                ConfettiView()
+            }
+
+            VStack(spacing: AppTheme.Spacing.lg) {
+                // Header with winner
+                winnerSection
+
+                // Final standings
+                standingsSection
+
+                Spacer()
+
+                // Play again button
+                playAgainButton
+            }
+            .padding()
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 0.5).delay(0.3)) {
@@ -45,40 +45,56 @@ struct VibeCheckGameOverView: View {
 
     private var winnerSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            Image(systemName: "trophy.fill")
-                .font(.system(size: 60))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.yellow, .orange],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .shadow(color: .yellow.opacity(0.5), radius: 10)
+            // Celebration spot plate (§9 — no naked SF hero, no gradient fill).
+            ZStack {
+                Circle().fill(AppTheme.Retro.panel)
+                Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                Image(systemName: "trophy.fill")
+                    .font(.system(size: 48, weight: .bold))
+                    .foregroundColor(AppTheme.Retro.mustard)
+                    .shadow(color: AppTheme.Retro.ink, radius: 0, x: 2, y: 2)
+            }
+            .frame(width: 110, height: 110)
 
-            Text("GAME OVER!")
-                .font(AppTheme.Typography.hero)
+            // Celebration accent is grass (§3 recipe); cream display type
+            // ≥17pt is sanctioned on grass.
+            Text("Game Over!")
+                .font(AppTheme.Retro.Typography.heading(28, relativeTo: .title))
+                .foregroundColor(AppTheme.Retro.cream)
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .retroPanel(AppTheme.Retro.grass)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                        .fill(AppTheme.Retro.ink)
+                        .offset(x: AppTheme.Retro.shadowOffset,
+                                y: AppTheme.Retro.shadowOffset)
+                )
+                .rotationEffect(.degrees(-1))
 
             if let winner = viewModel.winner {
                 VStack(spacing: AppTheme.Spacing.sm) {
                     Text("\(winner.name) Wins!")
-                        .font(AppTheme.Typography.sectionHeader.weight(.semibold))
-                        .foregroundStyle(.purple)
+                        .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                        .foregroundColor(AppTheme.Retro.panelText)
+                        .retroLozenge()
+                        .rotationEffect(.degrees(0.8))
 
                     Text("\(winner.score) points")
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundStyle(.secondary)
+                        .font(AppTheme.Typography.secondary)
+                        .foregroundColor(AppTheme.Retro.panelText)
+                        .retroLozenge()
                 }
             }
         }
-        .padding()
+        .padding(.top, AppTheme.Spacing.md)
     }
 
     private var standingsSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            Text("FINAL STANDINGS")
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundStyle(.secondary)
+            Text("Final Standings")
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             ForEach(Array(viewModel.sortedTeamsByScore.enumerated()), id: \.element.id) { index, team in
                 FinalTeamRow(
@@ -88,48 +104,26 @@ struct VibeCheckGameOverView: View {
                 )
 
                 if index < viewModel.sortedTeamsByScore.count - 1 {
-                    Divider()
+                    Divider().overlay(AppTheme.Retro.ink.opacity(0.25))
                 }
             }
         }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
-        }
+        .frame(maxWidth: .infinity)
+        .retroCard()
     }
 
     private var playAgainButton: some View {
         VStack(spacing: 12) {
-            Button {
+            RetroPrimaryButton(title: "Play Again", icon: "arrow.counterclockwise",
+                               accent: VibeCheckStyle.accent) {
                 viewModel.resetGame()
-            } label: {
-                HStack {
-                    Image(systemName: "arrow.counterclockwise")
-                    Text("PLAY AGAIN")
-                        .fontWeight(.bold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background {
-                    LinearGradient(
-                        colors: [.purple, .blue],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                }
-                .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
             }
-            .buttonStyle(.plain)
 
-            Button {
+            // Cream panel + ink text is this language's secondary button;
+            // §3.2's one-accent rule keeps berry alone.
+            RetroPrimaryButton(title: "Back to Setup", icon: "gearshape",
+                               accent: AppTheme.Retro.panel) {
                 viewModel.returnToSetup()
-            } label: {
-                Text("Back to Setup")
-                    .font(AppTheme.Typography.secondary)
-                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -145,51 +139,29 @@ struct FinalTeamRow: View {
     var body: some View {
         HStack(spacing: AppTheme.Spacing.md) {
             // Rank with medal for top 3
-            ZStack {
-                if rank <= 3 {
-                    Circle()
-                        .fill(medalColor)
-                        .frame(width: 36, height: 36)
-
-                    if rank == 1 {
-                        Image(systemName: "crown.fill")
-                            .font(AppTheme.Typography.detail)
-                            .foregroundStyle(.white)
-                    } else {
-                        Text("\(rank)")
-                            .font(AppTheme.Typography.cardTitle.weight(.bold))
-                            .foregroundStyle(.white)
-                    }
-                } else {
-                    Text("\(rank).")
-                        .font(AppTheme.Typography.cardTitle.monospacedDigit())
-                        .foregroundStyle(.secondary)
-                        .frame(width: 36)
-                }
-            }
+            VibeCheckRankBadge(rank: rank, diameter: 36)
 
             // Team info
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 HStack(spacing: AppTheme.Spacing.sm) {
                     Text(team.name)
-                        .font(AppTheme.Typography.cardTitle)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Retro.panelText)
 
                     if isWinner {
                         Text("WINNER")
-                            .font(AppTheme.Typography.tabLabel.weight(.bold))
-                            .foregroundStyle(.white)
+                            .font(AppTheme.Retro.Typography.pillLabel)
+                            .foregroundColor(VibeCheckStyle.chipTextColor(on: VibeCheckStyle.accent))
                             .padding(.horizontal, AppTheme.Spacing.sm)
                             .padding(.vertical, 2)
-                            .background {
-                                Capsule()
-                                    .fill(GameTheme.vibeCheck.accentColor)
-                            }
+                            .background(Capsule().fill(VibeCheckStyle.accent))
+                            .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
                     }
                 }
 
                 Text(team.playerNames.joined(separator: ", "))
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
                     .lineLimit(1)
             }
 
@@ -198,24 +170,26 @@ struct FinalTeamRow: View {
             // Score
             VStack(alignment: .trailing, spacing: 2) {
                 Text("\(team.score)")
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(AppTheme.Retro.Typography.heading(24, relativeTo: .title2))
                     .monospacedDigit()
+                    .foregroundColor(AppTheme.Retro.panelText)
 
                 Text("points")
                     .font(AppTheme.Typography.tabLabel)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
             }
         }
         .padding(.vertical, AppTheme.Spacing.sm)
-    }
-
-    private var medalColor: Color {
-        switch rank {
-        case 1: return .yellow
-        case 2: return .gray
-        case 3: return .orange
-        default: return .clear
-        }
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .fill(isWinner ? AppTheme.Retro.mustard.opacity(0.35) : Color.clear)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .stroke(isWinner ? AppTheme.Retro.ink : Color.clear,
+                        lineWidth: AppTheme.Retro.strokeWidth)
+        )
     }
 }
 
@@ -228,8 +202,10 @@ struct ConfettiView: View {
         GeometryReader { geometry in
             ZStack {
                 ForEach(particles) { particle in
+                    // Rule 1: outlines on everything, confetti included.
                     Circle()
                         .fill(particle.color)
+                        .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1))
                         .frame(width: particle.size, height: particle.size)
                         .position(particle.position)
                         .opacity(particle.opacity)
@@ -244,7 +220,7 @@ struct ConfettiView: View {
     }
 
     private func createParticles(in size: CGSize) {
-        let colors: [Color] = [.purple, .blue, .yellow, .green, .orange, .pink]
+        let colors: [Color] = VibeCheckStyle.confettiColors
         particles = (0..<50).map { _ in
             ConfettiParticle(
                 color: colors.randomElement()!,

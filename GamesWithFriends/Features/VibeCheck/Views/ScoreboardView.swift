@@ -4,47 +4,40 @@ struct ScoreboardView: View {
     var viewModel: VibeCheckViewModel
 
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.lg) {
-            // Header
-            headerSection
-
-            // Team standings
-            standingsSection
-
-            Spacer()
-
-            // Next round info
-            nextRoundInfo
-
-            // Continue button
-            continueButton
-        }
-        .padding()
-        .background {
-            LinearGradient(
-                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+        ZStack {
+            GeometryReader { geo in
+                MotifGroundView(seed: 0x71BE_0C08,
+                                exclusions: [CGRect(x: 8, y: 8,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 16)])
+            }
             .ignoresSafeArea()
+
+            VStack(spacing: AppTheme.Spacing.lg) {
+                // Header
+                headerSection
+
+                // Team standings
+                standingsSection
+
+                Spacer()
+
+                // Next round info
+                nextRoundInfo
+
+                // Continue button
+                continueButton
+            }
+            .padding()
         }
     }
 
     // MARK: - Sections
 
     private var headerSection: some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
-            Image(systemName: "trophy.fill")
-                .font(.system(size: 36))
-                .foregroundStyle(.yellow)
-
-            Text("SCOREBOARD")
-                .font(AppTheme.Typography.sectionHeader)
-
-            Text("Target: \(viewModel.settings.targetScore) pts")
-                .font(AppTheme.Typography.secondary)
-                .foregroundStyle(.secondary)
-        }
+        VibeCheckHeader(title: "Scoreboard",
+                        subtitle: "Target: \(viewModel.settings.targetScore) pts")
+            .padding(.top, AppTheme.Spacing.sm)
     }
 
     private var standingsSection: some View {
@@ -58,23 +51,22 @@ struct ScoreboardView: View {
                 )
 
                 if index < viewModel.sortedTeamsByScore.count - 1 {
-                    Divider()
+                    Divider().overlay(AppTheme.Retro.ink.opacity(0.25))
                 }
             }
         }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
-        }
+        .frame(maxWidth: .infinity)
+        .retroCard()
     }
 
     private var nextRoundInfo: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Text("Round \(viewModel.rounds.count + 1)")
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundStyle(.purple)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(VibeCheckStyle.chipTextColor(on: VibeCheckStyle.accent))
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.vertical, 2)
+                .retroLozenge(VibeCheckStyle.accent)
 
             if let nextSetter = viewModel.promptSetterTeam {
                 HStack(spacing: 6) {
@@ -82,39 +74,18 @@ struct ScoreboardView: View {
                     Text("\(nextSetter.name) is the Prompt Setter")
                 }
                 .font(AppTheme.Typography.secondary)
-                .foregroundStyle(.secondary)
+                .foregroundColor(AppTheme.Retro.panelText)
             }
         }
-        .padding()
         .frame(maxWidth: .infinity)
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(GameTheme.vibeCheck.lightBackground)
-        }
+        .retroCard()
     }
 
     private var continueButton: some View {
-        Button {
+        RetroPrimaryButton(title: "Next Round", icon: "arrow.right",
+                           accent: VibeCheckStyle.accent) {
             viewModel.continueToNextRound()
-        } label: {
-            HStack {
-                Image(systemName: "arrow.right.circle.fill")
-                Text("NEXT ROUND")
-                    .fontWeight(.bold)
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background {
-                LinearGradient(
-                    colors: [.purple, .blue],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            }
-            .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
-        .buttonStyle(.plain)
     }
 }
 
@@ -133,35 +104,18 @@ struct TeamScoreRow: View {
     var body: some View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
-                // Rank indicator
-                ZStack {
-                    if rank == 1 {
-                        Circle()
-                            .fill(AppTheme.medalGold)
-                            .frame(width: 32, height: 32)
-
-                        Image(systemName: "crown.fill")
-                            .font(AppTheme.Typography.caption)
-                            .foregroundStyle(.white)
-                    } else {
-                        Circle()
-                            .fill(AppTheme.warmLinen)
-                            .frame(width: 32, height: 32)
-
-                        Text("\(rank)")
-                            .font(AppTheme.Typography.secondary.weight(.bold))
-                            .foregroundStyle(.secondary)
-                    }
-                }
+                // Rank indicator — candy medal disc, ink outline (§2 rule 1).
+                VibeCheckRankBadge(rank: rank)
 
                 // Team info
                 VStack(alignment: .leading, spacing: 2) {
                     Text(team.name)
-                        .font(AppTheme.Typography.cardTitle)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Retro.panelText)
 
                     Text(team.playerNames.joined(separator: ", "))
                         .font(AppTheme.Typography.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
                         .lineLimit(1)
                 }
 
@@ -169,30 +123,13 @@ struct TeamScoreRow: View {
 
                 // Score
                 Text("\(team.score)")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(AppTheme.Retro.Typography.heading(28, relativeTo: .title))
                     .monospacedDigit()
-                    .foregroundStyle(isLeading ? .purple : .primary)
+                    .foregroundColor(isLeading ? VibeCheckStyle.leaderColor : AppTheme.Retro.panelText)
             }
 
-            // Progress bar
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(AppTheme.warmLinen)
-                        .frame(height: 8)
-
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(
-                            LinearGradient(
-                                colors: [.purple, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .frame(width: geometry.size.width * progress, height: 8)
-                }
-            }
-            .frame(height: 8)
+            // Progress bar (§4 gotcha 6 — outlined meter, flat candy fill).
+            VibeCheckProgressBar(progress: progress, height: 8)
         }
         .padding(.vertical, AppTheme.Spacing.xs)
     }

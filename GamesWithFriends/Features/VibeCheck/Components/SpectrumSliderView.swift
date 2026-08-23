@@ -1,6 +1,13 @@
 import SwiftUI
 
-/// A vertical spectrum slider with polar opposite labels
+/// A vertical spectrum slider with polar opposite labels.
+///
+/// Retro-migrated (ART_DIRECTION §2/§5/§8): flat candy fills, ink outlines,
+/// hard offset shadows. **The geometry math, gesture handling and value
+/// mapping below are untouched from the pre-migration file** — every
+/// `usableHeight` / `yPosition` expression, the drag conversion, the haptic
+/// threshold and the percentage arithmetic are byte-for-byte as found. Only
+/// fills, strokes, shadows and label typography changed.
 struct SpectrumSliderView: View {
     let spectrum: VibeCheckSpectrum
     @Binding var position: Double  // 0.0 = top, 1.0 = bottom
@@ -18,9 +25,7 @@ struct SpectrumSliderView: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             // Top label
-            Text(spectrum.topLabel.uppercased())
-                .font(AppTheme.Typography.cardTitle.weight(.bold))
-                .foregroundStyle(.primary)
+            SpectrumPoleLabel(text: spectrum.topLabel, fill: VibeCheckStyle.poleTop)
 
             // Slider area
             GeometryReader { geometry in
@@ -75,34 +80,23 @@ struct SpectrumSliderView: View {
             .frame(height: sliderHeight)
 
             // Bottom label
-            Text(spectrum.bottomLabel.uppercased())
-                .font(AppTheme.Typography.cardTitle.weight(.bold))
-                .foregroundStyle(.primary)
+            SpectrumPoleLabel(text: spectrum.bottomLabel, fill: VibeCheckStyle.poleBottom)
         }
         .padding(.horizontal)
     }
 
     // MARK: - Components
 
+    /// Flat cream track inside an ink outline (§2 rules 1–2 — the old
+    /// four-stop accent gradient is retired).
     private var backgroundTrack: some View {
-        RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-            .fill(
-                LinearGradient(
-                    colors: [
-                        GameTheme.vibeCheck.accentColor.opacity(0.3),
-                        GameTheme.vibeCheck.accentColor.opacity(0.1),
-                        GameTheme.vibeCheck.accentColor.opacity(0.1),
-                        GameTheme.vibeCheck.accentColor.opacity(0.3)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
+        RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+            .fill(AppTheme.Retro.panel)
             .frame(width: trackWidth)
             .frame(maxWidth: .infinity)
             .overlay {
-                RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                    .stroke(AppTheme.mediumGray.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                    .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
                     .frame(width: trackWidth)
             }
     }
@@ -116,8 +110,10 @@ struct SpectrumSliderView: View {
             // Draw zones from outside in (miss -> perfect)
             ForEach(Array(ScoringZone.allCases.reversed().enumerated()), id: \.offset) { _, zone in
                 let zoneHeight = zone.threshold * usableHeight * 2  // *2 because it extends both ways
-                RoundedRectangle(cornerRadius: AppTheme.Radius.small)
-                    .fill(zone.color.opacity(0.3))
+                // Flat candy bands, opaque: the tighter zone paints over the
+                // looser one instead of the two tints blending (§2 rule 2).
+                RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner - 4)
+                    .fill(VibeCheckStyle.zoneColor(zone))
                     .frame(width: trackWidth - 8, height: min(zoneHeight, height))
                     .position(x: trackWidth / 2, y: targetY)
             }
@@ -133,16 +129,17 @@ struct SpectrumSliderView: View {
         return ZStack {
             // Target line
             Rectangle()
-                .fill(AppTheme.success)
+                .fill(VibeCheckStyle.targetMarker)
                 .frame(width: trackWidth + 20, height: 4)
+                .overlay(Rectangle().stroke(AppTheme.Retro.ink, lineWidth: 1))
 
             // Target marker
             Circle()
-                .fill(AppTheme.success)
+                .fill(VibeCheckStyle.targetMarker)
                 .frame(width: 16, height: 16)
                 .overlay {
                     Circle()
-                        .stroke(AppTheme.pureWhite, lineWidth: 2)
+                        .stroke(AppTheme.Retro.ink, lineWidth: 2)
                 }
         }
         .position(x: width / 2, y: yPosition)
@@ -154,16 +151,17 @@ struct SpectrumSliderView: View {
         return ZStack {
             // Guess line
             Rectangle()
-                .fill(AppTheme.warning)
+                .fill(VibeCheckStyle.guessMarker)
                 .frame(width: trackWidth + 20, height: 4)
+                .overlay(Rectangle().stroke(AppTheme.Retro.ink, lineWidth: 1))
 
             // Guess marker
             Circle()
-                .fill(AppTheme.warning)
+                .fill(VibeCheckStyle.guessMarker)
                 .frame(width: 16, height: 16)
                 .overlay {
                     Circle()
-                        .stroke(AppTheme.pureWhite, lineWidth: 2)
+                        .stroke(AppTheme.Retro.ink, lineWidth: 2)
                 }
         }
         .position(x: width / 2, y: yPosition)
@@ -176,31 +174,28 @@ struct SpectrumSliderView: View {
         return ZStack {
             // Position indicator line inside the bar, connecting to the handle
             Rectangle()
-                .fill(
-                    LinearGradient(
-                        colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
+                .fill(AppTheme.Retro.ink)
                 .frame(width: trackWidth - 8, height: 3)
                 .position(x: centerX, y: yPosition)
 
-            // Handle on the right side
+            // Handle on the right side — flat berry disc, ink outline, hard
+            // offset shadow instead of the old blurred drop shadow (§2 rule 2).
             Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .fill(VibeCheckStyle.accent)
                 .frame(width: handleSize, height: handleSize)
-                .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
+                .background(
+                    Circle()
+                        .fill(AppTheme.Retro.ink)
+                        .offset(x: 3, y: 3)
+                )
+                .overlay {
+                    Circle()
+                        .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
+                }
                 .overlay {
                     Image(systemName: "line.3.horizontal")
                         .font(AppTheme.Typography.cardTitle)
-                        .foregroundStyle(.white)
+                        .foregroundColor(VibeCheckStyle.chipTextColor(on: VibeCheckStyle.accent))
                 }
                 .position(x: centerX + trackWidth / 2 + handleSize / 2 - 4, y: yPosition)
 
@@ -229,16 +224,34 @@ struct SpectrumSliderView: View {
 
         return VStack(spacing: 2) {
             Text("\(percentage)%")
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundStyle(.primary)
+                .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
             Text(label.uppercased())
-                .font(AppTheme.Typography.tabLabel)
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(AppTheme.Retro.panelText.opacity(0.75))
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }
         .frame(width: 70, alignment: .trailing)
         .position(x: centerX - trackWidth / 2 - 45, y: yPosition)
+    }
+}
+
+// MARK: - Pole Label
+
+/// The spectrum's two ends are semantic, so each pole carries its own candy
+/// lozenge (§8: ink passes outright on poolBlue and tangerine, so the label
+/// text stays ink at every Dynamic Type size).
+struct SpectrumPoleLabel: View {
+    let text: String
+    let fill: Color
+
+    var body: some View {
+        Text(text.uppercased())
+            .font(AppTheme.Retro.Typography.heading(17))
+            .foregroundColor(VibeCheckStyle.chipTextColor(on: fill))
+            .multilineTextAlignment(.center)
+            .retroLozenge(fill)
     }
 }
 
@@ -254,18 +267,21 @@ struct PromptSetterSliderView: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             // Top label
-            Text(spectrum.topLabel.uppercased())
-                .font(AppTheme.Typography.cardTitle.weight(.bold))
-                .foregroundStyle(.primary)
+            SpectrumPoleLabel(text: spectrum.topLabel, fill: VibeCheckStyle.poleTop)
 
             // Slider with scoring zones
             GeometryReader { geometry in
                 ZStack(alignment: .top) {
                     // Background track
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(AppTheme.warmLinen)
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                        .fill(AppTheme.Retro.panel)
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                                .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
+                                .frame(width: trackWidth)
+                        }
 
                     // Scoring zones centered on target
                     scoringZonesView(height: geometry.size.height)
@@ -277,9 +293,7 @@ struct PromptSetterSliderView: View {
             .frame(height: sliderHeight)
 
             // Bottom label
-            Text(spectrum.bottomLabel.uppercased())
-                .font(AppTheme.Typography.cardTitle.weight(.bold))
-                .foregroundStyle(.primary)
+            SpectrumPoleLabel(text: spectrum.bottomLabel, fill: VibeCheckStyle.poleBottom)
 
             // Legend
             scoringLegend
@@ -310,7 +324,7 @@ struct PromptSetterSliderView: View {
 
                 context.fill(
                     Path(roundedRect: rect, cornerRadius: 6),
-                    with: .color(zone.color.opacity(0.6))
+                    with: .color(VibeCheckStyle.zoneColor(zone))
                 )
             }
         }
@@ -321,25 +335,27 @@ struct PromptSetterSliderView: View {
         let yPosition = targetPosition * height
 
         return Rectangle()
-            .fill(AppTheme.pureWhite)
+            .fill(AppTheme.Retro.ink)
             .frame(width: trackWidth + 30, height: 3)
-            .shadow(color: .black.opacity(0.3), radius: 2)
             .position(x: width / 2, y: yPosition)
     }
 
     private var scoringLegend: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: AppTheme.Spacing.sm) {
             ForEach(Array(ScoringZone.allCases.prefix(4)), id: \.self) { zone in
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Circle()
-                        .fill(zone.color)
-                        .frame(width: 10, height: 10)
+                        .fill(VibeCheckStyle.zoneColor(zone))
+                        .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
+                        .frame(width: 12, height: 12)
                     Text("\(zone.points)")
-                        .font(AppTheme.Typography.tabLabel)
-                        .foregroundStyle(.secondary)
+                        .font(AppTheme.Retro.Typography.pillLabel)
+                        .foregroundColor(AppTheme.Retro.panelText)
                 }
             }
         }
+        .padding(.vertical, 2)
+        .retroLozenge()
     }
 }
 
@@ -357,35 +373,38 @@ struct RevealSliderView: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             // Top label
-            Text(spectrum.topLabel.uppercased())
-                .font(AppTheme.Typography.cardTitle.weight(.bold))
-                .foregroundStyle(.primary)
+            SpectrumPoleLabel(text: spectrum.topLabel, fill: VibeCheckStyle.poleTop)
 
             // Slider with both positions
             GeometryReader { geometry in
                 ZStack(alignment: .top) {
                     // Background track
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(AppTheme.warmLinen)
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                        .fill(AppTheme.Retro.panel)
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                                .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
+                                .frame(width: trackWidth)
+                        }
 
                     // Scoring zones
                     scoringZonesView(height: geometry.size.height)
 
-                    // Target line (green)
+                    // Target line (grass)
                     positionLine(
                         y: targetPosition * geometry.size.height,
                         width: geometry.size.width,
-                        color: AppTheme.success,
+                        color: VibeCheckStyle.targetMarker,
                         label: "Target"
                     )
 
-                    // Guess line (team color)
+                    // Guess line
                     positionLine(
                         y: guessPosition * geometry.size.height,
                         width: geometry.size.width,
-                        color: AppTheme.warning,
+                        color: VibeCheckStyle.guessMarker,
                         label: "Guess"
                     )
                 }
@@ -393,25 +412,20 @@ struct RevealSliderView: View {
             .frame(height: sliderHeight)
 
             // Bottom label
-            Text(spectrum.bottomLabel.uppercased())
-                .font(AppTheme.Typography.cardTitle.weight(.bold))
-                .foregroundStyle(.primary)
+            SpectrumPoleLabel(text: spectrum.bottomLabel, fill: VibeCheckStyle.poleBottom)
 
             // Result
-            HStack {
+            HStack(spacing: AppTheme.Spacing.sm) {
                 Circle()
-                    .fill(zone.color)
+                    .fill(VibeCheckStyle.zoneColor(zone))
+                    .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 2))
                     .frame(width: 20, height: 20)
                 Text("+\(zone.points) points")
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundStyle(zone.color)
+                    .font(AppTheme.Retro.Typography.heading(17))
+                    .foregroundColor(AppTheme.Retro.panelText)
             }
-            .padding(.vertical, AppTheme.Spacing.sm)
-            .padding(.horizontal, AppTheme.Spacing.md)
-            .background {
-                Capsule()
-                    .fill(zone.color.opacity(0.2))
-            }
+            .padding(.vertical, AppTheme.Spacing.xs)
+            .retroLozenge()
         }
         .padding(.horizontal)
     }
@@ -437,7 +451,7 @@ struct RevealSliderView: View {
 
                 context.fill(
                     Path(roundedRect: rect, cornerRadius: 6),
-                    with: .color(zone.color.opacity(0.4))
+                    with: .color(VibeCheckStyle.zoneColor(zone))
                 )
             }
         }
@@ -446,17 +460,22 @@ struct RevealSliderView: View {
     private func positionLine(y: CGFloat, width: CGFloat, color: Color, label: String) -> some View {
         HStack(spacing: AppTheme.Spacing.sm) {
             Text(label)
-                .font(AppTheme.Typography.caption.weight(.semibold))
-                .foregroundStyle(color)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(VibeCheckStyle.chipTextColor(on: color))
+                .padding(.horizontal, AppTheme.Spacing.xs)
+                .padding(.vertical, 1)
+                .background(Capsule().fill(color))
+                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
                 .frame(width: 50, alignment: .trailing)
 
             Rectangle()
                 .fill(color)
                 .frame(width: trackWidth + 20, height: 4)
-                .shadow(color: .black.opacity(0.2), radius: 2)
+                .overlay(Rectangle().stroke(AppTheme.Retro.ink, lineWidth: 1))
 
             Circle()
                 .fill(color)
+                .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
                 .frame(width: 12, height: 12)
         }
         .position(x: width / 2, y: y)
