@@ -46,14 +46,14 @@ struct RetroCategoryPill: View {
             HStack(spacing: AppTheme.Spacing.xs) {
                 if let icon {
                     Image(systemName: icon)
-                        .font(.caption)
+                        .font(.subheadline)
                 }
                 Text(title)
             }
-            .font(AppTheme.Retro.Typography.pillLabel)
+            .font(AppTheme.Retro.Typography.heading(16, relativeTo: .subheadline))
             .foregroundColor(isSelected ? selectedTextColor : AppTheme.Retro.panelText)
             .padding(.horizontal, AppTheme.Spacing.md)
-            .padding(.vertical, AppTheme.Spacing.sm)
+            .padding(.vertical, AppTheme.Spacing.sm + 1)
             .background(Capsule().fill(isSelected ? color : AppTheme.Retro.panel))
             .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth))
         }
