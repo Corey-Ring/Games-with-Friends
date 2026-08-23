@@ -28,6 +28,18 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-08-22 — Adopt Retro Maximalist art direction [decision] [migration]
+
+**What:** The app is re-skinning from "warm minimalism" to a retro-maximalist candy-packaging aesthetic, formalized in `ART_DIRECTION.md`. Direction was picked from three mocked intensities on the [Retro Aesthetic Explorer canvas](https://claude.ai/code/artifact/3971b3d8-bb93-4d2e-8d79-bbba81408593) (Option C won); source photos + take/ignore notes live in `docs/design/inspiration/`.
+
+**Why:** Corey wanted the app to carry the energy of Maeve/Fishwife packaging and 70s hand-painted murals; the minimal UI made that impossible to express beyond illustrations.
+
+**Impact:** `DESIGN_GUIDE.md` now carries a supersession banner — its aesthetic sections (§1, §2, §3 display type, §4.2–4.3, §6, §10) yield to `ART_DIRECTION.md` on migrated screens; mechanics sections still bind everywhere. Migration is phased (tokens/components → hub → accent remap → per-game); a screen is either fully migrated or untouched, never blended. Per-game accent colors will be remapped (`ART_DIRECTION.md` §3.2) in one commit during phase 3.
+
+**Alternatives considered:** Option A (retro illustrations inside the existing minimal shell — rejected as garnish) and Option B (ink outlines + candy palette on the existing card system — rejected in favor of C's full energy).
+
+---
+
 ## 2026-07-12 — Launch-readiness pass: Vibe Check is Competition-only for 1.0 [decision]
 
 **What:** Vibe Check ships Competition-only. After post-fix code review flagged the original "default `selectedMode = .competition`" routing as fragile (the classic state machine stayed live behind it), `VibeCheckRootView` was rewritten to drive `CompetitionVibeCheckViewModel` directly — the classic `VibeCheckViewModel` is never instantiated, and the dead classic setup UI (mode picker, `TeamSetupView`, stepper cards) was deleted from `VibeCheckHomeView`. Classic gameplay views and the classic VM remain in the target but have no entry point.
