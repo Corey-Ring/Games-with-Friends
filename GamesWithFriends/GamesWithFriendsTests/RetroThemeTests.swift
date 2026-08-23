@@ -31,6 +31,14 @@ final class RetroThemeTests: XCTestCase {
         assertSameColor(AppTheme.Retro.plum, hex: "8E4585")
     }
 
+    func testDisplayFontsRegister() {
+        RetroFonts.registerAll()
+        XCTAssertNotNil(UIFont(name: "Shrikhand-Regular", size: 20),
+                        "Shrikhand not registered — check bundle resource + PostScript name")
+        XCTAssertNotNil(UIFont(name: "LilitaOne", size: 20),
+                        "Lilita One not registered — check bundle resource + PostScript name")
+    }
+
     func testShapeTokens() {
         XCTAssertEqual(AppTheme.Retro.strokeWidth, 2.5)
         XCTAssertEqual(AppTheme.Retro.strokeHeavy, 3)

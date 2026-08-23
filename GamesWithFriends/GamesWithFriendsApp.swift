@@ -10,6 +10,10 @@ import SwiftData
 
 @main
 struct GamesWithFriendsApp: App {
+    init() {
+        RetroFonts.registerAll()
+    }
+
     var body: some Scene {
         WindowGroup {
             GameHubView()

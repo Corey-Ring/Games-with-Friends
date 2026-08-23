@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import CoreText
 
 // ART_DIRECTION.md §3 (color), §5 (shape). Phase-1 foundation; no shipped
 // screen references these until its migration phase lands.
@@ -50,5 +51,45 @@ extension AppTheme {
         static let pressTravel: CGFloat = 3
         /// Max rotation jitter for cards/lockups, in degrees (§5).
         static let maxCardTilt: Double = 1.5
+    }
+}
+
+// MARK: - Font registration (runtime; project uses GENERATE_INFOPLIST_FILE,
+// so CTFontManager registration replaces UIAppFonts plumbing)
+enum RetroFonts {
+    private final class BundleToken {}
+    private static var registered = false
+
+    /// Idempotent. Call once from the app initializer (and from tests).
+    static func registerAll() {
+        guard !registered else { return }
+        registered = true
+        for resource in ["Shrikhand-Regular", "LilitaOne-Regular"] {
+            guard let url = Bundle(for: BundleToken.self).url(forResource: resource, withExtension: "ttf") else {
+                assertionFailure("Missing bundled font \(resource).ttf")
+                continue
+            }
+            CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+        }
+    }
+}
+
+// MARK: - Retro typography (§4). Display faces scale with Dynamic Type
+// via relativeTo; SF Pro (AppTheme.Typography) remains the body face.
+extension AppTheme.Retro {
+    struct Typography {
+        /// Shrikhand — logo lockups ONLY (§4), never body or labels.
+        static func display(_ size: CGFloat, relativeTo style: Font.TextStyle = .largeTitle) -> Font {
+            .custom("Shrikhand-Regular", size: size, relativeTo: style)
+        }
+        /// Lilita One — headings, card titles, buttons, pills.
+        static func heading(_ size: CGFloat, relativeTo style: Font.TextStyle = .headline) -> Font {
+            .custom("LilitaOne", size: size, relativeTo: style)
+        }
+
+        static let logo = display(40)
+        static let screenTitle = heading(28, relativeTo: .title)
+        static let cardTitle = heading(17, relativeTo: .headline)
+        static let pillLabel = heading(14, relativeTo: .subheadline)
     }
 }
