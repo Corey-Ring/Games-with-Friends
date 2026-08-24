@@ -369,15 +369,13 @@ def brows(ey=-24.5, gap=9.5):
             f'stroke="{INK}" stroke-width="2.6" stroke-linecap="round"/>')
 
 def grin(my=7, w=13.5):
-    """Big open grin: dark mouth, teeth band along the top, tongue below."""
+    """Big open grin: dark mouth with a tongue peeking from the bottom."""
     i = _uid[0]; _uid[0] += 1
     d = f"M {-w} {my} Q 0 {my + w * 1.25} {w} {my} Q 0 {my + w * 0.34} {-w} {my} Z"
     add(f'<clipPath id="grin{i}"><path d="{d}"/></clipPath>')
     add(f'<path d="{d}" fill="{MOUTH}"/>')
     add(f'<g clip-path="url(#grin{i})">')
-    add(f'<path d="M {-w} {my} Q 0 {my + w * 0.34} {w} {my} L {w} {my + 4.4} '
-        f'Q 0 {my + w * 0.34 + 4.4} {-w} {my + 4.4} Z" fill="{WHITE}"/>')
-    add(f'<ellipse cx="0" cy="{my + w * 0.78}" rx="{w * 0.52}" ry="{w * 0.4}" '
+    add(f'<ellipse cx="0" cy="{my + w * 0.82}" rx="{w * 0.56}" ry="{w * 0.42}" '
         f'fill="{GUM}" stroke="{INK}" stroke-width="2.2"/>')
     add('</g>')
     add(f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="2.8" stroke-linejoin="round"/>')
