@@ -296,63 +296,90 @@ def center_cards():
     dot(-62, -78, 4, MAGENTA)
     add('</g>')
 
-# classic board-game meeple silhouette: round head, wing arms angled
-# down-and-out, chunky base with a narrow notch between the legs
-MEEPLE = ("M0,-50 C12,-50 20,-42 20,-32 C20,-25 16,-19 10,-16 "
-          "C24,-15 38,-12 44,-6 C48,-1 45,6 38,5 C30,4 22,2 16,2 "
-          "C17,12 22,22 28,32 C31,38 32,43 31,46 C30,50 26,52 21,52 L9,52 "
-          "C5,52 3,49 3,45 C3,38 4,32 0,28 C-4,32 -3,38 -3,45 "
-          "C-3,49 -5,52 -9,52 L-21,52 C-26,52 -30,50 -31,46 "
-          "C-32,43 -31,38 -28,32 C-22,22 -17,12 -16,2 "
-          "C-22,2 -30,4 -38,5 C-45,6 -48,-1 -44,-6 "
-          "C-38,-12 -24,-15 -10,-16 C-16,-19 -20,-25 -20,-32 "
-          "C-20,-42 -12,-50 0,-50 Z")
+# candy-palette accents from GamesWithFriends/ART_DIRECTION.md (section 3.1)
+POOL   = "#5BC0DF"
+GUM    = "#F387B8"
+GRASS  = "#57A34F"
+TANGER = "#F07C24"
+CANDY_PLUM = "#8E4585"
+SKIN_TAN   = "#E9BD90"
+SKIN_BROWN = "#A96B4A"
 
-def meeple(x, y, rot, scale, fill, trim):
-    """One folk meeple with a face and a personal touch, drawn like the
-    reference tins: closed happy eyes, rosy cheeks, ink outline."""
-    add(f'<g transform="translate({x} {y}) rotate({rot}) scale({scale})">')
-    add(f'<path d="{MEEPLE}" fill="{fill}" stroke="{INK}" stroke-width="4.2" '
-        f'stroke-linejoin="round"/>')
-    # face: closed eyes + smile + blush
-    add(f'<g stroke="{INK}" stroke-width="2.6" fill="none" stroke-linecap="round">'
-        f'<path d="M -11 -36 Q -7 -31 -3 -36"/>'
-        f'<path d="M 3 -36 Q 7 -31 11 -36"/>'
-        f'<path d="M -6 -27 Q 0 -22 6 -27"/></g>')
-    dot(-14, -29, 3.0, BLUSH)
-    dot(14, -29, 3.0, BLUSH)
-    if trim == "scarf":
-        add(f'<path d="M -11 -14 L 11 -14 L 1 0 Z" fill="{GOLD}" stroke="{INK}" '
-            f'stroke-width="2.6" stroke-linejoin="round"/>')
-    elif trim == "star":
-        pts = []
-        for i in range(10):
-            rr = 9 if i % 2 == 0 else 3.8
-            a = math.radians(-90 + i * 36)
-            pts.append((rr * math.cos(a), 0 + rr * math.sin(a)))
-        add(f'<polygon points="{P(pts)}" fill="{GOLD}" stroke="{INK}" '
-            f'stroke-width="2.4" stroke-linejoin="round"/>')
+HAND = ("M -10 9 L -10 -4 A 2.6 2.6 0 0 1 -5 -4.6 A 2.6 2.6 0 0 1 0 -4.8 "
+        "A 2.6 2.6 0 0 1 5 -4.6 A 2.6 2.6 0 0 1 10 -4 L 10 9 Q 0 14 -10 9 Z")
+
+def friend(x, y, s, skin, hair, hair_col, shirt, wave=None, freckles=False):
+    """Mural-style friend: big head, dot eyes, big smile, waving open palm
+    (see docs/design/inspiration/mural-town-closeup.jpg)."""
+    add(f'<g transform="translate({x} {y}) scale({s})">')
+    # waving arm behind the torso
+    if wave:
+        wx = 34 if wave == "right" else -34
+        hx = 40 if wave == "right" else -40
+        sxx = 12 if wave == "right" else -12
+        add(f'<path d="M {sxx} 30 Q {wx*0.8} 16 {wx} -8" fill="none" stroke="{INK}" '
+            f'stroke-width="15" stroke-linecap="round"/>')
+        add(f'<path d="M {sxx} 30 Q {wx*0.8} 16 {wx} -8" fill="none" stroke="{shirt}" '
+            f'stroke-width="9.5" stroke-linecap="round"/>')
+        add(f'<g transform="translate({hx} -19) rotate({14 if wave == "right" else -14}) scale(1.3)">'
+            f'<path d="{HAND}" fill="{skin}" stroke="{INK}" stroke-width="2.6" '
+            f'stroke-linejoin="round"/>'
+            f'<g stroke="{INK}" stroke-width="1.8" stroke-linecap="round">'
+            f'<line x1="-5" y1="-4" x2="-5" y2="3"/>'
+            f'<line x1="0" y1="-4.4" x2="0" y2="3.6"/>'
+            f'<line x1="5" y1="-4" x2="5" y2="3"/></g></g>')
+    # torso
+    add(f'<rect x="-23" y="16" width="46" height="40" rx="15" fill="{shirt}" '
+        f'stroke="{INK}" stroke-width="3.6"/>')
+    add(f'<path d="M -7 17 L 0 25 L 7 17" fill="none" stroke="{INK}" '
+        f'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>')
+    # head
+    add(f'<circle cx="0" cy="-6" r="21" fill="{skin}" stroke="{INK}" stroke-width="3.6"/>')
+    # hair
+    if hair == "bob":
+        add(f'<path d="M -21 -10 A 21 21 0 0 1 21 -10 L 17 -5 A 16 16 0 0 0 -16 -7 Z" '
+            f'fill="{hair_col}" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
+        add(f'<path d="M 14 -14 Q 22 -12 22 -4 Q 18 -8 12 -8 Z" '
+            f'fill="{hair_col}" stroke="{INK}" stroke-width="2.6" stroke-linejoin="round"/>')
+    elif hair == "curls":
+        for hxx, hy, hr in [(-19, -16, 7.5), (-10, -23, 8), (0, -26, 8.5),
+                            (10, -23, 8), (19, -16, 7.5)]:
+            add(f'<circle cx="{hxx}" cy="{hy}" r="{hr}" fill="{hair_col}" '
+                f'stroke="{INK}" stroke-width="2.8"/>')
+    elif hair == "buns":
+        add(f'<circle cx="-20" cy="-22" r="8" fill="{hair_col}" stroke="{INK}" stroke-width="2.8"/>')
+        add(f'<circle cx="20" cy="-22" r="8" fill="{hair_col}" stroke="{INK}" stroke-width="2.8"/>')
+        add(f'<path d="M -21 -10 A 21 21 0 0 1 21 -10 L 16 -6 A 16 16 0 0 0 -16 -6 Z" '
+            f'fill="{hair_col}" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
+    elif hair == "cap":
+        add(f'<path d="M -21 -10 A 21 21 0 0 1 21 -10 L 21 -8 L -28 -8 Z" '
+            f'fill="{hair_col}" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
+        add(f'<circle cx="0" cy="-27" r="3.6" fill="{hair_col}" stroke="{INK}" stroke-width="2.4"/>')
+    # face: dot eyes, big smile, blush
+    dot(-7.5, -8, 2.7, INK)
+    dot(7.5, -8, 2.7, INK)
+    add(f'<path d="M -7 0 Q 0 7 7 0" fill="none" stroke="{INK}" '
+        f'stroke-width="2.8" stroke-linecap="round"/>')
+    dot(-14, -1, 3.2, BLUSH)
+    dot(14, -1, 3.2, BLUSH)
+    if freckles:
+        dot(-4, -3, 1.1, INK)
+        dot(0, -2, 1.1, INK)
+        dot(4, -3, 1.1, INK)
     add('</g>')
 
 def center_meeples():
-    """A little crowd of meeples: game night, everyone's invited."""
+    """A crowd of mural-style friends waving hello: game night, everyone in."""
     add(f'<g transform="translate({gx} {gy})">')
+    add('<g transform="scale(1.12)">')
     # back row peeks over the front row
-    meeple(-35, -26, -5, 0.78, GREEN, "star")
-    meeple(35, -26, 5, 0.78, MAGENTA, None)
+    friend(-42, -34, 0.82, SKIN_TAN, "cap", GRASS, GRASS, wave="left")
+    friend(42, -34, 0.82, CREAM, "buns", "#8E4585", TANGER, wave="right")
     # front row
-    meeple(-54, 28, -9, 1.0, BLUE, "scarf")
-    meeple(54, 28, 9, 1.0, RED, None)
-    # shared star overhead
-    pts = []
-    for i in range(10):
-        rr = 17 if i % 2 == 0 else 7
-        a = math.radians(-90 + i * 36)
-        pts.append((rr * math.cos(a), -92 + rr * math.sin(a)))
-    add(f'<polygon points="{P(pts)}" fill="{GOLD}" stroke="{INK}" '
-        f'stroke-width="3.2" stroke-linejoin="round"/>')
-    sparkle(-92, -58, 8, GOLD_HI)
-    sparkle(92, -58, 8, GOLD_HI)
+    friend(-38, 26, 1.0, CREAM, "bob", GOLD, POOL, freckles=True)
+    friend(38, 26, 1.0, SKIN_BROWN, "curls", INK, GUM)
+    add('</g>')
+    star5(0, -98, 13, GOLD, rot=12)
     # spray of stars below the medallion circle
     star5(-56, 206, 10, GOLD, rot=-12)
     star5(0, 222, 14, GOLD_HI, rot=8)

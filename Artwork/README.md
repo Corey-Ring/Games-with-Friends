@@ -26,7 +26,7 @@ center art while keeping everything else identical:
 |---|---|
 | `globe` (default) | The folk globe — writes `cover-art.png` |
 | `cards` | A fanned hand of cards with a die |
-| `meeples` | Two meeples under a shared star |
+| `meeples` | Four mural-style friends waving hello |
 | `tiles` | Q & A letter tiles |
 | `question` | A question mark on a scalloped rosette |
 
