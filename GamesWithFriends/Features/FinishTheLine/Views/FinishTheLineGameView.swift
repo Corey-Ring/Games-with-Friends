@@ -70,10 +70,11 @@ struct FinishTheLineGameView: View {
             )
             .overlay(alignment: .top) {
                 if showTimeBonusPip {
+                    // §8: grass can't be small text on cream — grass-filled chip, ink label.
                     Text("+2s")
                         .font(AppTheme.Retro.Typography.pillLabel)
-                        .foregroundColor(FinishTheLineStyle.correctColor)
-                        .retroLozenge()
+                        .foregroundColor(AppTheme.Retro.ink)
+                        .retroLozenge(FinishTheLineStyle.correctColor)
                         .offset(y: -26)
                         .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
                 }
@@ -136,10 +137,11 @@ struct FinishTheLineGameView: View {
             Spacer(minLength: 0)
 
             if showNearMissPip {
+                // §8: tangerine can't be small text on cream — tangerine chip, ink label.
                 Text("So close — say it again!")
                     .font(AppTheme.Typography.footnote.weight(.semibold))
-                    .foregroundColor(FinishTheLineStyle.skippedColor)
-                    .retroLozenge()
+                    .foregroundColor(AppTheme.Retro.ink)
+                    .retroLozenge(FinishTheLineStyle.skippedColor)
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
 

@@ -165,6 +165,8 @@
 		TH000001000000000000000F /* RetroSpotIllustrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000F /* RetroSpotIllustrations.swift */; };
 		TF0000010000000000000001 /* Shrikhand-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000001 /* Shrikhand-Regular.ttf */; };
 		TF0000010000000000000002 /* LilitaOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000002 /* LilitaOne-Regular.ttf */; };
+		TF0000010000000000000003 /* Shrikhand-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000003 /* Shrikhand-OFL.txt */; };
+		TF0000010000000000000004 /* LilitaOne-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000004 /* LilitaOne-OFL.txt */; };
 		TT0000010000000000000001 /* RetroThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TT0000020000000000000001 /* RetroThemeTests.swift */; };
 		TH0000010000000000000003 /* BackgroundStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000003 /* BackgroundStyles.swift */; };
 		TH0000010000000000000004 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000004 /* Color+Hex.swift */; };
@@ -360,6 +362,8 @@
 		TH000002000000000000000F /* RetroSpotIllustrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroSpotIllustrations.swift; sourceTree = "<group>"; };
 		TF0000020000000000000001 /* Shrikhand-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Shrikhand-Regular.ttf"; sourceTree = "<group>"; };
 		TF0000020000000000000002 /* LilitaOne-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LilitaOne-Regular.ttf"; sourceTree = "<group>"; };
+		TF0000020000000000000003 /* Shrikhand-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Shrikhand-OFL.txt"; sourceTree = "<group>"; };
+		TF0000020000000000000004 /* LilitaOne-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LilitaOne-OFL.txt"; sourceTree = "<group>"; };
 		TT0000020000000000000001 /* RetroThemeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RetroThemeTests.swift; path = ../../GamesWithFriendsTests/RetroThemeTests.swift; sourceTree = "<group>"; };
 		TH0000020000000000000003 /* BackgroundStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundStyles.swift; sourceTree = "<group>"; };
 		TH0000020000000000000004 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Color+Hex.swift"; path = "Color+Hex.swift"; sourceTree = "<group>"; };
@@ -1087,6 +1091,8 @@
 			children = (
 				TF0000020000000000000001 /* Shrikhand-Regular.ttf */,
 				TF0000020000000000000002 /* LilitaOne-Regular.ttf */,
+				TF0000020000000000000003 /* Shrikhand-OFL.txt */,
+				TF0000020000000000000004 /* LilitaOne-OFL.txt */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -1244,6 +1250,8 @@
 				F10000010000000000000080 /* Assets.xcassets in Resources */,
 				TF0000010000000000000001 /* Shrikhand-Regular.ttf in Resources */,
 				TF0000010000000000000002 /* LilitaOne-Regular.ttf in Resources */,
+				TF0000010000000000000003 /* Shrikhand-OFL.txt in Resources */,
+				TF0000010000000000000004 /* LilitaOne-OFL.txt in Resources */,
 				4AF67CC12F3BC535009A3801 /* README.md in Resources */,
 				4AF67CBF2F3BC4E1009A3801 /* add_directors.py in Resources */,
 			);
