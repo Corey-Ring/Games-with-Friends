@@ -8,8 +8,10 @@ struct Name5GameView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Background
-                WarmLinenBackground()
+                // Plain retro ground behind the phase switch; each phase view
+                // paints its own motif field with a distinct seed (§3, §7).
+                AppTheme.Retro.ground
+                    .ignoresSafeArea()
 
                 // Content based on game phase
                 switch viewModel.gamePhase {
@@ -39,6 +41,7 @@ struct Name5GameView: View {
                                 Label("New Game", systemImage: "arrow.counterclockwise")
                             }
                         } label: {
+                            // §6: SF glyphs survive only as functional chrome.
                             Image(systemName: "ellipsis.circle")
                                 .font(AppTheme.Typography.subsectionHeader)
                         }
@@ -55,6 +58,7 @@ struct Name5GameView: View {
                     break
                 }
             }
+            .tint(AppTheme.Retro.ink)
         }
     }
 }
@@ -65,26 +69,55 @@ struct GameOverView: View {
 
     var body: some View {
         ZStack {
-            GameBackground(gameTheme: .name5)
-            
+            GeometryReader { geo in
+                // The results column runs the full width; motifs keep to the
+                // nav strip and the outer edges (§7 — the generator adds the
+                // 12pt clearance itself).
+                MotifGroundView(seed: 0x4A5E_0F08,
+                                exclusions: [CGRect(x: 8, y: 56,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 56)])
+            }
+            .ignoresSafeArea()
+
             ScrollView {
                 VStack(spacing: AppTheme.Spacing.lg) {
-                    // Header
-                    VStack(spacing: AppTheme.Spacing.md) {
-                        Image(systemName: viewModel.playerStandings.isEmpty ? "flag.checkered" : "trophy.fill")
-                            .font(.system(size: 60))
-                            .foregroundStyle(viewModel.playerStandings.isEmpty ? GameTheme.name5.accentColor : AppTheme.medalGold)
+                    // Header: spot plate + framed Lilita title (§3 recipe /
+                    // §9 — no naked SF hero on a celebration screen).
+                    VStack(spacing: AppTheme.Spacing.sm) {
+                        ZStack {
+                            Circle().fill(AppTheme.Retro.panel)
+                            Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                            RetroSpotIllustration(kind: .burstFive)
+                                .frame(width: 64, height: 64)
+                        }
+                        .frame(width: 84, height: 84)
 
+                        // Celebration accent is grass (§3 recipe); cream
+                        // display text ≥17pt Lilita is sanctioned there (§8).
                         Text("Game Over!")
-                            .font(AppTheme.Typography.hero)
-                            .fontWeight(.bold)
+                            .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                            .foregroundColor(AppTheme.Retro.cream)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, AppTheme.Spacing.md)
+                            .padding(.vertical, AppTheme.Spacing.xs)
+                            .retroPanel(AppTheme.Retro.grass)
+                            .background(
+                                RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                                    .fill(AppTheme.Retro.ink)
+                                    .offset(x: AppTheme.Retro.shadowOffset,
+                                            y: AppTheme.Retro.shadowOffset)
+                            )
+                            .rotationEffect(.degrees(-1))
 
                         Text(winnerText)
                             .font(AppTheme.Typography.body)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppTheme.Retro.panelText)
                             .multilineTextAlignment(.center)
+                            .retroLozenge()
+                            .rotationEffect(.degrees(0.8))
                     }
-                    .padding(.top, 40)
+                    .padding(.top, AppTheme.Spacing.lg)
 
                     // Standings (pass-and-play only)
                     if !viewModel.playerStandings.isEmpty {
@@ -104,11 +137,15 @@ struct GameOverView: View {
 
                     // Buttons
                     VStack(spacing: AppTheme.Spacing.md) {
-                        PrimaryButton(title: "Play Again", icon: "play.fill") {
+                        RetroPrimaryButton(title: "Play Again", icon: "play.fill",
+                                           accent: Name5Style.accent) {
                             viewModel.startGame()
                         }
 
-                        SecondaryButton(title: "Back to Setup", icon: "gearshape") {
+                        // Cream panel + ink text is this language's secondary
+                        // button; §3.2's one-accent rule keeps lilac alone.
+                        RetroPrimaryButton(title: "Back to Setup", icon: "gearshape",
+                                           accent: AppTheme.Retro.panel) {
                             viewModel.resetGame()
                         }
                     }
@@ -141,31 +178,34 @@ struct StandingsCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Standings")
-                .font(AppTheme.Typography.sectionHeader)
-                .fontWeight(.bold)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             ForEach(standings) { standing in
                 HStack(spacing: AppTheme.Spacing.md) {
-                    Image(systemName: winners.contains(standing.playerNumber) ? "crown.fill" : "person.fill")
-                        .foregroundColor(winners.contains(standing.playerNumber) ? AppTheme.medalGold : .secondary)
-                        .frame(width: 24)
+                    // §8: the semantic color rides on the ink-outlined badge
+                    // so the row copy stays ink-on-cream.
+                    Name5StatusBadge(
+                        systemImage: winners.contains(standing.playerNumber) ? "crown.fill" : "person.fill",
+                        color: winners.contains(standing.playerNumber) ? Name5Style.winnerColor : Name5Style.infoColor
+                    )
 
                     Text("Player \(standing.playerNumber)")
-                        .font(AppTheme.Typography.cardTitle)
-                        .fontWeight(winners.contains(standing.playerNumber) ? .bold : .regular)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Retro.panelText)
 
                     Spacer()
 
                     Text("\(standing.successes) of \(standing.attempts)")
-                        .font(AppTheme.Typography.cardTitle)
+                        .font(AppTheme.Retro.Typography.cardTitle)
                         .monospacedDigit()
-                        .foregroundColor(winners.contains(standing.playerNumber) ? GameTheme.name5.accentColor : .secondary)
+                        .foregroundColor(AppTheme.Retro.panelText)
                 }
                 .padding(.vertical, AppTheme.Spacing.xs)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .gameCard()
+        .retroCard()
         .accessibilityElement(children: .combine)
     }
 }
@@ -177,8 +217,8 @@ struct FinalStatsCard: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.lg) {
             Text("Final Stats")
-                .font(AppTheme.Typography.sectionHeader)
-                .fontWeight(.bold)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppTheme.Spacing.md) {
@@ -186,32 +226,32 @@ struct FinalStatsCard: View {
                     icon: "target",
                     label: "Total Rounds",
                     value: "\(stats.roundsPlayed)",
-                    color: GameTheme.name5.accentColor
+                    color: Name5Style.accent
                 )
 
                 FinalStatItem(
-                    icon: "checkmark.circle.fill",
+                    icon: "checkmark",
                     label: "Successful",
                     value: "\(stats.roundsWon)",
-                    color: AppTheme.success
+                    color: Name5Style.successColor
                 )
 
                 FinalStatItem(
                     icon: "flame.fill",
                     label: "Best Streak",
                     value: "\(stats.bestStreak)",
-                    color: AppTheme.warning
+                    color: Name5Style.missColor
                 )
 
                 FinalStatItem(
                     icon: "percent",
                     label: "Success Rate",
                     value: "\(Int(stats.successRate * 100))%",
-                    color: GameTheme.name5.accentColor
+                    color: Name5Style.accent
                 )
             }
         }
-        .gameCard()
+        .retroCard()
     }
 }
 
@@ -222,25 +262,23 @@ struct FinalStatItem: View {
     let color: Color
 
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.md) {
-            Image(systemName: icon)
-                .font(AppTheme.Typography.screenTitle)
-                .foregroundColor(color)
+        VStack(spacing: AppTheme.Spacing.sm) {
+            // §9: the 10%-opacity tint circle is retired — the stat color now
+            // rides on an ink-outlined badge inside a double-ruled tile (§5).
+            Name5StatusBadge(systemImage: icon, color: color, diameter: 32)
 
             Text(value)
-                .font(AppTheme.Typography.screenTitle)
+                .font(AppTheme.Retro.Typography.heading(24, relativeTo: .title))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             Text(label)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(AppTheme.mediumGray)
+                .foregroundColor(AppTheme.Retro.cocoa)
                 .multilineTextAlignment(.center)
         }
-        .padding()
+        .padding(AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(color.opacity(0.1))
-        )
+        .retroPanel(AppTheme.Retro.panel, cornerRadius: AppTheme.Retro.Radius.inner)
     }
 }
 
@@ -251,22 +289,24 @@ struct RecentRoundsCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Recent Rounds")
-                .font(AppTheme.Typography.cardTitle)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             ForEach(results.suffix(5).reversed()) { result in
                 HStack {
-                    Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
-                        .foregroundColor(result.success ? AppTheme.success : AppTheme.warning)
+                    Name5StatusBadge(systemImage: result.success ? "checkmark" : "xmark",
+                                     color: result.success ? Name5Style.successColor : Name5Style.missColor)
 
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                         Text(result.promptText)
                             .font(AppTheme.Typography.body)
+                            .foregroundColor(AppTheme.Retro.panelText)
                             .lineLimit(1)
 
                         if let time = result.timeUsed {
                             Text("\(time)s")
                                 .font(AppTheme.Typography.caption)
-                                .foregroundColor(AppTheme.mediumGray)
+                                .foregroundColor(AppTheme.Retro.cocoa)
                         }
                     }
 
@@ -274,24 +314,18 @@ struct RecentRoundsCard: View {
 
                     if let playerNum = result.playerNumber {
                         Text("P\(playerNum)")
-                            .font(AppTheme.Typography.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(AppTheme.mediumGray)
+                            .font(AppTheme.Retro.Typography.pillLabel)
+                            .foregroundColor(Name5Style.chipTextColor(on: Name5Style.accent))
                             .padding(.horizontal, AppTheme.Spacing.sm)
                             .padding(.vertical, AppTheme.Spacing.xs)
-                            .background(
-                                Capsule()
-                                    .fill(AppTheme.mediumGray.opacity(0.15))
-                            )
+                            .background(Capsule().fill(Name5Style.accent))
+                            .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
                     }
                 }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(AppTheme.mediumGray.opacity(0.05))
-                )
+                .padding(AppTheme.Spacing.sm)
+                .retroPanel(AppTheme.Retro.panel, cornerRadius: AppTheme.Retro.Radius.inner)
             }
         }
-        .gameCard()
+        .retroCard()
     }
 }

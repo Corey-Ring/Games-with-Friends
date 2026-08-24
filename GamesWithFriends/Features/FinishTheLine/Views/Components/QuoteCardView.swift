@@ -8,7 +8,7 @@ import SwiftUI
 /// The headline card players read aloud. The source is hidden while the card
 /// is live (no spoilers — that's the tip-of-tongue tension), fading in only as
 /// a lifeline hint or once the card resolves. On resolution the blank fills
-/// with the missing word — green for a correct answer, amber for the skip
+/// with the missing word — grass for a correct answer, tangerine for the skip
 /// "groan reveal" — and the attribution slides in underneath.
 struct QuoteCardView: View {
     let quote: Quote
@@ -21,20 +21,18 @@ struct QuoteCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            // Category pill — gives players a scan-hint
+            // Category chip — gives players a scan-hint. Semantic variety is
+            // allowed on chips inside a cream card (playbook §3), so each
+            // category wears its own candy hue with an ink outline.
             HStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: quote.category.iconName)
                     .font(.caption2)
                 Text(quote.category.displayName.uppercased())
-                    .font(AppTheme.Typography.footnote.weight(.bold))
+                    .font(AppTheme.Retro.Typography.pillLabel)
                     .tracking(1.2)
             }
-            .foregroundColor(.white)
-            .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xs)
-            .background(
-                Capsule().fill(accentColor)
-            )
+            .foregroundColor(FinishTheLineStyle.chipTextColor(on: categoryFill))
+            .retroLozenge(categoryFill)
 
             // Quote body — blank fills in with the answer on resolution
             QuoteBodyText(
@@ -46,16 +44,17 @@ struct QuoteCardView: View {
 
             // Source line — hidden until resolved or hint-revealed
             if showSource {
-                Divider()
-                    .overlay(accentColor.opacity(0.3))
+                Rectangle()
+                    .fill(AppTheme.Retro.ink)
+                    .frame(height: 2)
 
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: resolution == nil ? "lightbulb.fill" : "quote.opening")
                         .font(.caption)
-                        .foregroundColor(accentColor.opacity(0.65))
+                        .foregroundColor(AppTheme.Retro.cocoa)
                     Text(quote.source)
                         .font(AppTheme.Typography.detail.italic())
-                        .foregroundColor(AppTheme.mediumGray)
+                        .foregroundColor(AppTheme.Retro.cocoa)
                         .lineLimit(2)
                 }
                 .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
@@ -64,18 +63,25 @@ struct QuoteCardView: View {
         .padding(AppTheme.Spacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.large)
-                .fill(AppTheme.cardSurface)
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                .fill(AppTheme.Retro.panel)
+        )
+        // Rule 1: uniform ink outline always; the resolution/ember state rides
+        // a second inset rule so the card can shout without losing its line.
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.large)
-                .stroke(borderStyle, lineWidth: borderWidth)
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card - 4)
+                .inset(by: 5)
+                .stroke(stateRuleColor, lineWidth: stateRuleWidth)
         )
-        .shadow(
-            color: shadowColor,
-            radius: resolution != nil ? 24 : 12,
-            x: 0,
-            y: 6
+        // Rule 2: hard offset shadow, never a colored blur.
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                .fill(AppTheme.Retro.ink)
+                .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
         )
         .scaleEffect(resolution == .correct && !reduceMotion ? 1.03 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: resolution)
@@ -86,51 +92,41 @@ struct QuoteCardView: View {
 
     // MARK: - Resolution styling
 
+    private var categoryFill: Color {
+        FinishTheLineStyle.categoryColor(quote.category)
+    }
+
     private var fillTreatment: QuoteBodyText.Fill? {
         switch resolution {
         case .correct:
-            return QuoteBodyText.Fill(word: quote.missingWord, color: AppTheme.success)
+            return QuoteBodyText.Fill(word: quote.missingWord,
+                                      color: FinishTheLineStyle.correctColor)
         case .skipped:
-            return QuoteBodyText.Fill(word: quote.missingWord, color: AppTheme.warning)
+            return QuoteBodyText.Fill(word: quote.missingWord,
+                                      color: FinishTheLineStyle.skippedColor)
         case nil:
             return nil
         }
     }
 
-    private var borderStyle: AnyShapeStyle {
+    /// Inner state rule: grass on a correct answer, tangerine on a skip, the
+    /// tangerine ember while On Fire, and clear otherwise.
+    private var stateRuleColor: Color {
         switch resolution {
         case .correct:
-            return AnyShapeStyle(AppTheme.success)
+            return FinishTheLineStyle.correctColor
         case .skipped:
-            return AnyShapeStyle(AppTheme.warning)
+            return FinishTheLineStyle.skippedColor
         case nil:
-            if isOnFire {
-                // Ember treatment matches the StreakBadge flame gradient.
-                return AnyShapeStyle(
-                    LinearGradient(
-                        colors: [AppTheme.warning, AppTheme.brandOrange],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-            }
-            return AnyShapeStyle(accentColor.opacity(0.18))
+            return isOnFire ? FinishTheLineStyle.streakOnFireColor : .clear
         }
     }
 
-    private var borderWidth: CGFloat {
+    private var stateRuleWidth: CGFloat {
         switch resolution {
         case .correct: return 4
         case .skipped: return 3
-        case nil: return isOnFire ? 2.5 : 1.5
-        }
-    }
-
-    private var shadowColor: Color {
-        switch resolution {
-        case .correct: return AppTheme.success.opacity(0.4)
-        case .skipped: return AppTheme.warning.opacity(0.35)
-        case nil: return isOnFire ? AppTheme.brandOrange.opacity(0.3) : accentColor.opacity(0.18)
+        case nil: return isOnFire ? 3 : 0
         }
     }
 
@@ -152,9 +148,10 @@ struct QuoteCardView: View {
 
 // MARK: - Quote body text with styled blank
 
-/// Renders the setup string with the ___ token replaced by a stylized pill so
-/// the blank reads at a glance — or, once resolved, by the missing word in the
-/// resolution color.
+/// Renders the setup string with the ___ token replaced by a stylized blank so
+/// it reads at a glance — or, once resolved, by the missing word in the
+/// resolution color. The blank logic is unchanged; only the face and colors
+/// move to the retro tokens.
 private struct QuoteBodyText: View {
     struct Fill {
         let word: String
@@ -166,14 +163,17 @@ private struct QuoteBodyText: View {
     let fill: Fill?
 
     /// Scales with Dynamic Type — this is the primary readable game content,
-    /// not a decorative display element.
-    @ScaledMetric(relativeTo: .title) private var quoteSize: CGFloat = 30
+    /// not a decorative display element. The old `@ScaledMetric` is replaced by
+    /// `relativeTo:`, the §4-prescribed scaling hook for the display faces;
+    /// stacking both would scale the size twice.
+    private let quoteSize: CGFloat = 30
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 0) {
             styledText
-                .font(.system(size: quoteSize, weight: .bold, design: .serif))
-                .foregroundColor(.primary)
+                // §4: display-scale content goes Lilita One, ink on cream.
+                .font(AppTheme.Retro.Typography.heading(quoteSize, relativeTo: .title))
+                .foregroundColor(AppTheme.Retro.panelText)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
                 .minimumScaleFactor(0.7)

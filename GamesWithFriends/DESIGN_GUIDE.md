@@ -3,6 +3,14 @@
 > **For Claude Code Implementation**
 > This document defines the visual identity, component patterns, and aesthetic principles for the Games With Friends app. Use this as the single source of truth when implementing or modifying any UI.
 
+> ⚠️ **Aesthetic migration in progress (2026-08-22).** The app is adopting the
+> **Retro Maximalist** direction defined in [`ART_DIRECTION.md`](./ART_DIRECTION.md).
+> For any screen being migrated, `ART_DIRECTION.md` supersedes this guide's §1
+> (Philosophy), §2 (Color), display typography in §3, shape/shadow specs in §4.2–4.3,
+> §6 (Illustration), and §10 (Do/Don't). Mechanics — spacing grid, Dynamic Type,
+> haptics, keyboard handling, accessibility, the §9.5 checklist — remain governed here.
+> Unmigrated screens keep following this guide until their migration phase lands.
+
 ---
 
 ## 1. Design Philosophy

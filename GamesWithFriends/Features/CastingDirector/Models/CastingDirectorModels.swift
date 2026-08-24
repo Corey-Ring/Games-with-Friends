@@ -189,11 +189,15 @@ struct CastingDirectorPlayer: Identifiable, Equatable {
     var wrongGuesses: Int = 0
     
     var color: Color {
+        // Candy identity ramp (retro §3.2), excluding the game's tangerine accent.
+        // Indexed by a raw UUID byte, not hashValue — hashValue is seeded per
+        // process, so it reshuffled everyone's color on every launch.
         let colors: [Color] = [
-            AppTheme.skyBlue, AppTheme.forestGreen, AppTheme.coralRed, AppTheme.warmGold,
-            AppTheme.electricIndigo, AppTheme.softMauve, AppTheme.tealGreen, AppTheme.compassRose
+            AppTheme.Retro.cornflower, AppTheme.Retro.plum, AppTheme.Retro.bubblegum,
+            AppTheme.Retro.poolBlue, AppTheme.Retro.tomato, AppTheme.Retro.lilac,
+            AppTheme.Retro.mustard, AppTheme.Retro.berry
         ]
-        return colors[abs(id.hashValue) % colors.count]
+        return colors[Int(id.uuid.0) % colors.count]
     }
 }
 

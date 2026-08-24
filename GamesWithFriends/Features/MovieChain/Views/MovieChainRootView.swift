@@ -7,7 +7,11 @@ struct MovieChainRootView: View {
 
     var body: some View {
         ZStack {
-            GameBackground(gameTheme: .movieChain)
+            // Plain retro ground at the root — the game screen hosts a
+            // keyboard and live search, so no motif field here (playbook §3);
+            // the celebration screens layer their own motifs on top.
+            AppTheme.Retro.ground
+                .ignoresSafeArea()
 
             Group {
                 switch viewModel.gamePhase {

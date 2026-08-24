@@ -7,38 +7,41 @@ struct CompetitionRevealView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.md) {
-            // Header
-            headerSection
+        ZStack {
+            GeometryReader { geo in
+                MotifGroundView(seed: 0x71BE_0C07,
+                                exclusions: [CGRect(x: 8, y: 8,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 16)])
+            }
+            .ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 20) {
-                    // The prompt
-                    promptCard
+            VStack(spacing: AppTheme.Spacing.md) {
+                // Header
+                headerSection
 
-                    // Spectrum with all positions revealed
-                    if let round = viewModel.currentRound {
-                        multiGuessRevealSection(round: round)
-                    }
+                ScrollView {
+                    VStack(spacing: 20) {
+                        // The prompt
+                        promptCard
 
-                    // Leaderboard results
-                    if showResults {
-                        leaderboardSection
+                        // Spectrum with all positions revealed
+                        if let round = viewModel.currentRound {
+                            multiGuessRevealSection(round: round)
+                        }
+
+                        // Leaderboard results
+                        if showResults {
+                            leaderboardSection
+                        }
                     }
                 }
-            }
+                .scrollIndicators(.hidden)
 
-            // Continue button
-            continueButton
-        }
-        .padding()
-        .background {
-            LinearGradient(
-                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+                // Continue button
+                continueButton
+            }
+            .padding()
         }
         .onAppear {
             if reduceMotion {
@@ -71,42 +74,50 @@ struct CompetitionRevealView: View {
         VStack(spacing: AppTheme.Spacing.xs) {
             if let round = viewModel.currentRound {
                 Text("Round \(round.roundNumber)")
-                    .font(AppTheme.Typography.secondary)
-                    .foregroundStyle(.secondary)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .foregroundColor(AppTheme.Retro.panelText)
+                    .retroLozenge()
             }
 
-            Text("RESULTS")
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundStyle(GameTheme.vibeCheck.accentColor)
+            // Framed Lilita title on the game accent (Rule 4).
+            Text("Results")
+                .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                .foregroundColor(VibeCheckStyle.chipTextColor(on: VibeCheckStyle.accent))
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .retroPanel(VibeCheckStyle.accent)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                        .fill(AppTheme.Retro.ink)
+                        .offset(x: AppTheme.Retro.shadowOffset,
+                                y: AppTheme.Retro.shadowOffset)
+                )
+                .rotationEffect(.degrees(-1))
         }
     }
 
     private var promptCard: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Text("THE PROMPT")
-                .font(AppTheme.Typography.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(AppTheme.Retro.cocoa)
                 .tracking(2)
 
             if let round = viewModel.currentRound {
                 Text("\"\(round.prompt)\"")
-                    .font(AppTheme.Typography.subsectionHeader.weight(.semibold))
+                    .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title3))
+                    .foregroundColor(AppTheme.Retro.panelText)
                     .multilineTextAlignment(.center)
             }
 
             if let setter = viewModel.vibeSetter {
                 Text("Set by \(setter.name)")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(AppTheme.Retro.cocoa)
             }
         }
-        .padding()
         .frame(maxWidth: .infinity)
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.cardSurface)
-                .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
-        }
+        .retroCard()
     }
 
     @ViewBuilder
@@ -126,30 +137,33 @@ struct CompetitionRevealView: View {
             HStack(spacing: 20) {
                 HStack(spacing: 6) {
                     Circle()
-                        .fill(AppTheme.success)
+                        .fill(VibeCheckStyle.targetMarker)
+                        .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
                         .frame(width: 12, height: 12)
                     Text("Target")
                         .font(AppTheme.Typography.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(AppTheme.Retro.panelText)
                 }
 
                 HStack(spacing: 6) {
                     Circle()
-                        .strokeBorder(Color.primary, lineWidth: 2)
+                        .strokeBorder(AppTheme.Retro.ink, lineWidth: 2)
                         .frame(width: 12, height: 12)
                     Text("Guesses")
                         .font(AppTheme.Typography.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(AppTheme.Retro.panelText)
                 }
             }
+            .padding(.vertical, AppTheme.Spacing.xs)
+            .retroLozenge()
         }
     }
 
     private var leaderboardSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             Text("LEADERBOARD")
-                .font(AppTheme.Typography.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(AppTheme.Retro.cocoa)
                 .tracking(2)
 
             ForEach(viewModel.getRoundResults()) { result in
@@ -164,36 +178,16 @@ struct CompetitionRevealView: View {
                 ))
             }
         }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                .fill(AppTheme.cardSurface)
-                .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
-        }
+        .frame(maxWidth: .infinity)
+        .retroCard()
     }
 
     private var continueButton: some View {
-        Button {
+        RetroPrimaryButton(title: viewModel.isGameOver ? "See Final Results" : "Continue",
+                           icon: viewModel.isGameOver ? "trophy.fill" : "arrow.right",
+                           accent: VibeCheckStyle.accent) {
             viewModel.proceedFromReveal()
-        } label: {
-            HStack {
-                Image(systemName: viewModel.isGameOver ? "trophy.fill" : "arrow.right.circle.fill")
-                Text(viewModel.isGameOver ? "SEE FINAL RESULTS" : "CONTINUE")
-                    .fontWeight(.bold)
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background {
-                LinearGradient(
-                    colors: [GameTheme.vibeCheck.accentColor, GameTheme.vibeCheck.accentColor],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            }
-            .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.card))
         }
-        .buttonStyle(.plain)
         .opacity(showResults ? 1 : 0.5)
         .disabled(!showResults)
     }
@@ -201,6 +195,9 @@ struct CompetitionRevealView: View {
 
 // MARK: - Multi-Guess Reveal Slider
 
+/// Retro-migrated: fills, strokes and label typography only — every
+/// `targetY` / `zoneHalfHeight` / `position` expression below is unchanged
+/// from the pre-migration file.
 struct CompetitionRevealSliderView: View {
     let spectrum: VibeCheckSpectrum
     let targetPosition: Double
@@ -209,33 +206,33 @@ struct CompetitionRevealSliderView: View {
     private let sliderHeight: CGFloat = 300
     private let trackWidth: CGFloat = 60
 
-    // Player colors for differentiation — theme accents, one per player
-    private let playerColors: [Color] = [
-        AppTheme.skyBlue, AppTheme.electricIndigo, AppTheme.softMauve,
-        AppTheme.tealGreen, AppTheme.coralRed, AppTheme.forestGreen,
-        AppTheme.warmGold, AppTheme.compassRose, AppTheme.mediumGray
-    ]
+    // Player colors for differentiation — candy accents, one per seat, from
+    // the shared style so both modes agree on seat identity.
+    private var playerColors: [Color] { VibeCheckStyle.playerColors }
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             // Top label
-            Text(spectrum.topLabel.uppercased())
-                .font(AppTheme.Typography.cardTitle.weight(.bold))
-                .foregroundStyle(.primary)
+            SpectrumPoleLabel(text: spectrum.topLabel, fill: VibeCheckStyle.poleTop)
 
             // Slider with all positions
             GeometryReader { geometry in
                 ZStack(alignment: .top) {
                     // Background track
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(AppTheme.elevatedSurface)
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                        .fill(AppTheme.Retro.panel)
                         .frame(width: trackWidth)
                         .frame(maxWidth: .infinity)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                                .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
+                                .frame(width: trackWidth)
+                        }
 
                     // Scoring zones
                     scoringZonesView(height: geometry.size.height)
 
-                    // Target line (green)
+                    // Target line (grass)
                     targetLine(height: geometry.size.height, width: geometry.size.width)
 
                     // All guess lines
@@ -253,9 +250,7 @@ struct CompetitionRevealSliderView: View {
             .frame(height: sliderHeight)
 
             // Bottom label
-            Text(spectrum.bottomLabel.uppercased())
-                .font(AppTheme.Typography.cardTitle.weight(.bold))
-                .foregroundStyle(.primary)
+            SpectrumPoleLabel(text: spectrum.bottomLabel, fill: VibeCheckStyle.poleBottom)
         }
         .padding(.horizontal)
     }
@@ -281,7 +276,7 @@ struct CompetitionRevealSliderView: View {
 
                 context.fill(
                     Path(roundedRect: rect, cornerRadius: 6),
-                    with: .color(zone.color.opacity(0.4))
+                    with: .color(VibeCheckStyle.zoneColor(zone))
                 )
             }
         }
@@ -292,21 +287,25 @@ struct CompetitionRevealSliderView: View {
 
         return HStack(spacing: AppTheme.Spacing.xs) {
             Text("Target")
-                .font(AppTheme.Typography.tabLabel.weight(.semibold))
-                .foregroundStyle(AppTheme.success)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(VibeCheckStyle.chipTextColor(on: VibeCheckStyle.targetMarker))
+                .padding(.horizontal, AppTheme.Spacing.xs)
+                .padding(.vertical, 1)
+                .background(Capsule().fill(VibeCheckStyle.targetMarker))
+                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
                 .frame(width: 45, alignment: .trailing)
 
             Rectangle()
-                .fill(AppTheme.success)
+                .fill(VibeCheckStyle.targetMarker)
                 .frame(width: trackWidth + 20, height: 4)
-                .shadow(color: .black.opacity(0.2), radius: 2)
+                .overlay(Rectangle().stroke(AppTheme.Retro.ink, lineWidth: 1))
 
             Circle()
-                .fill(AppTheme.success)
+                .fill(VibeCheckStyle.targetMarker)
                 .frame(width: 14, height: 14)
                 .overlay {
                     Circle()
-                        .stroke(AppTheme.pureWhite, lineWidth: 2)
+                        .stroke(AppTheme.Retro.ink, lineWidth: 2)
                 }
         }
         .position(x: width / 2, y: y)
@@ -319,22 +318,27 @@ struct CompetitionRevealSliderView: View {
 
         return HStack(spacing: AppTheme.Spacing.xs) {
             Text(result.playerName)
-                .font(AppTheme.Typography.tabLabel.weight(.medium))
-                .foregroundStyle(color)
-                .frame(width: 45, alignment: .trailing)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(VibeCheckStyle.chipTextColor(on: color))
                 .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .padding(.horizontal, AppTheme.Spacing.xs)
+                .padding(.vertical, 1)
+                .background(Capsule().fill(color))
+                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
+                .frame(width: 45, alignment: .trailing)
 
             Rectangle()
                 .fill(color)
                 .frame(width: trackWidth + 20, height: 3)
-                .shadow(color: .black.opacity(0.15), radius: 1)
+                .overlay(Rectangle().stroke(AppTheme.Retro.ink, lineWidth: 1))
 
             Circle()
                 .fill(color)
                 .frame(width: 12, height: 12)
                 .overlay {
                     Circle()
-                        .stroke(AppTheme.pureWhite, lineWidth: 1.5)
+                        .stroke(AppTheme.Retro.ink, lineWidth: 1.5)
                 }
         }
         .position(x: width / 2 + xOffset, y: y)
@@ -351,115 +355,64 @@ struct CompetitionResultRow: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.sm) {
             HStack(spacing: 12) {
-                // Rank indicator
-                rankBadge
+                // Rank indicator — candy medal disc, ink outline (§2 rule 1).
+                VibeCheckRankBadge(rank: result.rank)
 
                 // Player info
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: AppTheme.Spacing.sm) {
                         Text(result.playerName)
-                            .font(AppTheme.Typography.cardTitle)
+                            .font(AppTheme.Retro.Typography.cardTitle)
+                            .foregroundColor(AppTheme.Retro.panelText)
 
                         if result.rank == 1 {
                             Text("CLOSEST")
-                                .font(AppTheme.Typography.tabLabel.weight(.bold))
-                                .foregroundStyle(.white)
+                                .font(AppTheme.Retro.Typography.pillLabel)
+                                .foregroundColor(VibeCheckStyle.chipTextColor(on: VibeCheckStyle.closestColor))
                                 .padding(.horizontal, AppTheme.Spacing.xs)
                                 .padding(.vertical, 2)
-                                .background {
-                                    Capsule()
-                                        .fill(AppTheme.success)
-                                }
+                                .background(Capsule().fill(VibeCheckStyle.closestColor))
+                                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
                         }
                     }
 
                     Text("\(result.distancePercentage)% away")
                         .font(AppTheme.Typography.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
                 }
 
                 Spacer()
 
-                // Points badge
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(result.zone.color)
-                        .frame(width: 16, height: 16)
-
-                    Text("+\(result.pointsEarned)")
-                        .font(AppTheme.Typography.subsectionHeader.weight(.bold))
-                        .foregroundStyle(result.zone.color)
-                }
-                .padding(.horizontal, AppTheme.Spacing.sm)
-                .padding(.vertical, AppTheme.Spacing.xs)
-                .background {
-                    Capsule()
-                        .fill(result.zone.color.opacity(0.15))
-                }
+                // Points badge — flat zone fill, ink outline, ink numeral (§8).
+                VibeCheckPointsChip(zone: result.zone, points: result.pointsEarned)
             }
 
             // Worst guesser tease
             if isWorst && totalPlayers > 1 {
                 HStack(spacing: 6) {
-                    Image(systemName: "face.smiling.inverse")
-                        .foregroundStyle(AppTheme.warning)
+                    VibeCheckStatusBadge(systemImage: "face.smiling",
+                                         color: VibeCheckStyle.teaseColor,
+                                         diameter: 20)
                     Text(WorstGuesserTease.randomMessage())
                         .font(AppTheme.Typography.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(AppTheme.Retro.panelText)
                         .italic()
                 }
-                .padding(.horizontal, AppTheme.Spacing.sm)
-                .padding(.vertical, AppTheme.Spacing.sm)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .frame(maxWidth: .infinity)
-                .background {
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.small)
-                        .fill(AppTheme.warning.opacity(0.1))
-                }
+                .retroLozenge()
             }
         }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(AppTheme.elevatedSurface)
-        }
-    }
-
-    private var rankBadge: some View {
-        ZStack {
-            if result.rank == 1 {
-                Circle()
-                    .fill(AppTheme.medalGold)
-                    .frame(width: 32, height: 32)
-
-                Image(systemName: "crown.fill")
-                    .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.white)
-            } else if result.rank == 2 {
-                Circle()
-                    .fill(AppTheme.medalSilver)
-                    .frame(width: 32, height: 32)
-
-                Text("2")
-                    .font(AppTheme.Typography.secondary.weight(.bold))
-                    .foregroundStyle(.white)
-            } else if result.rank == 3 {
-                Circle()
-                    .fill(AppTheme.medalBronze)
-                    .frame(width: 32, height: 32)
-
-                Text("3")
-                    .font(AppTheme.Typography.secondary.weight(.bold))
-                    .foregroundStyle(.white)
-            } else {
-                Circle()
-                    .fill(AppTheme.elevatedSurface)
-                    .frame(width: 32, height: 32)
-
-                Text("\(result.rank)")
-                    .font(AppTheme.Typography.secondary.weight(.bold))
-                    .foregroundStyle(.secondary)
-            }
-        }
+        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .fill(AppTheme.Retro.ground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
+        )
     }
 }
 

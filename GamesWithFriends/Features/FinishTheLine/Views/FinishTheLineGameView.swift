@@ -13,11 +13,13 @@ struct FinishTheLineGameView: View {
     @State private var showNearMissPip = false
     @State private var showTimeBonusPip = false
 
-    private let theme = GameTheme.finishTheLine
-
     var body: some View {
         ZStack {
-            GameBackground(gameTheme: theme)
+            // Plain ground, no motif field: the live waveform and the timer
+            // dial both animate here, and §7 keeps decoration ≥12pt clear of
+            // interactive/visualization areas — which is the whole column.
+            AppTheme.Retro.ground
+                .ignoresSafeArea()
 
             VStack(spacing: AppTheme.Spacing.md) {
                 topHUD
@@ -45,23 +47,18 @@ struct FinishTheLineGameView: View {
 
     private var topHUD: some View {
         HStack(alignment: .center) {
+            // Round-nav button (§3 recipe): ink glyph on a cream disc, hard
+            // shadow from the raised style rather than a soft ring.
             Button {
                 viewModel.quitRound()
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(AppTheme.deepCharcoal)
-                    .frame(width: 36, height: 36)
-                    .background(
-                        Circle()
-                            .fill(AppTheme.pureWhite.opacity(0.85))
-                    )
-                    .overlay(
-                        Circle()
-                            .stroke(theme.accentColor.opacity(0.25), lineWidth: 1)
-                    )
+                    .foregroundColor(AppTheme.Retro.panelText)
+                    .frame(width: 44, height: 44)
+                    .retroPanel(AppTheme.Retro.panel, cornerRadius: 999)
             }
-            .pressable()
+            .buttonStyle(RetroRaisedButtonStyle(cornerRadius: 999))
             .accessibilityLabel("Quit round")
 
             Spacer()
@@ -69,14 +66,16 @@ struct FinishTheLineGameView: View {
             SpotlightTimerView(
                 timeRemaining: viewModel.timeRemaining,
                 totalDuration: FinishTheLineViewModel.roundDuration,
-                accentColor: theme.accentColor
+                accentColor: FinishTheLineStyle.accent
             )
             .overlay(alignment: .top) {
                 if showTimeBonusPip {
+                    // §8: grass can't be small text on cream — grass-filled chip, ink label.
                     Text("+2s")
-                        .font(AppTheme.Typography.caption.weight(.bold))
-                        .foregroundColor(AppTheme.success)
-                        .offset(y: -22)
+                        .font(AppTheme.Retro.Typography.pillLabel)
+                        .foregroundColor(AppTheme.Retro.ink)
+                        .retroLozenge(FinishTheLineStyle.correctColor)
+                        .offset(y: -26)
                         .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
                 }
             }
@@ -92,21 +91,20 @@ struct FinishTheLineGameView: View {
         HStack(spacing: AppTheme.Spacing.xs) {
             Image(systemName: "star.fill")
                 .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.white)
 
             Text("\(viewModel.score)")
-                .font(.system(size: 18, weight: .heavy, design: .rounded))
-                .foregroundColor(.white)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
                 .monospacedDigit()
                 .contentTransition(.numericText())
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
-        .padding(.vertical, AppTheme.Spacing.xs)
+        // §8 plum rule: cream label on the plum fill, never ink.
+        .foregroundColor(FinishTheLineStyle.chipTextColor(on: FinishTheLineStyle.accent))
+        .retroLozenge(FinishTheLineStyle.accent)
         .background(
             Capsule()
-                .fill(theme.accentColor)
+                .fill(AppTheme.Retro.ink)
+                .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
         )
-        .shadow(color: theme.accentColor.opacity(0.35), radius: 6, x: 0, y: 3)
         .accessibilityLabel("Score: \(viewModel.score) points")
     }
 
@@ -126,7 +124,7 @@ struct FinishTheLineGameView: View {
             if let quote = viewModel.currentQuote {
                 QuoteCardView(
                     quote: quote,
-                    accentColor: theme.accentColor,
+                    accentColor: FinishTheLineStyle.accent,
                     resolution: viewModel.cardResolution,
                     showSource: viewModel.cardResolution != nil || viewModel.hintRevealed,
                     isOnFire: viewModel.isOnFire
@@ -139,21 +137,18 @@ struct FinishTheLineGameView: View {
             Spacer(minLength: 0)
 
             if showNearMissPip {
+                // §8: tangerine can't be small text on cream — tangerine chip, ink label.
                 Text("So close — say it again!")
                     .font(AppTheme.Typography.footnote.weight(.semibold))
-                    .foregroundColor(AppTheme.warning)
-                    .padding(.horizontal, AppTheme.Spacing.sm)
-                    .padding(.vertical, AppTheme.Spacing.xs)
-                    .background(
-                        Capsule().fill(AppTheme.warning.opacity(0.12))
-                    )
+                    .foregroundColor(AppTheme.Retro.ink)
+                    .retroLozenge(FinishTheLineStyle.skippedColor)
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
 
             FinishTheLineWaveformView(
                 audioLevel: viewModel.speechManager.audioLevel,
                 isListening: viewModel.speechManager.isListening,
-                accentColor: theme.accentColor
+                accentColor: FinishTheLineStyle.accent
             )
 
             heardCaption
@@ -187,24 +182,14 @@ struct FinishTheLineGameView: View {
             Image(systemName: viewModel.hasBeatenTarget ? "crown.fill" : "trophy.fill")
                 .font(.system(size: 12, weight: .bold))
             Text(verbatim: viewModel.hasBeatenTarget ? "Beaten!" : "Beat \(viewModel.scoreToBeat ?? 0)")
-                .font(AppTheme.Typography.pillLabel)
+                .font(AppTheme.Retro.Typography.pillLabel)
         }
-        .foregroundColor(viewModel.hasBeatenTarget ? .white : theme.accentColor)
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.vertical, AppTheme.Spacing.xs)
-        .background(
-            Capsule().fill(
-                viewModel.hasBeatenTarget
-                    ? AnyShapeStyle(
-                        LinearGradient(
-                            colors: [AppTheme.medalGold, AppTheme.warmGold],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    : AnyShapeStyle(theme.accentColor.opacity(0.12))
-            )
-        )
+        // Beaten: the mustard metal lights up (ink label passes on mustard).
+        // Not yet: plain cream lozenge, ink label. Gradient retired (§9).
+        .foregroundColor(viewModel.hasBeatenTarget
+                         ? FinishTheLineStyle.chipTextColor(on: FinishTheLineStyle.bestColor)
+                         : AppTheme.Retro.panelText)
+        .retroLozenge(viewModel.hasBeatenTarget ? FinishTheLineStyle.bestColor : AppTheme.Retro.panel)
         .animation(.spring(response: 0.35, dampingFraction: 0.65), value: viewModel.hasBeatenTarget)
         .accessibilityLabel(
             viewModel.hasBeatenTarget
@@ -216,26 +201,31 @@ struct FinishTheLineGameView: View {
     private var encoreBanner: some View {
         HStack(spacing: AppTheme.Spacing.xs) {
             Image(systemName: "bolt.fill")
-                .font(.system(size: 12, weight: .bold))
+                .font(.system(size: 14, weight: .bold))
             Text("ENCORE — 2× POINTS")
-                .font(AppTheme.Typography.pillLabel)
+                .font(AppTheme.Retro.Typography.heading(17))
                 .tracking(1.5)
         }
-        .foregroundColor(.white)
-        .padding(.horizontal, AppTheme.Spacing.md)
-        .padding(.vertical, AppTheme.Spacing.xs)
+        // §8: on tomato, cream is display-only — Lilita at 17pt clears the bar.
+        .foregroundColor(AppTheme.Retro.cream)
+        .retroLozenge(FinishTheLineStyle.dangerColor)
         .background(
-            Capsule().fill(AppTheme.error)
+            Capsule()
+                .fill(AppTheme.Retro.ink)
+                .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
         )
-        .shadow(color: AppTheme.error.opacity(0.4), radius: 8, x: 0, y: 3)
         .accessibilityLabel("Encore: double points for the final seconds")
     }
 
     private var heardCaption: some View {
+        // The blank-space fallback keeps the row's height reserved; the
+        // lozenge just fades out with it so no empty pill sits on the ground.
         Text(viewModel.heardSnippet.isEmpty ? " " : "Heard: \u{201C}\(viewModel.heardSnippet)\u{201D}")
             .font(AppTheme.Typography.caption)
-            .foregroundColor(AppTheme.mediumGray.opacity(0.8))
+            .foregroundColor(AppTheme.Retro.panelText)
             .lineLimit(1)
+            .retroLozenge()
+            .opacity(viewModel.heardSnippet.isEmpty ? 0 : 1)
             .accessibilityHidden(viewModel.heardSnippet.isEmpty)
     }
 
@@ -273,27 +263,16 @@ struct FinishTheLineGameView: View {
 
     private var bottomControls: some View {
         HStack(spacing: AppTheme.Spacing.md) {
-            Button {
+            // Secondary action: cream panel + ink label, the house pattern for
+            // the non-accent button (one game accent per screen, §3.2).
+            RetroPrimaryButton(
+                title: "Skip",
+                icon: "forward.fill",
+                accent: AppTheme.Retro.panel,
+                textColor: AppTheme.Retro.panelText
+            ) {
                 viewModel.skipCurrentQuote()
-            } label: {
-                HStack(spacing: AppTheme.Spacing.xs) {
-                    Image(systemName: "forward.fill")
-                    Text("Skip")
-                }
-                .font(AppTheme.Typography.buttonLabel)
-                .foregroundColor(theme.accentColor)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 52)
-                .background(
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(theme.accentColor.opacity(0.12))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(theme.accentColor.opacity(0.3), lineWidth: 1)
-                )
             }
-            .pressable()
             .accessibilityLabel("Skip this quote. Free, but resets your streak.")
         }
     }

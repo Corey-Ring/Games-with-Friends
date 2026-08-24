@@ -8,70 +8,94 @@ struct ChainBreakView: View {
     @State private var bounceTrigger = false
 
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.lg) {
-            Spacer()
-
-            // Chain break icon
-            ZStack {
-                Circle()
-                    .fill(GameTheme.movieChain.accentColor.opacity(0.2))
-                    .frame(width: 120, height: 120)
-
-                Image(systemName: "link.badge.plus")
-                    .font(.system(size: 50))
-                    .foregroundStyle(GameTheme.movieChain.accentColor)
-                    .symbolEffect(.bounce, value: bounceTrigger)
+        ZStack {
+            GeometryReader { geo in
+                // Interstitial screen: the message column owns the middle;
+                // motifs live in the gutters (§7).
+                MotifGroundView(seed: 0xF11_A0502,
+                                exclusions: [CGRect(x: 16, y: 80,
+                                                    width: geo.size.width - 32,
+                                                    height: geo.size.height - 100)])
             }
+            .ignoresSafeArea()
 
-            // Message
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-                Text("Chain Broken!")
-                    .font(AppTheme.Typography.hero)
-                    .foregroundColor(.primary)
+            VStack(spacing: AppTheme.Spacing.lg) {
+                Spacer()
 
-                Text(reason.message)
-                    .font(AppTheme.Typography.body)
-                    .foregroundColor(.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
+                // Chain break icon — spot plate, never a naked SF hero (§9).
+                ZStack {
+                    Circle().fill(AppTheme.Retro.panel)
+                    Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                    Image(systemName: "link.badge.plus")
+                        .font(.system(size: 44, weight: .bold))
+                        .foregroundStyle(MovieChainStyle.accent)
+                        .symbolEffect(.bounce, value: bounceTrigger)
+                }
+                .frame(width: 110, height: 110)
 
-            // Player who broke the chain
-            HStack(spacing: AppTheme.Spacing.md) {
-                Circle()
-                    .fill(viewModel.currentPlayer.color)
-                    .frame(width: 20, height: 20)
+                // Message
+                VStack(spacing: AppTheme.Spacing.sm) {
+                    Text("Chain Broken!")
+                        .font(AppTheme.Retro.Typography.heading(24, relativeTo: .title))
+                        .foregroundColor(AppTheme.Retro.ink)
+                        .padding(.horizontal, AppTheme.Spacing.md)
+                        .padding(.vertical, AppTheme.Spacing.xs)
+                        .retroPanel(MovieChainStyle.accent)
+                        .background(
+                            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                                .fill(AppTheme.Retro.ink)
+                                .offset(x: AppTheme.Retro.shadowOffset,
+                                        y: AppTheme.Retro.shadowOffset)
+                        )
+                        .rotationEffect(.degrees(-1))
 
-                Text(viewModel.currentPlayer.name)
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(.primary)
+                    Text(reason.message)
+                        .font(AppTheme.Typography.secondary)
+                        .foregroundColor(AppTheme.Retro.panelText)
+                        .multilineTextAlignment(.center)
+                        .retroLozenge()
+                        .rotationEffect(.degrees(0.8))
+                }
+                .padding(.horizontal)
 
-                if viewModel.gameMode.hasLives {
-                    Text("lost a life")
-                        .foregroundColor(.secondary)
+                // Player who broke the chain
+                HStack(spacing: AppTheme.Spacing.md) {
+                    Circle()
+                        .fill(viewModel.currentPlayer.color)
+                        .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
+                        .frame(width: 20, height: 20)
 
-                    HStack(spacing: 2) {
-                        ForEach(0..<viewModel.gameMode.defaultLives, id: \.self) { index in
-                            Image(systemName: index < viewModel.currentPlayer.lives ? "heart.fill" : "heart")
-                                .foregroundStyle(AppTheme.error)
-                                .font(AppTheme.Typography.caption)
+                    Text(viewModel.currentPlayer.name)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Retro.panelText)
+
+                    if viewModel.gameMode.hasLives {
+                        Text("lost a life")
+                            .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
+
+                        HStack(spacing: 2) {
+                            ForEach(0..<viewModel.gameMode.defaultLives, id: \.self) { index in
+                                Image(systemName: index < viewModel.currentPlayer.lives ? "heart.fill" : "heart")
+                                    .foregroundStyle(MovieChainStyle.lives)
+                                    .font(AppTheme.Typography.caption)
+                            }
                         }
                     }
                 }
+                .retroCard()
+                .padding(.horizontal)
+
+                // Chain stats
+                chainStatsSection
+                    .padding(.horizontal)
+
+                Spacer()
+
+                // Action buttons
+                actionButtons
+                    .padding(.horizontal)
+                    .padding(.bottom, AppTheme.Spacing.lg)
             }
-            .gameCard()
-            .padding(.horizontal)
-
-            // Chain stats
-            chainStatsSection
-                .padding(.horizontal)
-
-            Spacer()
-
-            // Action buttons
-            actionButtons
-                .padding(.horizontal)
-                .padding(.bottom, AppTheme.Spacing.lg)
         }
         .onAppear {
             // Respect Reduce Motion — only bounce the icon when motion is allowed.
@@ -86,8 +110,8 @@ struct ChainBreakView: View {
     private var chainStatsSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             Text("Chain Length: \(viewModel.chain.count)")
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(.primary)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             if viewModel.chain.count > 1 {
                 // Show the chain that was built
@@ -115,7 +139,7 @@ struct ChainBreakView: View {
                 )
             }
         }
-        .gameCard()
+        .retroCard()
     }
 
     // MARK: - Action Buttons
@@ -124,25 +148,29 @@ struct ChainBreakView: View {
         VStack(spacing: AppTheme.Spacing.md) {
             // Check if game should end (only 1 player left in classic mode)
             if viewModel.gameMode == .classic && viewModel.activePlayers.count <= 1 {
-                PrimaryButton(title: "See Results", icon: "flag.checkered") {
+                RetroPrimaryButton(title: "See Results", icon: "flag.checkered",
+                                   accent: MovieChainStyle.accent) {
                     viewModel.endGame()
                 }
             } else {
                 // Continue with new chain
-                PrimaryButton(title: "Start New Chain", icon: "arrow.clockwise") {
+                RetroPrimaryButton(title: "Start New Chain", icon: "arrow.clockwise",
+                                   accent: MovieChainStyle.accent) {
                     viewModel.startNewChain()
                 }
 
                 // Timed and Endless have no elimination end-state, so they need
                 // an explicit exit — without it the standings screen is unreachable.
                 if viewModel.gameMode != .classic {
-                    SecondaryButton(title: "End Game", icon: "flag.checkered") {
+                    RetroPrimaryButton(title: "End Game", icon: "flag.checkered",
+                                       accent: AppTheme.Retro.panel) {
                         viewModel.endGame()
                     }
                 }
             }
 
-            SecondaryButton(title: "Quit to Menu", icon: "house") {
+            RetroPrimaryButton(title: "Quit to Menu", icon: "house",
+                               accent: AppTheme.Retro.panel) {
                 viewModel.returnToSetup()
             }
         }
@@ -156,28 +184,18 @@ struct MiniChainLinkView: View {
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.xs) {
-            ZStack {
-                Circle()
-                    .fill(link.isMovie ? GameTheme.movieChain.accentColor : actorCircleColor)
-                    .frame(width: 36, height: 36)
-
-                Image(systemName: link.isMovie ? "film" : "person.fill")
-                    .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.white)
-            }
+            ChainNodeDisc(
+                systemImage: link.isMovie ? "film" : "person.fill",
+                color: link.isMovie ? MovieChainStyle.movieNode : MovieChainStyle.actorNode,
+                diameter: 36
+            )
 
             Text(shortName)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
                 .lineLimit(1)
                 .frame(width: 60)
         }
-    }
-
-    // deepCharcoal reads as an invisible circle on the dark card surface;
-    // lift it to darkElevated in dark mode so the actor node stays legible.
-    private var actorCircleColor: Color {
-        AppTheme.actorNodeSurface
     }
 
     private var shortName: String {
@@ -200,15 +218,15 @@ struct MovieChainStatBox: View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: icon)
                 .font(AppTheme.Typography.sectionHeader)
-                .foregroundStyle(GameTheme.movieChain.accentColor)
+                .foregroundStyle(MovieChainStyle.accent)
 
             Text(value)
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(.primary)
+                .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             Text(title)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
         }
         .frame(maxWidth: .infinity)
     }

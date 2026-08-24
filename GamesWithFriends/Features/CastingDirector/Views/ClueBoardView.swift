@@ -7,13 +7,10 @@ struct ClueBoardView: View {
 
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [GameTheme.castingDirector.accentColor.opacity(0.15), GameTheme.castingDirector.accentColor.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Plain retro ground — the scattered chips are the ornament here,
+            // and the guess overlay brings up the keyboard (playbook §3).
+            AppTheme.Retro.ground
+                .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Top bar
@@ -25,10 +22,11 @@ struct ClueBoardView: View {
                 if viewModel.isLoadingRound {
                     Spacer()
                     VStack(spacing: AppTheme.Spacing.md) {
-                        GameSpinner(color: GameTheme.castingDirector.accentColor)
+                        GameSpinner(color: CastingDirectorStyle.accent)
                         Text("Finding an actor...")
-                            .font(AppTheme.Typography.cardTitle)
-                            .foregroundStyle(.secondary)
+                            .font(AppTheme.Retro.Typography.cardTitle)
+                            .foregroundColor(AppTheme.Retro.panelText)
+                            .retroLozenge()
                     }
                     Spacer()
                 } else {
@@ -146,16 +144,17 @@ struct ClueBoardView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Round \(viewModel.currentRound) of \(viewModel.numberOfRounds)")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.Retro.panelText.opacity(0.7))
 
                 if viewModel.gameMode == .passAndPlay {
                     HStack(spacing: AppTheme.Spacing.xs) {
                         Circle()
                             .fill(viewModel.currentPlayer.color)
+                            .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1))
                             .frame(width: 10, height: 10)
                         Text(viewModel.currentPlayer.name)
-                            .font(AppTheme.Typography.secondary)
-                            .fontWeight(.medium)
+                            .font(AppTheme.Retro.Typography.pillLabel)
+                            .foregroundStyle(AppTheme.Retro.panelText)
                     }
                 }
             }
@@ -166,24 +165,25 @@ struct ClueBoardView: View {
             HStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: "lightbulb.fill")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(AppTheme.warning)
+                    .foregroundStyle(AppTheme.Retro.ink)
                 Text("\(viewModel.roundState.cluesRevealed)/\(viewModel.allClues.count)")
-                    .font(AppTheme.Typography.secondary)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .foregroundStyle(AppTheme.Retro.ink)
                     .monospacedDigit()
             }
             .padding(.horizontal, AppTheme.Spacing.sm)
             .padding(.vertical, AppTheme.Spacing.xs)
-            .background(.ultraThinMaterial)
-            .clipShape(Capsule())
+            .background(Capsule().fill(AppTheme.Retro.mustard))
+            .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
 
             // Difficulty badge
             Text(viewModel.difficulty.rawValue)
-                .font(AppTheme.Typography.caption)
-                .fontWeight(.medium)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundStyle(AppTheme.Retro.ink)
                 .padding(.horizontal, AppTheme.Spacing.sm)
                 .padding(.vertical, AppTheme.Spacing.xs)
-                .background(GameTheme.castingDirector.mediumBackground)
-                .clipShape(Capsule())
+                .background(Capsule().fill(CastingDirectorStyle.accent))
+                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
         }
     }
 
@@ -196,37 +196,41 @@ struct ClueBoardView: View {
                 viewModel.giveUp()
             } label: {
                 Text("Give Up")
-                    .font(AppTheme.Typography.secondary)
-                    .foregroundStyle(.secondary)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .fixedSize()
+                    .foregroundStyle(AppTheme.Retro.panelText)
                     .padding(.horizontal, AppTheme.Spacing.md)
                     .padding(.vertical, AppTheme.Spacing.sm)
-                    .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
+                    .retroPanel(AppTheme.Retro.panel, cornerRadius: 999)
             }
+            .buttonStyle(RetroRaisedButtonStyle(cornerRadius: 999))
 
             Spacer()
 
-            // Score display
+            // Score display — plain column on the ground; the lozenge device
+            // can't hold three wrapping lines without ballooning.
             VStack(spacing: 2) {
-                Text("Score")
-                    .font(AppTheme.Typography.tabLabel)
-                    .foregroundStyle(.secondary)
-                Text("\(viewModel.potentialScore)")
-                    .font(AppTheme.Typography.sectionHeader)
-                    .fontWeight(.bold)
+                Text("Score \(viewModel.potentialScore)")
+                    .font(AppTheme.Retro.Typography.pillLabel)
                     .monospacedDigit()
-                    .foregroundStyle(GameTheme.castingDirector.accentColor)
+                    .fixedSize()
+                    .foregroundStyle(AppTheme.Retro.panelText)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.vertical, AppTheme.Spacing.xs)
+                    .retroLozenge()
                     .contentTransition(.numericText())
                     .animation(reduceMotion ? nil : .spring(), value: viewModel.potentialScore)
 
-                Text("Each extra clue costs 50 points")
+                Text("Extra clues cost 50")
                     .font(AppTheme.Typography.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.Retro.ink.opacity(0.7))
+                    .fixedSize()
 
                 if viewModel.eraFallbackNotice {
-                    Text("No \(viewModel.era.rawValue)-era actor available — showing any era")
+                    Text("No \(viewModel.era.rawValue)-era actor — showing any era")
                         .font(AppTheme.Typography.caption)
-                        .foregroundStyle(AppTheme.warning)
+                        .foregroundStyle(AppTheme.Retro.cocoa)
+                        .multilineTextAlignment(.center)
                 }
             }
 
@@ -240,13 +244,14 @@ struct ClueBoardView: View {
                     Image(systemName: "questionmark.circle.fill")
                     Text("Guess")
                 }
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundStyle(.white)
-                .padding(.horizontal, AppTheme.Spacing.lg)
+                .font(AppTheme.Retro.Typography.heading(16, relativeTo: .headline))
+                .fixedSize()
+                .foregroundStyle(AppTheme.Retro.ink)
+                .padding(.horizontal, AppTheme.Spacing.md)
                 .padding(.vertical, AppTheme.Spacing.sm)
-                .background(GameTheme.castingDirector.accentColor)
-                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
+                .retroPanel(CastingDirectorStyle.accent, cornerRadius: AppTheme.Retro.Radius.inner)
             }
+            .buttonStyle(RetroRaisedButtonStyle(cornerRadius: AppTheme.Retro.Radius.inner))
             .modifier(ShakeEffect(shakes: (reduceMotion || !viewModel.wrongGuessShake) ? 0 : 4))
             .animation(reduceMotion ? nil : .default, value: viewModel.wrongGuessShake)
         }
@@ -256,25 +261,33 @@ struct ClueBoardView: View {
 
     private var correctGuessOverlay: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 80))
-                .foregroundStyle(AppTheme.success)
-                .symbolEffect(.bounce, value: reduceMotion ? false : viewModel.correctGuess)
+            ZStack {
+                Circle().fill(CastingDirectorStyle.successColor)
+                Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
+                Image(systemName: "checkmark")
+                    .font(.system(size: 36, weight: .black))
+                    .foregroundColor(AppTheme.Retro.ink)
+                    .symbolEffect(.bounce, value: reduceMotion ? false : viewModel.correctGuess)
+            }
+            .frame(width: 84, height: 84)
 
             if let actor = viewModel.roundState.targetActor {
                 Text(actor.name)
-                    .font(AppTheme.Typography.screenTitle)
-                    .fontWeight(.bold)
+                    .font(AppTheme.Retro.Typography.heading(24, relativeTo: .title))
+                    .foregroundColor(AppTheme.Retro.panelText)
+                    .multilineTextAlignment(.center)
             }
 
             Text("+\(viewModel.roundState.currentScore) points!")
-                .font(AppTheme.Typography.sectionHeader)
-                .fontWeight(.semibold)
-                .foregroundStyle(GameTheme.castingDirector.accentColor)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.ink)
+                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .background(Capsule().fill(CastingDirectorStyle.accent))
+                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
         }
         .padding(40)
-        .background(.ultraThickMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.large))
+        .retroPanel(AppTheme.Retro.panel)
     }
 }
 

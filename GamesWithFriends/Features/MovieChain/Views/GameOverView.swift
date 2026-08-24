@@ -6,21 +6,34 @@ struct MovieChainGameOverView: View {
     let winner: MovieChainPlayer?
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: AppTheme.Spacing.lg) {
-                // Trophy/Winner section
-                winnerSection
-
-                // Final standings
-                standingsSection
-
-                // Game stats
-                gameStatsSection
-
-                // Action buttons
-                actionButtons
+        ZStack {
+            GeometryReader { geo in
+                // Celebration screen: scrolling column owns the width, motifs
+                // keep to gutters and the top band (§7).
+                MotifGroundView(seed: 0xF11_A0503,
+                                exclusions: [CGRect(x: 8, y: 70,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 70)])
             }
-            .padding(AppTheme.Spacing.md)
+            .ignoresSafeArea()
+
+            ScrollView {
+                VStack(spacing: AppTheme.Spacing.lg) {
+                    // Trophy/Winner section
+                    winnerSection
+
+                    // Final standings
+                    standingsSection
+
+                    // Game stats
+                    gameStatsSection
+
+                    // Action buttons
+                    actionButtons
+                }
+                .padding(AppTheme.Spacing.md)
+            }
+            .scrollIndicators(.hidden)
         }
     }
 
@@ -28,37 +41,60 @@ struct MovieChainGameOverView: View {
 
     private var winnerSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            // Trophy icon
+            // Trophy on a spot plate (§9 — no naked SF hero).
             ZStack {
-                Circle()
-                    .fill(AppTheme.medalGold.opacity(0.3))
-                    .frame(width: 120, height: 120)
-
+                Circle().fill(AppTheme.Retro.panel)
+                Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
                 Image(systemName: "trophy.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(AppTheme.medalGold)
+                    .font(.system(size: 48, weight: .bold))
+                    .foregroundStyle(AppTheme.Retro.mustard)
+                    .shadow(color: AppTheme.Retro.ink, radius: 0, x: 2, y: 2)
             }
+            .frame(width: 110, height: 110)
 
             if let winner = winner {
                 VStack(spacing: AppTheme.Spacing.sm) {
                     Text("Winner!")
-                        .font(AppTheme.Typography.sectionHeader)
-                        .foregroundColor(.secondary)
+                        .font(AppTheme.Retro.Typography.heading(24, relativeTo: .title))
+                        .foregroundColor(AppTheme.Retro.ink)
+                        .padding(.horizontal, AppTheme.Spacing.md)
+                        .padding(.vertical, AppTheme.Spacing.xs)
+                        .retroPanel(MovieChainStyle.accent)
+                        .background(
+                            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                                .fill(AppTheme.Retro.ink)
+                                .offset(x: AppTheme.Retro.shadowOffset,
+                                        y: AppTheme.Retro.shadowOffset)
+                        )
+                        .rotationEffect(.degrees(-1))
 
                     HStack(spacing: AppTheme.Spacing.md) {
                         Circle()
                             .fill(winner.color)
+                            .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
                             .frame(width: 24, height: 24)
 
                         Text(winner.name)
-                            .font(AppTheme.Typography.hero)
-                            .foregroundColor(.primary)
+                            .font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
+                            .foregroundColor(AppTheme.Retro.panelText)
                     }
+                    .retroLozenge()
+                    .rotationEffect(.degrees(0.8))
                 }
             } else {
                 Text("Game Over!")
-                    .font(AppTheme.Typography.hero)
-                    .foregroundColor(.primary)
+                    .font(AppTheme.Retro.Typography.heading(24, relativeTo: .title))
+                    .foregroundColor(AppTheme.Retro.ink)
+                    .padding(.horizontal, AppTheme.Spacing.md)
+                    .padding(.vertical, AppTheme.Spacing.xs)
+                    .retroPanel(MovieChainStyle.accent)
+                    .background(
+                        RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                            .fill(AppTheme.Retro.ink)
+                            .offset(x: AppTheme.Retro.shadowOffset,
+                                    y: AppTheme.Retro.shadowOffset)
+                    )
+                    .rotationEffect(.degrees(-1))
             }
         }
         .padding(.top, AppTheme.Spacing.lg)
@@ -69,8 +105,8 @@ struct MovieChainGameOverView: View {
     private var standingsSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Final Standings")
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(.primary)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             ForEach(Array(sortedPlayers.enumerated()), id: \.element.id) { index, player in
                 PlayerStandingRow(
@@ -82,7 +118,8 @@ struct MovieChainGameOverView: View {
                 .staggeredAppear(index: index)
             }
         }
-        .gameCard()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .retroCard()
     }
 
     private var sortedPlayers: [MovieChainPlayer] {
@@ -106,8 +143,8 @@ struct MovieChainGameOverView: View {
     private var gameStatsSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("Game Statistics")
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(.primary)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             LazyVGrid(columns: [
                 GridItem(.flexible()),
@@ -138,7 +175,8 @@ struct MovieChainGameOverView: View {
                 )
             }
         }
-        .gameCard()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .retroCard()
     }
 
     private var countMovies: Int {
@@ -157,11 +195,13 @@ struct MovieChainGameOverView: View {
 
     private var actionButtons: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            PrimaryButton(title: "Play Again", icon: "arrow.clockwise") {
+            RetroPrimaryButton(title: "Play Again", icon: "arrow.clockwise",
+                               accent: MovieChainStyle.accent) {
                 viewModel.startGame()
             }
 
-            SecondaryButton(title: "Back to Setup", icon: "gearshape") {
+            RetroPrimaryButton(title: "Back to Setup", icon: "gearshape",
+                               accent: AppTheme.Retro.panel) {
                 viewModel.returnToSetup()
             }
         }
@@ -179,32 +219,33 @@ struct PlayerStandingRow: View {
 
     var body: some View {
         HStack(spacing: AppTheme.Spacing.md) {
-            // Rank
+            // Rank medal — candy metals with ink outlines (§2 rule 1).
             ZStack {
-                Circle()
-                    .fill(rankColor)
-                    .frame(width: 32, height: 32)
+                Circle().fill(rankColor)
+                Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
 
                 if rank <= 3 {
                     Image(systemName: rankIcon)
-                        .font(AppTheme.Typography.caption)
-                        .foregroundStyle(.white)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(rankGlyphColor)
                 } else {
                     Text("\(rank)")
                         .font(AppTheme.Typography.caption)
                         .fontWeight(.bold)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(rankGlyphColor)
                 }
             }
+            .frame(width: 32, height: 32)
 
             // Player info
             Circle()
                 .fill(player.color)
+                .overlay(Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5))
                 .frame(width: 16, height: 16)
 
             Text(player.name)
-                .font(AppTheme.Typography.cardTitle)
-                .foregroundColor(.primary)
+                .font(AppTheme.Retro.Typography.cardTitle)
+                .foregroundColor(AppTheme.Retro.panelText)
 
             Spacer()
 
@@ -216,36 +257,51 @@ struct PlayerStandingRow: View {
                         ForEach(0..<gameMode.defaultLives, id: \.self) { index in
                             Image(systemName: index < player.lives ? "heart.fill" : "heart")
                                 .font(AppTheme.Typography.tabLabel)
-                                .foregroundStyle(AppTheme.error)
+                                .foregroundStyle(MovieChainStyle.lives)
                         }
                     }
                 case .timed:
                     Text("\(player.score) pts")
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(GameTheme.movieChain.accentColor)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Retro.panelText)
                 case .endless:
                     Text("\(player.linksContributed) links")
-                        .font(AppTheme.Typography.cardTitle)
-                        .foregroundColor(GameTheme.movieChain.accentColor)
+                        .font(AppTheme.Retro.Typography.cardTitle)
+                        .foregroundColor(AppTheme.Retro.panelText)
                 }
 
                 Text("\(player.linksContributed) contributed")
                     .font(AppTheme.Typography.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
             }
         }
         .padding(.vertical, AppTheme.Spacing.sm)
         .padding(.horizontal, AppTheme.Spacing.md)
-        .background(isWinner ? player.color.opacity(0.1) : Color.clear)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.small))
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .fill(isWinner ? AppTheme.Retro.mustard.opacity(0.35) : Color.clear)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .stroke(isWinner ? AppTheme.Retro.ink : Color.clear,
+                        lineWidth: AppTheme.Retro.strokeWidth)
+        )
     }
 
     private var rankColor: Color {
         switch rank {
-        case 1: return AppTheme.medalGold
-        case 2: return AppTheme.medalSilver
-        case 3: return AppTheme.medalBronze
-        default: return AppTheme.mediumGray
+        case 1: return MovieChainStyle.medalFirst
+        case 2: return MovieChainStyle.medalSecond
+        case 3: return MovieChainStyle.medalThird
+        default: return AppTheme.Retro.panel
+        }
+    }
+
+    private var rankGlyphColor: Color {
+        switch rank {
+        case 1, 2: return AppTheme.Retro.ink
+        case 3: return AppTheme.Retro.cream
+        default: return AppTheme.Retro.panelText
         }
     }
 
@@ -270,21 +326,27 @@ struct GameStatCard: View {
         VStack(spacing: AppTheme.Spacing.sm) {
             Image(systemName: icon)
                 .font(AppTheme.Typography.sectionHeader)
-                .foregroundStyle(GameTheme.movieChain.accentColor)
+                .foregroundStyle(MovieChainStyle.accent)
 
             Text(value)
-                .font(AppTheme.Typography.sectionHeader)
-                .foregroundColor(.primary)
+                .font(AppTheme.Retro.Typography.heading(20, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
 
             Text(title)
                 .font(AppTheme.Typography.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(AppTheme.Spacing.md)
-        .background(GameTheme.movieChain.lightBackground)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .fill(AppTheme.Retro.ground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
+        )
     }
 }
 

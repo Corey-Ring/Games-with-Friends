@@ -25,15 +25,17 @@ struct MovieChainPlayer: Identifiable, Equatable {
 
 /// Default player colors
 extension MovieChainPlayer {
+    // Candy identity ramp (retro §3.2), excluding the game's tomato accent and
+    // the cornflower reserved for actor nodes in the chain.
     static let defaultColors: [Color] = [
-        AppTheme.coralRed,
-        AppTheme.skyBlue,
-        AppTheme.forestGreen,
-        AppTheme.warmGold,
-        AppTheme.electricIndigo,
-        AppTheme.softMauve,
-        AppTheme.tealGreen,
-        AppTheme.compassRose
+        AppTheme.Retro.bubblegum,
+        AppTheme.Retro.poolBlue,
+        AppTheme.Retro.grass,
+        AppTheme.Retro.mustard,
+        AppTheme.Retro.lilac,
+        AppTheme.Retro.berry,
+        AppTheme.Retro.plum,
+        AppTheme.Retro.tangerine
     ]
 
     static func defaultName(for index: Int) -> String {

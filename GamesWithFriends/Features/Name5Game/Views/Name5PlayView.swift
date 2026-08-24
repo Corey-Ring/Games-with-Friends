@@ -5,8 +5,16 @@ struct Name5PlayView: View {
 
     var body: some View {
         ZStack {
-            // Background
-            GameBackground(gameTheme: .name5)
+            GeometryReader { geo in
+                // The timer dial, prompt card and action buttons own the
+                // whole column, so motifs keep to the nav strip and the outer
+                // edges (§7 — no motifs within 12pt of a timer).
+                MotifGroundView(seed: 0x4A5E_0F06,
+                                exclusions: [CGRect(x: 8, y: 56,
+                                                    width: geo.size.width - 16,
+                                                    height: geo.size.height - 56)])
+            }
+            .ignoresSafeArea()
 
             VStack(spacing: AppTheme.Spacing.lg) {
                 // Player indicator (if multiplayer)
@@ -57,18 +65,21 @@ struct PlayerIndicator: View {
     let player: PlayerTurn
 
     var body: some View {
-        HStack {
-            Image(systemName: "person.circle.fill")
-                .font(AppTheme.Typography.sectionHeader)
+        HStack(spacing: AppTheme.Spacing.sm) {
+            Image(systemName: "person.fill")
+                .font(AppTheme.Typography.caption)
             Text("Player \(player.playerNumber)")
-                .font(AppTheme.Typography.cardTitle)
-                .fontWeight(.bold)
+                .font(AppTheme.Retro.Typography.heading(17))
         }
-        .foregroundColor(GameTheme.name5.accentColor)
-        .padding()
+        // §8: ink on lilac — the whole-turn banner is the one place the
+        // screen accent shows up as a fill.
+        .foregroundColor(Name5Style.chipTextColor(on: Name5Style.accent))
+        .padding(.vertical, AppTheme.Spacing.xs)
+        .retroLozenge(Name5Style.accent)
         .background(
             Capsule()
-                .fill(GameTheme.name5.accentColor.opacity(0.15))
+                .fill(AppTheme.Retro.ink)
+                .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
         )
     }
 }
@@ -83,23 +94,38 @@ struct TimerView: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             ZStack {
+                // Cream dial plate with an ink rule — the countdown reads
+                // ink-on-cream (§3 recipe) instead of floating on the ground.
                 Circle()
-                    .stroke(AppTheme.mediumGray.opacity(0.2), lineWidth: 12)
+                    .fill(AppTheme.Retro.panel)
+                Circle()
+                    .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
 
+                // Unfilled track: ink at 15% + a hairline rule (§4 gotcha 6).
                 Circle()
+                    .inset(by: 10)
+                    .stroke(AppTheme.Retro.ink.opacity(0.15), lineWidth: 12)
+
+                // Progress arc — re-tinted to the candy ramp; the trim math
+                // and the linear animation are untouched.
+                Circle()
+                    .inset(by: 10)
                     .trim(from: 0, to: progress)
-                    .stroke(color, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                    .stroke(Name5Style.timerRingColor(color), style: StrokeStyle(lineWidth: 12, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .animation(.linear(duration: 0.3), value: progress)
 
                 VStack(spacing: AppTheme.Spacing.xs) {
+                    // Urgent state turns tomato on the view model's existing
+                    // three-stop trigger — no new condition here.
                     Text("\(timeRemaining)")
-                        .font(AppTheme.Typography.hero)
-                        .foregroundColor(color)
+                        .font(AppTheme.Retro.Typography.heading(44, relativeTo: .largeTitle))
+                        .monospacedDigit()
+                        .foregroundColor(Name5Style.timerTextColor(color))
 
                     Text("seconds")
                         .font(AppTheme.Typography.caption)
-                        .foregroundColor(AppTheme.mediumGray)
+                        .foregroundColor(AppTheme.Retro.cocoa)
                 }
             }
             .frame(width: 140, height: 140)
@@ -120,58 +146,36 @@ struct PromptCard: View {
                     Image(systemName: prompt.category.icon)
                         .font(AppTheme.Typography.caption)
                     Text(prompt.category.rawValue)
-                        .font(AppTheme.Typography.caption)
-                        .fontWeight(.semibold)
+                        .font(AppTheme.Retro.Typography.pillLabel)
                 }
-                .foregroundColor(.white)
+                .foregroundColor(Name5Style.chipTextColor(on: Name5Style.accent))
                 .padding(.horizontal, AppTheme.Spacing.md)
                 .padding(.vertical, AppTheme.Spacing.xs)
-                .background(Capsule().fill(GameTheme.name5.accentColor))
+                .background(Capsule().fill(Name5Style.accent))
+                .overlay(Capsule().stroke(AppTheme.Retro.ink, lineWidth: 2))
 
-                HStack(spacing: 3) {
-                    ForEach(0..<difficultyStars, id: \.self) { _ in
-                        Image(systemName: "star.fill")
-                            .font(AppTheme.Typography.tabLabel)
-                            .foregroundColor(.white)
-                    }
-                    Text(prompt.difficulty.rawValue)
-                        .font(AppTheme.Typography.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                }
-                .padding(.horizontal, AppTheme.Spacing.md)
-                .padding(.vertical, AppTheme.Spacing.xs)
-                .background(Capsule().fill(difficultyColor))
+                Name5DifficultyChip(difficulty: prompt.difficulty)
             }
 
-            // Prompt text — .primary so it stays readable on .gameCard()'s dark surface
+            // Prompt text — the card's hero. Lilita One display (§4) so the
+            // content pops as loud as the chrome around it.
             Text(prompt.text)
-                .font(AppTheme.Typography.sectionHeader)
+                .font(AppTheme.Retro.Typography.heading(24, relativeTo: .title))
                 .multilineTextAlignment(.center)
-                .foregroundColor(.primary)
+                .foregroundColor(AppTheme.Retro.panelText)
+                .lineSpacing(4)
                 .padding(.horizontal)
         }
-        .padding(AppTheme.Spacing.xl)
+        .padding(AppTheme.Spacing.lg)
         .frame(maxWidth: .infinity)
-        .gameCard()
+        .retroPanel(AppTheme.Retro.panel)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.card)
+                .fill(AppTheme.Retro.ink)
+                .offset(x: AppTheme.Retro.shadowOffset, y: AppTheme.Retro.shadowOffset)
+        )
         .scaleEffect(phase == .playing ? 1.0 : 0.95)
         .animation(.spring(response: 0.3), value: phase)
-    }
-
-    private var difficultyStars: Int {
-        switch prompt.difficulty {
-        case .easy: return 1
-        case .medium: return 2
-        case .hard: return 3
-        }
-    }
-
-    private var difficultyColor: Color {
-        switch prompt.difficulty {
-        case .easy: return AppTheme.success
-        case .medium: return AppTheme.warning
-        case .hard: return AppTheme.error
-        }
     }
 }
 
@@ -181,11 +185,15 @@ struct ReadyButtons: View {
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            PrimaryButton(title: "Start", icon: "play.fill") {
+            RetroPrimaryButton(title: "Start", icon: "play.fill",
+                               accent: Name5Style.accent) {
                 viewModel.startRound()
             }
 
-            SecondaryButton(title: "Skip", icon: "forward.fill") {
+            // Tangerine is this app's utility action next to the game accent
+            // (same split the pilot uses for "Pass").
+            RetroPrimaryButton(title: "Skip", icon: "forward.fill",
+                               accent: AppTheme.Retro.tangerine) {
                 viewModel.skipPrompt()
             }
         }
@@ -199,47 +207,20 @@ struct PlayingButtons: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             HStack(spacing: AppTheme.Spacing.md) {
-                Button(action: {
+                RetroPrimaryButton(title: "Got It!", icon: "checkmark",
+                                   accent: Name5Style.successColor) {
                     viewModel.markSuccess()
-                }) {
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                        Text("Got It!")
-                            .fontWeight(.bold)
-                    }
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, AppTheme.Spacing.md)
-                    .background(
-                        RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                            .fill(AppTheme.success)
-                    )
                 }
-                .pressable()
 
-                Button(action: {
+                RetroPrimaryButton(title: "Failed", icon: "xmark",
+                                   accent: Name5Style.dangerColor) {
                     viewModel.markFailure()
-                }) {
-                    HStack {
-                        Image(systemName: "xmark.circle.fill")
-                        Text("Failed")
-                            .fontWeight(.bold)
-                    }
-                    .font(AppTheme.Typography.cardTitle)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, AppTheme.Spacing.md)
-                    .background(
-                        RoundedRectangle(cornerRadius: AppTheme.Radius.card)
-                            .fill(AppTheme.error)
-                    )
                 }
-                .pressable()
             }
 
             if viewModel.timerEnabled {
-                SecondaryButton(title: "Pause", icon: "pause.fill") {
+                RetroPrimaryButton(title: "Pause", icon: "pause.fill",
+                                   accent: AppTheme.Retro.panel) {
                     viewModel.pauseTimer()
                 }
             }
@@ -254,31 +235,22 @@ struct PausedButtons: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             Text("Paused")
-                .font(AppTheme.Typography.sectionHeader)
-                .fontWeight(.bold)
-                .foregroundColor(AppTheme.mediumGray)
+                .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                .foregroundColor(AppTheme.Retro.panelText)
+                .retroLozenge()
 
-            PrimaryButton(title: "Resume", icon: "play.fill") {
+            RetroPrimaryButton(title: "Resume", icon: "play.fill",
+                               accent: Name5Style.accent) {
                 viewModel.resumeTimer()
             }
 
-            Button(action: {
+            // Destructive but secondary: cream panel with tomato label
+            // (tomato on cream passes at body size, §8).
+            RetroPrimaryButton(title: "Give Up", icon: "stop.fill",
+                               accent: AppTheme.Retro.panel,
+                               textColor: Name5Style.dangerColor) {
                 viewModel.markFailure()
-            }) {
-                HStack {
-                    Image(systemName: "stop.fill")
-                    Text("Give Up")
-                        .fontWeight(.semibold)
-                }
-                .foregroundColor(AppTheme.error)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, AppTheme.Spacing.md)
-                .background(
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                        .fill(AppTheme.error.opacity(0.15))
-                )
             }
-            .pressable()
         }
     }
 }

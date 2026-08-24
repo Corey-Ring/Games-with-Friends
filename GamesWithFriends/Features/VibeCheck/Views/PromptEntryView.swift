@@ -9,39 +9,37 @@ struct PromptEntryView: View {
     }
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 12) {
-                // Header - inline at top
-                headerSection
+        ZStack {
+            // Text entry screen: plain ground, no motifs behind the keyboard
+            // (§3 recipe / §7 — nothing within 12pt of an input).
+            AppTheme.Retro.ground.ignoresSafeArea()
 
-                // Instructions card
-                instructionsCard
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 12) {
+                    // Header - inline at top
+                    headerSection
 
-                // Spectrum with target
-                if let round = viewModel.currentRound {
-                    PromptSetterSliderView(
-                        spectrum: round.spectrum,
-                        targetPosition: round.targetPosition
-                    )
+                    // Instructions card
+                    instructionsCard
+
+                    // Spectrum with target
+                    if let round = viewModel.currentRound {
+                        PromptSetterSliderView(
+                            spectrum: round.spectrum,
+                            targetPosition: round.targetPosition
+                        )
+                    }
+
+                    // Prompt input
+                    promptInputSection
+
+                    // Submit button
+                    submitButton
                 }
-
-                // Prompt input
-                promptInputSection
-
-                // Submit button
-                submitButton
+                .padding(.horizontal)
+                .padding(.top, AppTheme.Spacing.sm)
+                .padding(.bottom)
             }
-            .padding(.horizontal)
-            .padding(.top, AppTheme.Spacing.sm)
-            .padding(.bottom)
-        }
-        .background {
-            LinearGradient(
-                colors: [GameTheme.vibeCheck.accentColor.opacity(0.1), GameTheme.vibeCheck.accentColor.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
         }
     }
 
@@ -51,94 +49,75 @@ struct PromptEntryView: View {
         HStack {
             if let round = viewModel.currentRound {
                 Text("Round \(round.roundNumber)")
-                    .font(AppTheme.Typography.secondary)
-                    .foregroundStyle(.secondary)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+                    .foregroundColor(AppTheme.Retro.panelText)
+                    .retroLozenge()
             }
 
             Spacer()
 
             if let setter = viewModel.promptSetterTeam {
+                // §8: the setter chip's plum fill takes cream text.
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: "person.fill.questionmark")
                     Text("\(setter.name) - Prompt Setter")
                 }
-                .font(AppTheme.Typography.secondary.weight(.semibold))
-                .foregroundStyle(.purple)
+                .font(AppTheme.Retro.Typography.pillLabel)
+                .foregroundColor(VibeCheckStyle.chipTextColor(on: VibeCheckStyle.setterRole))
+                .retroLozenge(VibeCheckStyle.setterRole)
             }
         }
     }
 
     private var instructionsCard: some View {
-        VStack(spacing: 6) {
-            Image(systemName: "lightbulb.fill")
-                .font(AppTheme.Typography.subsectionHeader)
-                .foregroundStyle(.yellow)
+        VStack(spacing: AppTheme.Spacing.sm) {
+            // Ink-outlined badge instead of the naked tinted SF glyph (§9).
+            VibeCheckStatusBadge(systemImage: "lightbulb.fill",
+                                 color: AppTheme.Retro.mustard,
+                                 diameter: 28)
 
             Text("Create a Prompt")
-                .font(AppTheme.Typography.secondary.weight(.semibold))
+                .font(AppTheme.Retro.Typography.cardTitle)
+                .foregroundColor(AppTheme.Retro.panelText)
 
             Text("Think of something that matches the target position on the spectrum. Your team will try to guess where you placed it!")
                 .font(AppTheme.Typography.caption)
-                .foregroundStyle(.secondary)
+                .foregroundColor(AppTheme.Retro.cocoa)
                 .multilineTextAlignment(.center)
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.vertical, AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
-        }
+        .retroCard()
     }
 
     private var promptInputSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             Text("Your Prompt:")
-                .font(AppTheme.Typography.secondary.weight(.medium))
+                .font(AppTheme.Retro.Typography.cardTitle)
+                .foregroundColor(AppTheme.Retro.panelText)
 
             TextField("Enter something that matches the target...", text: $viewModel.currentPrompt, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(1...2)
                 .focused($isPromptFieldFocused)
                 .submitLabel(.done)
+                .tint(VibeCheckStyle.accent)
                 .onSubmit {
                     if canSubmit {
                         viewModel.submitPrompt()
                     }
                 }
         }
-        .padding(AppTheme.Spacing.sm)
-        .background {
-            RoundedRectangle(cornerRadius: AppTheme.Radius.medium)
-                .fill(AppTheme.pureWhite)
-                .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
-        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .retroCard()
     }
 
     private var submitButton: some View {
-        Button {
+        RetroPrimaryButton(title: "Submit Prompt", icon: "checkmark",
+                           accent: VibeCheckStyle.accent) {
             viewModel.submitPrompt()
-        } label: {
-            HStack {
-                Image(systemName: "checkmark.circle.fill")
-                Text("SUBMIT PROMPT")
-                    .fontWeight(.bold)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, AppTheme.Spacing.md)
-            .background {
-                LinearGradient(
-                    colors: canSubmit ? [.purple, .blue] : [.gray, .gray],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            }
-            .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
         }
-        .buttonStyle(.plain)
         .disabled(!canSubmit)
+        .opacity(canSubmit ? 1.0 : 0.6)
     }
 }
 

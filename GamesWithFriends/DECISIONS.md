@@ -28,6 +28,96 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-08-23 — PR #4 pre-merge review: three fixes applied, seven findings deferred to phase 5 [decision]
+
+**What:** A full multi-angle code review of the retro branch confirmed no logic/crash bugs but surfaced 10 findings. Three were fixed pre-merge: (1) Finish the Line's "+2s" and near-miss pips were grass/tangerine small text on cream (§8 fail) — now candy-filled chips with ink labels; (2) Casting Director + Movie Chain player-identity dots still used the retired muted ramp — both models now carry candy ramps excluding their game accents (and Casting Director indexes by a raw UUID byte instead of the per-process-seeded `hashValue`, so colors no longer reshuffle each launch); (3) the two OFL font-license files are now in the app target's Resources phase (pbxproj IDs `TF…03/04`), satisfying ART_DIRECTION §4's "OFL files ship with the fonts".
+
+**Deferred to phase 5 (all confirmed, all latent behind the root `.preferredColorScheme(.light)` pin or structural):** `RetroPrimaryButton` defaults `textColor` to static ink while 17 call sites pass adaptive `panel` — every secondary button breaks the moment dark mode is enabled; Casting Director has four fixed-ink-on-adaptive spots (game-over rank discs, clue-board captions, guess-overlay strikethroughs, high-score chip); Name 5's timer translates the VM's retired-token colors by `==` equality (falls through to calm on any palette change); `chipTextColor(on:)` exists in 9 copies with 6 missing the cocoa branch — hoist to `AppTheme.Retro.textColor(on:)`; accents live in three parallel maps plus two stale `GameDefinition.accentColor` decls (MovieChain warmGold, CountryLetter forestGreen); `MotifGroundView` regenerates the seeded field inside the Canvas closure every render (hot on Name 5's per-second timer and Country Letter's keyboard animation); motif exclusion rects test only the center, so sparkle arms can intrude ~2.4pt into interactive zones.
+
+---
+
+## 2026-08-23 — Retro phase 4: Border Hop migrated — phase 4 complete (9/9) [migration]
+
+**What:** All five Border Hop screens (difficulty/setup, route briefing, live map, quiz sheet, results) plus `StopwatchView` and the `BorderHopMapView` canvas re-skinned to Retro Maximalist. New `Views/BorderHopStyle.swift` holds the candy remaps (correct→grass, wrong/urgent→tomato, second-look→tangerine, goal metal→mustard, medals mustard/cornflower/cocoa), a difficulty ramp (easy grass / medium tangerine / hard tomato / expert lilac), a `Map` sub-enum naming every color the canvas draws, and the shared `BorderHopSpotPlate` (suitcase) / `BorderHopTitlePanel` / `BorderHopGlyphPlate` furniture. `GameTheme.borderHop` accent → cornflower — the last muted accent in the table, so phase 3 is now fully landed too. Motif seeds `0xB0B5_0E01/02/03` (setup / briefing / results); the live map and the quiz sheet are deliberately motif-free (§7), so seeds `…04`/`…05` were reserved and left unused.
+
+**Map decisions (the delicate file):** camera math, viewport/wrap logic, hit-testing, label candidate ordering and every `/ zoom` line-width expression are byte-for-byte unchanged — only colors moved. The world now reads as printed paper: cream sea, cocoa-tinted land (scenery 18%, in-play "fogged" 32% — flat tints, not gradients), current country flat cornflower with an ink outline (white strokes retired, §8: ink passes on cornflower), destination flat mustard with an ink outline, frontier a pale cornflower wash inside a solid ink rule, visited cornflower-tinted with the original dashed stroke. **Deviations to know:** (1) the frontier accent-glow and destination gold-glow `GraphicsContext.shadow` filters were deleted outright rather than compensated with a heavier stroke — the ink outline does the work at the original 2 / 2.5 pt widths; (2) the destination now fills *then* strokes (the original stroked first, so the fill buried the inner half of the glow) — needed so the ink outline sits on top; (3) **the label halo filter is kept**, downgraded from a soft `black 0.8 / white 0.9 @ r1.5` to a solid opaque cream (day) / ink (night) at radius 1 — country names sit directly on land fills and are unreadable without it; this is the only blur-adjacent filter left on a migrated Border Hop screen; (4) inside `Canvas` the palette uses explicit `isDark` pairs rather than the adaptive `Retro.panel`/`panelText` tokens (a `GraphicsContext` resolves colors once, so a dynamic `UIColor` provider is not reliable there) — the `colorScheme` branching structure the file already had is preserved and the SwiftUI chrome around the canvas *does* use the adaptive tokens; (5) dark-mode map linework is **cream, not ink** — ink outlines vanish on the night ground (§3.3's "add a cream rule if separation suffers").
+
+**Other deviations:** the quiz answer rows moved from 6 pt to 8 pt spacing so their 5 pt hard shadows clear the row below; the victory overlay's `flag.checkered.circle.fill` hero (and its `symbolEffect(.bounce)`) is replaced by the suitcase spot plate, so that one Reduce-Motion-gated bounce no longer exists (nothing animates now, so no accessibility regression); the results header's efficiency grade moved out of a hero SF symbol into a medal lozenge (`Shortest route` / `Nearly optimal` / `Solid route` / `Scenic route`); two copy lines changed because the thing they described was retired — "Tap a **glowing** neighbor" → "highlighted" (briefing + coach), and "The **bright** country with the pin" → "The country filled in blue with the pin". `StopwatchView` keeps its `color` parameter (callers now pass `Retro.panelText`); Border Hop has no urgency trigger for it, so tomato is unused today.
+
+**On-simulator fix (Fable):** the game bar's live "N borders away" delta rendered grass/tomato as small *text* on the cream panel — the exact §8 failure (~2.7:1 for grass) the quiz view's own comments call out. Restyled as a chip: candy capsule fill (grass = closer, tomato = farther) with ink glyphs and a 2 pt ink stroke; the neutral state stays plain `panelText` with no fill. Trigger condition, spring animation, and `contentTransition(.numericText())` untouched.
+
+**Flagged, not fixed:** `BorderHopDifficulty.badgeColor` (Models/) still returns the retired palette — untouched per the views-only rule; the view layer reads `BorderHopStyle.difficultyColor(_:)` instead, so the model property is now dead for this game. Ink on tomato measures ≈4.35:1, just under the 4.5 body floor — used only for Lilita pill labels and eliminated-choice rows (large-text territory), consistent with the sibling migrations. `BorderHopMapView` mixes chrome (mini-map, recenter button, edge pills) into the same file as the canvas; splitting it is a phase-5 tidy.
+
+## 2026-08-23 — Retro phase 4: Border Blitz, VibeCheck, Finish the Line, Casting Director migrated [migration]
+
+**What:** Four games in one pass — Border Blitz (poolBlue, Opus agent), VibeCheck base + Competition (berry, Opus agent, 15 screens + shared `VibeCheckHeader`/badges), Finish the Line (plum, Opus agent), Casting Director (tangerine, Fable-direct, clue-tier ramp cornflower→grass→mustard→tomato). 8/9 games done; only Border Hop remains (deliberately skipped per Corey).
+
+**Why / notable calls:** Plum games route every plum fill through `chipTextColor` → cream (§8). Speech-game screens (Border Blitz gameplay, FTL gameplay) use plain ground — no motifs behind live waveforms; waveforms/silhouettes recolored only, math untouched. VibeCheck scoring zones went opaque (were stacked opacities ≈ gradient, §2). Casting Director clue chips: cream tiles, tier rides the order badge + latest-clue stroke; bottom bar rebuilt compact after fixedSize overflow found on-simulator.
+
+**Gotchas / flagged, not fixed:** VibeCheck base-mode screens (PromptEntry/PassDevice/TeamGuessing/Reveal/Scoreboard/GameOver) are UNREACHABLE in 1.0 — both root views drive the Competition VM; migrated anyway for the 1.1 Classic revival but only Competition was screenshot-verified. VibeCheck has zero accessibility modifiers anywhere (incl. the spectrum slider — no adjustable action); phase-5 item. Border Blitz `hard` (35s, no letters) vs `expert` (25s, letters) ordering oddity; `BorderBlitzGame.swift` root background swapped to retro ground (2-line out-of-scope fix, flagged by agent). `simctl privacy grant microphone` kills the running app — reinstall/relaunch after granting.
+
+## 2026-08-23 — Retro phase 4: Name 5 + Movie Chain migrated [migration]
+
+**What:** Name 5 (Opus agent, four screens, `Name5Style.swift` + `Name5StatusBadge`/`Name5DifficultyChip`) and Movie Chain (Fable-direct, five screens, `MovieChainStyle.swift` + shared `ChainNodeDisc`). Accents: lilac and tomato. GameTheme entries remapped. 5/9 games done.
+
+**Why / deviations:** Name 5 keeps its circular timer dial (re-tinted grass→tangerine→tomato on the view model's existing stops, math untouched) on a cream plate; difficulty ramp rides on stars inside cream lozenges rather than pill fills (§8). Movie Chain's chain rhythm is carried by node color (movie=tomato, actor=cornflower ink-outlined discs); the keyboard/search screen uses plain ground with hard ink rules instead of motifs + soft edge shadows; calm timer text is ink (grass-on-cream ~2.7:1), turning tangerine/tomato at the existing thresholds; medals are mustard/cornflower/cocoa with §8-correct glyph colors.
+
+**Gotchas / flagged, not fixed:** Movie Chain actor search rows show raw IMDb ids as the subtitle (pre-existing data presentation). Name 5: dead `dismiss` binding in Name5GameView, unread `isRunning` param in TimerView, `Name5ViewModel.timerColor` returns retired palette colors from the VM layer (layering smell; remap lives in the style file) — all pre-existing, untouched. Concurrent pbxproj edits by two agents coordinated by distinct ID suffixes (C7/C8).
+
+## 2026-08-23 — Retro phase 4: Country Letter Challenge migrated [migration]
+
+**What:** All three Country Letter screens (letter select, gameplay, results) migrated to the retro look via an Opus agent following `RETRO_MIGRATION_PLAYBOOK.md`; new `CountryLetterStyle.swift` remaps the retired semantic palette (success→grass, error→tomato, neutral/missed→cornflower, give-up→tangerine) and adds the shared `CountryStatusBadge` ink-outlined status disc. `GameTheme.countryLetter` accent → grass.
+
+**Why:** First playbook-driven agent migration — validates the delegation split. Ink (not cream) text on grass panels: measured cream-on-grass is ~2.8:1, below the large-text floor; `RetroComponents` doc comment already prescribes ink on grass. Semantic colors ride on badges so labels stay ink-on-cream body copy.
+
+**Gotchas / flagged, not fixed:** `CountryLetterGame.swift`'s `GameDefinition` still declares `AppTheme.forestGreen` (cosmetic — hub reads the Retro accent map; clean up in phase 3). Pre-existing logic quirks left untouched: `showHint()` inflates `hintCount` on no-op hints; `submitGuess()` schedules `finishGame()` via un-cancelled `asyncAfter`. `AppTheme.Retro.cocoa` as secondary text is illegible on darkPanel in dark mode (also affects CS pilot's HomeView) — phase-5 item; new code uses `panelText.opacity(0.7)` instead. Verified on-simulator: letter grid + disabled W/X, correct/error/hint feedback, Done→results, Play Again reset. 38 tests green.
+
+## 2026-08-23 — Retro phase 4 pilot: Conversation Starters migrated [migration]
+
+**What:** All four Conversation Starters screens (setup, in-game, settings sheet, saved sheet) re-skinned to Retro Maximalist. New `ConversationStartersStyle` centralizes the candy remaps (vibe ramp: Ice poolBlue → Casual grass → Fun tangerine → Deep plum → Daring tomato; categories each get a distinct candy color, plum chips take cream text per §8). `GameTheme.conversationStarters` accent pulled forward to Bubblegum (phase-3 item; safe — hub reads the Retro accent map). The per-game recipe is documented in `RETRO_MIGRATION_PLAYBOOK.md` for the remaining eight games.
+
+**Gameplay untouched:** view models, models, data, gestures, timers, haptics unchanged (verified via `git diff --stat` + on-simulator invariant walk: stepper clamp, pill filters, card swipe/prev-next, star→saved, share, timer enable/countdown).
+
+**Deviations:** vibe-tinted background gradient retired (§2 bans gradients; vibe still reads from the card's dot meter); naked SF-symbol empty/done heroes replaced with spot-plate + panel recipe (§9).
+
+**Fixed in passing:** (1) custom-label buttons in List rows need `.buttonStyle(.plain)` or a row tap fires every button (Share also fired Remove); (2) pre-existing silent failure — the saved-list share sheet presented from the root VC while the Saved sheet was up; now presents from the top-most presented VC.
+
+---
+
+## 2026-08-22 — Retro phase 2: hub re-skin landed [migration]
+
+**What:** `GameHubView` is the first migrated shipped screen: motif ground, Shrikhand "GAMES" lockup, candy shelf cards with alternating ±0.6° tilt and press physics. New primitives: `AppTheme.Retro.accent(forGameID:)` (candy accents per §3.2) and `RetroSpotIllustrations.swift` (`RetroSpotKind` mapped from game ids + nine `Canvas`-drawn spots — six ported from the Option C artboard SVGs, three new: berry heart, cornflower suitcase, plum clapperboard). Verified on-simulator light + scrolled + navigation tap; system-dark renders consistently light because the app pins `.preferredColorScheme(.light)` (protected app-level config, deliberately untouched).
+
+**Why:** ART_DIRECTION.md §10 phase 2; the Option C artboard is the spec.
+
+**Deliberate deviations from the artboard:** (1) "Party games for your table" tagline omitted — §11 calls it placeholder copy. (2) Card descriptions sit in cream mini-panels rather than naked on accents — §8 requires the cream device on 6 of 9 accents; uniform treatment keeps the shelf consistent and makes contrast failures structurally impossible. (3) Logo stays 40 pt (artboard 44 px) for Dynamic Type headroom.
+
+**Impact / gotchas:** Hub cards read accents from `AppTheme.Retro.accent(forGameID:)`, NOT `game.accentColor` — do not "simplify" back to `GameTheme` until phase 3 remaps it. Motif exclusion rects cover the header zone and card column; the layout generator adds its own 12 pt clearance, so pass the actual content rects (sparkles are up to 18 pt and will poke out from behind corners otherwise). Future games need a `RetroSpotKind` case + mapping (test enforces distinctness); unmapped ids fall back to the SF Symbol on a tangerine plate.
+
+---
+
+## 2026-08-22 — Retro phase 1: foundations landed [migration]
+
+**What:** `AppTheme.Retro` tokens, bundled Shrikhand/Lilita One (runtime CTFontManager registration — project uses GENERATE_INFOPLIST_FILE, so no UIAppFonts plist), `.retroPanel/.retroCard/.retroLozenge`, `RetroRaisedButtonStyle` (shadow collapse + travel press physics), `MotifFieldLayout` (pure, seeded, tested) + `MotifGroundView`. No shipped screen changed; visual surface is `RetroShowcaseView` (Xcode Previews only), verified on-simulator against the Option C artboard.
+
+**Why:** ART_DIRECTION.md §10 phase 1. Runtime font registration chosen over Info.plist keys for determinism with the generated plist.
+
+**Impact:** Phase 2 (hub) builds only on these primitives — do not hand-roll outlines/shadows in views. `RetroFonts.registerAll()` is called from the app init and is idempotent; tests call it directly. Motif grounds take `exclusions` rects for interactive areas. Note the tests folder is `GamesWithFriends/GamesWithFriendsTests/` (nested), not a repo-root sibling.
+
+---
+
+## 2026-08-22 — Adopt Retro Maximalist art direction [decision] [migration]
+
+**What:** The app is re-skinning from "warm minimalism" to a retro-maximalist candy-packaging aesthetic, formalized in `ART_DIRECTION.md`. Direction was picked from three mocked intensities on the [Retro Aesthetic Explorer canvas](https://claude.ai/code/artifact/3971b3d8-bb93-4d2e-8d79-bbba81408593) (Option C won); source photos + take/ignore notes live in `docs/design/inspiration/`.
+
+**Why:** Corey wanted the app to carry the energy of Maeve/Fishwife packaging and 70s hand-painted murals; the minimal UI made that impossible to express beyond illustrations.
+
+**Impact:** `DESIGN_GUIDE.md` now carries a supersession banner — its aesthetic sections (§1, §2, §3 display type, §4.2–4.3, §6, §10) yield to `ART_DIRECTION.md` on migrated screens; mechanics sections still bind everywhere. Migration is phased (tokens/components → hub → accent remap → per-game); a screen is either fully migrated or untouched, never blended. Per-game accent colors will be remapped (`ART_DIRECTION.md` §3.2) in one commit during phase 3.
+
+**Alternatives considered:** Option A (retro illustrations inside the existing minimal shell — rejected as garnish) and Option B (ink outlines + candy palette on the existing card system — rejected in favor of C's full energy).
+
+---
+
 ## 2026-07-12 — Launch-readiness pass: Vibe Check is Competition-only for 1.0 [decision]
 
 **What:** Vibe Check ships Competition-only. After post-fix code review flagged the original "default `selectedMode = .competition`" routing as fragile (the classic state machine stayed live behind it), `VibeCheckRootView` was rewritten to drive `CompetitionVibeCheckViewModel` directly — the classic `VibeCheckViewModel` is never instantiated, and the dead classic setup UI (mode picker, `TeamSetupView`, stepper cards) was deleted from `VibeCheckHomeView`. Classic gameplay views and the classic VM remain in the target but have no entry point.

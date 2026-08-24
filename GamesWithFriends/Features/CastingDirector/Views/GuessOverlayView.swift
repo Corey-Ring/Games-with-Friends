@@ -21,8 +21,8 @@ struct GuessOverlayView: View {
                     // Header
                     HStack {
                         Text("Who is the actor?")
-                            .font(AppTheme.Typography.subsectionHeader)
-                            .fontWeight(.semibold)
+                            .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                            .foregroundColor(AppTheme.Retro.panelText)
 
                         Spacer()
 
@@ -31,7 +31,7 @@ struct GuessOverlayView: View {
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .font(AppTheme.Typography.sectionHeader)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(AppTheme.Retro.panelText.opacity(0.6))
                         }
                     }
 
@@ -43,23 +43,25 @@ struct GuessOverlayView: View {
                                     Text(name)
                                         .font(AppTheme.Typography.caption)
                                         .strikethrough()
-                                        .foregroundStyle(AppTheme.error)
+                                        .foregroundStyle(AppTheme.Retro.ink)
                                         .padding(.horizontal, AppTheme.Spacing.sm)
                                         .padding(.vertical, AppTheme.Spacing.xs)
-                                        .background(AppTheme.error.opacity(0.1))
-                                        .clipShape(Capsule())
+                                        .background(Capsule().fill(CastingDirectorStyle.errorColor.opacity(0.35)))
+                                        .overlay(Capsule().stroke(CastingDirectorStyle.errorColor, lineWidth: 1.5))
                                 }
                             }
                         }
                     }
 
-                    // Search field
+                    // Search field — inset well on the cream card (§3 recipe).
                     HStack {
                         Image(systemName: "magnifyingglass")
-                            .foregroundStyle(.secondary)
+                            .fontWeight(.bold)
+                            .foregroundStyle(AppTheme.Retro.panelText.opacity(0.6))
 
                         TextField("Search actors...", text: $viewModel.searchQuery)
                             .textFieldStyle(.plain)
+                            .foregroundColor(AppTheme.Retro.panelText)
                             .autocorrectionDisabled()
                             .focused($isSearchFocused)
 
@@ -68,18 +70,24 @@ struct GuessOverlayView: View {
                                 viewModel.searchQuery = ""
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(AppTheme.Retro.panelText.opacity(0.6))
                             }
                         }
 
                         if viewModel.isSearching {
-                            GameSpinner(color: GameTheme.castingDirector.accentColor)
+                            GameSpinner(color: CastingDirectorStyle.accent)
                                 .scaleEffect(0.6)
                         }
                     }
                     .padding(AppTheme.Spacing.sm)
-                    .background(AppTheme.warmLinen)
-                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.medium))
+                    .background(
+                        RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                            .fill(AppTheme.Retro.ground)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                            .stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeWidth)
+                    )
 
                     // Results list
                     if !viewModel.searchResults.isEmpty {
@@ -90,20 +98,24 @@ struct GuessOverlayView: View {
                                         viewModel.submitGuess(actor)
                                     } label: {
                                         HStack(spacing: 12) {
-                                            Image(systemName: "person.fill")
-                                                .font(AppTheme.Typography.secondary)
-                                                .foregroundStyle(GameTheme.castingDirector.accentColor)
-                                                .frame(width: 30)
+                                            ZStack {
+                                                Circle().fill(CastingDirectorStyle.accent)
+                                                Circle().stroke(AppTheme.Retro.ink, lineWidth: 1.5)
+                                                Image(systemName: "person.fill")
+                                                    .font(.system(size: 13, weight: .bold))
+                                                    .foregroundColor(AppTheme.Retro.ink)
+                                            }
+                                            .frame(width: 30, height: 30)
 
                                             VStack(alignment: .leading, spacing: 2) {
                                                 Text(actor.name)
-                                                    .font(AppTheme.Typography.body)
-                                                    .foregroundStyle(.primary)
+                                                    .font(AppTheme.Retro.Typography.cardTitle)
+                                                    .foregroundStyle(AppTheme.Retro.panelText)
 
                                                 if let knownFor = actor.knownFor {
                                                     Text(knownFor)
                                                         .font(AppTheme.Typography.caption)
-                                                        .foregroundStyle(.secondary)
+                                                        .foregroundStyle(AppTheme.Retro.panelText.opacity(0.7))
                                                         .lineLimit(1)
                                                 }
                                             }
@@ -112,12 +124,19 @@ struct GuessOverlayView: View {
 
                                             Image(systemName: "chevron.right")
                                                 .font(AppTheme.Typography.caption)
-                                                .foregroundStyle(.secondary)
+                                                .fontWeight(.bold)
+                                                .foregroundStyle(AppTheme.Retro.panelText.opacity(0.6))
                                         }
                                         .padding(.horizontal, AppTheme.Spacing.sm)
                                         .padding(.vertical, AppTheme.Spacing.sm)
-                                        .background(AppTheme.warmLinen.opacity(0.5))
-                                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.small))
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                                                .fill(AppTheme.Retro.ground.opacity(0.6))
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                                                .stroke(AppTheme.Retro.ink.opacity(0.4), lineWidth: 1.5)
+                                        )
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -127,7 +146,7 @@ struct GuessOverlayView: View {
                     } else if !viewModel.searchQuery.isEmpty && !viewModel.isSearching {
                         Text("No actors found")
                             .font(AppTheme.Typography.secondary)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppTheme.Retro.panelText.opacity(0.7))
                             .padding()
                     }
 
@@ -135,15 +154,14 @@ struct GuessOverlayView: View {
                     HStack(spacing: AppTheme.Spacing.xs) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(AppTheme.Typography.tabLabel)
-                            .foregroundStyle(AppTheme.warning)
+                            .foregroundStyle(CastingDirectorStyle.warningColor)
                         Text("Wrong guess: -\(viewModel.difficulty.wrongGuessPenalty) points")
                             .font(AppTheme.Typography.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppTheme.Retro.panelText.opacity(0.7))
                     }
                 }
                 .padding(AppTheme.Spacing.lg)
-                .background(.regularMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.large))
+                .retroPanel(AppTheme.Retro.panel)
                 .padding(.horizontal)
                 .padding(.bottom, AppTheme.Spacing.lg)
             }
