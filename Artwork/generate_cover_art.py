@@ -316,28 +316,56 @@ def hose(x0, y0, x1, y1, bend, wd=5.6):
         f'stroke="{INK}" stroke-width="{wd}" stroke-linecap="round"/>')
 
 def glove(x, y, rot=0.0, s=1.0, kind="open"):
-    """Chunky white cartoon glove: open wave, peace sign, or fist."""
+    """Classic cartoon mitt: three sausage fingers + a thumb over a round
+    palm, bracelet cuff at the wrist, three lines on the back of the hand.
+    Drawn in two passes (ink silhouette, then white fill) so the pieces
+    merge into one clean outline."""
     add(f'<g transform="translate({x} {y}) rotate({rot}) scale({s})">')
+    parts = []
     if kind == "open":
-        add(f'<path d="M -11 9 L -11 -2 A 3 3 0 0 1 -5.5 -3.2 A 3 3 0 0 1 0 -3.6 '
-            f'A 3 3 0 0 1 5.5 -3.2 A 3 3 0 0 1 11 -2 L 11 9 Q 0 15 -11 9 Z" '
-            f'fill="{WHITE}" stroke="{INK}" stroke-width="2.8" stroke-linejoin="round"/>')
-        add(f'<g stroke="{INK}" stroke-width="1.8" stroke-linecap="round">'
-            f'<line x1="-5.5" y1="-2.6" x2="-5.5" y2="4"/>'
-            f'<line x1="0" y1="-3" x2="0" y2="4.4"/>'
-            f'<line x1="5.5" y1="-2.6" x2="5.5" y2="4"/></g>')
-        add(f'<path d="M -8 10.4 Q 0 13.6 8 10.4" fill="none" stroke="{INK}" '
-            f'stroke-width="1.8" stroke-linecap="round"/>')
+        for a in (-26, 0, 26):
+            parts.append(f'<rect x="-3" y="-17" width="6" height="15" rx="3" '
+                         f'transform="rotate({a} 0 2)" {{P}}/>')
+        parts.append('<rect x="-3" y="-14" width="6" height="12" rx="3" '
+                     'transform="rotate(-62 0 2)" {P}/>')
+        parts.append('<circle cx="0" cy="2" r="7.6" {P}/>')
     elif kind == "peace":
-        add(f'<rect x="-7.8" y="-15" width="5.8" height="16" rx="2.9" fill="{WHITE}" '
-            f'stroke="{INK}" stroke-width="2.6" transform="rotate(-13)"/>')
-        add(f'<rect x="2" y="-15.5" width="5.8" height="16.5" rx="2.9" fill="{WHITE}" '
-            f'stroke="{INK}" stroke-width="2.6" transform="rotate(11)"/>')
-        add(f'<circle cx="0" cy="4" r="8.4" fill="{WHITE}" stroke="{INK}" stroke-width="2.8"/>')
-    else:  # fist
-        add(f'<circle cx="0" cy="0" r="8" fill="{WHITE}" stroke="{INK}" stroke-width="2.8"/>')
-        add(f'<path d="M -4 -3 L -4 3 M 0 -3.6 L 0 3.6 M 4 -3 L 4 3" fill="none" '
-            f'stroke="{INK}" stroke-width="1.7" stroke-linecap="round"/>')
+        parts.append('<rect x="-3" y="-18" width="6" height="16" rx="3" '
+                     'transform="rotate(-14 0 3)" {P}/>')
+        parts.append('<rect x="-3" y="-18.5" width="6" height="16.5" rx="3" '
+                     'transform="rotate(12 0 3)" {P}/>')
+        parts.append('<rect x="-3" y="-12" width="6" height="10" rx="3" '
+                     'transform="rotate(-64 0 3)" {P}/>')
+        parts.append('<circle cx="0" cy="3" r="7.8" {P}/>')
+    else:  # fist: round mitt with the fingers curled across the front
+        parts.append('<circle cx="0" cy="0" r="7.8" {P}/>')
+        parts.append('<rect x="-8" y="0.6" width="14" height="6.8" rx="3.4" {P}/>')
+    ink = (f'fill="{INK}" stroke="{INK}" stroke-width="5.4" '
+           f'stroke-linejoin="round"')
+    white = f'fill="{WHITE}"'
+    for p in parts:
+        add(p.replace("{P}", ink))
+    for p in parts:
+        add(p.replace("{P}", white))
+    if kind == "open":
+        add(f'<g stroke="{INK}" stroke-width="1.6" stroke-linecap="round">'
+            f'<line x1="-3.4" y1="1" x2="-3.4" y2="6.4"/>'
+            f'<line x1="0" y1="0.6" x2="0" y2="6.8"/>'
+            f'<line x1="3.4" y1="1" x2="3.4" y2="6.4"/></g>')
+        cuff_y = 8.0
+    elif kind == "peace":
+        add(f'<g stroke="{INK}" stroke-width="1.6" stroke-linecap="round">'
+            f'<line x1="-2.6" y1="4.6" x2="-2.6" y2="8.4"/>'
+            f'<line x1="2.6" y1="4.6" x2="2.6" y2="8.4"/></g>')
+        cuff_y = 9.0
+    else:
+        add(f'<g stroke="{INK}" stroke-width="1.6" stroke-linecap="round">'
+            f'<line x1="-3.8" y1="-4.6" x2="-3.8" y2="-1.4"/>'
+            f'<line x1="0" y1="-5.2" x2="0" y2="-1.4"/>'
+            f'<line x1="3.8" y1="-4.6" x2="3.8" y2="-1.4"/></g>')
+        cuff_y = 6.2
+    add(f'<rect x="-7.4" y="{cuff_y}" width="14.8" height="5.4" rx="2.7" '
+        f'fill="{WHITE}" stroke="{INK}" stroke-width="2.4"/>')
     add('</g>')
 
 def shoe(x, y, s=1.0, fill=RED, flip=1, rot=0.0):
@@ -427,7 +455,7 @@ def mascot_card(x, y, s=1.0, rot=0.0, arms="wave"):
             f'stroke="{INK}" stroke-width="1.8" stroke-linejoin="round"/></g>')
     pie_eyes(ey=-13)
     grin(my=6, w=12)
-    cheeks(ey=-4, gap=17, r=3.2)
+    cheeks(ey=3, gap=20, r=3.2)
     dot(-4, -1, 1.1, INK); dot(0, 0, 1.1, INK); dot(4, -1, 1.1, INK)
     add('</g>')
 
