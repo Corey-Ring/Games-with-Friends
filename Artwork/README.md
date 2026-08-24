@@ -26,9 +26,15 @@ center art while keeping everything else identical:
 |---|---|
 | `globe` (default) | The folk globe — writes `cover-art.png` |
 | `cards` | A fanned hand of cards with a die |
-| `meeples` | Four mural-style friends waving hello |
+| `mascots` | Three retro game mascots on parade: the card, the die, and the globe |
+| `duo` | The die and the card sharing a high five |
+| `solo` | One big lucky die with star-struck eyes |
 | `tiles` | Q & A letter tiles |
 | `question` | A question mark on a scalloped rosette |
+
+The mascot variants use the rubber-hose sticker style from the inspiration
+references: game objects as characters, with pie-cut oval eyes, noodle limbs,
+white mitt gloves, and chunky two-tone shoes.
 
 Non-globe variants render to `variants/cover-art-<name>.png`. To adopt one as
 the cover, copy it over `cover-art.png` and the app-icon copy named above.

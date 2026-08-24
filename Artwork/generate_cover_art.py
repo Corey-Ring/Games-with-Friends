@@ -37,7 +37,7 @@ BSB = ImageFont.truetype(f"{FONT_DIR}/BigShoulders-Bold.ttf", 100)
 WSB = ImageFont.truetype(f"{FONT_DIR}/WorkSans-Bold.ttf", 100)
 PAC = ImageFont.truetype(f"{FONT_DIR}/Pacifico.ttf", 100)
 
-# medallion center variant: globe (default) | cards | meeples | tiles | question
+# medallion center variant: globe (default) | cards | mascots | duo | solo | tiles | question
 VARIANT = sys.argv[1] if len(sys.argv) > 1 else "globe"
 
 parts = []
@@ -301,91 +301,210 @@ POOL   = "#5BC0DF"
 GUM    = "#F387B8"
 GRASS  = "#57A34F"
 TANGER = "#F07C24"
-CANDY_PLUM = "#8E4585"
-SKIN_TAN   = "#E9BD90"
-SKIN_BROWN = "#A96B4A"
+MOUTH  = "#7B2130"
+WHITE  = "#FFFFFF"
 
-HAND = ("M -10 9 L -10 -4 A 2.6 2.6 0 0 1 -5 -4.6 A 2.6 2.6 0 0 1 0 -4.8 "
-        "A 2.6 2.6 0 0 1 5 -4.6 A 2.6 2.6 0 0 1 10 -4 L 10 9 Q 0 14 -10 9 Z")
+# ---- rubber-hose mascot kit --------------------------------------------
+# Game objects as characters, in the retro-sticker style of the inspiration
+# refs: pie-cut oval eyes, noodle limbs, white mitt gloves, chunky shoes.
+_uid = [0]
 
-def friend(x, y, s, skin, hair, hair_col, shirt, wave=None, freckles=False):
-    """Mural-style friend: big head, dot eyes, big smile, waving open palm
-    (see docs/design/inspiration/mural-town-closeup.jpg)."""
-    add(f'<g transform="translate({x} {y}) scale({s})">')
-    # waving arm behind the torso
-    if wave:
-        wx = 34 if wave == "right" else -34
-        hx = 40 if wave == "right" else -40
-        sxx = 12 if wave == "right" else -12
-        add(f'<path d="M {sxx} 30 Q {wx*0.8} 16 {wx} -8" fill="none" stroke="{INK}" '
-            f'stroke-width="15" stroke-linecap="round"/>')
-        add(f'<path d="M {sxx} 30 Q {wx*0.8} 16 {wx} -8" fill="none" stroke="{shirt}" '
-            f'stroke-width="9.5" stroke-linecap="round"/>')
-        add(f'<g transform="translate({hx} -19) rotate({14 if wave == "right" else -14}) scale(1.3)">'
-            f'<path d="{HAND}" fill="{skin}" stroke="{INK}" stroke-width="2.6" '
-            f'stroke-linejoin="round"/>'
-            f'<g stroke="{INK}" stroke-width="1.8" stroke-linecap="round">'
-            f'<line x1="-5" y1="-4" x2="-5" y2="3"/>'
-            f'<line x1="0" y1="-4.4" x2="0" y2="3.6"/>'
-            f'<line x1="5" y1="-4" x2="5" y2="3"/></g></g>')
-    # torso
-    add(f'<rect x="-23" y="16" width="46" height="40" rx="15" fill="{shirt}" '
-        f'stroke="{INK}" stroke-width="3.6"/>')
-    add(f'<path d="M -7 17 L 0 25 L 7 17" fill="none" stroke="{INK}" '
-        f'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>')
-    # head
-    add(f'<circle cx="0" cy="-6" r="21" fill="{skin}" stroke="{INK}" stroke-width="3.6"/>')
-    # hair
-    if hair == "bob":
-        add(f'<path d="M -21 -10 A 21 21 0 0 1 21 -10 L 17 -5 A 16 16 0 0 0 -16 -7 Z" '
-            f'fill="{hair_col}" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
-        add(f'<path d="M 14 -14 Q 22 -12 22 -4 Q 18 -8 12 -8 Z" '
-            f'fill="{hair_col}" stroke="{INK}" stroke-width="2.6" stroke-linejoin="round"/>')
-    elif hair == "curls":
-        for hxx, hy, hr in [(-19, -16, 7.5), (-10, -23, 8), (0, -26, 8.5),
-                            (10, -23, 8), (19, -16, 7.5)]:
-            add(f'<circle cx="{hxx}" cy="{hy}" r="{hr}" fill="{hair_col}" '
-                f'stroke="{INK}" stroke-width="2.8"/>')
-    elif hair == "buns":
-        add(f'<circle cx="-20" cy="-22" r="8" fill="{hair_col}" stroke="{INK}" stroke-width="2.8"/>')
-        add(f'<circle cx="20" cy="-22" r="8" fill="{hair_col}" stroke="{INK}" stroke-width="2.8"/>')
-        add(f'<path d="M -21 -10 A 21 21 0 0 1 21 -10 L 16 -6 A 16 16 0 0 0 -16 -6 Z" '
-            f'fill="{hair_col}" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
-    elif hair == "cap":
-        add(f'<path d="M -21 -10 A 21 21 0 0 1 21 -10 L 21 -8 L -28 -8 Z" '
-            f'fill="{hair_col}" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
-        add(f'<circle cx="0" cy="-27" r="3.6" fill="{hair_col}" stroke="{INK}" stroke-width="2.4"/>')
-    # face: dot eyes, big smile, blush
-    dot(-7.5, -8, 2.7, INK)
-    dot(7.5, -8, 2.7, INK)
-    add(f'<path d="M -7 0 Q 0 7 7 0" fill="none" stroke="{INK}" '
-        f'stroke-width="2.8" stroke-linecap="round"/>')
-    dot(-14, -1, 3.2, BLUSH)
-    dot(14, -1, 3.2, BLUSH)
-    if freckles:
-        dot(-4, -3, 1.1, INK)
-        dot(0, -2, 1.1, INK)
-        dot(4, -3, 1.1, INK)
+def hose(x0, y0, x1, y1, bend, wd=5.6):
+    """Thin rubber-hose limb: a single curved ink stroke."""
+    mx, my = (x0 + x1) / 2 + bend, (y0 + y1) / 2
+    add(f'<path d="M {x0} {y0} Q {mx} {my} {x1} {y1}" fill="none" '
+        f'stroke="{INK}" stroke-width="{wd}" stroke-linecap="round"/>')
+
+def glove(x, y, rot=0.0, s=1.0, kind="open"):
+    """Chunky white cartoon glove: open wave, peace sign, or fist."""
+    add(f'<g transform="translate({x} {y}) rotate({rot}) scale({s})">')
+    if kind == "open":
+        add(f'<path d="M -11 9 L -11 -2 A 3 3 0 0 1 -5.5 -3.2 A 3 3 0 0 1 0 -3.6 '
+            f'A 3 3 0 0 1 5.5 -3.2 A 3 3 0 0 1 11 -2 L 11 9 Q 0 15 -11 9 Z" '
+            f'fill="{WHITE}" stroke="{INK}" stroke-width="2.8" stroke-linejoin="round"/>')
+        add(f'<g stroke="{INK}" stroke-width="1.8" stroke-linecap="round">'
+            f'<line x1="-5.5" y1="-2.6" x2="-5.5" y2="4"/>'
+            f'<line x1="0" y1="-3" x2="0" y2="4.4"/>'
+            f'<line x1="5.5" y1="-2.6" x2="5.5" y2="4"/></g>')
+        add(f'<path d="M -8 10.4 Q 0 13.6 8 10.4" fill="none" stroke="{INK}" '
+            f'stroke-width="1.8" stroke-linecap="round"/>')
+    elif kind == "peace":
+        add(f'<rect x="-7.8" y="-15" width="5.8" height="16" rx="2.9" fill="{WHITE}" '
+            f'stroke="{INK}" stroke-width="2.6" transform="rotate(-13)"/>')
+        add(f'<rect x="2" y="-15.5" width="5.8" height="16.5" rx="2.9" fill="{WHITE}" '
+            f'stroke="{INK}" stroke-width="2.6" transform="rotate(11)"/>')
+        add(f'<circle cx="0" cy="4" r="8.4" fill="{WHITE}" stroke="{INK}" stroke-width="2.8"/>')
+    else:  # fist
+        add(f'<circle cx="0" cy="0" r="8" fill="{WHITE}" stroke="{INK}" stroke-width="2.8"/>')
+        add(f'<path d="M -4 -3 L -4 3 M 0 -3.6 L 0 3.6 M 4 -3 L 4 3" fill="none" '
+            f'stroke="{INK}" stroke-width="1.7" stroke-linecap="round"/>')
     add('</g>')
 
-def center_meeples():
-    """A crowd of mural-style friends waving hello: game night, everyone in."""
-    add(f'<g transform="translate({gx} {gy})">')
-    add('<g transform="scale(1.12)">')
-    # back row peeks over the front row
-    friend(-42, -34, 0.82, SKIN_TAN, "cap", GRASS, GRASS, wave="left")
-    friend(42, -34, 0.82, CREAM, "buns", "#8E4585", TANGER, wave="right")
-    # front row
-    friend(-38, 26, 1.0, CREAM, "bob", GOLD, POOL, freckles=True)
-    friend(38, 26, 1.0, SKIN_BROWN, "curls", INK, GUM)
+def shoe(x, y, s=1.0, fill=RED, flip=1, rot=0.0):
+    """Chunky two-tone shoe, toe pointing +x (flip=-1 mirrors)."""
+    add(f'<g transform="translate({x} {y}) rotate({rot}) scale({flip * s} {s})">')
+    add(f'<path d="M -12 3 L 16 3 Q 17 7.6 12 7.6 L -8 7.6 Q -12 7.6 -12 3 Z" '
+        f'fill="{CREAM}" stroke="{INK}" stroke-width="2.6" stroke-linejoin="round"/>')
+    add(f'<path d="M -10 3 L -11 -3 Q -11 -9 -3 -10 Q 8 -11 13 -4 Q 16 -1 15 3 Z" '
+        f'fill="{fill}" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
     add('</g>')
-    star5(0, -98, 13, GOLD, rot=12)
-    # spray of stars below the medallion circle
+
+def pie_eyes(ey=-9, gap=9.5, rx=7.4, ry=10.6, look=(0, 1.6), star=False):
+    """Big side-by-side oval eyes with heavy pupils (or star pupils)."""
+    lx, ly = look
+    for sn in (-1, 1):
+        ex = sn * gap
+        add(f'<ellipse cx="{ex}" cy="{ey}" rx="{rx}" ry="{ry}" fill="{WHITE}" '
+            f'stroke="{INK}" stroke-width="2.8"/>')
+        if star:
+            star5(ex + lx, ey + ly, 5.6, INK, rot=sn * 8, sw=0)
+        else:
+            dot(ex + lx, ey + ly, 4.7, INK)
+            dot(ex + lx + 1.7, ey + ly - 1.7, 1.5, WHITE)
+
+def brows(ey=-24.5, gap=9.5):
+    for sn in (-1, 1):
+        ex = sn * gap
+        add(f'<path d="M {ex-4.5} {ey+2} Q {ex} {ey-2} {ex+4.5} {ey+2}" fill="none" '
+            f'stroke="{INK}" stroke-width="2.6" stroke-linecap="round"/>')
+
+def grin(my=7, w=13.5):
+    """Big open grin: dark mouth, teeth band along the top, tongue below."""
+    i = _uid[0]; _uid[0] += 1
+    d = f"M {-w} {my} Q 0 {my + w * 1.25} {w} {my} Q 0 {my + w * 0.34} {-w} {my} Z"
+    add(f'<clipPath id="grin{i}"><path d="{d}"/></clipPath>')
+    add(f'<path d="{d}" fill="{MOUTH}"/>')
+    add(f'<g clip-path="url(#grin{i})">')
+    add(f'<path d="M {-w} {my} Q 0 {my + w * 0.34} {w} {my} L {w} {my + 4.4} '
+        f'Q 0 {my + w * 0.34 + 4.4} {-w} {my + 4.4} Z" fill="{WHITE}"/>')
+    add(f'<ellipse cx="0" cy="{my + w * 0.78}" rx="{w * 0.52}" ry="{w * 0.4}" '
+        f'fill="{GUM}" stroke="{INK}" stroke-width="2.2"/>')
+    add('</g>')
+    add(f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="2.8" stroke-linejoin="round"/>')
+
+def cheeks(ey=-2, gap=19, r=3.4, col=GUM):
+    dot(-gap, ey, r, col)
+    dot(gap, ey, r, col)
+
+def mascot_die(x, y, s=1.0, rot=0.0, arms="up", eyes_star=False):
+    """The lucky die: cream body, corner pips, arms up cheering."""
+    add(f'<g transform="translate({x} {y}) rotate({rot}) scale({s})">')
+    hose(-13, 32, -19, 52, -3, 6); hose(13, 32, 19, 52, 3, 6)
+    shoe(-21, 58, 1.0, RED, flip=-1); shoe(21, 58, 1.0, RED, flip=1)
+    if arms == "up":
+        hose(-33, -4, -50, -36, -12); glove(-52, -43, rot=-14, s=1.05)
+        hose(33, -4, 50, -36, 12); glove(52, -43, rot=14, s=1.05)
+    elif arms == "hifive":
+        hose(33, -10, 52, -50, 16); glove(54, -58, rot=40, s=1.1)
+        hose(-33, 6, -48, 22, -10); glove(-51, 25, rot=-95, s=0.95, kind="fist")
+    add(f'<rect x="-37" y="-37" width="74" height="74" rx="15" fill="{CREAM}" '
+        f'stroke="{INK}" stroke-width="4.2"/>')
+    for px, py in [(-24.5, -24.5), (24.5, -24.5), (-24.5, 24.5), (24.5, 24.5)]:
+        dot(px, py, 4.4, INK)
+    pie_eyes(star=eyes_star)
+    brows()
+    grin()
+    cheeks(ey=1, gap=19)
+    add('</g>')
+
+def mascot_card(x, y, s=1.0, rot=0.0, arms="wave"):
+    """The ace of hearts: tall cream card, freckles, one arm up waving."""
+    add(f'<g transform="translate({x} {y}) rotate({rot}) scale({s})">')
+    hose(-12, 40, -17, 58, -3, 6); hose(12, 40, 17, 58, 3, 6)
+    shoe(-19, 64, 1.0, BLUE, flip=-1); shoe(19, 64, 1.0, BLUE, flip=1)
+    if arms == "wave":
+        hose(-28, -14, -44, -44, -14); glove(-46, -51, rot=-16, s=1.05)
+        hose(28, 6, 44, 20, 8); glove(47, 22, rot=95, s=0.95, kind="fist")
+    elif arms == "hifive":
+        hose(-28, -16, -52, -46, -12); glove(-56, -53, rot=-40, s=1.1)
+        hose(28, 6, 44, 20, 8); glove(47, 22, rot=95, s=0.95, kind="fist")
+    add(f'<rect x="-31" y="-43" width="62" height="86" rx="9" fill="{CREAM}" '
+        f'stroke="{INK}" stroke-width="4"/>')
+    add(f'<rect x="-24" y="-36" width="48" height="72" rx="6" fill="none" '
+        f'stroke="{MAGENTA}" stroke-width="2" opacity="0.5"/>')
+    for hx, hy, hrot in [(-20, -31, 0), (20, 31, 180)]:
+        add(f'<g transform="translate({hx} {hy}) rotate({hrot})">'
+            f'<path d="M 0 5 C -7 0 -7 -6 -3.4 -6 C -1.4 -6 0 -4.4 0 -2.8 '
+            f'C 0 -4.4 1.4 -6 3.4 -6 C 7 -6 7 0 0 5 Z" fill="{MAGENTA}" '
+            f'stroke="{INK}" stroke-width="1.8" stroke-linejoin="round"/></g>')
+    pie_eyes(ey=-13)
+    grin(my=6, w=12)
+    cheeks(ey=-4, gap=17, r=3.2)
+    dot(-4, -1, 1.1, INK); dot(0, 0, 1.1, INK); dot(4, -1, 1.1, INK)
+    add('</g>')
+
+def mascot_globe(x, y, s=1.0, rot=0.0):
+    """The globetrotter: pool-blue globe body flashing a peace sign."""
+    add(f'<g transform="translate({x} {y}) rotate({rot}) scale({s})">')
+    hose(-13, 34, -18, 52, -3, 6); hose(13, 34, 18, 52, 3, 6)
+    shoe(-20, 58, 1.0, TANGER, flip=-1); shoe(20, 58, 1.0, TANGER, flip=1)
+    hose(-36, 6, -48, 22, -8); glove(-51, 24, rot=-95, s=0.95, kind="fist")
+    hose(36, -8, 52, -38, 12); glove(54, -46, rot=18, s=1.05, kind="peace")
+    i = _uid[0]; _uid[0] += 1
+    add(f'<circle cx="0" cy="0" r="41" fill="{POOL}" stroke="{INK}" stroke-width="4.2"/>')
+    add(f'<clipPath id="gb{i}"><circle cx="0" cy="0" r="39"/></clipPath>')
+    add(f'<g clip-path="url(#gb{i})">')
+    add(f'<g stroke="{CREAM}" stroke-width="2" fill="none" opacity="0.55">'
+        f'<ellipse cx="0" cy="0" rx="24" ry="41"/>'
+        f'<path d="M -38 -26 Q 0 -36 38 -26"/>'
+        f'<path d="M -38 28 Q 0 38 38 28"/></g>')
+    add(f'<path d="M -46 -20 Q -30 -30 -24 -16 Q -22 -4 -34 -2 Q -48 0 -46 -20 Z" '
+        f'fill="{GRASS}" stroke="{INK}" stroke-width="2.6" stroke-linejoin="round"/>')
+    add(f'<path d="M 30 16 Q 42 10 48 20 Q 50 32 36 32 Q 26 30 30 16 Z" '
+        f'fill="{GRASS}" stroke="{INK}" stroke-width="2.6" stroke-linejoin="round"/>')
+    add('</g>')
+    pie_eyes(ey=-8)
+    grin(my=8, w=12)
+    cheeks(ey=2, gap=19, r=3.4)
+    add('</g>')
+
+def star_spray():
+    """Spray of stars below the medallion circle."""
     star5(-56, 206, 10, GOLD, rot=-12)
     star5(0, 222, 14, GOLD_HI, rot=8)
     star5(56, 206, 10, GOLD, rot=12)
     dot(-96, 190, 4, BLUSH)
     dot(96, 190, 4, BLUSH)
+
+def center_mascots():
+    """Three game mascots on parade: the card, the die, and the globe."""
+    add(f'<g transform="translate({gx} {gy})">')
+    add('<g transform="scale(1.12)">')
+    mascot_card(-78, -8, 0.88, rot=-7)
+    mascot_globe(76, -2, 0.9, rot=5)
+    mascot_die(0, 16, 1.0)
+    star5(0, -118, 12, GOLD, rot=10)
+    sparkle(-116, -96, 8, GOLD_HI)
+    sparkle(116, -96, 8, GOLD_HI)
+    add('</g>')
+    star_spray()
+    add('</g>')
+
+def center_duo():
+    """High five! The die and the card celebrate a win."""
+    add(f'<g transform="translate({gx} {gy})">')
+    add('<g transform="scale(1.1)">')
+    mascot_die(-58, 22, 1.12, rot=-4, arms="hifive")
+    mascot_card(64, 12, 1.06, rot=7, arms="hifive")
+    star5(2, -78, 15, GOLD_HI, rot=12)
+    sparkle(-26, -110, 8, CREAM)
+    sparkle(34, -102, 7, GOLD_HI)
+    dot(-2, -116, 3.6, MAGENTA)
+    add('</g>')
+    star_spray()
+    add('</g>')
+
+def center_solo():
+    """One big lucky die with star-struck eyes: the life of the party."""
+    add(f'<g transform="translate({gx} {gy})">')
+    mascot_die(0, 4, 1.66, arms="up", eyes_star=True)
+    sparkle(-108, -76, 9, GOLD_HI)
+    sparkle(108, -76, 9, GOLD_HI)
+    sparkle(-116, 52, 7, CREAM)
+    sparkle(116, 52, 7, CREAM)
+    dot(-88, -118, 4, MAGENTA)
+    dot(88, -118, 4, MAGENTA)
+    star_spray()
     add('</g>')
 
 def center_tiles():
@@ -431,8 +550,8 @@ def center_question():
     add('</g>')
 
 CENTERS = {"globe": center_globe, "cards": center_cards,
-           "meeples": center_meeples, "tiles": center_tiles,
-           "question": center_question}
+           "mascots": center_mascots, "duo": center_duo, "solo": center_solo,
+           "tiles": center_tiles, "question": center_question}
 CENTERS[VARIANT]()
 
 # charms inside medallion (blush zone)
