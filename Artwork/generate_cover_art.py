@@ -315,12 +315,13 @@ def hose(x0, y0, x1, y1, bend, wd=5.6):
     add(f'<path d="M {x0} {y0} Q {mx} {my} {x1} {y1}" fill="none" '
         f'stroke="{INK}" stroke-width="{wd}" stroke-linecap="round"/>')
 
-def glove(x, y, rot=0.0, s=1.0, kind="open"):
+def glove(x, y, rot=0.0, s=1.0, kind="open", flip=1):
     """Classic cartoon mitt: three sausage fingers + a thumb over a round
     palm, bracelet cuff at the wrist, three lines on the back of the hand.
-    Drawn in two passes (ink silhouette, then white fill) so the pieces
-    merge into one clean outline."""
-    add(f'<g transform="translate({x} {y}) rotate({rot}) scale({s})">')
+    Drawn as a right hand (thumb toward -x); pass flip=-1 to mirror it for
+    a left hand so the thumb points inward. Drawn in two passes (ink
+    silhouette, then white fill) so the pieces merge into one clean outline."""
+    add(f'<g transform="translate({x} {y}) rotate({rot}) scale({flip * s} {s})">')
     parts = []
     if kind == "open":
         for a in (-26, 0, 26):
@@ -418,11 +419,11 @@ def mascot_die(x, y, s=1.0, rot=0.0, arms="up", eyes_star=False):
     hose(-13, 32, -19, 52, -3, 6); hose(13, 32, 19, 52, 3, 6)
     shoe(-21, 58, 1.0, RED, flip=-1); shoe(21, 58, 1.0, RED, flip=1)
     if arms == "up":
-        hose(-33, -4, -50, -36, -12); glove(-52, -43, rot=-14, s=1.05)
+        hose(-33, -4, -50, -36, -12); glove(-52, -43, rot=14, s=1.05, flip=-1)
         hose(33, -4, 50, -36, 12); glove(52, -43, rot=14, s=1.05)
     elif arms == "hifive":
         hose(33, -10, 52, -50, 16); glove(54, -58, rot=40, s=1.1)
-        hose(-33, 6, -48, 22, -10); glove(-51, 25, rot=-95, s=0.95, kind="fist")
+        hose(-33, 6, -48, 22, -10); glove(-51, 25, rot=95, s=0.95, kind="fist", flip=-1)
     add(f'<rect x="-37" y="-37" width="74" height="74" rx="15" fill="{CREAM}" '
         f'stroke="{INK}" stroke-width="4.2"/>')
     for px, py in [(-24.5, -24.5), (24.5, -24.5), (-24.5, 24.5), (24.5, 24.5)]:
@@ -439,10 +440,10 @@ def mascot_card(x, y, s=1.0, rot=0.0, arms="wave"):
     hose(-12, 40, -17, 58, -3, 6); hose(12, 40, 17, 58, 3, 6)
     shoe(-19, 64, 1.0, BLUE, flip=-1); shoe(19, 64, 1.0, BLUE, flip=1)
     if arms == "wave":
-        hose(-28, -14, -44, -44, -14); glove(-46, -51, rot=-16, s=1.05)
+        hose(-28, -14, -44, -44, -14); glove(-46, -51, rot=16, s=1.05, flip=-1)
         hose(28, 6, 44, 20, 8); glove(47, 22, rot=95, s=0.95, kind="fist")
     elif arms == "hifive":
-        hose(-28, -16, -52, -46, -12); glove(-56, -53, rot=-40, s=1.1)
+        hose(-28, -16, -52, -46, -12); glove(-56, -53, rot=40, s=1.1, flip=-1)
         hose(28, 6, 44, 20, 8); glove(47, 22, rot=95, s=0.95, kind="fist")
     add(f'<rect x="-31" y="-43" width="62" height="86" rx="9" fill="{CREAM}" '
         f'stroke="{INK}" stroke-width="4"/>')
@@ -464,7 +465,7 @@ def mascot_globe(x, y, s=1.0, rot=0.0):
     add(f'<g transform="translate({x} {y}) rotate({rot}) scale({s})">')
     hose(-13, 34, -18, 52, -3, 6); hose(13, 34, 18, 52, 3, 6)
     shoe(-20, 58, 1.0, TANGER, flip=-1); shoe(20, 58, 1.0, TANGER, flip=1)
-    hose(-36, 6, -48, 22, -8); glove(-51, 24, rot=-95, s=0.95, kind="fist")
+    hose(-36, 6, -48, 22, -8); glove(-51, 24, rot=95, s=0.95, kind="fist", flip=-1)
     hose(36, -8, 52, -38, 12); glove(54, -46, rot=18, s=1.05, kind="peace")
     i = _uid[0]; _uid[0] += 1
     add(f'<circle cx="0" cy="0" r="41" fill="{POOL}" stroke="{INK}" stroke-width="4.2"/>')
@@ -581,8 +582,9 @@ CENTERS = {"globe": center_globe, "cards": center_cards,
 CENTERS[VARIANT]()
 
 # charms inside medallion (blush zone)
-sparkle(MC[0]-142, MC[1]-38, 11)
-sparkle(MC[0]+142, MC[1]-38, 11)
+if VARIANT != "mascots":  # the trio's outer gloves reach this spot
+    sparkle(MC[0]-142, MC[1]-38, 11)
+    sparkle(MC[0]+142, MC[1]-38, 11)
 star5(MC[0]-120, MC[1]+86, 12, GOLD)
 star5(MC[0]+120, MC[1]+86, 12, GOLD)
 dot(MC[0]-146, MC[1]+34, 4, MAGENTA)
