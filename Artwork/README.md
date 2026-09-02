@@ -2,8 +2,9 @@
 
 Cover art for **Games with Friends**, in a vintage tin-label / candy-box aesthetic
 (think Fishwife tinned seafood and Maeve chocolate packaging): a deep plum field in a
-marigold frame, the gold script title "Games for Friends" arching over a globe
-medallion, and mirrored carnation garlands.
+marigold frame, the gold script title "Games for Friends" arching over a medallion of
+three retro game mascots — the card, the die, and the globe — and mirrored carnation
+garlands.
 
 ## Files
 
@@ -24,9 +25,9 @@ center art while keeping everything else identical:
 
 | Variant | Center art |
 |---|---|
-| `globe` (default) | The folk globe — writes `cover-art.png` |
+| `mascots` (default) | Three retro game mascots on parade: the card, the die, and the globe — writes `cover-art.png` |
+| `globe` | The folk globe (the previous cover) |
 | `cards` | A fanned hand of cards with a die |
-| `mascots` | Three retro game mascots on parade: the card, the die, and the globe |
 | `duo` | The die and the card sharing a high five |
 | `solo` | One big lucky die with star-struck eyes |
 | `tiles` | Q & A letter tiles |
@@ -36,14 +37,15 @@ The mascot variants use the rubber-hose sticker style from the inspiration
 references: game objects as characters, with pie-cut oval eyes, noodle limbs,
 white mitt gloves, and chunky two-tone shoes.
 
-Non-globe variants render to `variants/cover-art-<name>.png`. To adopt one as
-the cover, copy it over `cover-art.png` and the app-icon copy named above.
+Non-default variants render to `variants/cover-art-<name>.png`. To adopt one as
+the cover, make it the default in the script (or copy it over `cover-art.png`
+and the app-icon copy named above).
 
 ## Regenerating
 
 ```bash
 pip install cairosvg pillow
-python3 Artwork/generate_cover_art.py [globe|cards|meeples|tiles|question]
+python3 Artwork/generate_cover_art.py [mascots|globe|cards|duo|solo|tiles|question]
 ```
 
 The script expects these fonts installed (all SIL Open Font License, free from

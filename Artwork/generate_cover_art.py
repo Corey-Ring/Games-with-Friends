@@ -2,8 +2,9 @@
 """Games with Friends — cover art in the 'Cannery Folk' philosophy.
 
 Vintage tin-label maximalism: plum field in a marigold frame, the gold
-script title "Games for Friends" arching over a globe medallion, and
-mirrored carnation garlands.
+script title "Games for Friends" arching over a medallion of three
+game mascots (the card, the die, and the globe), and mirrored
+carnation garlands.
 Built as SVG, rendered to PNG with cairosvg.
 """
 import math
@@ -37,8 +38,8 @@ BSB = ImageFont.truetype(f"{FONT_DIR}/BigShoulders-Bold.ttf", 100)
 WSB = ImageFont.truetype(f"{FONT_DIR}/WorkSans-Bold.ttf", 100)
 PAC = ImageFont.truetype(f"{FONT_DIR}/Pacifico.ttf", 100)
 
-# medallion center variant: globe (default) | cards | mascots | duo | solo | tiles | question
-VARIANT = sys.argv[1] if len(sys.argv) > 1 else "globe"
+# medallion center variant: mascots (default) | globe | cards | duo | solo | tiles | question
+VARIANT = sys.argv[1] if len(sys.argv) > 1 else "mascots"
 
 parts = []
 def add(s): parts.append(s)
@@ -681,7 +682,7 @@ svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
        f'viewBox="0 0 {W} {H}">' + "".join(parts) + "</svg>")
 
 out_dir = os.path.dirname(os.path.abspath(__file__))
-if VARIANT == "globe":
+if VARIANT == "mascots":
     base = f"{out_dir}/cover-art"
 else:
     os.makedirs(f"{out_dir}/variants", exist_ok=True)
