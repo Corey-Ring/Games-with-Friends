@@ -27,6 +27,23 @@ enum CountryLetterStyle {
     /// Revealed via hints. `AppTheme.warning` `FF9500` → tangerine.
     static let giveUpColor = AppTheme.Retro.tangerine
 
+    // MARK: - Motif ground
+
+    /// Motif-free regions for the screens whose only top-band control is the
+    /// "Main menu" lozenge: that lozenge's corner, and the content column
+    /// below it, in the screen coordinates of a full-bleed GeometryReader
+    /// (`chrome` is the device's safe area, from `\.systemChromeInsets`).
+    /// The home-indicator strip stays open for motifs.
+    static func groundExclusions(in geo: GeometryProxy, chrome: EdgeInsets) -> [CGRect] {
+        let bandHeight: CGFloat = 64
+        return [
+            CGRect(x: 0, y: chrome.top, width: 200, height: bandHeight),
+            CGRect(x: 8, y: chrome.top + bandHeight,
+                   width: geo.size.width - 16,
+                   height: geo.size.height - chrome.top - bandHeight - chrome.bottom),
+        ]
+    }
+
     /// §8: ink passes on every color above; plum is the one accent that needs
     /// cream instead. Kept so chip call sites stay honest if the map grows.
     static func chipTextColor(on color: Color) -> Color {
@@ -51,5 +68,27 @@ struct CountryStatusBadge: View {
                 .foregroundColor(CountryLetterStyle.chipTextColor(on: color))
         }
         .frame(width: diameter, height: diameter)
+    }
+}
+
+/// The one way "back" looks in this game: a cream lozenge with a chevron,
+/// whether it leads to the hub or to the letter picker. Replaces the system
+/// navigation bar, which stranded a lone circle above a strip of empty ground.
+struct CountryLetterNavButton: View {
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: "chevron.left")
+                    .font(AppTheme.Typography.caption)
+                Text(title)
+                    .font(AppTheme.Retro.Typography.pillLabel)
+            }
+            .foregroundColor(AppTheme.Retro.panelText)
+            .retroLozenge()
+        }
+        .buttonStyle(RetroRaisedButtonStyle(cornerRadius: 999))
     }
 }

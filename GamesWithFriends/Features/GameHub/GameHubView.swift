@@ -7,50 +7,60 @@ struct GameHubView: View {
     let games = GameRegistry.allGames()
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                GeometryReader { geo in
-                    // Motifs live in the gutters and top corners. Exclusions
-                    // cover the header lockup and the card column; the layout
-                    // generator adds its own 12pt clearance (§7), which keeps
-                    // even 18pt sparkles from poking out behind card corners.
-                    MotifGroundView(exclusions: [
-                        CGRect(x: 60, y: 40, width: geo.size.width - 120, height: 160),
-                        CGRect(x: 28, y: 150,
-                               width: geo.size.width - 56,
-                               height: geo.size.height - 150)
-                    ])
-                }
-                .ignoresSafeArea()
+        // The only place the device's safe-area insets are readable: inside
+        // the stack every screen goes full-bleed. Published for the motif
+        // grounds so they stay clear of the status bar (§7).
+        GeometryReader { window in
+            NavigationStack {
+                hub
+            }
+            .environment(\.systemChromeInsets, window.safeAreaInsets)
+        }
+    }
 
-                ScrollView {
-                    VStack(spacing: 0) {
-                        RetroHubHeader()
-                            .padding(.top, AppTheme.Spacing.lg)
-                            .padding(.bottom, AppTheme.Spacing.lg)
+    private var hub: some View {
+        ZStack {
+            GeometryReader { geo in
+                // Motifs live in the gutters and top corners. Exclusions
+                // cover the header lockup and the card column; the layout
+                // generator adds its own 12pt clearance (§7), which keeps
+                // even 18pt sparkles from poking out behind card corners.
+                MotifGroundView(exclusions: [
+                    CGRect(x: 60, y: 40, width: geo.size.width - 120, height: 160),
+                    CGRect(x: 28, y: 150,
+                           width: geo.size.width - 56,
+                           height: geo.size.height - 150)
+                ])
+            }
+            .ignoresSafeArea()
 
-                        // 20pt gap from the artboard; 28pt gutters give edge
-                        // motifs room to breathe clear of the cards.
-                        VStack(spacing: 20) {
-                            ForEach(Array(games.enumerated()), id: \.element.id) { index, game in
-                                NavigationLink(destination: game.makeRootView()) {
-                                    RetroHubGameCard(game: game)
-                                }
-                                .buttonStyle(RetroRaisedButtonStyle())
-                                .rotationEffect(.degrees(index.isMultiple(of: 2) ? -0.6 : 0.6))
-                                .accessibilityLabel("\(game.name). \(game.description)")
-                                .accessibilityHint("Double tap to play")
-                                .staggeredAppear(index: index)
+            ScrollView {
+                VStack(spacing: 0) {
+                    RetroHubHeader()
+                        .padding(.top, AppTheme.Spacing.lg)
+                        .padding(.bottom, AppTheme.Spacing.lg)
+
+                    // 20pt gap from the artboard; 28pt gutters give edge
+                    // motifs room to breathe clear of the cards.
+                    VStack(spacing: 20) {
+                        ForEach(Array(games.enumerated()), id: \.element.id) { index, game in
+                            NavigationLink(destination: game.makeRootView()) {
+                                RetroHubGameCard(game: game)
                             }
+                            .buttonStyle(RetroRaisedButtonStyle())
+                            .rotationEffect(.degrees(index.isMultiple(of: 2) ? -0.6 : 0.6))
+                            .accessibilityLabel("\(game.name). \(game.description)")
+                            .accessibilityHint("Double tap to play")
+                            .staggeredAppear(index: index)
                         }
-                        .padding(.horizontal, 28)
-                        .padding(.bottom, AppTheme.Spacing.xl)
                     }
+                    .padding(.horizontal, 28)
+                    .padding(.bottom, AppTheme.Spacing.xl)
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.hidden, for: .navigationBar)
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
     }
 }
 

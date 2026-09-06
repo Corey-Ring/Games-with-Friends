@@ -22,7 +22,10 @@ struct CountryLetterGameView: View {
                 ResultsView(viewModel: viewModel)
             }
         }
-        // §6: functional nav glyphs (the hub's back chevron) render ink.
+        // Every screen in the flow draws its own "Main menu" lozenge, so the
+        // system bar (and the empty strip it reserved) stays hidden.
+        .toolbar(.hidden, for: .navigationBar)
+        // §6: functional nav glyphs render ink.
         .tint(AppTheme.Retro.ink)
     }
 }

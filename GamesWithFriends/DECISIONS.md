@@ -28,6 +28,16 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-09-06 — Motif grounds clear the status bar via an environment inset; Country Letter owns its nav [decision] [gotcha]
+
+**Context.** Every full-bleed `MotifGroundView` painted motifs behind the clock. The exclusion rects each screen passes are in screen coordinates, but their "nav strip" band (`y: 56`) was really the status bar. Reading `geo.safeAreaInsets.top` inside a `GeometryReader { … }.ignoresSafeArea()` returns **0** — the insets are consumed, not reported — so callers cannot know where the status bar ends.
+
+**Decision.** `GameHubView` wraps its `NavigationStack` in a non-ignoring `GeometryReader` and publishes `window.safeAreaInsets` as `\.systemChromeInsets`. `MotifGroundView` reads it and excludes the top band itself; no call site changed. Previews of individual screens get the default (zero) and may still show a motif under the clock — acceptable.
+
+**Country Letter Challenge** hides the system navigation bar (`.toolbar(.hidden, for: .navigationBar)`) and draws a "Main menu" lozenge (`CountryLetterNavButton`) at the top of all three screens, matching the existing "Pick another letter" lozenge. The play screen opens with an instruction banner ("Name every country that starts with C · There are 18 to find") in place of the transient "Ready!" feedback line.
+
+**Typed matching** now goes through `CountryMatcher` (exact → unique leading words → edit-distance with a per-word budget; ties and names ≤ 4 letters stay strict) and `CountriesData.notCountries` explains territories, continents and former countries ("Curaçao is part of the Kingdom of the Netherlands…") instead of "Not recognized". Voice input still uses exact lookup. `CountryLetterMatchingTests` pins the accepted typos and the false-credit guards ("South America" ≠ South Africa, "Nigera" is a tie).
+
 ## 2026-09-05 — Country Letter Challenge: both Congos under C, voice input via a third speech-manager copy [decision]
 
 **What:** `Country` gained an optional `indexLetter`; `CountriesData` uses it to file "Democratic Republic of the Congo" under **C** (alternates: DR Congo, DRC, Congo Kinshasa, Zaire) next to `Congo` (Republic of the Congo, Congo Brazzaville…). A player-facing alias sweep landed at the same time (USA/America, UK/Britain/England, St Lucia/St Kitts/St Vincent, Bosnia, Trinidad, Türkiye, Holland, Macedonia, Czech, Columbia, Cypress…). Voice guessing was added by copying `BorderBlitzSpeechRecognitionManager` verbatim to `CountryLetterSpeechRecognitionManager`; all matching lives in `CountryGameViewModel.spokenCountries(in:among:)`.

@@ -15,6 +15,7 @@
 		1100CF9D3457D8D775409119 /* FranchiseDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D2EFBE20E2F6ECC969E759 /* FranchiseDetectorTests.swift */; };
 		110F5D5D0C7DEEA938FDECA7 /* CountryLetterVoiceControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4FE6AA4223FDF9033C7785 /* CountryLetterVoiceControl.swift */; };
 		14F68D71A924870DE5BB57BD /* BorderHopViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */; };
+		2AF8108D977FC61A7F6EC761 /* NotCountriesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7538EBA048EA8D4744B1259D /* NotCountriesData.swift */; };
 		2DD62FB808FF825CC081B894 /* BorderHopResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */; };
 		31CEAA5DD3AA72B2C74BA1BC /* BorderHopDifficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D9BEC93CACB379192250A8 /* BorderHopDifficulty.swift */; };
 		3864A347BA0139047864D476 /* BorderHopCountryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B164C28D586C431DB94A76D /* BorderHopCountryData.swift */; };
@@ -139,6 +140,7 @@
 		F100000100000000000000CD /* BorderHopStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CD /* BorderHopStyle.swift */; };
 		F1AA00010000000000000080 /* BorderBlitzCountryPathData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AA00010000000000000080 /* BorderBlitzCountryPathData.swift */; };
 		F1AA00010000000000000081 /* BorderBlitzCountryMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AA00010000000000000081 /* BorderBlitzCountryMetadata.swift */; };
+		F1CBB923AAC284568CF5CAAA /* CountryMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20FD8024EA856774A61CF8E /* CountryMatcher.swift */; };
 		FBBFE9D289FBB4307839C4B1 /* BorderHopRoundResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A0CA6A0BBCE05A9A678569 /* BorderHopRoundResult.swift */; };
 		FTL0000010000000000000001 /* FinishTheLineGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000001 /* FinishTheLineGame.swift */; };
 		FTL0000010000000000000002 /* Quote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000002 /* Quote.swift */; };
@@ -258,6 +260,7 @@
 		711EBF55D2123D46A4134134 /* CastingDirectorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorViewModel.swift; sourceTree = "<group>"; };
 		738B8B6A213DA4C3C836EBEA /* ClueBuilders.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueBuilders.swift; path = Features/CastingDirector/Services/ClueGeneration/ClueBuilders.swift; sourceTree = "<group>"; };
 		74DEBA0D22633744F9DCF952 /* BorderHopDifficultyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopDifficultyView.swift; sourceTree = "<group>"; };
+		7538EBA048EA8D4744B1259D /* NotCountriesData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotCountriesData.swift; sourceTree = "<group>"; };
 		771CD3B545EF4CF697598FAD /* CastingDirectorGameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorGameOverView.swift; sourceTree = "<group>"; };
 		7E3E539738BF9B87C15E66CB /* StopwatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchView.swift; sourceTree = "<group>"; };
 		80BFC6E88AF5B11741EC1036 /* BorderHopGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopGame.swift; sourceTree = "<group>"; };
@@ -267,6 +270,7 @@
 		9EFC83BF0058967C0FC4CF8F /* MapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRenderer.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6071829304150 /* BorderHopGeoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopGeoData.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6071829304152 /* ne_110m_admin_0_countries.geojson */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ne_110m_admin_0_countries.geojson; sourceTree = "<group>"; };
+		B20FD8024EA856774A61CF8E /* CountryMatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryMatcher.swift; sourceTree = "<group>"; };
 		BH00000000000000000010 /* CountryFlagProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryFlagProvider.swift; sourceTree = "<group>"; };
 		BH00000000000000000012 /* QuizTypeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizTypeSelector.swift; sourceTree = "<group>"; };
 		C4659BABA6B3904065DD6133 /* ClueLadderAssemblerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueLadderAssemblerTests.swift; path = ../../GamesWithFriendsTests/ClueLadderAssemblerTests.swift; sourceTree = "<group>"; };
@@ -852,6 +856,7 @@
 			isa = PBXGroup;
 			children = (
 				F20000010000000000000021 /* CountriesData.swift */,
+				7538EBA048EA8D4744B1259D /* NotCountriesData.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -860,6 +865,7 @@
 			isa = PBXGroup;
 			children = (
 				F20000010000000000000022 /* Country.swift */,
+				B20FD8024EA856774A61CF8E /* CountryMatcher.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1461,6 +1467,8 @@
 				7D29D48E0BCE96EB1A56AD51 /* ClueLadderAssembler.swift in Sources */,
 				B9486AC70624E776BFE1A9AE /* CountryLetterSpeechRecognitionManager.swift in Sources */,
 				110F5D5D0C7DEEA938FDECA7 /* CountryLetterVoiceControl.swift in Sources */,
+				F1CBB923AAC284568CF5CAAA /* CountryMatcher.swift in Sources */,
+				2AF8108D977FC61A7F6EC761 /* NotCountriesData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

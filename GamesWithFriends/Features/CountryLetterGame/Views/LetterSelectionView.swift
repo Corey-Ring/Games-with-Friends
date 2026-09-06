@@ -2,6 +2,8 @@ import SwiftUI
 
 struct LetterSelectionView: View {
     var viewModel: CountryGameViewModel
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.systemChromeInsets) private var chrome
 
     let columns = Array(repeating: GridItem(.flexible(), spacing: AppTheme.Spacing.sm), count: 6)
 
@@ -9,16 +11,22 @@ struct LetterSelectionView: View {
         ZStack {
             GeometryReader { geo in
                 // Header + the 26-tile grid fill the column; motifs keep to
-                // the nav strip and the outer edges, ≥12pt clear of every
-                // letter button (§7 — the generator adds the clearance).
+                // the top band right of the "Main menu" lozenge and the outer
+                // edges, ≥12pt clear of every button (§7 — the generator
+                // adds the clearance).
                 MotifGroundView(seed: 0xC1A5_0F02,
-                                exclusions: [CGRect(x: 8, y: 56,
-                                                    width: geo.size.width - 16,
-                                                    height: geo.size.height - 56)])
+                                exclusions: CountryLetterStyle.groundExclusions(in: geo, chrome: chrome))
             }
             .ignoresSafeArea()
 
             VStack(spacing: AppTheme.Spacing.lg) {
+                HStack {
+                    CountryLetterNavButton(title: "Main menu") {
+                        dismiss()
+                    }
+                    Spacer()
+                }
+
                 // Header: spot plate + framed Lilita title (Rule 4 — the game
                 // name is far past the ~8-char Shrikhand cap, §4).
                 VStack(spacing: AppTheme.Spacing.sm) {
@@ -51,7 +59,6 @@ struct LetterSelectionView: View {
                         .retroLozenge()
                         .rotationEffect(.degrees(0.8))
                 }
-                .padding(.top, AppTheme.Spacing.lg)
 
                 LazyVGrid(columns: columns, spacing: AppTheme.Spacing.md) {
                     ForEach(Array(Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ").enumerated()), id: \.element) { index, letter in

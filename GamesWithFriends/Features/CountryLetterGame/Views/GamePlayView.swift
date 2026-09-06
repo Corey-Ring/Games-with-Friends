@@ -3,58 +3,44 @@ import SwiftUI
 struct GamePlayView: View {
     @Bindable var viewModel: CountryGameViewModel
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.systemChromeInsets) private var chrome
 
     var body: some View {
         ZStack {
             GeometryReader { geo in
-                // Everything below the nav strip is interactive (input field,
-                // stat cards, the guessed list, the action row), so motifs
-                // keep to the top band and the outer edges (§7).
+                // Everything inside the safe area is interactive (nav
+                // lozenges, input field, stat cards, the guessed list, the
+                // action row), so motifs keep to the outer edges and the
+                // strip under the home indicator (§7).
                 MotifGroundView(seed: 0xC1A5_0F03,
-                                exclusions: [CGRect(x: 8, y: 56,
+                                exclusions: [CGRect(x: 8, y: chrome.top,
                                                     width: geo.size.width - 16,
-                                                    height: geo.size.height - 56)])
+                                                    height: geo.size.height
+                                                        - chrome.top - chrome.bottom)])
             }
             .ignoresSafeArea()
 
             VStack(spacing: AppTheme.Spacing.lg) {
-                // Header with letter and change button
+                // Both ways back, in the same lozenge: left to the hub,
+                // right to the letter picker.
                 HStack {
-                    Button(action: {
-                        viewModel.changeLetterFromGame()
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "chevron.left")
-                                .font(AppTheme.Typography.caption)
-                            Text("Pick another letter")
-                                .font(AppTheme.Retro.Typography.pillLabel)
-                        }
-                        .foregroundColor(AppTheme.Retro.panelText)
-                        .retroLozenge()
+                    CountryLetterNavButton(title: "Main menu") {
+                        dismiss()
                     }
-                    .buttonStyle(RetroRaisedButtonStyle(cornerRadius: 999))
 
                     Spacer()
 
-                    if let letter = viewModel.selectedLetter {
-                        // The round's letter is the screen's loudest object:
-                        // chunky Lilita, ink on grass, hard-shadowed (§4/§5).
-                        Text(letter)
-                            .font(AppTheme.Retro.Typography.heading(26, relativeTo: .title2))
-                            .foregroundColor(AppTheme.Retro.ink)
-                            .frame(minWidth: 30)
-                            .padding(.vertical, AppTheme.Spacing.xs)
-                            .retroLozenge(CountryLetterStyle.accent)
-                            .background(
-                                Capsule()
-                                    .fill(AppTheme.Retro.ink)
-                                    .offset(x: AppTheme.Retro.shadowOffset,
-                                            y: AppTheme.Retro.shadowOffset)
-                            )
+                    CountryLetterNavButton(title: "Pick another letter") {
+                        viewModel.changeLetterFromGame()
                     }
                 }
                 .padding(.horizontal)
-                .padding(.top)
+                .padding(.top, AppTheme.Spacing.sm)
+
+                if let letter = viewModel.selectedLetter {
+                    instructionBanner(letter: letter)
+                }
 
                 // Stats cards
                 HStack(spacing: AppTheme.Spacing.md) {
@@ -186,6 +172,44 @@ struct GamePlayView: View {
                 viewModel.suspendVoice()
             }
         }
+    }
+
+    /// The round's instruction, loud and first: the letter as the screen's
+    /// biggest object (chunky Lilita, ink on grass, hard-shadowed — §4/§5)
+    /// beside a plain-words brief of what to do.
+    private func instructionBanner(letter: String) -> some View {
+        HStack(spacing: AppTheme.Spacing.md) {
+            Text(letter)
+                .font(AppTheme.Retro.Typography.heading(30, relativeTo: .largeTitle))
+                .foregroundColor(AppTheme.Retro.ink)
+                .frame(width: 56, height: 56)
+                .retroPanel(CountryLetterStyle.accent,
+                            cornerRadius: AppTheme.Retro.Radius.inner)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Retro.Radius.inner)
+                        .fill(AppTheme.Retro.ink)
+                        .offset(x: AppTheme.Retro.shadowOffset,
+                                y: AppTheme.Retro.shadowOffset)
+                )
+
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                Text("Name every country that starts with \(letter)")
+                    .font(AppTheme.Retro.Typography.heading(18, relativeTo: .title3))
+                    .foregroundColor(AppTheme.Retro.panelText)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text("There are \(viewModel.totalCountries) to find. Type or say them below.")
+                    .font(AppTheme.Typography.secondary)
+                    .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .retroCard()
+        .padding(.horizontal)
+        .accessibilityElement(children: .combine)
     }
 
     private var voiceHint: String {

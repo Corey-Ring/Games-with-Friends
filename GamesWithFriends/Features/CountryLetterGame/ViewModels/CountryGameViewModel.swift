@@ -95,7 +95,9 @@ class CountryGameViewModel {
         currentHintedCountry = nil
         hintLevels = [:]
         gameState = .playing
-        feedbackMessage = "Ready! \(totalCountries) countries start with \(letter)."
+        // The play screen's instruction banner says how many countries start
+        // with the letter, so the feedback slot stays clear for the first guess.
+        feedbackMessage = ""
         feedbackType = .info
     }
 
@@ -114,9 +116,15 @@ class CountryGameViewModel {
 
         // Resolve against the whole list, not just this letter's, so a guess
         // for the wrong letter gets told which letter it belongs to instead
-        // of a misleading "Not recognized".
-        guard let matchedCountry = CountriesData.all.first(where: { $0.matches(trimmedGuess) }) else {
-            feedbackMessage = "Not recognized. Try another name."
+        // of a misleading "Not recognized". Typos and keyboard-unfriendly
+        // spellings are forgiven by the matcher; a well-known territory or
+        // continent gets told why it doesn't count.
+        guard let matchedCountry = CountryMatcher.resolve(trimmedGuess, in: CountriesData.all) else {
+            if let place = CountriesData.notACountry(matching: trimmedGuess) {
+                feedbackMessage = place.explanation
+            } else {
+                feedbackMessage = "Not recognized. Check the spelling and try again."
+            }
             feedbackType = .error
             HapticManager.error()
             return

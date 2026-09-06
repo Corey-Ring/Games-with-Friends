@@ -3,21 +3,28 @@ import SwiftUI
 struct ResultsView: View {
     var viewModel: CountryGameViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.systemChromeInsets) private var chrome
 
     var body: some View {
         ZStack {
             GeometryReader { geo in
                 // Scrolling result column runs the full width; motifs keep to
-                // the nav strip and the outer edges (§7).
+                // the top band right of the "Main menu" lozenge and the outer
+                // edges (§7).
                 MotifGroundView(seed: 0xC1A5_0F04,
-                                exclusions: [CGRect(x: 8, y: 56,
-                                                    width: geo.size.width - 16,
-                                                    height: geo.size.height - 56)])
+                                exclusions: CountryLetterStyle.groundExclusions(in: geo, chrome: chrome))
             }
             .ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: AppTheme.Spacing.lg) {
+                    HStack {
+                        CountryLetterNavButton(title: "Main menu") {
+                            dismiss()
+                        }
+                        Spacer()
+                    }
+
                     // Header: spot plate + framed Lilita title (§3 recipe /
                     // §9 — no naked SF hero on a celebration screen).
                     VStack(spacing: AppTheme.Spacing.sm) {
@@ -51,7 +58,6 @@ struct ResultsView: View {
                             .retroLozenge()
                             .rotationEffect(.degrees(0.8))
                     }
-                    .padding(.top, AppTheme.Spacing.lg)
 
                     // Score display — big Lilita numeral on cream (§8: the
                     // count is body-adjacent reading, so it stays on a panel).
