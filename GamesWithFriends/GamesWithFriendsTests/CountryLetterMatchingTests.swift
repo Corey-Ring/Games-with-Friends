@@ -14,10 +14,12 @@ final class CountryLetterMatchingTests: XCTestCase {
 
     // MARK: - Data integrity
 
-    func testEveryCountryIsFiledUnderItsOwnFirstLetter() {
+    func testEveryCountryIsFiledUnderItsIndexLetter() {
         for (letter, countries) in CountriesData.letterIndex {
             for country in countries {
                 XCTAssertEqual(country.firstLetter, letter, "\(country.name) filed under \(letter)")
+                let expected = country.indexLetter ?? String(country.name.prefix(1)).uppercased()
+                XCTAssertEqual(letter, expected, country.name)
             }
         }
     }
@@ -38,7 +40,7 @@ final class CountryLetterMatchingTests: XCTestCase {
     func testBothCongosLiveUnderC() {
         let names = cCountries.map(\.name)
         XCTAssertTrue(names.contains("Congo"), "Republic of the Congo missing from C")
-        XCTAssertTrue(names.contains("Congo (DRC)"), "DR Congo missing from C")
+        XCTAssertTrue(names.contains("Democratic Republic of the Congo"), "DR Congo missing from C")
         XCTAssertNil(CountriesData.letterIndex["D"]?.first { $0.name.contains("Congo") })
     }
 
@@ -54,12 +56,12 @@ final class CountryLetterMatchingTests: XCTestCase {
             ("Republic of Congo", "Congo"),
             ("Republic of the Congo", "Congo"),
             ("Congo-Brazzaville", "Congo"),
-            ("Democratic Republic of the Congo", "Congo (DRC)"),
-            ("Democratic Republic of Congo", "Congo (DRC)"),
-            ("DR Congo", "Congo (DRC)"),
-            ("DRC", "Congo (DRC)"),
-            ("Congo-Kinshasa", "Congo (DRC)"),
-            ("Zaire", "Congo (DRC)"),
+            ("Democratic Republic of the Congo", "Democratic Republic of the Congo"),
+            ("Democratic Republic of Congo", "Democratic Republic of the Congo"),
+            ("DR Congo", "Democratic Republic of the Congo"),
+            ("DRC", "Democratic Republic of the Congo"),
+            ("Congo-Kinshasa", "Democratic Republic of the Congo"),
+            ("Zaire", "Democratic Republic of the Congo"),
             ("Ivory Coast", "Côte d'Ivoire"),
             ("Cote d’Ivoire", "Côte d'Ivoire"),
             ("Czech Republic", "Czechia"),
@@ -139,7 +141,7 @@ final class CountryLetterMatchingTests: XCTestCase {
         vm.handleSpeechTranscript("Democratic Republic")
         vm.handleSpeechTranscript("Democratic Republic of the")
         vm.handleSpeechTranscript("Democratic Republic of the Congo")
-        XCTAssertEqual(vm.guessedCountries.map(\.name), ["Congo (DRC)"])
+        XCTAssertEqual(vm.guessedCountries.map(\.name), ["Democratic Republic of the Congo"])
     }
 
     func testSpokenMultiWordNamesResolveAcrossWindows() {
@@ -158,10 +160,68 @@ final class CountryLetterMatchingTests: XCTestCase {
         XCTAssertTrue(vm.guessedCountries.isEmpty)
     }
 
-    func testSpokenLastCountryFinishesTheRound() {
+    func testSpokenLastCountryFinishesTheRound() async throws {
         let vm = CountryGameViewModel()
         vm.selectLetter("Q")
         vm.handleSpeechTranscript("Qatar")
         XCTAssertEqual(vm.remainingCount, 0)
+        try await Task.sleep(for: .milliseconds(700))
+        XCTAssertEqual(vm.gameState, .finished)
+    }
+
+    func testChangingLetterCancelsThePendingFinish() async throws {
+        let vm = CountryGameViewModel()
+        vm.selectLetter("Q")
+        vm.handleSpeechTranscript("Qatar")
+        vm.changeLetterFromGame()
+        try await Task.sleep(for: .milliseconds(700))
+        XCTAssertEqual(vm.gameState, .selectingLetter)
+    }
+
+    func testSeveralCountriesInOnePartialAreAllNamedInFeedback() {
+        let vm = CountryGameViewModel()
+        vm.selectLetter("C")
+        vm.handleSpeechTranscript("Chad Chile Cuba")
+        XCTAssertEqual(vm.guessedCountries.map(\.name), ["Chad", "Chile", "Cuba"])
+        for name in ["Chad", "Chile", "Cuba"] {
+            XCTAssertTrue(vm.feedbackMessage.contains(name), vm.feedbackMessage)
+        }
+    }
+
+    // MARK: - Partials that could still grow into a longer name
+
+    func testLastWordThatPrefixesAnotherNameWaitsForMoreWords() {
+        let vm = CountryGameViewModel()
+        vm.selectLetter("G")
+        vm.handleSpeechTranscript("Guinea")
+        XCTAssertTrue(vm.guessedCountries.isEmpty, "Guinea must not be credited while it could become Guinea-Bissau")
+        vm.handleSpeechTranscript("Guinea Bissau")
+        XCTAssertEqual(vm.guessedCountries.map(\.name), ["Guinea-Bissau"])
+        vm.handleSpeechTranscript("Guinea Bissau Guinea Ghana")
+        XCTAssertEqual(vm.guessedCountries.map(\.name), ["Guinea-Bissau", "Guinea", "Ghana"])
+    }
+
+    func testHeldBackLastWordIsCreditedOnTheFinalTranscript() {
+        let vm = CountryGameViewModel()
+        vm.selectLetter("C")
+        vm.handleSpeechTranscript("Congo")
+        XCTAssertTrue(vm.guessedCountries.isEmpty)
+        vm.handleSpeechTranscript("Congo", isFinal: true)
+        XCTAssertEqual(vm.guessedCountries.map(\.name), ["Congo"])
+    }
+
+    func testRevisedWordDoesNotCreditBothCountries() {
+        let vm = CountryGameViewModel()
+        vm.selectLetter("N")
+        vm.handleSpeechTranscript("Niger")
+        vm.handleSpeechTranscript("Nigeria")
+        XCTAssertEqual(vm.guessedCountries.map(\.name), ["Nigeria"])
+    }
+
+    func testUnambiguousLastWordIsCreditedImmediately() {
+        let vm = CountryGameViewModel()
+        vm.selectLetter("C")
+        vm.handleSpeechTranscript("Canada")
+        XCTAssertEqual(vm.guessedCountries.map(\.name), ["Canada"])
     }
 }

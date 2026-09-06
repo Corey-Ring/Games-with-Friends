@@ -4,15 +4,24 @@ struct Country: Identifiable, Codable, Hashable, Equatable {
     let id: UUID
     let name: String
     let alternateNames: [String]
+    /// Overrides the letter the country is filed under when players don't
+    /// think of it by its official first word (the DRC lives under C).
+    let indexLetter: String?
 
-    init(name: String, alternateNames: [String] = []) {
+    init(name: String, indexLetter: String? = nil, alternateNames: [String] = []) {
         self.id = UUID()
         self.name = name
+        self.indexLetter = indexLetter
         self.alternateNames = alternateNames
     }
 
     var firstLetter: String {
-        String(name.prefix(1)).uppercased()
+        indexLetter ?? String(name.prefix(1)).uppercased()
+    }
+
+    /// Every label a player may use for this country: the name plus alternates.
+    var labels: [String] {
+        [name] + alternateNames
     }
 
     /// Whole-string match against the display name or any alternate, after
@@ -22,11 +31,7 @@ struct Country: Identifiable, Codable, Hashable, Equatable {
         let normalized = Country.normalize(input)
         guard !normalized.isEmpty else { return false }
 
-        if normalized == Country.normalize(name) {
-            return true
-        }
-
-        return alternateNames.contains { normalized == Country.normalize($0) }
+        return labels.contains { normalized == Country.normalize($0) }
     }
 
     /// Lowercases, strips diacritics and punctuation (so "Côte d’Ivoire",

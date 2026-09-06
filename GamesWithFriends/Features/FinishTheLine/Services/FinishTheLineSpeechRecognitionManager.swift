@@ -127,7 +127,10 @@ class FinishTheLineSpeechRecognitionManager {
 
     func stopListening() {
         guard isListening else {
-            // Still clean up recognition state even if not fully listening
+            // Still clean up recognition state even if not fully listening.
+            // A start that installed the tap and then failed in engine.start()
+            // leaves the tap behind; installing a second one crashes.
+            audioEngine.inputNode.removeTap(onBus: 0)
             recognitionRequest?.endAudio()
             recognitionRequest = nil
             recognitionTask?.cancel()
@@ -228,6 +231,7 @@ class FinishTheLineSpeechRecognitionManager {
     }
 
     private func cleanupRecognition() {
+        audioEngine.inputNode.removeTap(onBus: 0)
         recognitionRequest?.endAudio()
         recognitionRequest = nil
         recognitionTask?.cancel()

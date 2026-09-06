@@ -8,87 +8,83 @@ struct CountryLetterVoiceControl: View {
     var viewModel: CountryGameViewModel
 
     var body: some View {
+        let state = viewModel.voiceState
+        let look = Presentation.for(state)
+
         Group {
-            if viewModel.voiceState == .denied,
+            if state == .denied,
                let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                Link(destination: settingsURL) { label }
+                Link(destination: settingsURL) { label(look, listening: false) }
             } else {
                 Button {
                     Task { await viewModel.toggleVoice() }
                 } label: {
-                    label
+                    label(look, listening: state == .listening)
                 }
             }
         }
         .buttonStyle(RetroRaisedButtonStyle(cornerRadius: 999))
-        .accessibilityLabel(accessibilityLabel)
-        .accessibilityHint(accessibilityHint)
+        .accessibilityLabel(look.accessibilityLabel)
+        .accessibilityHint(look.accessibilityHint)
     }
 
-    private var label: some View {
+    private func label(_ look: Presentation, listening: Bool) -> some View {
         HStack(spacing: AppTheme.Spacing.xs) {
-            Image(systemName: icon)
+            Image(systemName: look.icon)
                 .font(AppTheme.Retro.Typography.pillLabel)
 
-            if viewModel.voiceState == .listening {
-                CountryLetterVoiceMeter(audioLevel: viewModel.speechManager.audioLevel)
+            if listening {
+                // The meter reads the audio level itself so ~50 updates a
+                // second re-render five bars, not the whole lozenge.
+                CountryLetterVoiceMeter(speechManager: viewModel.speechManager)
             }
 
-            Text(title)
+            Text(look.title)
                 .font(AppTheme.Retro.Typography.pillLabel)
                 .lineLimit(1)
         }
-        .foregroundColor(textColor)
-        .retroLozenge(fill)
+        .foregroundColor(look.textColor)
+        .retroLozenge(look.fill)
     }
 
-    private var icon: String {
-        switch viewModel.voiceState {
-        case .listening: return "mic.fill"
-        case .off: return "mic.slash.fill"
-        case .needsPermission: return "mic.badge.plus"
-        case .denied: return "mic.slash.fill"
-        }
-    }
+    /// Everything a state shows, in one place, so a new state can't ship
+    /// with a stale icon or VoiceOver string.
+    private struct Presentation {
+        let icon: String
+        let title: String
+        let fill: Color
+        let textColor: Color
+        let accessibilityLabel: String
+        let accessibilityHint: String
 
-    private var title: String {
-        switch viewModel.voiceState {
-        case .listening: return "Listening"
-        case .off: return "Voice off"
-        case .needsPermission: return "Use your voice"
-        case .denied: return "Mic blocked"
-        }
-    }
-
-    /// Grass while the mic is live or on offer, tomato when blocked, cream
-    /// when the player switched it off (§3.2 one-accent rule: grass only).
-    private var fill: Color {
-        switch viewModel.voiceState {
-        case .listening, .needsPermission: return CountryLetterStyle.accent
-        case .off: return AppTheme.Retro.panel
-        case .denied: return CountryLetterStyle.errorColor
-        }
-    }
-
-    private var textColor: Color {
-        viewModel.voiceState == .off ? AppTheme.Retro.panelText : CountryLetterStyle.chipTextColor(on: fill)
-    }
-
-    private var accessibilityLabel: String {
-        switch viewModel.voiceState {
-        case .listening: return "Microphone on, listening for country names"
-        case .off: return "Microphone off"
-        case .needsPermission: return "Use your voice"
-        case .denied: return "Microphone access blocked"
-        }
-    }
-
-    private var accessibilityHint: String {
-        switch viewModel.voiceState {
-        case .listening: return "Turns voice guessing off"
-        case .off: return "Turns voice guessing on"
-        case .needsPermission: return "Asks for microphone access so you can say your guesses"
-        case .denied: return "Opens Settings"
+        static func `for`(_ state: CountryGameViewModel.VoiceState) -> Presentation {
+            switch state {
+            case .listening:
+                // Grass while live or on offer (§3.2 one-accent rule: grass only).
+                return Presentation(icon: "mic.fill", title: "Listening",
+                                    fill: CountryLetterStyle.accent,
+                                    textColor: CountryLetterStyle.chipTextColor(on: CountryLetterStyle.accent),
+                                    accessibilityLabel: "Microphone on, listening for country names",
+                                    accessibilityHint: "Turns voice guessing off")
+            case .off:
+                return Presentation(icon: "mic.slash.fill", title: "Voice off",
+                                    fill: AppTheme.Retro.panel,
+                                    textColor: AppTheme.Retro.panelText,
+                                    accessibilityLabel: "Microphone off",
+                                    accessibilityHint: "Turns voice guessing on")
+            case .needsPermission:
+                return Presentation(icon: "mic.badge.plus", title: "Use your voice",
+                                    fill: CountryLetterStyle.accent,
+                                    textColor: CountryLetterStyle.chipTextColor(on: CountryLetterStyle.accent),
+                                    accessibilityLabel: "Use your voice",
+                                    accessibilityHint: "Asks for microphone access so you can say your guesses")
+            case .denied:
+                return Presentation(icon: "mic.slash.fill", title: "Mic blocked",
+                                    fill: CountryLetterStyle.errorColor,
+                                    textColor: CountryLetterStyle.chipTextColor(on: CountryLetterStyle.errorColor),
+                                    accessibilityLabel: "Microphone access blocked",
+                                    accessibilityHint: "Opens Settings")
+            }
         }
     }
 }
@@ -96,7 +92,7 @@ struct CountryLetterVoiceControl: View {
 /// Pocket version of the Border Blitz level meter, sized to sit inside a
 /// lozenge. Same five-bar envelope and spring cadence.
 private struct CountryLetterVoiceMeter: View {
-    let audioLevel: Float
+    let speechManager: CountryLetterSpeechRecognitionManager
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let barMultipliers: [Float] = [0.6, 0.85, 1.0, 0.85, 0.6]
@@ -104,7 +100,8 @@ private struct CountryLetterVoiceMeter: View {
     private let maxHeight: CGFloat = 14
 
     var body: some View {
-        HStack(spacing: 2) {
+        let audioLevel = speechManager.audioLevel
+        HStack(spacing: AppTheme.Spacing.xs) {
             ForEach(0..<barMultipliers.count, id: \.self) { index in
                 let level = CGFloat(audioLevel * barMultipliers[index])
                 RoundedRectangle(cornerRadius: 1)

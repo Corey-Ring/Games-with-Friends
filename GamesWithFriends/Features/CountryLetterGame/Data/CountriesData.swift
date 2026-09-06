@@ -43,7 +43,7 @@ struct CountriesData {
         Country(name: "Congo", alternateNames: ["Republic of the Congo", "Republic of Congo", "Congo Republic", "Congo Brazzaville"]),
         // Filed under C on purpose: players name "the two Congos" on a C round,
         // and this one was unreachable while it lived under D.
-        Country(name: "Congo (DRC)", alternateNames: ["Democratic Republic of the Congo", "Democratic Republic of Congo", "DR Congo", "DRC", "Congo Kinshasa", "Zaire"]),
+        Country(name: "Democratic Republic of the Congo", indexLetter: "C", alternateNames: ["Democratic Republic of Congo", "DR Congo", "DRC", "Congo Kinshasa", "Zaire"]),
         Country(name: "Costa Rica"),
         Country(name: "Côte d'Ivoire", alternateNames: ["Ivory Coast", "Cote d Ivoire", "Cote d'Ivoire"]),
         Country(name: "Croatia"),

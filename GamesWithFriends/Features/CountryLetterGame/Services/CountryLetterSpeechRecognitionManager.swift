@@ -7,9 +7,9 @@
 //  Core/Services/SpeechRecognitionManager.swift with a generic match
 //  callback. See FinishTheLine_PRD.md §6 and DECISIONS.md.
 //
-//  Behaviorally identical to BorderBlitzSpeechRecognitionManager — the only
-//  difference is the class name and enum prefix. Country matching lives in
-//  CountryGameViewModel.handleSpeechTranscript, not here.
+//  Behaviorally identical to BorderBlitzSpeechRecognitionManager apart from
+//  the class name, the enum prefix and the extra `finalTranscriptHandler`.
+//  Country matching lives in CountryGameViewModel.handleSpeechTranscript.
 //
 
 import Speech
@@ -31,6 +31,10 @@ class CountryLetterSpeechRecognitionManager {
     var permissionStatus: CountryLetterSpeechPermissionStatus = .notDetermined
 
     var matchHandler: ((String) -> Void)?
+    /// Called with the utterance's final transcript just before recognition
+    /// restarts. Country Letter uses it to settle guesses it held back while
+    /// the last word could still grow into a longer name (see the view model).
+    var finalTranscriptHandler: ((String) -> Void)?
 
     // MARK: - Private Properties
     @ObservationIgnored private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
@@ -126,7 +130,10 @@ class CountryLetterSpeechRecognitionManager {
 
     func stopListening() {
         guard isListening else {
-            // Still clean up recognition state even if not fully listening
+            // Still clean up recognition state even if not fully listening.
+            // A start that installed the tap and then failed in engine.start()
+            // leaves the tap behind; installing a second one crashes.
+            audioEngine.inputNode.removeTap(onBus: 0)
             recognitionRequest?.endAudio()
             recognitionRequest = nil
             recognitionTask?.cancel()
@@ -166,12 +173,13 @@ class CountryLetterSpeechRecognitionManager {
                     self.matchHandler?(transcription)
 
                     if result.isFinal {
+                        self.finalTranscriptHandler?(transcription)
                         self.restartRecognition()
                     }
                 }
 
                 if let error = error as? NSError {
-                    // Code 1110 = no speech detected; code 216 = task cancelled
+                    // Code 1110 = no speech detected; code 301 = request cancelled
                     // Auto-restart on timeout/no-speech errors, ignore cancellations
                     let recoverableCodes = [1110, 301]
                     if recoverableCodes.contains(error.code) {
@@ -227,6 +235,7 @@ class CountryLetterSpeechRecognitionManager {
     }
 
     private func cleanupRecognition() {
+        audioEngine.inputNode.removeTap(onBus: 0)
         recognitionRequest?.endAudio()
         recognitionRequest = nil
         recognitionTask?.cancel()
