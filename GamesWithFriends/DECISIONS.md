@@ -325,3 +325,16 @@ Loading UI uses `.skeletonLoading()` for content-shaped placeholders, or `GameSp
 ### [convention] All design tokens flow through `AppTheme` / `GameTheme`
 
 No raw `Color.blue`, no hardcoded padding numbers, no hardcoded corner radii, no `.font(.title)` in game views. See `DESIGN_GUIDE.md` §2, §3, §4, §9.5.
+
+### [gotcha] Full-bleed maps and the HUD live in different coordinate spaces
+
+Border Hop draws its map with `.ignoresSafeArea()`, so the map's `GeometryReader` origin is
+the physical top of the device, while the HUD above it is laid out *inside* the safe area.
+Anything the map positions near the top (edge-indicator pills, the mini-map) must therefore
+add the device's top inset, or it lands underneath the close button — which is exactly what
+happened with hardcoded `y: 72` / `.padding(.top, 64)` constants.
+
+Read the inset from `\.systemChromeInsets` (published once by `GameHubView` and inherited by
+every pushed screen); don't reach for a second mechanism. `BorderHopMapView.hudBottom` derives
+the HUD's real bottom edge from it, and `BorderHopEdgePillLayout` holds the placement math so
+it can be unit-tested without a running view.

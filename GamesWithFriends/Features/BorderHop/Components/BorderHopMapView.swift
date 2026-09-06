@@ -35,6 +35,10 @@ struct BorderHopMapView: View {
     var viewModel: BorderHopViewModel
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// The map is drawn full-bleed, so its coordinate space starts at the physical top of
+    /// the device while the HUD sits below the status bar. Everything the map draws near
+    /// the top has to be offset by this or it lands underneath the HUD.
+    @Environment(\.systemChromeInsets) private var chrome
 
     @State private var renderer: MapRenderer?
     @State private var camera = MapCamera(center: .zero, zoom: 2)
@@ -46,6 +50,20 @@ struct BorderHopMapView: View {
     @State private var isWorldView = false
 
     private let maxZoom: CGFloat = 16
+    private let miniMapWidth: CGFloat = 112
+    /// Height reserved for the destination bar at the bottom of the screen.
+    private let bottomBarClearance: CGFloat = 104
+
+    /// Bottom edge of the HUD row in map coordinates: status bar / Dynamic Island, the
+    /// HUD's own top padding, the 44pt close plate, and the plate's raised shadow.
+    private var hudBottom: CGFloat {
+        chrome.top + AppTheme.Spacing.sm + 44 + AppTheme.Retro.shadowOffset
+    }
+
+    /// Where map chrome may start without colliding with the HUD.
+    private var topClearance: CGFloat {
+        hudBottom + AppTheme.Spacing.sm
+    }
 
     var body: some View {
         GeometryReader { geo in
@@ -64,6 +82,9 @@ struct BorderHopMapView: View {
                         camera: camera,
                         viewSize: viewSize,
                         colorScheme: colorScheme,
+                        topClearance: topClearance,
+                        bottomClearance: bottomBarClearance,
+                        miniMapRect: miniMapFrame(viewSize: viewSize, renderer: renderer),
                         onTapCountry: { viewModel.handleTap(countryId: $0) }
                     )
                 }
@@ -73,7 +94,7 @@ struct BorderHopMapView: View {
             .overlay(alignment: .topTrailing) {
                 miniMap(viewSize: viewSize)
                     .padding(.trailing, AppTheme.Spacing.md)
-                    .padding(.top, 64) // below the HUD row
+                    .padding(.top, topClearance)
             }
             .overlay(alignment: .bottomTrailing) {
                 if isUserAdjusted || isWorldView {
@@ -246,13 +267,27 @@ struct BorderHopMapView: View {
 
     // MARK: - Mini-map
 
+    /// The mini-map's frame in map coordinates. Single source of truth so the overlay and
+    /// the edge-pill exclusion can't drift apart.
+    private func miniMapFrame(viewSize: CGSize, renderer: MapRenderer) -> CGRect {
+        let canvas = renderer.canvasSize
+        guard canvas.width > 0 else { return .null }
+        let height = miniMapWidth * canvas.height / canvas.width
+        return CGRect(
+            x: viewSize.width - AppTheme.Spacing.md - miniMapWidth,
+            y: topClearance,
+            width: miniMapWidth,
+            height: height
+        )
+    }
+
     /// Always-visible world overview: where you are, where the goal is, what the camera sees.
     private func miniMap(viewSize: CGSize) -> some View {
         Group {
             if let renderer {
                 let canvas = renderer.canvasSize
-                let width: CGFloat = 112
-                let height = width * canvas.height / canvas.width
+                let width = miniMapWidth
+                let height = miniMapFrame(viewSize: viewSize, renderer: renderer).height
 
                 Canvas { context, size in
                     let scale = size.width / canvas.width
@@ -339,6 +374,9 @@ private struct AnimatedMapContent: View, Animatable {
     var camera: MapCamera
     let viewSize: CGSize
     let colorScheme: ColorScheme
+    let topClearance: CGFloat
+    let bottomClearance: CGFloat
+    let miniMapRect: CGRect
     let onTapCountry: (String) -> Void
 
     var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>, CGFloat> {
@@ -618,14 +656,6 @@ private struct AnimatedMapContent: View, Animatable {
     private var edgeTargets: [EdgeTarget] {
         guard !viewModel.hasArrived, viewSize.width > 0 else { return [] }
 
-        let bounds = CGRect(origin: .zero, size: viewSize)
-        // Keep pills clear of the HUD (top), destination bar (bottom), and mini-map (trailing)
-        let safeArea = CGRect(
-            x: 16, y: 72,
-            width: bounds.width - 32,
-            height: bounds.height - 72 - 104
-        )
-
         var ids = viewModel.countryStates
             .filter { $0.value == .frontier }
             .map { $0.key }
@@ -635,39 +665,31 @@ private struct AnimatedMapContent: View, Animatable {
             ids.append(viewModel.destinationCountryId)
         }
 
-        var targets: [EdgeTarget] = []
-        var placedRects: [CGRect] = []
-
-        for id in ids {
-            guard let projected = renderer.projectedCountries[id] else { continue }
-            let real = screenPosition(of: projected, size: viewSize)
-            guard !bounds.insetBy(dx: 16, dy: 16).contains(real) else { continue }
-
-            var clamped = CGPoint(
-                x: min(max(real.x, safeArea.minX + 44), safeArea.maxX - 44),
-                y: min(max(real.y, safeArea.minY + 16), safeArea.maxY - 16)
-            )
-            let angle = Angle(radians: atan2(real.y - clamped.y, real.x - clamped.x))
-
-            // Nudge down if overlapping an already-placed pill
-            var pillRect = CGRect(x: clamped.x - 55, y: clamped.y - 16, width: 110, height: 32)
-            var attempts = 0
-            while placedRects.contains(where: { $0.intersects(pillRect) }), attempts < 8 {
-                clamped.y += 36
-                pillRect = pillRect.offsetBy(dx: 0, dy: 36)
-                attempts += 1
-            }
-            placedRects.append(pillRect)
-
-            targets.append(EdgeTarget(
+        let candidates = ids.compactMap { id -> BorderHopEdgePillLayout.Candidate? in
+            guard let projected = renderer.projectedCountries[id] else { return nil }
+            return BorderHopEdgePillLayout.Candidate(
                 id: id,
-                name: viewModel.graph.country(for: id)?.name ?? id,
-                position: clamped,
-                angle: angle,
-                isDestination: id == viewModel.destinationCountryId
-            ))
+                realPosition: screenPosition(of: projected, size: viewSize)
+            )
         }
-        return targets
+
+        // Placement math lives in BorderHopEdgePillLayout so it can be unit-tested; the
+        // pills have to dodge the HUD (top), the destination bar (bottom), and the mini-map.
+        return BorderHopEdgePillLayout.place(
+            candidates: candidates,
+            viewSize: viewSize,
+            topClearance: topClearance,
+            bottomClearance: bottomClearance,
+            exclusions: [miniMapRect]
+        ).map { placement in
+            EdgeTarget(
+                id: placement.id,
+                name: viewModel.graph.country(for: placement.id)?.name ?? placement.id,
+                position: placement.position,
+                angle: placement.angle,
+                isDestination: placement.id == viewModel.destinationCountryId
+            )
+        }
     }
 }
 

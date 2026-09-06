@@ -17,9 +17,11 @@
 		14F68D71A924870DE5BB57BD /* BorderHopViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */; };
 		2AF8108D977FC61A7F6EC761 /* NotCountriesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7538EBA048EA8D4744B1259D /* NotCountriesData.swift */; };
 		2DD62FB808FF825CC081B894 /* BorderHopResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */; };
+		30F3B28F51CC4F2322B11B02 /* BorderHopEdgePillLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3166F0BD29AE1A4924543341 /* BorderHopEdgePillLayout.swift */; };
 		31CEAA5DD3AA72B2C74BA1BC /* BorderHopDifficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D9BEC93CACB379192250A8 /* BorderHopDifficulty.swift */; };
 		3864A347BA0139047864D476 /* BorderHopCountryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B164C28D586C431DB94A76D /* BorderHopCountryData.swift */; };
 		3B7C856BB50C57C3759A66CC /* ClueBuildersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFFD6B5E1EB7845691621AE /* ClueBuildersTests.swift */; };
+		4333594BC23DAB6F9BCD102E /* BorderHopEdgePillLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BAF5F088E2B23C96CA348C /* BorderHopEdgePillLayoutTests.swift */; };
 		476B8873374E36C45CDD0555 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 617AFF132DBE74C893856D94 /* Foundation.framework */; };
 		49B12EB57751052B495143EA /* BorderHopCountry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 448761DB6BFCF0DEF4D01F7B /* BorderHopCountry.swift */; };
 		4A3F83BB2F3BC7C900F29F5F /* CastingDirectorModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F83BA2F3BC7C900F29F5F /* CastingDirectorModels.swift */; };
@@ -217,6 +219,7 @@
 		25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopViewModel.swift; sourceTree = "<group>"; };
 		2F3D08E36B34AFB03DCE8CBB /* CountryLetterMatchingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CountryLetterMatchingTests.swift; path = ../../GamesWithFriendsTests/CountryLetterMatchingTests.swift; sourceTree = "<group>"; };
 		30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopResultsView.swift; sourceTree = "<group>"; };
+		3166F0BD29AE1A4924543341 /* BorderHopEdgePillLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BorderHopEdgePillLayout.swift; path = Features/BorderHop/Components/BorderHopEdgePillLayout.swift; sourceTree = "<group>"; };
 		33BF84BA1F17D93F51186B46 /* ClueChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClueChipView.swift; sourceTree = "<group>"; };
 		36ECEBF2AC09E319B228A592 /* FranchiseDetector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FranchiseDetector.swift; path = Features/CastingDirector/Services/ClueGeneration/FranchiseDetector.swift; sourceTree = "<group>"; };
 		37A0CA6A0BBCE05A9A678569 /* BorderHopRoundResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopRoundResult.swift; sourceTree = "<group>"; };
@@ -280,6 +283,7 @@
 		D3F4A82E5B6C7D9E0A1F3E4B /* country_fun_facts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = country_fun_facts.json; sourceTree = "<group>"; };
 		D9D2EFBE20E2F6ECC969E759 /* FranchiseDetectorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FranchiseDetectorTests.swift; path = ../../GamesWithFriendsTests/FranchiseDetectorTests.swift; sourceTree = "<group>"; };
 		DDFFA2186BF8E5C1F529A7F0 /* ClueTuning.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueTuning.swift; path = Features/CastingDirector/Services/ClueGeneration/ClueTuning.swift; sourceTree = "<group>"; };
+		E1BAF5F088E2B23C96CA348C /* BorderHopEdgePillLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BorderHopEdgePillLayoutTests.swift; path = ../../GamesWithFriendsTests/BorderHopEdgePillLayoutTests.swift; sourceTree = "<group>"; };
 		E4D9BEC93CACB379192250A8 /* BorderHopDifficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopDifficulty.swift; sourceTree = "<group>"; };
 		EF4FE6AA4223FDF9033C7785 /* CountryLetterVoiceControl.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryLetterVoiceControl.swift; sourceTree = "<group>"; };
 		EX00000000000000000002 /* CountryExportProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryExportProvider.swift; sourceTree = "<group>"; };
@@ -430,6 +434,7 @@
 				C4659BABA6B3904065DD6133 /* ClueLadderAssemblerTests.swift */,
 				8760B25E57A779684B408F4E /* ClueGeneratorIntegrationTests.swift */,
 				2F3D08E36B34AFB03DCE8CBB /* CountryLetterMatchingTests.swift */,
+				E1BAF5F088E2B23C96CA348C /* BorderHopEdgePillLayoutTests.swift */,
 			);
 			name = GamesWithFriendsTests;
 			path = GamesWithFriends/GamesWithFriendsTests;
@@ -619,6 +624,7 @@
 			isa = PBXGroup;
 			children = (
 				69342068494283E6365ACD2E /* CastingDirector */,
+				83D45263FA5F586CC5218B33 /* BorderHop */,
 			);
 			name = Features;
 			sourceTree = "<group>";
@@ -633,6 +639,22 @@
 				0B530D0984BED1BE39031EE2 /* ClueLadderAssembler.swift */,
 			);
 			name = ClueGeneration;
+			sourceTree = "<group>";
+		};
+		83D45263FA5F586CC5218B33 /* BorderHop */ = {
+			isa = PBXGroup;
+			children = (
+				9B7FA60FAAA130482FD12DFA /* Components */,
+			);
+			name = BorderHop;
+			sourceTree = "<group>";
+		};
+		9B7FA60FAAA130482FD12DFA /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				3166F0BD29AE1A4924543341 /* BorderHopEdgePillLayout.swift */,
+			);
+			name = Components;
 			sourceTree = "<group>";
 		};
 		AAA410786D9FD4572C30AD96 /* Services */ = {
@@ -1297,6 +1319,7 @@
 				10C3B9F8C0D46A672F386884 /* ClueLadderAssemblerTests.swift in Sources */,
 				6E2CD5015590CF7B726705B3 /* ClueGeneratorIntegrationTests.swift in Sources */,
 				A10616BC409CEED0A627C18B /* CountryLetterMatchingTests.swift in Sources */,
+				4333594BC23DAB6F9BCD102E /* BorderHopEdgePillLayoutTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1469,6 +1492,7 @@
 				110F5D5D0C7DEEA938FDECA7 /* CountryLetterVoiceControl.swift in Sources */,
 				F1CBB923AAC284568CF5CAAA /* CountryMatcher.swift in Sources */,
 				2AF8108D977FC61A7F6EC761 /* NotCountriesData.swift in Sources */,
+				30F3B28F51CC4F2322B11B02 /* BorderHopEdgePillLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
