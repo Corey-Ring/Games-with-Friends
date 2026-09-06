@@ -2,13 +2,13 @@ import SwiftUI
 
 // ART_DIRECTION §6: spot illustrations replace decorative SF Symbols. Flat
 // candy fills, 3 pt ink outlines in a 64 pt art box, rounded joins, faces per
-// Rule 6, at most one sparkle garnish per spot. The first six are ported from
-// the adopted Option C artboard SVGs; the three below-the-fold games follow
-// the same recipe.
+// Rule 6, at most one sparkle garnish per spot. Most are ported from the
+// adopted Option C artboard SVGs; the three below-the-fold games plus the
+// 2026-08-25 globe-flag and bubble-five redesigns follow the same recipe.
 enum RetroSpotKind: CaseIterable, Hashable {
     case speechBubbles   // Conversation Starters
     case globe           // Country Letter Challenge
-    case burstFive       // Name 5
+    case bubbleFive      // Name 5
     case borderMap       // Border Blitz
     case filmFrame       // Movie Chain
     case starFace        // Casting Director
@@ -20,7 +20,7 @@ enum RetroSpotKind: CaseIterable, Hashable {
         switch gameID {
         case "conversation-starters": self = .speechBubbles
         case "country-letter-game": self = .globe
-        case "name-5-game": self = .burstFive
+        case "name-5-game": self = .bubbleFive
         case "border-blitz": self = .borderMap
         case "movie-chain": self = .filmFrame
         case "casting-director": self = .starFace
@@ -56,7 +56,7 @@ enum RetroSpotPainter {
         switch kind {
         case .speechBubbles: speechBubbles(&context)
         case .globe: globe(&context)
-        case .burstFive: burstFive(&context)
+        case .bubbleFive: bubbleFive(&context)
         case .borderMap: borderMap(&context)
         case .filmFrame: filmFrame(&context)
         case .starFace: starFace(&context)
@@ -157,47 +157,95 @@ enum RetroSpotPainter {
         paint(&c, small, fill: AppTheme.Retro.poolBlue)
     }
 
-    // MARK: Country Letter Challenge — smiling globe
+    // MARK: Country Letter Challenge — smiling globe flying a letter flag
 
     private static func globe(_ c: inout GraphicsContext) {
-        let sphere = Path(ellipseIn: CGRect(x: 10, y: 10, width: 44, height: 44))
-        paint(&c, sphere, fill: AppTheme.Retro.grass)
+        // Flag rides high so a stretch of bare pole shows between its
+        // bottom edge and the sphere — that gap is what makes it read as
+        // planted in the north pole rather than stuck on like a sticker.
+        let flag = Path(roundedRect: CGRect(x: 37, y: 1, width: 18, height: 11),
+                        cornerRadius: 2.5)
+        paint(&c, flag, fill: AppTheme.Retro.tomato, lineWidth: 2.4)
+        let letter = Text("A").font(AppTheme.Retro.Typography.heading(9.5, relativeTo: .caption))
+        c.draw(letter.foregroundStyle(ink), at: CGPoint(x: 46.7, y: 7.2))
+        c.draw(letter.foregroundStyle(AppTheme.Retro.cream), at: CGPoint(x: 46, y: 6.5))
 
-        var lat1 = Path()
-        lat1.move(to: CGPoint(x: 12, y: 26))
-        lat1.addQuadCurve(to: CGPoint(x: 32, y: 26), control: CGPoint(x: 22, y: 32))
-        lat1.addQuadCurve(to: CGPoint(x: 50, y: 28), control: CGPoint(x: 42, y: 20))
-        var lat2 = Path()
-        lat2.move(to: CGPoint(x: 14, y: 42))
-        lat2.addQuadCurve(to: CGPoint(x: 32, y: 42), control: CGPoint(x: 23, y: 37))
-        lat2.addQuadCurve(to: CGPoint(x: 48, y: 40), control: CGPoint(x: 41, y: 47))
-        for lat in [lat1, lat2] {
-            c.stroke(lat, with: .color(AppTheme.Retro.cream),
-                     style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        var pole = Path()
+        pole.move(to: CGPoint(x: 36, y: 19))
+        pole.addLine(to: CGPoint(x: 36, y: 1))
+        c.stroke(pole, with: .color(ink),
+                 style: StrokeStyle(lineWidth: 2.4, lineCap: .round))
+
+        // Blue ocean with green continents clipped by the rim — the classic
+        // cartoon-Earth read. Face floats in open water.
+        let sphere = Path(ellipseIn: CGRect(x: 10, y: 17, width: 44, height: 44))
+        c.fill(sphere, with: .color(AppTheme.Retro.poolBlue))
+
+        var land1 = Path()
+        land1.move(to: CGPoint(x: 8, y: 26))
+        land1.addQuadCurve(to: CGPoint(x: 21, y: 19), control: CGPoint(x: 13, y: 18))
+        land1.addQuadCurve(to: CGPoint(x: 28, y: 26), control: CGPoint(x: 29, y: 20))
+        land1.addQuadCurve(to: CGPoint(x: 20, y: 32), control: CGPoint(x: 27, y: 31))
+        land1.addQuadCurve(to: CGPoint(x: 8, y: 26), control: CGPoint(x: 12, y: 33))
+        land1.closeSubpath()
+        var land2 = Path()
+        land2.move(to: CGPoint(x: 47.5, y: 25.5))
+        land2.addQuadCurve(to: CGPoint(x: 57, y: 30), control: CGPoint(x: 54.5, y: 23.5))
+        land2.addQuadCurve(to: CGPoint(x: 54.5, y: 42), control: CGPoint(x: 59, y: 37))
+        land2.addQuadCurve(to: CGPoint(x: 47, y: 41), control: CGPoint(x: 50, y: 45.5))
+        land2.addQuadCurve(to: CGPoint(x: 46.5, y: 33.5), control: CGPoint(x: 45.5, y: 38))
+        land2.addQuadCurve(to: CGPoint(x: 47.5, y: 25.5), control: CGPoint(x: 47.5, y: 29))
+        land2.closeSubpath()
+        var land3 = Path()
+        land3.move(to: CGPoint(x: 22, y: 54))
+        land3.addQuadCurve(to: CGPoint(x: 32, y: 52), control: CGPoint(x: 26, y: 50))
+        land3.addQuadCurve(to: CGPoint(x: 34, y: 58), control: CGPoint(x: 37, y: 54))
+        land3.addQuadCurve(to: CGPoint(x: 25, y: 60), control: CGPoint(x: 30, y: 62))
+        land3.addQuadCurve(to: CGPoint(x: 22, y: 54), control: CGPoint(x: 21, y: 58))
+        land3.closeSubpath()
+
+        var ocean = c
+        ocean.clip(to: sphere)
+        for land in [land1, land2, land3] {
+            ocean.fill(land, with: .color(AppTheme.Retro.grass))
+            ocean.stroke(land, with: .color(ink),
+                         style: StrokeStyle(lineWidth: 2.4, lineJoin: .round))
         }
-        face(&c, leftEye: CGPoint(x: 26, y: 30), rightEye: CGPoint(x: 38, y: 30))
+        c.stroke(sphere, with: .color(ink),
+                 style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+
+        face(&c, leftEye: CGPoint(x: 26, y: 38), rightEye: CGPoint(x: 37, y: 38))
     }
 
-    // MARK: Name 5 — sixteen-point burst with a big 5
+    // MARK: Name 5 — chunky bubble-letter 5
 
-    private static func burstFive(_ c: inout GraphicsContext) {
-        let pts: [CGPoint] = [
-            CGPoint(x: 32, y: 4), CGPoint(x: 37, y: 18), CGPoint(x: 51, y: 12),
-            CGPoint(x: 45, y: 25), CGPoint(x: 60, y: 28), CGPoint(x: 46, y: 34),
-            CGPoint(x: 54, y: 46), CGPoint(x: 40, y: 42), CGPoint(x: 38, y: 58),
-            CGPoint(x: 30, y: 45), CGPoint(x: 20, y: 54), CGPoint(x: 23, y: 39),
-            CGPoint(x: 8, y: 38), CGPoint(x: 21, y: 30), CGPoint(x: 12, y: 16),
-            CGPoint(x: 27, y: 21)
-        ]
-        var burst = Path()
-        burst.move(to: pts[0])
-        for p in pts.dropFirst() { burst.addLine(to: p) }
-        burst.closeSubpath()
-        paint(&c, burst, fill: AppTheme.Retro.tomato)
+    private static func bubbleFive(_ c: inout GraphicsContext) {
+        // 70s bubble-letter "5" (mural-coming-soon reference / Rule 4):
+        // one fat marker-stroke skeleton rendered three times — ink hard
+        // offset shadow, ink keyline tube, lilac face.
+        var five = Path()
+        five.move(to: CGPoint(x: 43, y: 11.5))
+        five.addLine(to: CGPoint(x: 23.5, y: 11.5))
+        five.addLine(to: CGPoint(x: 23.5, y: 28.5))
+        five.addCurve(to: CGPoint(x: 46, y: 41),
+                      control1: CGPoint(x: 38, y: 25.5),
+                      control2: CGPoint(x: 46, y: 32))
+        five.addCurve(to: CGPoint(x: 28, y: 54),
+                      control1: CGPoint(x: 46, y: 50),
+                      control2: CGPoint(x: 37, y: 55))
+        five.addCurve(to: CGPoint(x: 20.5, y: 50),
+                      control1: CGPoint(x: 24.5, y: 53.5),
+                      control2: CGPoint(x: 22, y: 52))
 
-        let five = Text("5").font(AppTheme.Retro.Typography.heading(22, relativeTo: .title2))
-        c.draw(five.foregroundStyle(ink), at: CGPoint(x: 33.2, y: 33.2))
-        c.draw(five.foregroundStyle(Color.white), at: CGPoint(x: 32, y: 32))
+        let tube = StrokeStyle(lineWidth: 15.5, lineCap: .round, lineJoin: .round)
+        let shadow = five.applying(CGAffineTransform(translationX: 3.5, y: 3.5))
+        c.stroke(shadow, with: .color(ink), style: tube)
+        c.stroke(five, with: .color(ink), style: tube)
+        c.stroke(five, with: .color(AppTheme.Retro.lilac),
+                 style: StrokeStyle(lineWidth: 10.5, lineCap: .round, lineJoin: .round))
+
+        let sparkle = sparklePath(center: CGPoint(x: 9, y: 9), r: 5.5)
+        paint(&c, sparkle, fill: AppTheme.Retro.cream, lineWidth: 2)
     }
 
     // MARK: Border Blitz — country blob with dashed borders and a flag

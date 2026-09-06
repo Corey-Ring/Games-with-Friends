@@ -58,7 +58,7 @@ struct ResultHeader: View {
             ZStack {
                 Circle().fill(AppTheme.Retro.panel)
                 Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
-                RetroSpotIllustration(kind: .burstFive)
+                RetroSpotIllustration(kind: .bubbleFive)
                     .frame(width: 64, height: 64)
                     .opacity(success ? 1 : 0.6)
             }
