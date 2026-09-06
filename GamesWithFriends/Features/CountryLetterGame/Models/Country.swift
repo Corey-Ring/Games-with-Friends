@@ -35,19 +35,25 @@ struct Country: Identifiable, Codable, Hashable, Equatable {
     }
 
     /// Lowercases, strips diacritics and punctuation (so "Côte d’Ivoire",
-    /// "Cote d'Ivoire" and "cote d ivoire" collapse together), collapses
-    /// whitespace, and drops a leading "the".
+    /// "Cote d'Ivoire" and "cote d ivoire" collapse together), spells out
+    /// "&" and "St.", collapses whitespace, and drops a leading "the".
     static func normalize(_ text: String) -> String {
         var result = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
 
         // Remove diacritics
         result = result.folding(options: .diacriticInsensitive, locale: .current)
 
+        // "&" reads as "and" — it would otherwise vanish with the punctuation.
+        result = result.replacingOccurrences(of: "&", with: " and ")
+
         // Remove non-alphanumeric characters except spaces
         result = result.components(separatedBy: CharacterSet.alphanumerics.union(.whitespaces).inverted).joined(separator: " ")
 
-        // Collapse multiple spaces
-        result = result.components(separatedBy: .whitespaces).filter { !$0.isEmpty }.joined(separator: " ")
+        // Collapse multiple spaces and spell out the "St." abbreviation.
+        result = result.components(separatedBy: .whitespaces)
+            .filter { !$0.isEmpty }
+            .map { $0 == "st" ? "saint" : $0 }
+            .joined(separator: " ")
 
         // Remove leading "the "
         if result.hasPrefix("the ") {

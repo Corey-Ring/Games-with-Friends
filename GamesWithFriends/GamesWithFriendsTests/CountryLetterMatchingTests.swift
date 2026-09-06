@@ -224,4 +224,140 @@ final class CountryLetterMatchingTests: XCTestCase {
         vm.handleSpeechTranscript("Canada")
         XCTAssertEqual(vm.guessedCountries.map(\.name), ["Canada"])
     }
+
+    // MARK: - Forgiving typed input (typos, keyboard-unfriendly characters)
+
+    private func resolveAll(_ input: String) -> String? {
+        CountryMatcher.resolve(input, in: CountriesData.all)?.name
+    }
+
+    func testDiacriticsAndPunctuationTypedFromAnEnglishKeyboardStillMatch() {
+        let expectations: [(String, String)] = [
+            ("Cote dIvoire", "Côte d'Ivoire"),
+            ("Sao Tome & Principe", "São Tomé and Príncipe"),
+            ("Bosnia & Herzegovina", "Bosnia and Herzegovina"),
+            ("St. Lucia", "Saint Lucia"),
+            ("St Kitts & Nevis", "Saint Kitts and Nevis"),
+            ("Guinea Bissau", "Guinea-Bissau"),
+            ("Timor Leste", "Timor-Leste"),
+        ]
+        for (input, expected) in expectations {
+            XCTAssertEqual(resolveAll(input), expected, "input: \(input)")
+        }
+    }
+
+    func testOneLetterSlipsAreForgivenOnLongerNames() {
+        let expectations: [(String, String)] = [
+            ("Cambodai", "Cambodia"),        // transposition
+            ("Camaroon", "Cameroon"),        // substitution
+            ("Cyrpus", "Cyprus"),            // transposition, 6 letters
+            ("Costa Rico", "Costa Rica"),
+            ("Phillipines", "Philippines"),
+            ("Kyrgystan", "Kyrgyzstan"),
+            ("Lichtenstein", "Liechtenstein"),
+            ("Luxemburg", "Luxembourg"),
+            ("Portugual", "Portugal"),
+            ("Argentinia", "Argentina"),
+            ("Swizterland", "Switzerland"),
+            ("Bangaldesh", "Bangladesh"),
+            ("Madagasca", "Madagascar"),
+            ("Kazakstan", "Kazakhstan"),
+        ]
+        for (input, expected) in expectations {
+            XCTAssertEqual(resolveAll(input), expected, "input: \(input)")
+        }
+    }
+
+    func testShortNamesRequireAnExactSpelling() {
+        // A one-letter slip on a four-letter name is as likely to be a
+        // different word as a typo, so these stay strict.
+        XCTAssertNil(resolveAll("Cubs"))
+        XCTAssertNil(resolveAll("Chat"))
+        XCTAssertNil(resolveAll("Perv"))
+        XCTAssertEqual(resolveAll("Cuba"), "Cuba")
+        XCTAssertEqual(resolveAll("Chad"), "Chad")
+    }
+
+    func testExactNamesWinOverLongerNeighbours() {
+        XCTAssertEqual(resolveAll("Guinea"), "Guinea")
+        XCTAssertEqual(resolveAll("Niger"), "Niger")
+        XCTAssertEqual(resolveAll("Sudan"), "Sudan")
+        XCTAssertEqual(resolveAll("Dominica"), "Dominica")
+        XCTAssertEqual(resolveAll("Congo"), "Congo")
+    }
+
+    func testTypoEquallyCloseToTwoCountriesIsNotCredited() {
+        // "Nigera" is one edit from both Niger and Nigeria.
+        XCTAssertNil(resolveAll("Nigera"))
+    }
+
+    func testLeadingWordsOfAUniqueNameAreEnough() {
+        let expectations: [(String, String)] = [
+            ("Dominican", "Dominican Republic"),
+            ("Saudi", "Saudi Arabia"),
+            ("Sierra", "Sierra Leone"),
+            ("Central African", "Central African Republic"),
+            ("Solomon", "Solomon Islands"),
+            ("Marshall", "Marshall Islands"),
+            ("Burkina", "Burkina Faso"),
+        ]
+        for (input, expected) in expectations {
+            XCTAssertEqual(resolveAll(input), expected, "input: \(input)")
+        }
+    }
+
+    func testAmbiguousLeadingWordsAreNotCredited() {
+        XCTAssertNil(resolveAll("South"))
+        XCTAssertNil(resolveAll("North"))
+        XCTAssertNil(resolveAll("Saint"))
+        XCTAssertNil(resolveAll("United"))
+        // A partial word is not a leading-word match.
+        XCTAssertNil(resolveAll("Domin"))
+    }
+
+    // MARK: - Places people name that are not on the list
+
+    func testWellKnownTerritoriesAndContinentsAreRecognisedAsNotCountries() {
+        for input in ["Curacao", "Curaçao", "Puerto Rico", "Greenland", "Hong Kong", "Scotland", "Africa", "Europe"] {
+            XCTAssertNil(resolveAll(input), "\(input) must not be credited as a country")
+            XCTAssertNotNil(CountriesData.notACountry(matching: input), "\(input) should get an explanation")
+        }
+    }
+
+    func testNotACountryNamesNeverCollideWithRealCountries() {
+        for place in CountriesData.notCountries {
+            for label in place.labels {
+                XCTAssertNil(CountryMatcher.resolve(label, in: CountriesData.all),
+                             "\"\(label)\" is both a country and a not-a-country entry")
+            }
+        }
+    }
+
+    func testTypedTerritoryGetsAnExplanationInsteadOfNotRecognised() {
+        let vm = CountryGameViewModel()
+        vm.selectLetter("C")
+        vm.currentGuess = "Curacao"
+        vm.submitGuess()
+        XCTAssertEqual(vm.feedbackType, .error)
+        XCTAssertTrue(vm.feedbackMessage.contains("Curaçao"), vm.feedbackMessage)
+        XCTAssertFalse(vm.feedbackMessage.contains("Not recognized"), vm.feedbackMessage)
+        XCTAssertTrue(vm.guessedCountries.isEmpty)
+    }
+
+    func testTypedTypoIsCreditedAndNamedCorrectly() {
+        let vm = CountryGameViewModel()
+        vm.selectLetter("C")
+        vm.currentGuess = "Cambodai"
+        vm.submitGuess()
+        XCTAssertEqual(vm.guessedCountries.map(\.name), ["Cambodia"])
+        XCTAssertTrue(vm.feedbackMessage.contains("Cambodia"), vm.feedbackMessage)
+    }
+
+    func testRoundStartsWithNoFeedbackNoise() {
+        // The instruction banner now carries "N countries start with X", so
+        // the feedback slot stays clear until the first guess.
+        let vm = CountryGameViewModel()
+        vm.selectLetter("C")
+        XCTAssertTrue(vm.feedbackMessage.isEmpty, vm.feedbackMessage)
+    }
 }

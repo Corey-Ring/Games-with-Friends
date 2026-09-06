@@ -5,6 +5,11 @@ import SwiftUI
 /// Pass `exclusions` (in this view's coordinate space) for regions that must
 /// stay motif-free (§7: none within 12pt of interactive areas — the layout
 /// engine adds the clearance).
+///
+/// The status-bar band is excluded automatically from
+/// `\.systemChromeInsets`, which the hub captures once at its root (a
+/// full-bleed GeometryReader reports zero insets, so callers can't), so no
+/// motif paints behind the clock on any iPhone.
 struct MotifGroundView: View {
     var seed: UInt64 = 0xCAFE_D00D
     var density: CGFloat = 1.0
@@ -16,6 +21,7 @@ struct MotifGroundView: View {
         AppTheme.Retro.grass,
     ]
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.systemChromeInsets) private var chromeInsets
 
     var body: some View {
         ZStack {
@@ -26,9 +32,12 @@ struct MotifGroundView: View {
                 let effectiveDensity = dark ? density * 0.6 : density
                 let colors = dark ? Array(palette.dropFirst()) : palette
                 guard !colors.isEmpty else { return }
+                let chrome = chromeInsets.top > 0
+                    ? [CGRect(x: 0, y: 0, width: size.width, height: chromeInsets.top)]
+                    : []
                 let motifs = MotifFieldLayout.generate(seed: seed, size: size,
                                                        density: effectiveDensity,
-                                                       avoiding: exclusions)
+                                                       avoiding: chrome + exclusions)
                 for motif in motifs {
                     draw(motif, in: context, colors: colors)
                 }
@@ -114,4 +123,20 @@ struct MotifGroundView: View {
 
 #Preview("Motif ground") {
     MotifGroundView(exclusions: [CGRect(x: 20, y: 300, width: 350, height: 200)])
+}
+
+// MARK: - System chrome insets
+
+private struct SystemChromeInsetsKey: EnvironmentKey {
+    static let defaultValue = EdgeInsets()
+}
+
+extension EnvironmentValues {
+    /// The device's safe-area insets (status bar, home indicator), captured
+    /// by the hub's root and inherited by every pushed screen. Full-bleed
+    /// grounds use it to keep decoration clear of system chrome.
+    var systemChromeInsets: EdgeInsets {
+        get { self[SystemChromeInsetsKey.self] }
+        set { self[SystemChromeInsetsKey.self] = newValue }
+    }
 }
