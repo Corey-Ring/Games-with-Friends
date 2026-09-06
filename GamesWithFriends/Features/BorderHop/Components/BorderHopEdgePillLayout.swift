@@ -7,8 +7,9 @@ import SwiftUI
 /// mini-map, and it is easy to get wrong by a safe-area inset.
 enum BorderHopEdgePillLayout {
 
-    /// Fixed pill footprint. The pill itself is sized by its content, but the collision
-    /// math needs one stable rect, and every country name fits inside this.
+    /// Nominal pill footprint used for collision math. The real pill is sized by its
+    /// content and long names ("Democratic Republic of the Congo") run wider than this,
+    /// so stacking is approximate for those; the vertical size is what keeps rows apart.
     static let pillSize = CGSize(width: 110, height: 32)
 
     private static let horizontalInset: CGFloat = 16
