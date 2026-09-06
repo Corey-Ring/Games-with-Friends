@@ -4,36 +4,41 @@ struct Country: Identifiable, Codable, Hashable, Equatable {
     let id: UUID
     let name: String
     let alternateNames: [String]
+    /// Overrides the letter the country is filed under when players don't
+    /// think of it by its official first word (the DRC lives under C).
+    let indexLetter: String?
 
-    init(name: String, alternateNames: [String] = []) {
+    init(name: String, indexLetter: String? = nil, alternateNames: [String] = []) {
         self.id = UUID()
         self.name = name
+        self.indexLetter = indexLetter
         self.alternateNames = alternateNames
     }
 
     var firstLetter: String {
-        String(name.prefix(1)).uppercased()
+        indexLetter ?? String(name.prefix(1)).uppercased()
     }
 
+    /// Every label a player may use for this country: the name plus alternates.
+    var labels: [String] {
+        [name] + alternateNames
+    }
+
+    /// Whole-string match against the display name or any alternate, after
+    /// both sides go through `normalize`. Deliberately exact: fuzzy matching
+    /// on a 195-entry list produces false credits (e.g. "Niger" vs "Nigeria").
     func matches(_ input: String) -> Bool {
-        let normalized = normalizeInput(input)
-        let normalizedName = normalizeInput(name)
+        let normalized = Country.normalize(input)
+        guard !normalized.isEmpty else { return false }
 
-        if normalized == normalizedName {
-            return true
-        }
-
-        for alt in alternateNames {
-            if normalized == normalizeInput(alt) {
-                return true
-            }
-        }
-
-        return false
+        return labels.contains { normalized == Country.normalize($0) }
     }
 
-    private func normalizeInput(_ text: String) -> String {
-        var result = text.lowercased().trimmingCharacters(in: .whitespaces)
+    /// Lowercases, strips diacritics and punctuation (so "Côte d’Ivoire",
+    /// "Cote d'Ivoire" and "cote d ivoire" collapse together), collapses
+    /// whitespace, and drops a leading "the".
+    static func normalize(_ text: String) -> String {
+        var result = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
 
         // Remove diacritics
         result = result.folding(options: .diacriticInsensitive, locale: .current)

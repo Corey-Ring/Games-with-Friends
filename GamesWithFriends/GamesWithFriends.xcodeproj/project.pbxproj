@@ -10,8 +10,10 @@
 		0013CC9E2603BF0F03A2CA62 /* GuessOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E24AF47ECEE9765542BD20 /* GuessOverlayView.swift */; };
 		06D5EA4A9B2DDC4145745EC1 /* FranchiseDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36ECEBF2AC09E319B228A592 /* FranchiseDetector.swift */; };
 		06FC50D097F5DC0D0B5EE7EC /* ClueBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE79220ABF60EDD425B86DF /* ClueBoardView.swift */; };
+		0DDF00D5BEEFCAFE00000002 /* BorderHopRouteGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DDF00D5BEEFCAFE00000001 /* BorderHopRouteGenerationTests.swift */; };
 		10C3B9F8C0D46A672F386884 /* ClueLadderAssemblerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4659BABA6B3904065DD6133 /* ClueLadderAssemblerTests.swift */; };
 		1100CF9D3457D8D775409119 /* FranchiseDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D2EFBE20E2F6ECC969E759 /* FranchiseDetectorTests.swift */; };
+		110F5D5D0C7DEEA938FDECA7 /* CountryLetterVoiceControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4FE6AA4223FDF9033C7785 /* CountryLetterVoiceControl.swift */; };
 		14F68D71A924870DE5BB57BD /* BorderHopViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */; };
 		2DD62FB808FF825CC081B894 /* BorderHopResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */; };
 		31CEAA5DD3AA72B2C74BA1BC /* BorderHopDifficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D9BEC93CACB379192250A8 /* BorderHopDifficulty.swift */; };
@@ -26,7 +28,6 @@
 		4A883C5F2F04BC5A0046272B /* MovieChainGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C562F04BC5A0046272B /* MovieChainGameView.swift */; };
 		4A883C602F04BC5A0046272B /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C4A2F04BC5A0046272B /* GameState.swift */; };
 		4A883C612F04BC5A0046272B /* ChainBreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C542F04BC5A0046272B /* ChainBreakView.swift */; };
-		F100000100000000000000C8 /* MovieChainStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C8 /* MovieChainStyle.swift */; };
 		4A883C622F04BC5A0046272B /* MovieChainRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C572F04BC5A0046272B /* MovieChainRootView.swift */; };
 		4A883C632F04BC5A0046272B /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C4B2F04BC5A0046272B /* Player.swift */; };
 		4A883C642F04BC5A0046272B /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A883C552F04BC5A0046272B /* GameOverView.swift */; };
@@ -63,19 +64,18 @@
 		86E6F4294F19721EB6D70A7B /* ActorFactsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DCB539E3F859283CFC33B3 /* ActorFactsTests.swift */; };
 		90C0FDFEC1E5C4FFA3F3A2FB /* BorderHopQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4208B509F5857580092065AC /* BorderHopQuizView.swift */; };
 		92A37E92A10920D753D31418 /* ClueChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33BF84BA1F17D93F51186B46 /* ClueChipView.swift */; };
-		F100000100000000000000CC /* CastingDirectorStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CC /* CastingDirectorStyle.swift */; };
-		F100000100000000000000CD /* BorderHopStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CD /* BorderHopStyle.swift */; };
 		97CE7CE18AEDA00A510093A9 /* MapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFC83BF0058967C0FC4CF8F /* MapRenderer.swift */; };
+		A10616BC409CEED0A627C18B /* CountryLetterMatchingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3D08E36B34AFB03DCE8CBB /* CountryLetterMatchingTests.swift */; };
 		A1B2C3D4E5F6071829304151 /* BorderHopGeoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6071829304150 /* BorderHopGeoData.swift */; };
 		A1B2C3D4E5F6071829304153 /* ne_110m_admin_0_countries.geojson in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6071829304152 /* ne_110m_admin_0_countries.geojson */; };
 		AA3F082975F7ADFF49CB36D4 /* BorderHopDifficultyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DEBA0D22633744F9DCF952 /* BorderHopDifficultyView.swift */; };
 		B7E2A91F3C4D5A6E8F0B1D2C /* country_fun_facts.json in Resources */ = {isa = PBXBuildFile; fileRef = D3F4A82E5B6C7D9E0A1F3E4B /* country_fun_facts.json */; };
+		B9486AC70624E776BFE1A9AE /* CountryLetterSpeechRecognitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4D7DFC781C11A426D4D1B0 /* CountryLetterSpeechRecognitionManager.swift */; };
 		BC5A7E77AF43EC241ED3FD24 /* BorderHopMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163185AC4CA8F9B7D72E7E02 /* BorderHopMapView.swift */; };
 		BDB151554BFD4DC2C8609769 /* CastingDirectorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 711EBF55D2123D46A4134134 /* CastingDirectorViewModel.swift */; };
 		BH00000000000000000011 /* CountryFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BH00000000000000000010 /* CountryFlagProvider.swift */; };
 		BH00000000000000000013 /* QuizTypeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = BH00000000000000000012 /* QuizTypeSelector.swift */; };
 		C50C046FE5CA1CE43FE9F2CD /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC84603689E26C6A2B560E2 /* SmokeTests.swift */; };
-		0DDF00D5BEEFCAFE00000002 /* BorderHopRouteGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DDF00D5BEEFCAFE00000001 /* BorderHopRouteGenerationTests.swift */; };
 		C81058FD3AF002326590C757 /* BorderHopGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC6E88AF5B11741EC1036 /* BorderHopGame.swift */; };
 		CFB73CFD1165E460873FD563 /* CountryGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1CDBD0A43F76C79197488E /* CountryGraph.swift */; };
 		EC6DF7F939F1429F53979E41 /* CastingDirectorSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF032457008CACCB62515BA /* CastingDirectorSetupView.swift */; };
@@ -95,13 +95,11 @@
 		F10000010000000000000016 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000016 /* GameView.swift */; };
 		F10000010000000000000017 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000017 /* HomeView.swift */; };
 		F10000010000000000000018 /* SavedStartersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000018 /* SavedStartersView.swift */; };
-		F100000100000000000000C5 /* ConversationStartersStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C5 /* ConversationStartersStyle.swift */; };
 		F10000010000000000000019 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000019 /* SettingsView.swift */; };
 		F10000010000000000000020 /* CountryLetterGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000020 /* CountryLetterGame.swift */; };
 		F10000010000000000000021 /* CountriesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000021 /* CountriesData.swift */; };
 		F10000010000000000000022 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000022 /* Country.swift */; };
 		F10000010000000000000023 /* CountryGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000023 /* CountryGameViewModel.swift */; };
-		F100000100000000000000C6 /* CountryLetterStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C6 /* CountryLetterStyle.swift */; };
 		F10000010000000000000024 /* CountryLetterGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000024 /* CountryLetterGameView.swift */; };
 		F10000010000000000000025 /* GamePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000025 /* GamePlayView.swift */; };
 		F10000010000000000000026 /* LetterSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000026 /* LetterSelectionView.swift */; };
@@ -116,7 +114,6 @@
 		F10000010000000000000057 /* Name5PlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000057 /* Name5PlayView.swift */; };
 		F10000010000000000000058 /* Name5ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000058 /* Name5ResultsView.swift */; };
 		F10000010000000000000059 /* Name5SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000059 /* Name5SetupView.swift */; };
-		F100000100000000000000C7 /* Name5Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C7 /* Name5Style.swift */; };
 		F10000010000000000000060 /* BorderBlitzGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000060 /* BorderBlitzGame.swift */; };
 		F10000010000000000000061 /* BorderBlitzCountry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000061 /* BorderBlitzCountry.swift */; };
 		F10000010000000000000062 /* BorderBlitzDifficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000062 /* BorderBlitzDifficulty.swift */; };
@@ -130,8 +127,16 @@
 		F10000010000000000000070 /* BorderBlitzGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000070 /* BorderBlitzGameView.swift */; };
 		F10000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift */; };
 		F10000010000000000000072 /* BorderBlitzWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000072 /* BorderBlitzWaveformView.swift */; };
-		F100000100000000000000C9 /* BorderBlitzStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C9 /* BorderBlitzStyle.swift */; };
 		F10000010000000000000080 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000080 /* Assets.xcassets */; };
+		F100000100000000000000C5 /* ConversationStartersStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C5 /* ConversationStartersStyle.swift */; };
+		F100000100000000000000C6 /* CountryLetterStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C6 /* CountryLetterStyle.swift */; };
+		F100000100000000000000C7 /* Name5Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C7 /* Name5Style.swift */; };
+		F100000100000000000000C8 /* MovieChainStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C8 /* MovieChainStyle.swift */; };
+		F100000100000000000000C9 /* BorderBlitzStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000C9 /* BorderBlitzStyle.swift */; };
+		F100000100000000000000CA /* VibeCheckStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CA /* VibeCheckStyle.swift */; };
+		F100000100000000000000CB /* FinishTheLineStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CB /* FinishTheLineStyle.swift */; };
+		F100000100000000000000CC /* CastingDirectorStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CC /* CastingDirectorStyle.swift */; };
+		F100000100000000000000CD /* BorderHopStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CD /* BorderHopStyle.swift */; };
 		F1AA00010000000000000080 /* BorderBlitzCountryPathData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AA00010000000000000080 /* BorderBlitzCountryPathData.swift */; };
 		F1AA00010000000000000081 /* BorderBlitzCountryMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AA00010000000000000081 /* BorderBlitzCountryMetadata.swift */; };
 		FBBFE9D289FBB4307839C4B1 /* BorderHopRoundResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A0CA6A0BBCE05A9A678569 /* BorderHopRoundResult.swift */; };
@@ -145,7 +150,6 @@
 		FTL0000010000000000000008 /* FinishTheLineQuoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000008 /* FinishTheLineQuoteData.swift */; };
 		FTL0000010000000000000009 /* FinishTheLineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000009 /* FinishTheLineViewModel.swift */; };
 		FTL0000010000000000000010 /* FinishTheLineSpeechRecognitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000010 /* FinishTheLineSpeechRecognitionManager.swift */; };
-		FTL0000010000000000000099 /* FinishTheLineSoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000099 /* FinishTheLineSoundPlayer.swift */; };
 		FTL0000010000000000000011 /* FinishTheLineMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000011 /* FinishTheLineMenuView.swift */; };
 		FTL0000010000000000000012 /* FinishTheLineCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000012 /* FinishTheLineCountdownView.swift */; };
 		FTL0000010000000000000013 /* FinishTheLineGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000013 /* FinishTheLineGameView.swift */; };
@@ -154,20 +158,13 @@
 		FTL0000010000000000000016 /* SpotlightTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000016 /* SpotlightTimerView.swift */; };
 		FTL0000010000000000000017 /* StreakBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000017 /* StreakBadge.swift */; };
 		FTL0000010000000000000018 /* FinishTheLineWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000018 /* FinishTheLineWaveformView.swift */; };
-		F100000100000000000000CB /* FinishTheLineStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CB /* FinishTheLineStyle.swift */; };
-		TH0000010000000000000001 /* AnimatedScoreText.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000001 /* AnimatedScoreText.swift */; };
-		TH0000010000000000000002 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000002 /* AppTheme.swift */; };
-		TH000001000000000000000A /* RetroTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000A /* RetroTheme.swift */; };
-		TH000001000000000000000B /* RetroModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000B /* RetroModifiers.swift */; };
-		TH000001000000000000000C /* RetroComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000C /* RetroComponents.swift */; };
-		TH000001000000000000000D /* MotifField.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000D /* MotifField.swift */; };
-		TH000001000000000000000E /* MotifGroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000E /* MotifGroundView.swift */; };
-		TH000001000000000000000F /* RetroSpotIllustrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000F /* RetroSpotIllustrations.swift */; };
+		FTL0000010000000000000099 /* FinishTheLineSoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTL0000020000000000000099 /* FinishTheLineSoundPlayer.swift */; };
 		TF0000010000000000000001 /* Shrikhand-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000001 /* Shrikhand-Regular.ttf */; };
 		TF0000010000000000000002 /* LilitaOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000002 /* LilitaOne-Regular.ttf */; };
 		TF0000010000000000000003 /* Shrikhand-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000003 /* Shrikhand-OFL.txt */; };
 		TF0000010000000000000004 /* LilitaOne-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = TF0000020000000000000004 /* LilitaOne-OFL.txt */; };
-		TT0000010000000000000001 /* RetroThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TT0000020000000000000001 /* RetroThemeTests.swift */; };
+		TH0000010000000000000001 /* AnimatedScoreText.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000001 /* AnimatedScoreText.swift */; };
+		TH0000010000000000000002 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000002 /* AppTheme.swift */; };
 		TH0000010000000000000003 /* BackgroundStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000003 /* BackgroundStyles.swift */; };
 		TH0000010000000000000004 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000004 /* Color+Hex.swift */; };
 		TH0000010000000000000005 /* GameTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000005 /* GameTheme.swift */; };
@@ -175,6 +172,13 @@
 		TH0000010000000000000007 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000007 /* SharedComponents.swift */; };
 		TH0000010000000000000008 /* SkeletonLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000008 /* SkeletonLoading.swift */; };
 		TH0000010000000000000009 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH0000020000000000000009 /* ViewModifiers.swift */; };
+		TH000001000000000000000A /* RetroTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000A /* RetroTheme.swift */; };
+		TH000001000000000000000B /* RetroModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000B /* RetroModifiers.swift */; };
+		TH000001000000000000000C /* RetroComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000C /* RetroComponents.swift */; };
+		TH000001000000000000000D /* MotifField.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000D /* MotifField.swift */; };
+		TH000001000000000000000E /* MotifGroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000E /* MotifGroundView.swift */; };
+		TH000001000000000000000F /* RetroSpotIllustrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = TH000002000000000000000F /* RetroSpotIllustrations.swift */; };
+		TT0000010000000000000001 /* RetroThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TT0000020000000000000001 /* RetroThemeTests.swift */; };
 		VC0000010000000000000001 /* VibeCheckModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000001 /* VibeCheckModels.swift */; };
 		VC0000010000000000000002 /* VibeCheckCategoryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000002 /* VibeCheckCategoryData.swift */; };
 		VC0000010000000000000003 /* VibeCheckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000003 /* VibeCheckViewModel.swift */; };
@@ -185,7 +189,6 @@
 		VC0000010000000000000014 /* VibeCheckGameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000014 /* VibeCheckGameOverView.swift */; };
 		VC0000010000000000000015 /* PassDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000015 /* PassDeviceView.swift */; };
 		VC0000010000000000000016 /* VibeCheckRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000016 /* VibeCheckRootView.swift */; };
-		F100000100000000000000CA /* VibeCheckStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200000100000000000000CA /* VibeCheckStyle.swift */; };
 		VC0000010000000000000017 /* VibeCheckGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000017 /* VibeCheckGame.swift */; };
 		VC0000010000000000000018 /* PromptEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000018 /* PromptEntryView.swift */; };
 		VC0000010000000000000019 /* TeamGuessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = VC0000020000000000000019 /* TeamGuessingView.swift */; };
@@ -210,10 +213,9 @@
 		163185AC4CA8F9B7D72E7E02 /* BorderHopMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopMapView.swift; sourceTree = "<group>"; };
 		22E24AF47ECEE9765542BD20 /* GuessOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuessOverlayView.swift; sourceTree = "<group>"; };
 		25DC7B922FB2FEC1DE97874A /* BorderHopViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopViewModel.swift; sourceTree = "<group>"; };
+		2F3D08E36B34AFB03DCE8CBB /* CountryLetterMatchingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CountryLetterMatchingTests.swift; path = ../../GamesWithFriendsTests/CountryLetterMatchingTests.swift; sourceTree = "<group>"; };
 		30AD62C0F0A8B4EBA6CBF8B8 /* BorderHopResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopResultsView.swift; sourceTree = "<group>"; };
 		33BF84BA1F17D93F51186B46 /* ClueChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClueChipView.swift; sourceTree = "<group>"; };
-		F200000100000000000000CC /* CastingDirectorStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorStyle.swift; sourceTree = "<group>"; };
-		F200000100000000000000CD /* BorderHopStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopStyle.swift; sourceTree = "<group>"; };
 		36ECEBF2AC09E319B228A592 /* FranchiseDetector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FranchiseDetector.swift; path = Features/CastingDirector/Services/ClueGeneration/FranchiseDetector.swift; sourceTree = "<group>"; };
 		37A0CA6A0BBCE05A9A678569 /* BorderHopRoundResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopRoundResult.swift; sourceTree = "<group>"; };
 		3AF032457008CACCB62515BA /* CastingDirectorSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorSetupView.swift; sourceTree = "<group>"; };
@@ -228,7 +230,6 @@
 		4A883C502F04BC5A0046272B /* MovieChainDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainDatabase.swift; sourceTree = "<group>"; };
 		4A883C522F04BC5A0046272B /* MovieChainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainViewModel.swift; sourceTree = "<group>"; };
 		4A883C542F04BC5A0046272B /* ChainBreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainBreakView.swift; sourceTree = "<group>"; };
-		F200000100000000000000C8 /* MovieChainStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainStyle.swift; sourceTree = "<group>"; };
 		4A883C552F04BC5A0046272B /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
 		4A883C562F04BC5A0046272B /* MovieChainGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainGameView.swift; sourceTree = "<group>"; };
 		4A883C572F04BC5A0046272B /* MovieChainRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainRootView.swift; sourceTree = "<group>"; };
@@ -248,6 +249,7 @@
 		4AF67CBE2F3BC4E1009A3801 /* add_directors.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = add_directors.py; sourceTree = "<group>"; };
 		4AF67CC02F3BC535009A3801 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		511E75D624B1C5511E4979D7 /* ActorFacts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ActorFacts.swift; path = Features/CastingDirector/Services/ClueGeneration/ActorFacts.swift; sourceTree = "<group>"; };
+		5D4D7DFC781C11A426D4D1B0 /* CountryLetterSpeechRecognitionManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryLetterSpeechRecognitionManager.swift; sourceTree = "<group>"; };
 		5DE79220ABF60EDD425B86DF /* ClueBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClueBoardView.swift; sourceTree = "<group>"; };
 		5F473A26759E5E81E8FD800D /* QuizEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizEngine.swift; sourceTree = "<group>"; };
 		617AFF132DBE74C893856D94 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -275,6 +277,7 @@
 		D9D2EFBE20E2F6ECC969E759 /* FranchiseDetectorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FranchiseDetectorTests.swift; path = ../../GamesWithFriendsTests/FranchiseDetectorTests.swift; sourceTree = "<group>"; };
 		DDFFA2186BF8E5C1F529A7F0 /* ClueTuning.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClueTuning.swift; path = Features/CastingDirector/Services/ClueGeneration/ClueTuning.swift; sourceTree = "<group>"; };
 		E4D9BEC93CACB379192250A8 /* BorderHopDifficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopDifficulty.swift; sourceTree = "<group>"; };
+		EF4FE6AA4223FDF9033C7785 /* CountryLetterVoiceControl.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryLetterVoiceControl.swift; sourceTree = "<group>"; };
 		EX00000000000000000002 /* CountryExportProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryExportProvider.swift; sourceTree = "<group>"; };
 		EX00000000000000000004 /* country_exports.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = country_exports.json; sourceTree = "<group>"; };
 		F00000010000000000000001 /* GamesWithFriends.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GamesWithFriends.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -291,14 +294,12 @@
 		F20000010000000000000016 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		F20000010000000000000017 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		F20000010000000000000018 /* SavedStartersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStartersView.swift; sourceTree = "<group>"; };
-		F200000100000000000000C5 /* ConversationStartersStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationStartersStyle.swift; sourceTree = "<group>"; };
 		F20000010000000000000019 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F20000010000000000000020 /* CountryLetterGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryLetterGame.swift; sourceTree = "<group>"; };
 		F20000010000000000000021 /* CountriesData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountriesData.swift; sourceTree = "<group>"; };
 		F20000010000000000000022 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
 		F20000010000000000000023 /* CountryGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryGameViewModel.swift; sourceTree = "<group>"; };
 		F20000010000000000000024 /* CountryLetterGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryLetterGameView.swift; sourceTree = "<group>"; };
-		F200000100000000000000C6 /* CountryLetterStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryLetterStyle.swift; sourceTree = "<group>"; };
 		F20000010000000000000025 /* GamePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePlayView.swift; sourceTree = "<group>"; };
 		F20000010000000000000026 /* LetterSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterSelectionView.swift; sourceTree = "<group>"; };
 		F20000010000000000000027 /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
@@ -312,7 +313,6 @@
 		F20000010000000000000057 /* Name5PlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5PlayView.swift; sourceTree = "<group>"; };
 		F20000010000000000000058 /* Name5ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5ResultsView.swift; sourceTree = "<group>"; };
 		F20000010000000000000059 /* Name5SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5SetupView.swift; sourceTree = "<group>"; };
-		F200000100000000000000C7 /* Name5Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5Style.swift; sourceTree = "<group>"; };
 		F20000010000000000000060 /* BorderBlitzGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzGame.swift; sourceTree = "<group>"; };
 		F20000010000000000000061 /* BorderBlitzCountry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzCountry.swift; sourceTree = "<group>"; };
 		F20000010000000000000062 /* BorderBlitzDifficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzDifficulty.swift; sourceTree = "<group>"; };
@@ -326,8 +326,16 @@
 		F20000010000000000000070 /* BorderBlitzGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzGameView.swift; sourceTree = "<group>"; };
 		F20000010000000000000071 /* BorderBlitzSpeechRecognitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzSpeechRecognitionManager.swift; sourceTree = "<group>"; };
 		F20000010000000000000072 /* BorderBlitzWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzWaveformView.swift; sourceTree = "<group>"; };
-		F200000100000000000000C9 /* BorderBlitzStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzStyle.swift; sourceTree = "<group>"; };
 		F20000010000000000000080 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F200000100000000000000C5 /* ConversationStartersStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationStartersStyle.swift; sourceTree = "<group>"; };
+		F200000100000000000000C6 /* CountryLetterStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryLetterStyle.swift; sourceTree = "<group>"; };
+		F200000100000000000000C7 /* Name5Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Name5Style.swift; sourceTree = "<group>"; };
+		F200000100000000000000C8 /* MovieChainStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieChainStyle.swift; sourceTree = "<group>"; };
+		F200000100000000000000C9 /* BorderBlitzStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzStyle.swift; sourceTree = "<group>"; };
+		F200000100000000000000CA /* VibeCheckStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckStyle.swift; sourceTree = "<group>"; };
+		F200000100000000000000CB /* FinishTheLineStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineStyle.swift; sourceTree = "<group>"; };
+		F200000100000000000000CC /* CastingDirectorStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorStyle.swift; sourceTree = "<group>"; };
+		F200000100000000000000CD /* BorderHopStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderHopStyle.swift; sourceTree = "<group>"; };
 		F2AA00010000000000000080 /* BorderBlitzCountryPathData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzCountryPathData.swift; sourceTree = "<group>"; };
 		F2AA00010000000000000081 /* BorderBlitzCountryMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderBlitzCountryMetadata.swift; sourceTree = "<group>"; };
 		FE4867B2C553A7BCE8B005A8 /* CastingDirectorGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastingDirectorGame.swift; sourceTree = "<group>"; };
@@ -342,7 +350,6 @@
 		FTL0000020000000000000008 /* FinishTheLineQuoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineQuoteData.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000009 /* FinishTheLineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineViewModel.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000010 /* FinishTheLineSpeechRecognitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineSpeechRecognitionManager.swift; sourceTree = "<group>"; };
-		FTL0000020000000000000099 /* FinishTheLineSoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineSoundPlayer.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000011 /* FinishTheLineMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineMenuView.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000012 /* FinishTheLineCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineCountdownView.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000013 /* FinishTheLineGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineGameView.swift; sourceTree = "<group>"; };
@@ -351,20 +358,13 @@
 		FTL0000020000000000000016 /* SpotlightTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightTimerView.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000017 /* StreakBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakBadge.swift; sourceTree = "<group>"; };
 		FTL0000020000000000000018 /* FinishTheLineWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineWaveformView.swift; sourceTree = "<group>"; };
-		F200000100000000000000CB /* FinishTheLineStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineStyle.swift; sourceTree = "<group>"; };
-		TH0000020000000000000001 /* AnimatedScoreText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedScoreText.swift; sourceTree = "<group>"; };
-		TH0000020000000000000002 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
-		TH000002000000000000000A /* RetroTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroTheme.swift; sourceTree = "<group>"; };
-		TH000002000000000000000B /* RetroModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroModifiers.swift; sourceTree = "<group>"; };
-		TH000002000000000000000C /* RetroComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroComponents.swift; sourceTree = "<group>"; };
-		TH000002000000000000000D /* MotifField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotifField.swift; sourceTree = "<group>"; };
-		TH000002000000000000000E /* MotifGroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotifGroundView.swift; sourceTree = "<group>"; };
-		TH000002000000000000000F /* RetroSpotIllustrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroSpotIllustrations.swift; sourceTree = "<group>"; };
+		FTL0000020000000000000099 /* FinishTheLineSoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTheLineSoundPlayer.swift; sourceTree = "<group>"; };
 		TF0000020000000000000001 /* Shrikhand-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Shrikhand-Regular.ttf"; sourceTree = "<group>"; };
 		TF0000020000000000000002 /* LilitaOne-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LilitaOne-Regular.ttf"; sourceTree = "<group>"; };
 		TF0000020000000000000003 /* Shrikhand-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Shrikhand-OFL.txt"; sourceTree = "<group>"; };
 		TF0000020000000000000004 /* LilitaOne-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LilitaOne-OFL.txt"; sourceTree = "<group>"; };
-		TT0000020000000000000001 /* RetroThemeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RetroThemeTests.swift; path = ../../GamesWithFriendsTests/RetroThemeTests.swift; sourceTree = "<group>"; };
+		TH0000020000000000000001 /* AnimatedScoreText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedScoreText.swift; sourceTree = "<group>"; };
+		TH0000020000000000000002 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		TH0000020000000000000003 /* BackgroundStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundStyles.swift; sourceTree = "<group>"; };
 		TH0000020000000000000004 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Color+Hex.swift"; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		TH0000020000000000000005 /* GameTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTheme.swift; sourceTree = "<group>"; };
@@ -372,6 +372,13 @@
 		TH0000020000000000000007 /* SharedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedComponents.swift; sourceTree = "<group>"; };
 		TH0000020000000000000008 /* SkeletonLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonLoading.swift; sourceTree = "<group>"; };
 		TH0000020000000000000009 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
+		TH000002000000000000000A /* RetroTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroTheme.swift; sourceTree = "<group>"; };
+		TH000002000000000000000B /* RetroModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroModifiers.swift; sourceTree = "<group>"; };
+		TH000002000000000000000C /* RetroComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroComponents.swift; sourceTree = "<group>"; };
+		TH000002000000000000000D /* MotifField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotifField.swift; sourceTree = "<group>"; };
+		TH000002000000000000000E /* MotifGroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotifGroundView.swift; sourceTree = "<group>"; };
+		TH000002000000000000000F /* RetroSpotIllustrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroSpotIllustrations.swift; sourceTree = "<group>"; };
+		TT0000020000000000000001 /* RetroThemeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RetroThemeTests.swift; path = ../../GamesWithFriendsTests/RetroThemeTests.swift; sourceTree = "<group>"; };
 		VC0000020000000000000001 /* VibeCheckModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckModels.swift; sourceTree = "<group>"; };
 		VC0000020000000000000002 /* VibeCheckCategoryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckCategoryData.swift; sourceTree = "<group>"; };
 		VC0000020000000000000003 /* VibeCheckViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckViewModel.swift; sourceTree = "<group>"; };
@@ -382,7 +389,6 @@
 		VC0000020000000000000014 /* VibeCheckGameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckGameOverView.swift; sourceTree = "<group>"; };
 		VC0000020000000000000015 /* PassDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassDeviceView.swift; sourceTree = "<group>"; };
 		VC0000020000000000000016 /* VibeCheckRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckRootView.swift; sourceTree = "<group>"; };
-		F200000100000000000000CA /* VibeCheckStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckStyle.swift; sourceTree = "<group>"; };
 		VC0000020000000000000017 /* VibeCheckGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeCheckGame.swift; sourceTree = "<group>"; };
 		VC0000020000000000000018 /* PromptEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptEntryView.swift; sourceTree = "<group>"; };
 		VC0000020000000000000019 /* TeamGuessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamGuessingView.swift; sourceTree = "<group>"; };
@@ -419,6 +425,7 @@
 				D3DCB539E3F859283CFC33B3 /* ActorFactsTests.swift */,
 				C4659BABA6B3904065DD6133 /* ClueLadderAssemblerTests.swift */,
 				8760B25E57A779684B408F4E /* ClueGeneratorIntegrationTests.swift */,
+				2F3D08E36B34AFB03DCE8CBB /* CountryLetterMatchingTests.swift */,
 			);
 			name = GamesWithFriendsTests;
 			path = GamesWithFriends/GamesWithFriendsTests;
@@ -703,6 +710,15 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		CCEC1E9AF05B4C31190D3FE1 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				5D4D7DFC781C11A426D4D1B0 /* CountryLetterSpeechRecognitionManager.swift */,
+			);
+			name = Services;
+			path = Services;
+			sourceTree = "<group>";
+		};
 		F40000010000000000000001 = {
 			isa = PBXGroup;
 			children = (
@@ -827,6 +843,7 @@
 				F40000010000000000000032 /* Models */,
 				F40000010000000000000033 /* ViewModels */,
 				F40000010000000000000034 /* Views */,
+				CCEC1E9AF05B4C31190D3FE1 /* Services */,
 			);
 			path = CountryLetterGame;
 			sourceTree = "<group>";
@@ -863,6 +880,7 @@
 				F20000010000000000000026 /* LetterSelectionView.swift */,
 				F20000010000000000000027 /* ResultsView.swift */,
 				F200000100000000000000C6 /* CountryLetterStyle.swift */,
+				EF4FE6AA4223FDF9033C7785 /* CountryLetterVoiceControl.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1063,6 +1081,17 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		TF0000030000000000000001 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				TF0000020000000000000001 /* Shrikhand-Regular.ttf */,
+				TF0000020000000000000002 /* LilitaOne-Regular.ttf */,
+				TF0000020000000000000003 /* Shrikhand-OFL.txt */,
+				TF0000020000000000000004 /* LilitaOne-OFL.txt */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		TH0000030000000000000001 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
@@ -1084,17 +1113,6 @@
 				TF0000030000000000000001 /* Fonts */,
 			);
 			path = Theme;
-			sourceTree = "<group>";
-		};
-		TF0000030000000000000001 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				TF0000020000000000000001 /* Shrikhand-Regular.ttf */,
-				TF0000020000000000000002 /* LilitaOne-Regular.ttf */,
-				TF0000020000000000000003 /* Shrikhand-OFL.txt */,
-				TF0000020000000000000004 /* LilitaOne-OFL.txt */,
-			);
-			path = Fonts;
 			sourceTree = "<group>";
 		};
 		VC0000030000000000000001 /* VibeCheck */ = {
@@ -1272,6 +1290,7 @@
 				86E6F4294F19721EB6D70A7B /* ActorFactsTests.swift in Sources */,
 				10C3B9F8C0D46A672F386884 /* ClueLadderAssemblerTests.swift in Sources */,
 				6E2CD5015590CF7B726705B3 /* ClueGeneratorIntegrationTests.swift in Sources */,
+				A10616BC409CEED0A627C18B /* CountryLetterMatchingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1440,6 +1459,8 @@
 				78E8E3AA4AAEF0A29A351075 /* ActorFacts.swift in Sources */,
 				63813C131E53D9FDB85F4559 /* ClueBuilders.swift in Sources */,
 				7D29D48E0BCE96EB1A56AD51 /* ClueLadderAssembler.swift in Sources */,
+				B9486AC70624E776BFE1A9AE /* CountryLetterSpeechRecognitionManager.swift in Sources */,
+				110F5D5D0C7DEEA938FDECA7 /* CountryLetterVoiceControl.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

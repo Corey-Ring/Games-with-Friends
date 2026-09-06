@@ -16,6 +16,11 @@ class CountryGameViewModel {
     var hintLevels: [UUID: Int] = [:]
     var gameState: GameState = .selectingLetter
 
+    var speechManager = CountryLetterSpeechRecognitionManager()
+    /// Set when the player taps the mic off. Scene resumes and new letters
+    /// must not silently re-arm a mic the player chose to silence.
+    var voiceMuted: Bool = false
+
     enum GameState {
         case selectingLetter
         case playing
@@ -26,6 +31,23 @@ class CountryGameViewModel {
         case success
         case error
         case info
+    }
+
+    /// What the mic control should show. Derived, never stored, so it can't
+    /// drift from the speech manager's real permission / listening state.
+    enum VoiceState {
+        case listening
+        case off
+        case needsPermission
+        case denied
+    }
+
+    var voiceState: VoiceState {
+        switch speechManager.permissionStatus {
+        case .notDetermined: return .needsPermission
+        case .denied: return .denied
+        case .authorized: return speechManager.isListening ? .listening : .off
+        }
     }
 
     var totalCountries: Int {
@@ -46,9 +68,26 @@ class CountryGameViewModel {
         }
     }
 
+    /// Normalized label → country for the current letter. Built once per
+    /// round so each spoken window costs one normalize and one lookup.
+    @ObservationIgnored private var spokenLookup: [String: Country] = [:]
+    @ObservationIgnored private var completionTask: Task<Void, Never>?
+
+    init() {
+        speechManager.matchHandler = { [weak self] transcription in
+            self?.handleSpeechTranscript(transcription)
+        }
+        speechManager.finalTranscriptHandler = { [weak self] transcription in
+            self?.handleSpeechTranscript(transcription, isFinal: true)
+        }
+    }
+
     func selectLetter(_ letter: String) {
         selectedLetter = letter
         targetCountries = CountriesData.letterIndex[letter] ?? []
+        spokenLookup = Self.makeSpokenLookup(for: targetCountries)
+        completionTask?.cancel()
+        completionTask = nil
         guessedCountries = []
         giveUpCountries = []
         currentGuess = ""
@@ -61,7 +100,7 @@ class CountryGameViewModel {
     }
 
     func submitGuess() {
-        let trimmedGuess = currentGuess.trimmingCharacters(in: .whitespaces)
+        let trimmedGuess = currentGuess.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !trimmedGuess.isEmpty else {
             feedbackMessage = "Enter a country name to submit a guess."
@@ -73,17 +112,20 @@ class CountryGameViewModel {
             return
         }
 
-        // Try to find matching country
-        guard let matchedCountry = targetCountries.first(where: { $0.matches(trimmedGuess) }) else {
+        // Resolve against the whole list, not just this letter's, so a guess
+        // for the wrong letter gets told which letter it belongs to instead
+        // of a misleading "Not recognized".
+        guard let matchedCountry = CountriesData.all.first(where: { $0.matches(trimmedGuess) }) else {
             feedbackMessage = "Not recognized. Try another name."
             feedbackType = .error
+            HapticManager.error()
             return
         }
 
-        // Check if country starts with selected letter
         guard matchedCountry.firstLetter == selectedLetter else {
-            feedbackMessage = "\"\(matchedCountry.name)\" does not start with \(selectedLetter)."
+            feedbackMessage = "\(matchedCountry.name) starts with \(matchedCountry.firstLetter), not \(selectedLetter)."
             feedbackType = .error
+            HapticManager.error()
             return
         }
 
@@ -103,25 +145,171 @@ class CountryGameViewModel {
             return
         }
 
-        // Valid guess!
-        guessedCountries.append(matchedCountry)
-
-        // Clear hint tracking if this was the hinted country
-        if currentHintedCountry == matchedCountry {
-            currentHintedCountry = nil
-        }
-        hintLevels.removeValue(forKey: matchedCountry.id)
-
-        feedbackMessage = "Nice! \(matchedCountry.name) added."
-        feedbackType = .success
         currentGuess = ""
-        HapticManager.success()
+        accept([matchedCountry], spoken: false)
+    }
 
-        // Check if game is complete
-        if remainingCount == 0 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-                self?.finishGame()
+    // MARK: - Voice
+
+    /// Feeds one speech transcript through the matcher. Partial transcripts
+    /// are cumulative within an utterance, so a country already on the board
+    /// is skipped silently rather than nagging on every partial result, and a
+    /// hit on the very last word is held back while it could still grow into
+    /// a longer name ("Guinea" → "Guinea-Bissau", "Niger" → "Nigeria",
+    /// "Congo" → "Congo Kinshasa") until more words or the final result land.
+    func handleSpeechTranscript(_ transcription: String, isFinal: Bool = false) {
+        guard gameState == .playing else { return }
+
+        let countries = Self.spokenHits(in: transcription, lookup: spokenLookup)
+            .filter { isFinal || !$0.isProvisional }
+            .map(\.country)
+            .filter { !guessedCountries.contains($0) && !giveUpCountries.contains($0) }
+
+        guard !countries.isEmpty else { return }
+        accept(countries, spoken: true)
+    }
+
+    private struct SpokenHit {
+        let country: Country
+        let isProvisional: Bool
+    }
+
+    /// Longest spoken form we accept ("Saint Vincent and the Grenadines").
+    private static let maxSpokenWords = 6
+
+    private static func makeSpokenLookup(for countries: [Country]) -> [String: Country] {
+        var lookup: [String: Country] = [:]
+        for country in countries {
+            for label in country.labels {
+                let key = Country.normalize(label)
+                if lookup[key] == nil { lookup[key] = country }
             }
+        }
+        return lookup
+    }
+
+    /// Finds every country named in a transcript. Windows of up to
+    /// `maxSpokenWords` consecutive words are tried longest-first and the words
+    /// of a hit are consumed, so "Democratic Republic of the Congo" credits
+    /// the DRC once instead of also crediting plain "Congo" on its last word.
+    /// Results come back in the order they were spoken.
+    private static func spokenHits(in transcription: String, lookup: [String: Country]) -> [SpokenHit] {
+        let words = transcription.split(whereSeparator: \.isWhitespace).map(String.init)
+        guard !words.isEmpty else { return [] }
+
+        var consumed = [Bool](repeating: false, count: words.count)
+        var hits: [(start: Int, hit: SpokenHit)] = []
+
+        for size in stride(from: min(maxSpokenWords, words.count), through: 1, by: -1) {
+            for start in 0...(words.count - size) {
+                let range = start..<(start + size)
+                guard !range.contains(where: { consumed[$0] }) else { continue }
+
+                let phrase = Country.normalize(words[range].joined(separator: " "))
+                guard !phrase.isEmpty, let country = lookup[phrase] else { continue }
+
+                for index in range { consumed[index] = true }
+                guard !hits.contains(where: { $0.hit.country == country }) else { continue }
+
+                let endsTranscript = range.upperBound == words.count
+                let couldGrow = endsTranscript && lookup.contains { key, other in
+                    other != country && key.hasPrefix(phrase)
+                }
+                hits.append((start, SpokenHit(country: country, isProvisional: couldGrow)))
+            }
+        }
+
+        return hits.sorted { $0.start < $1.start }.map(\.hit)
+    }
+
+    /// Call when the play screen appears or the app returns to the foreground.
+    func activateVoiceIfAllowed() {
+        speechManager.checkPermissionStatus()
+        guard gameState == .playing, !voiceMuted, speechManager.permissionStatus == .authorized else { return }
+        speechManager.startListening()
+    }
+
+    /// Call when the play screen disappears or the app leaves the foreground.
+    func suspendVoice() {
+        speechManager.stopListening()
+    }
+
+    /// The mic button. Requests access the first time, then toggles.
+    func toggleVoice() async {
+        switch speechManager.permissionStatus {
+        case .notDetermined:
+            await speechManager.requestPermissions()
+            guard speechManager.permissionStatus == .authorized else {
+                showVoiceDenied()
+                return
+            }
+            startVoiceAndReport()
+
+        case .denied:
+            showVoiceDenied()
+
+        case .authorized:
+            if speechManager.isListening {
+                voiceMuted = true
+                speechManager.stopListening()
+                feedbackMessage = "Voice is off. Typing still works."
+                feedbackType = .info
+            } else {
+                startVoiceAndReport()
+            }
+        }
+    }
+
+    /// Starting can fail silently (recognizer unavailable, audio route busy),
+    /// so the message reflects what actually happened rather than the intent.
+    private func startVoiceAndReport() {
+        voiceMuted = false
+        speechManager.startListening()
+        if speechManager.isListening {
+            feedbackMessage = "Voice is on. Just say a country."
+            feedbackType = .info
+        } else {
+            feedbackMessage = "Voice isn't available right now. Typing still works."
+            feedbackType = .error
+        }
+    }
+
+    private func showVoiceDenied() {
+        feedbackMessage = "Microphone access is off. Turn it on in Settings to say your guesses."
+        feedbackType = .error
+    }
+
+    // MARK: - Scoring
+
+    private func accept(_ countries: [Country], spoken: Bool) {
+        guard !countries.isEmpty else { return }
+
+        for country in countries {
+            guessedCountries.append(country)
+
+            // Clear hint tracking if this was the hinted country
+            if currentHintedCountry == country {
+                currentHintedCountry = nil
+            }
+            hintLevels.removeValue(forKey: country.id)
+        }
+
+        let names = ListFormatter.localizedString(byJoining: countries.map(\.name))
+        feedbackMessage = spoken ? "Heard you! \(names) added." : "Nice! \(names) added."
+        feedbackType = .success
+        HapticManager.success()
+        finishRoundSoonIfComplete()
+    }
+
+    /// Gives the last success badge a beat on screen before the results
+    /// appear. Cancelled if the player leaves the round in the meantime.
+    private func finishRoundSoonIfComplete() {
+        guard remainingCount == 0, completionTask == nil else { return }
+        completionTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(400))
+            guard !Task.isCancelled else { return }
+            self?.completionTask = nil
+            self?.finishGame()
         }
     }
 
@@ -177,6 +365,9 @@ class CountryGameViewModel {
                 hintLevels[newHinted.id] = hintLevel + 1
             }
         }
+
+        // A hint that gave the last country up ends the round like a guess would.
+        finishRoundSoonIfComplete()
     }
 
     private func getHintLevelReveal(for country: Country, level: Int) -> (String, Bool) {
@@ -209,10 +400,17 @@ class CountryGameViewModel {
     }
 
     func finishGame() {
+        guard gameState == .playing else { return }
+        completionTask?.cancel()
+        completionTask = nil
+        speechManager.stopListening()
         gameState = .finished
     }
 
     func resetGame() {
+        completionTask?.cancel()
+        completionTask = nil
+        speechManager.stopListening()
         selectedLetter = nil
         targetCountries = []
         guessedCountries = []

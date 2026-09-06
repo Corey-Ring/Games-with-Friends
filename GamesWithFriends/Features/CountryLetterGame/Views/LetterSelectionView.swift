@@ -44,7 +44,7 @@ struct LetterSelectionView: View {
                         )
                         .rotationEffect(.degrees(-1))
 
-                    Text("Select a letter to see how many countries you can name before tapping \"Done\".")
+                    Text("Select a letter, then type or say every country you can think of before tapping \"Done\".")
                         .font(AppTheme.Typography.secondary)
                         .foregroundColor(AppTheme.Retro.panelText)
                         .multilineTextAlignment(.center)
