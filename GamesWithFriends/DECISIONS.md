@@ -28,6 +28,14 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-09-06 — Border Blitz / Border Hop / Finish the Line spot icons redesigned [decision]
+
+**What:** Three hub spots in `Theme/RetroSpotIllustrations.swift` replaced after a mock-and-approve round with Corey: Border Blitz is now a smiling cartographic country struck by a tomato bolt (`.borderMap` keeps its name); Border Hop is a two-country landmass (cornflower → grass) with a smiling tomato pin that has just hopped the dashed border (`.suitcase` → `.hopMap`); Finish the Line is a plum speech bubble holding a three-dot "I know this…" ellipsis (`.clapperboard` → `.quoteBubble`). All three carry the bubble-five hard offset shadow, so `RetroSpotPainter.paint` grew an optional `shadow:` parameter.
+
+**Why:** the clapperboard said "movies" next to Movie Chain's film frame and Casting Director's star while the game quotes from anywhere; the suitcase said "travel" but not "borders"; the old Blitz blob read as a cloud. Corey picked these over bolder single-symbol variants (bolt-only country, hopping pin, `___”` bubble, stopwatch, compass, mic). Grass for the Hop destination was chosen over the in-game mustard for punch, accepting the overlap with Country Letter's accent.
+
+**Workflow:** SVG replicas in a 64-box on the 66 pt plate, rasterized with `qlmanage` (renders non-square sheets square — crop or keep sheets square), ported 1:1 to `Path`, verified on a simulator hub screenshot (the iOS Simulator MCP `swipe` works headlessly even though `attach` does not).
+
 ## 2026-09-06 — Motif grounds clear the status bar via an environment inset; Country Letter owns its nav [decision] [gotcha]
 
 **Context.** Every full-bleed `MotifGroundView` painted motifs behind the clock. The exclusion rects each screen passes are in screen coordinates, but their "nav strip" band (`y: 56`) was really the status bar. Reading `geo.safeAreaInsets.top` inside a `GeometryReader { … }.ignoresSafeArea()` returns **0** — the insets are consumed, not reported — so callers cannot know where the status bar ends.

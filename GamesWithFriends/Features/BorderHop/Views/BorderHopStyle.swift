@@ -184,7 +184,7 @@ struct BorderHopSpotPlate: View {
         ZStack {
             Circle().fill(AppTheme.Retro.panel)
             Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
-            RetroSpotIllustration(kind: .suitcase)
+            RetroSpotIllustration(kind: .hopMap)
                 .frame(width: diameter * 0.72, height: diameter * 0.72)
         }
         .frame(width: diameter, height: diameter)

@@ -116,7 +116,7 @@ struct FinishTheLineStatusDisc: View {
 }
 
 /// Spot plate: cream circle, ink rule, illustration inside (§3 recipe header).
-/// Finish the Line's spot is the clapperboard (§3.2 / RetroSpotKind).
+/// Finish the Line's spot is the "I know this…" bubble (§3.2 / RetroSpotKind).
 struct FinishTheLineSpotPlate: View {
     var diameter: CGFloat = 84
 
@@ -124,7 +124,7 @@ struct FinishTheLineSpotPlate: View {
         ZStack {
             Circle().fill(AppTheme.Retro.panel)
             Circle().stroke(AppTheme.Retro.ink, lineWidth: AppTheme.Retro.strokeHeavy)
-            RetroSpotIllustration(kind: .clapperboard)
+            RetroSpotIllustration(kind: .quoteBubble)
                 .frame(width: diameter * 0.76, height: diameter * 0.76)
         }
         .frame(width: diameter, height: diameter)

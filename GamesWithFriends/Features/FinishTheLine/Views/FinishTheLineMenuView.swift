@@ -58,7 +58,7 @@ struct FinishTheLineMenuView: View {
     //
     // Spot plate + framed Lilita title (§3 recipe). The old gradient hero
     // circle with the SF `quote.bubble.fill` inside it is retired (§9) — the
-    // clapperboard spot carries the identity now.
+    // speech-bubble spot carries the identity now.
 
     private var headerSection: some View {
         VStack(spacing: AppTheme.Spacing.sm) {

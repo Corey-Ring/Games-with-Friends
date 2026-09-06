@@ -20,7 +20,7 @@ struct BorderHopDifficultyView: View {
 
             ScrollView {
                 VStack(spacing: AppTheme.Spacing.lg) {
-                    // Header: suitcase spot plate + framed Lilita title. The
+                    // Header: hop-map spot plate + framed Lilita title. The
                     // naked hero type on the linen field is a retirement (§9).
                     VStack(spacing: AppTheme.Spacing.sm) {
                         BorderHopSpotPlate()
