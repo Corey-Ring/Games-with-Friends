@@ -2,10 +2,10 @@
 //  FinishTheLineSpeechRecognitionManager.swift
 //  GamesWithFriends
 //
-//  TODO: CONSOLIDATION — This manager is duplicated in both BorderBlitz and
-//  FinishTheLine. After FinishTheLine ships and stabilizes, extract the common
-//  logic to Core/Services/SpeechRecognitionManager.swift with a generic match
-//  callback. See FinishTheLine_PRD.md §6.
+//  TODO: CONSOLIDATION — This manager is duplicated in BorderBlitz,
+//  FinishTheLine and CountryLetterGame. Extract the common logic to
+//  Core/Services/SpeechRecognitionManager.swift with a generic match
+//  callback. See FinishTheLine_PRD.md §6 and DECISIONS.md.
 //
 //  Behaviorally identical to BorderBlitzSpeechRecognitionManager — the only
 //  difference is the class name and enum prefix. The `matchHandler` callback

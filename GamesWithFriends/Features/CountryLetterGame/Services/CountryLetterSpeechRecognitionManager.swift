@@ -1,5 +1,5 @@
 //
-//  BorderBlitzSpeechRecognitionManager.swift
+//  CountryLetterSpeechRecognitionManager.swift
 //  GamesWithFriends
 //
 //  TODO: CONSOLIDATION — This manager is duplicated in BorderBlitz,
@@ -7,11 +7,15 @@
 //  Core/Services/SpeechRecognitionManager.swift with a generic match
 //  callback. See FinishTheLine_PRD.md §6 and DECISIONS.md.
 //
+//  Behaviorally identical to BorderBlitzSpeechRecognitionManager — the only
+//  difference is the class name and enum prefix. Country matching lives in
+//  CountryGameViewModel.handleSpeechTranscript, not here.
+//
 
 import Speech
 import AVFoundation
 
-enum BorderBlitzSpeechPermissionStatus {
+enum CountryLetterSpeechPermissionStatus {
     case notDetermined
     case authorized
     case denied
@@ -19,12 +23,12 @@ enum BorderBlitzSpeechPermissionStatus {
 
 @MainActor
 @Observable
-class BorderBlitzSpeechRecognitionManager {
+class CountryLetterSpeechRecognitionManager {
     // MARK: - Properties
     var audioLevel: Float = 0.0
     var recognizedText: String = ""
     var isListening: Bool = false
-    var permissionStatus: BorderBlitzSpeechPermissionStatus = .notDetermined
+    var permissionStatus: CountryLetterSpeechPermissionStatus = .notDetermined
 
     var matchHandler: ((String) -> Void)?
 

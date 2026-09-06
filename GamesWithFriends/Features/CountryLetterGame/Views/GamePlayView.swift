@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GamePlayView: View {
     @Bindable var viewModel: CountryGameViewModel
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack {
@@ -62,14 +63,22 @@ struct GamePlayView: View {
                 }
                 .padding(.horizontal)
 
-                // Guess input form
+                // Guess input form — typed or spoken. The mic lozenge in the
+                // header is the voice affordance; the caption under the field
+                // spells out the current state in words.
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-                    Text("Country Guess")
-                        .font(AppTheme.Retro.Typography.cardTitle)
-                        .foregroundColor(AppTheme.Retro.panelText)
+                    HStack {
+                        Text("Country Guess")
+                            .font(AppTheme.Retro.Typography.cardTitle)
+                            .foregroundColor(AppTheme.Retro.panelText)
+
+                        Spacer()
+
+                        CountryLetterVoiceControl(viewModel: viewModel)
+                    }
 
                     HStack(spacing: AppTheme.Spacing.sm) {
-                        TextField("Start typing here...", text: $viewModel.currentGuess)
+                        TextField("Type a country name...", text: $viewModel.currentGuess)
                             .textFieldStyle(.plain)
                             .font(AppTheme.Typography.body)
                             .foregroundColor(AppTheme.Retro.panelText)
@@ -95,6 +104,11 @@ struct GamePlayView: View {
                         }
                         .buttonStyle(RetroRaisedButtonStyle(cornerRadius: AppTheme.Retro.Radius.inner))
                     }
+
+                    Text(voiceHint)
+                        .font(AppTheme.Typography.caption)
+                        .foregroundColor(AppTheme.Retro.panelText.opacity(0.7))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .retroCard()
@@ -159,6 +173,27 @@ struct GamePlayView: View {
                 .padding(.horizontal)
                 .padding(.bottom)
             }
+        }
+        // The mic only runs while this screen is on top and the app is in the
+        // foreground; the view model owns the muted flag, so a resume never
+        // re-arms a mic the player switched off.
+        .onAppear { viewModel.activateVoiceIfAllowed() }
+        .onDisappear { viewModel.suspendVoice() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                viewModel.activateVoiceIfAllowed()
+            } else {
+                viewModel.suspendVoice()
+            }
+        }
+    }
+
+    private var voiceHint: String {
+        switch viewModel.voiceState {
+        case .listening: return "Or just say it out loud. The mic is on."
+        case .off: return "Tap the mic to say your guesses instead of typing."
+        case .needsPermission: return "Tap the mic to say your guesses instead of typing."
+        case .denied: return "Voice needs microphone access. Tap the mic to open Settings."
         }
     }
 

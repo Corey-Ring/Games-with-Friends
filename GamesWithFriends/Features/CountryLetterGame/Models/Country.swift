@@ -15,25 +15,25 @@ struct Country: Identifiable, Codable, Hashable, Equatable {
         String(name.prefix(1)).uppercased()
     }
 
+    /// Whole-string match against the display name or any alternate, after
+    /// both sides go through `normalize`. Deliberately exact: fuzzy matching
+    /// on a 195-entry list produces false credits (e.g. "Niger" vs "Nigeria").
     func matches(_ input: String) -> Bool {
-        let normalized = normalizeInput(input)
-        let normalizedName = normalizeInput(name)
+        let normalized = Country.normalize(input)
+        guard !normalized.isEmpty else { return false }
 
-        if normalized == normalizedName {
+        if normalized == Country.normalize(name) {
             return true
         }
 
-        for alt in alternateNames {
-            if normalized == normalizeInput(alt) {
-                return true
-            }
-        }
-
-        return false
+        return alternateNames.contains { normalized == Country.normalize($0) }
     }
 
-    private func normalizeInput(_ text: String) -> String {
-        var result = text.lowercased().trimmingCharacters(in: .whitespaces)
+    /// Lowercases, strips diacritics and punctuation (so "Côte d’Ivoire",
+    /// "Cote d'Ivoire" and "cote d ivoire" collapse together), collapses
+    /// whitespace, and drops a leading "the".
+    static func normalize(_ text: String) -> String {
+        var result = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
 
         // Remove diacritics
         result = result.folding(options: .diacriticInsensitive, locale: .current)

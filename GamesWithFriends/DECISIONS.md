@@ -28,6 +28,20 @@ Tag the entry with `[decision]`, `[gotcha]`, `[convention]`, or `[migration]` at
 
 ---
 
+## 2026-09-05 — Country Letter Challenge: both Congos under C, voice input via a third speech-manager copy [decision]
+
+**What:** `CountriesData` now files the DRC under **C** as `Congo (DRC)` (alternates: Democratic Republic of the Congo, DR Congo, DRC, Congo Kinshasa, Zaire) next to `Congo` (Republic of the Congo, Congo Brazzaville…). A player-facing alias sweep landed at the same time (USA/America, UK/Britain/England, St Lucia/St Kitts/St Vincent, Bosnia, Trinidad, Türkiye, Holland, Macedonia, Czech, Columbia, Cypress…). Voice guessing was added by copying `BorderBlitzSpeechRecognitionManager` verbatim to `CountryLetterSpeechRecognitionManager`; all matching lives in `CountryGameViewModel.spokenCountries(in:among:)`.
+
+**Why:** The bug report ("some C countries aren't picked up") was two things: the DRC lived under D, so on a C round it could never be credited, and the matcher is whole-string exact against a thin alias list, so everyday phrasings ("Republic of Congo", "Czech", "Columbia") were rejected. Exact matching is deliberate — fuzzy matching over 195 names produces false credits (Niger/Nigeria, Dominica/Dominican Republic) — so the fix is a richer alias list, not a looser matcher.
+
+**Impact / gotchas:**
+- Spoken transcripts are cumulative partials, so the resolver tries word windows longest-first and consumes the words of a hit ("Democratic Republic of the Congo" must not also credit plain "Congo"), and countries already on the board are skipped silently. `CountryLetterMatchingTests` pins all of this.
+- Do **not** add aliases that are everyday spoken words: bare "US", "CAR", "chat"… would credit a country from ordinary chatter on that letter's round.
+- Three speech-manager copies now exist (Border Blitz, Finish the Line, Country Letter). Audio-session fixes must be applied to all three until the consolidation in `Core/Services/` happens.
+- The mic is auto-armed on the play screen only when access is already granted; otherwise the lozenge offers "Use your voice" and the permission prompt is user-initiated. `voiceMuted` on the view model keeps scene resumes from re-arming a mic the player switched off.
+
+---
+
 ## 2026-08-23 — PR #4 pre-merge review: three fixes applied, seven findings deferred to phase 5 [decision]
 
 **What:** A full multi-angle code review of the retro branch confirmed no logic/crash bugs but surfaced 10 findings. Three were fixed pre-merge: (1) Finish the Line's "+2s" and near-miss pips were grass/tangerine small text on cream (§8 fail) — now candy-filled chips with ink labels; (2) Casting Director + Movie Chain player-identity dots still used the retired muted ramp — both models now carry candy ramps excluding their game accents (and Casting Director indexes by a raw UUID byte instead of the per-process-seeded `hashValue`, so colors no longer reshuffle each launch); (3) the two OFL font-license files are now in the app target's Resources phase (pbxproj IDs `TF…03/04`), satisfying ART_DIRECTION §4's "OFL files ship with the fonts".
